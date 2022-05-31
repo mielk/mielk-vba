@@ -1,0 +1,61 @@
+Attribute VB_Name = "modConst"
+Option Explicit
+
+Private Const CLASS_NAME As String = "modConst"
+'[Registry] -----------------------------------------------------------------------------------------------
+Public Const HKEY_CURRENT_USER As Long = &H80000001
+Public Const HKEY_LOCAL_MACHINE As Long = &H80000002
+'[Methods] ------------------------------------------------------------------------------------------------
+Public Const ESCAPE_CHARACTER As String = "\"
+Public Const METHOD_START_TAG As String = "{"
+Public Const METHOD_END_TAG As String = "}"
+Public Const GET_NAME As String = "getName"
+Public Const NEW_LINE_SYMBOL As String = "\n"
+Public Const VALUE_____ As String = "*%Value%*"
+'[Reflection] ---------------------------------------------------------------------------------------------
+Public Const LOCAL_METHOD As String = "$."
+'[Extensions] ---------------------------------------------------------------------------------------------
+Public Const EXTENSION_TXT As String = ".txt"
+
+'[Constants from other libraries - used with late binding] ------------------------------------------------
+'[Outlook]
+Public Const olMailItem As Long = 0
+'[VBIDE]
+Public Const vbext_pk_Proc As Long = 0
+Public Const vbext_pk_Let As Long = 1
+Public Const vbext_pk_Set As Long = 2
+Public Const vbext_pk_Get As Long = 3
+Public Const vbext_ct_StdModule As Long = 1
+Public Const vbext_ct_ClassModule As Long = 2
+Public Const vbext_ct_MSForm As Long = 3
+Public Const vbext_ct_Document As Long = 100
+'[View] ---------------------------------------------------------------------------------------------------
+Public Const PIXEL_SIZE As Single = 0.75
+
+'[Control keys] -------------------------------------------------------------------------------------------
+Public Const SHIFT_MASK As Long = 1
+Public Const CTRL_MASK As Long = 2
+Public Const ALT_MASK As Long = 4
+
+
+
+'#FORCHECK
+'[Xml tags] -----------------------------------------------------------------------------------------------
+Public Const XML_EMPTY As String = "#Empty"
+Public Const XML_MISSING As String = "#Missing"
+Public Const XML_NOTHING As String = "#Nothing"
+Public Const XML_NULL As String = "#Null"
+Public Const XML_ARRAY As String = "<array>{0}</array>"
+Public Const XML_COLLECTION As String = "<collection>{0}</collection>"
+Public Const XML_DICTIONARY As String = "<dictionary>{0}</dictionary>"
+'[Db tags] ------------------------------------------------------------------------------------------------
+Public Const DB_NULL As String = "NULL"
+''[Files] --------------------------------------------------------------------------------------------------
+'Public Const SELECTING_FILES_EXCEL_FILES As String = "Excel files, *.xls; *.xlsm; *.xlsx"
+'Public Const SELECTING_FILES_TEXT_FILES As String = "Text files, *.txt; *.csv"
+''[Symbols] ------------------------------------------------------------------------------------------------
+'Public Const TRANSLATION_NOT_REQUIRED As String = "#"
+''[Validating] ---------------------------------------------------------------------------------------------
+'Public Const TAG_MAIN_VALUE As String = ";M}(H;C'M+?.>'#bx{pzk}2@.y%4Pr$z"
+'Public Const TAG_UNDERLYING_VALUE As String = "underlying-value"
+'    '----------------------------------------------------------------------------------------------------------
