@@ -82,7 +82,7 @@ Private Function getFromPart() As String
 End Function
 
 Private Function getValuePart() As String
-    getValuePart = F.Dictionaries.toString(pValues, DictPart_KeyAndValue, StringifyMode_Db, ", ", " = ", "")
+    getValuePart = F.dictionaries.toString(pValues, DictPart_KeyAndValue, StringifyMode_Db, ", ", " = ", "")
 End Function
 
 Private Function getWherePart() As String

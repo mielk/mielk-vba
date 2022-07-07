@@ -59,7 +59,11 @@ Public Function toString() As String
     Dim col As VBA.Collection
     '------------------------------------------------------------------------------------------------------
     If pComparisonMode = ComparisonMode_In Then
-        Set col = pComparedValue
+        If VBA.IsArray(pComparedValue) Then
+            Set col = F.Collections.fromArray(pComparedValue)
+        Else
+            Set col = pComparedValue
+        End If
         toString = pFieldName & operatorAsString & " (" & F.Collections.toString(col, StringifyMode_Db) & ")"
     Else
         toString = pFieldName & operatorAsString & F.Strings.toDbValue(pComparedValue)

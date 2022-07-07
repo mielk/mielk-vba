@@ -26,12 +26,29 @@ End Sub
 
 '[DB OPERATIONS]
 Public Sub dropTableIfExists(tableName As String)
-    Const SQL_PATTERN As String = "IF OBJECT_ID('{0}', 'U') IS NOT NULL DROP TABLE {0};"
+    Const REGEX_NOTHING_TO_DELETE As String = "not exist"
+    Const SQL_PATTERN As String = "DROP TABLE {0};"
     '------------------------------------------------------------------------------------------------------
     Dim sqlString As String
     '------------------------------------------------------------------------------------------------------
     sqlString = F.Strings.Format(SQL_PATTERN, tableName)
-    Call pConnection.Execute(sqlString)
+    Call pConnection.Execute(sqlString, handleErrors:=False)
+    
+    
+ExitPoint:
+    Dim errNumber As Long, errDescription As String
+    Exit Sub
+    
+ErrHandler:
+    errNumber = Err.Number: errDescription = Err.Description
+    If Not F.regex.checkIfMatch(errDescription, REGEX_NOTHING_TO_DELETE) Then
+        'call ErrorManager.addError
+    Else
+        errNumber = 0
+        errDescription = vbNullString
+    End If
+    GoTo ExitPoint
+    
 End Sub
 
 

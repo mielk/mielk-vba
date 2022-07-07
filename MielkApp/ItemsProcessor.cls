@@ -40,7 +40,7 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub initializeContainers()
-    Set pItems = F.Dictionaries.Create(False)
+    Set pItems = F.dictionaries.Create(False)
 End Sub
 
 Private Sub Class_Terminate()
@@ -87,20 +87,20 @@ Public Function getItemsDictionary() As Scripting.Dictionary
 End Function
 
 Public Function getItemsCollection() As VBA.Collection
-    Set getItemsCollection = F.Dictionaries.toCollection(pItems, DictPart_ValueOnly)
+    Set getItemsCollection = F.dictionaries.toCollection(pItems, DictPart_ValueOnly)
 End Function
 
 Public Function getMetaProperty(propertyTag As String) As Variant
-    Call F.Variables.assign(getMetaProperty, F.Dictionaries.getItem(pMetaObject, propertyTag))
+    Call F.Variables.assign(getMetaProperty, F.dictionaries.getItem(pMetaObject, propertyTag))
 End Function
 
 Public Function getItem(key As String) As IProcessItem
     Dim obj As Object
     '------------------------------------------------------------------------------------------------------
-    Set obj = F.Dictionaries.GetObject(pItems, key)
+    Set obj = F.dictionaries.GetObject(pItems, key)
     If Not obj Is Nothing Then
         If TypeOf obj Is IProcessItem Then
-            Set getItem = F.Dictionaries.GetObject(pItems, key)
+            Set getItem = F.dictionaries.GetObject(pItems, key)
         End If
     End If
 End Function
@@ -109,7 +109,7 @@ Public Function getStatusCounter(status As Variant) As Long
     If status < 0 Then          '[ALL] status
         getStatusCounter = pItems.Count
     Else
-        getStatusCounter = VBA.Val(F.Dictionaries.getItem(pStatusCounters, status))
+        getStatusCounter = VBA.Val(F.dictionaries.getItem(pStatusCounters, status))
     End If
 End Function
 
@@ -118,12 +118,12 @@ End Function
 '[Items]
 Public Function addItems(value As Scripting.Dictionary) As ItemsProcessor
     Set addItems = Me
-    Call F.Dictionaries.appendItemsFromContainer(pItems, value)
+    Call F.dictionaries.appendItemsFromContainer(pItems, value)
 End Function
 
 Public Function addItem(item As IProcessItem, key As String) As ItemsProcessor
     Set addItem = Me
-    Call F.Dictionaries.addItem(pItems, key, item)
+    Call F.dictionaries.addItem(pItems, key, item)
 End Function
 
 
@@ -169,7 +169,7 @@ Private Function createCountersDictionary() As Scripting.Dictionary
     Dim status As Variant
     '------------------------------------------------------------------------------------------------------
     
-    Set createCountersDictionary = F.Dictionaries.Create(False)
+    Set createCountersDictionary = F.dictionaries.Create(False)
     
     For Each key In pItems.Keys
         Set item = pItems.item(key)
@@ -216,13 +216,13 @@ Public Sub removeItem(name As String)
     Dim status As Variant
     '------------------------------------------------------------------------------------------------------
     
-    Set item = F.Dictionaries.GetObject(pItems, name)
+    Set item = F.dictionaries.GetObject(pItems, name)
     If Not item Is Nothing Then
         status = item.getStatus
         Call updateCounters(status, Empty)
     End If
     
-    Call F.Dictionaries.removeItem(pItems, name)
+    Call F.dictionaries.removeItem(pItems, name)
     
     RaiseEvent AfterItemRemoved(item)
 
@@ -276,7 +276,7 @@ Public Function confirm()
     RaiseEvent AfterConfirm
 End Function
 
-Public Function cancel()
+Public Function Cancel()
     RaiseEvent CancelledByUser
 End Function
 

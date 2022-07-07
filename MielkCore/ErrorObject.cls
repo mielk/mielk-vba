@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
 Option Explicit
 
-Private Const CLASS_NAME As String = "Error"
+Private Const CLASS_NAME As String = "ErrorObject"
 '----------------------------------------------------------------------------------------------------------
 Private pClassName As String
 Private pMethodName As String
@@ -86,7 +86,7 @@ End Function
 Public Function getParamsAsString() As String
     Const METHOD_NAME As String = "getParamsAsString"
     '------------------------------------------------------------------------------------------------------
-    Dim key As Variant
+    Dim Key As Variant
     Dim arr() As String
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
@@ -96,10 +96,10 @@ Public Function getParamsAsString() As String
     If Not pParams Is Nothing Then
         If pParams.count Then
             ReDim arr(1 To pParams.count)
-            For Each key In pParams.Keys
+            For Each Key In pParams.Keys
                 i = i + 1
-                arr(i) = "{" & key & ":" & F.strings.stringify(pParams.item(key), StringifyMode_Normal, True) & "}"
-            Next key
+                arr(i) = "{" & Key & ":" & f.strings.stringify(pParams.Item(Key), StringifyMode_Normal, True) & "}"
+            Next Key
             getParamsAsString = VBA.join(arr, ", ")
         End If
     End If
@@ -136,7 +136,7 @@ Public Function getStringForTextFile() As String
     
     If Not DEV_MODE Then On Error GoTo ErrHandler
     
-    getStringForTextFile = F.strings.format(STRING_PATTERN, _
+    getStringForTextFile = f.strings.format(STRING_PATTERN, _
                             pClassName & "." & pMethodName, _
                             pErrorNumber, _
                             pErrorDescription, _
@@ -166,19 +166,19 @@ End Function
 Private Function getParamsStringForTextFile() As String
     Const METHOD_NAME As String = "getParamsStringForTextFile"
     '------------------------------------------------------------------------------------------------------
-    Dim key As Variant
+    Dim Key As Variant
     Dim arr() As String
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
     
     If Not DEV_MODE Then On Error GoTo ErrHandler
     
-    If F.Dictionaries.isNonEmptyDictionary(pParams) Then
+    If f.dictionaries.isNonEmptyDictionary(pParams) Then
         ReDim arr(1 To pParams.count)
-        For Each key In pParams.Keys
+        For Each Key In pParams.Keys
             i = i + 1
-            arr(i) = "[" & key & "]: " & F.strings.stringify(pParams.item(key), StringifyMode_Normal, True)
-        Next key
+            arr(i) = "[" & Key & "]: " & f.strings.stringify(pParams.Item(Key), StringifyMode_Normal, False)
+        Next Key
         getParamsStringForTextFile = VBA.join(arr, VBA.vbCrLf & VBA.String(32, " "))
     Else
         getParamsStringForTextFile = "(no params)"
@@ -218,7 +218,7 @@ Public Function equals(errObject As ErrorObject, _
         equals = False
     ElseIf compareDescription And pErrorDescription <> errObject.getErrorDescription Then
         equals = False
-    ElseIf compareParams And Not F.Dictionaries.compare(pParams, errObject.getParams) Then
+    ElseIf compareParams And Not f.dictionaries.compare(pParams, errObject.getParams) Then
         equals = False
     Else
         equals = True

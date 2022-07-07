@@ -21,7 +21,7 @@ Private Const CLASS_NAME As String = "modWindowsApi"
     'Public Declare PtrSafe Function GetMenuItemCount Lib "user32" (ByVal hMenu As LongPtr) As Long
     'Public Declare PtrSafe Function GetSystemMenu Lib "user32" (ByVal hWnd As LongPtr, ByVal bRevert As Long) As LongPtr
     Public Declare PtrSafe Function GetWindowLong Lib "user32" Alias "GetWindowLongPtrA" (ByVal hWnd As LongPtr, ByVal nIndex As Long) As LongPtr
-    Public Declare PtrSafe Function GetWindowRect Lib "user32" (ByVal hWnd As LongPtr, ByVal lpRect As RECT) As Boolean
+    Public Declare PtrSafe Function GetWindowRect Lib "user32" (ByVal hWnd As LongPtr, lpRect As RECT) As Boolean
     'Public Declare PtrSafe Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hWnd As LongPtr, ByVal lpString As String, ByVal cch As LongPtr) As Long
     'Public Declare PtrSafe Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthA" (ByVal hWnd As LongPtr) As Long
     'Public Declare PtrSafe Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As LongPtr, ByRef lpdwProcessId As LongPtr) As LongPtr
@@ -54,7 +54,7 @@ Private Const CLASS_NAME As String = "modWindowsApi"
     'Public Declare PtrSafe Function GetMenuItemCount Lib "user32" (ByVal hMenu As LongPtr) As Long
     'Public Declare PtrSafe Function GetSystemMenu Lib "user32" (ByVal hWnd As LongPtr, ByVal bRevert As Long) As LongPtr
     Public Declare PtrSafe Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As LongPtr, ByVal nIndex As Long) As LongPtr
-    Public Declare PtrSafe Function GetWindowRect Lib "user32" (ByVal hWnd As LongPtr, ByVal lpRect As RECT) As Boolean
+    Public Declare PtrSafe Function GetWindowRect Lib "user32" (ByVal hWnd As LongPtr, lpRect As RECT) As Boolean
     'Public Declare PtrSafe Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthA" (ByVal hWnd As LongPtr) As Long
     'Public Declare PtrSafe Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hWnd As LongPtr, ByVal lpString As String, ByVal cch As LongPtr) As Long
     'Public Declare PtrSafe Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As LongPtr, ByRef lpdwProcessId As LongPtr) As LongPtr
@@ -87,7 +87,7 @@ Private Const CLASS_NAME As String = "modWindowsApi"
     'Public Declare Function GetMenuItemCount Lib "user32" (ByVal hMenu As Long) As Long
     'Public Declare Function GetSystemMenu Lib "user32" (ByVal hWnd As Long, ByVal bRevert As Long) As Long
     Public Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-    Public Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByVal lpRect As RECT) As Boolean
+    Public Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT) As Boolean
     'Public Declare Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hWnd As Long, ByVal lpString As String, ByVal cch As Long) As Long
     'Public Declare Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthA" (ByVal hWnd As Long) As Long
     'Public Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, ByRef lpdwProcessId As Long) As Long
@@ -100,7 +100,7 @@ Private Const CLASS_NAME As String = "modWindowsApi"
     Public Declare Function SetLayeredWindowAttributes Lib "user32" (ByVal hWnd As Long, ByVal crey As Long, ByVal bAlpha As Byte, ByVal dwFlags As Long) As Long
     'Public Declare Function setParent Lib "user32" Alias "SetParent" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
     Public Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-    Public Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+    Public Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
     Public Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
     'Public Declare Function UpdateWindow Lib "user32" (ByVal hWnd As Long) As Long
 #End If
@@ -139,7 +139,7 @@ Public Const SW_SHOWNORMAL = 1                      'Show the window and activat
 Public Const GWL_STYLE As Long = (-16)              'The offset of a window's style
 Public Const GWL_EXSTYLE As Long = (-20)            'The offset of a window's extended style
 Public Const WS_CAPTION As Long = &HC00000          'Style to add a titlebar
-Public Const WS_EX_DLGMODELFRAME As Long = &H1      'Controls if the window has an icon
+Public Const WS_EX_DLGMODALFRAME As Long = &H1      'Controls if the window has an icon
 
 'Constants for transparency
 Public Const WS_EX_LAYERED = &H8000

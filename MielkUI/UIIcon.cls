@@ -47,7 +47,7 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub setInitialValues()
-    pUuid = F.Crypto.createUuid
+    pUuid = F.Crypto.createUUID
     pVisible = True
     pEnabled = True
 End Sub
@@ -241,12 +241,12 @@ End Sub
 
 
 
-Public Function Move(Optional x As Variant, Optional y As Variant) As UIIcon
+Public Function move(Optional x As Variant, Optional y As Variant) As UIIcon
     Dim offsetX As Single
     Dim offsetY As Single
     '------------------------------------------------------------------------------------------------------
     
-    Set Move = Me
+    Set move = Me
     
     With pLabel
         If VBA.IsNumeric(x) Then
@@ -261,7 +261,7 @@ Public Function Move(Optional x As Variant, Optional y As Variant) As UIIcon
     
 End Function
 
-Public Function offset(Optional x As Single, Optional y As Single)
+Public Function offset(Optional x As Single, Optional y As Single) As UIIcon
     Set offset = Me
     Call UI.Forms.offsetControls(x, y, pLabel)
     pTop = pLabel.top
@@ -310,7 +310,7 @@ Private Sub updateBackground()
     If UI.Forms.isControlValid(pLabel) Then
         With pLabel
             .BackStyle = VBA.IIf(pIsTransparent, fmBackStyleTransparent, fmBackStyleOpaque)
-            .BackColor = pBackColor
+            .backColor = pBackColor
         End With
     End If
 End Sub
@@ -344,7 +344,7 @@ Private Sub pLabel_MouseUp(ByVal button As Integer, ByVal Shift As Integer, ByVa
     ElseIf pListener Is Nothing Then
         ' skip
     Else
-        Set properties = F.Dictionaries.createWithItems(False, _
+        Set properties = F.dictionaries.createWithItems(False, _
                                                         KeyValue(TAG_BUTTON, button), _
                                                         KeyValue(TAG_SHIFT, Shift), _
                                                         KeyValue(TAG_X, x), _
@@ -396,7 +396,7 @@ Private Function IControl_getTop() As Single
     IControl_getTop = getTop
 End Function
 
-Private Function IControl_getRectangle() As MielkCore.RECT
+Private Function IControl_getRectangle() As RECT
     Stop
 End Function
 
@@ -408,8 +408,8 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     Call alignVertically(baseCtrl)
 End Sub
 
-Private Function IControl_move(Optional x As Single, Optional y As Single) As IControl
-    Set IControl_move = Move(x, y)
+Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
+    Set IControl_move = move(x, y)
 End Function
 
 Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl

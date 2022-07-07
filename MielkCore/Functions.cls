@@ -15,10 +15,11 @@ Private pArrays As FArrays
 Private pBooks As FBooks
 Private pCast As FCast
 Private pCollections As FCollections
-Private pContextMenu As FContextMenu
 Private pColors As FColors
 Private pConstructors As FConstructors
-Private pCryptography As FCryptography
+Private pContextMenu As FContextMenu
+Private pCrypto As FCryptography
+Private pDatabase As FDatabase
 Private pDates As FDates
 Private pDeveloper As FDeveloper
 Private pDialogs As FDialogs
@@ -38,7 +39,7 @@ Private pScreen As FScreen
 Private pSheets As FSheets
 Private pStrings As FStrings
 Private pSystem As FSystem
-Private pTextFile As FTextFile
+Private pTextFiles As FTextFile
 Private pUtils As FUtils
 Private pVariables As FVariables
 '----------------------------------------------------------------------------------------------------------
@@ -53,8 +54,9 @@ Private Sub Class_Initialize()
     Set pContextMenu = New FContextMenu
     Set pColors = New FColors
     Set pConstructors = New FConstructors
-    Set pCryptography = New FCryptography
+    Set pCrypto = New FCryptography
     Set pDates = New FDates
+    Set pDatabase = New FDatabase
     Set pDeveloper = New FDeveloper
     Set pDialogs = New FDialogs
     Set pDictionaries = New FDictionaries
@@ -73,7 +75,7 @@ Private Sub Class_Initialize()
     Set pSheets = New FSheets
     Set pStrings = New FStrings
     Set pSystem = New FSystem
-    Set pTextFile = New FTextFile
+    Set pTextFiles = New FTextFile
     Set pUtils = New FUtils
     Set pVariables = New FVariables
 End Sub
@@ -95,8 +97,8 @@ Public Function Collections() As FCollections
     Set Collections = pCollections
 End Function
 
-Public Function contextMenu() As FContextMenu
-    Set contextMenu = pContextMenu
+Public Function ContextMenu() As FContextMenu
+    Set ContextMenu = pContextMenu
 End Function
 
 Public Function colors() As FColors
@@ -108,11 +110,15 @@ Public Function Create() As FConstructors
 End Function
 
 Public Function Crypto() As FCryptography
-    Set Crypto = pCryptography
+    Set Crypto = pCrypto
 End Function
 
 Public Function Dates() As FDates
     Set Dates = pDates
+End Function
+
+Public Function Db() As FDatabase
+    Set Db = pDatabase
 End Function
 
 Public Function Developer() As FDeveloper
@@ -123,8 +129,8 @@ Public Function Dialogs() As FDialogs
     Set Dialogs = pDialogs
 End Function
 
-Public Function Dictionaries() As FDictionaries
-    Set Dictionaries = pDictionaries
+Public Function dictionaries() As FDictionaries
+    Set dictionaries = pDictionaries
 End Function
 
 Public Function Excel() As FExcel
@@ -192,7 +198,7 @@ Public Function System() As FSystem
 End Function
 
 Public Function TextFiles() As FTextFile
-    Set TextFiles = pTextFile
+    Set TextFiles = pTextFiles
 End Function
 
 Public Function Utils() As FUtils

@@ -18,7 +18,7 @@ Private pAliases As Scripting.Dictionary
 
 
 Private Sub Class_Initialize()
-    Set pAliases = F.Dictionaries.Create(False)
+    Set pAliases = f.dictionaries.Create(False)
 End Sub
 
 
@@ -38,7 +38,7 @@ Public Function addAlias(value As String) As Event_
     Set addAlias = Me
     With pAliases
         If Not .exists(value) Then
-            Call .Add(value, value)
+            Call .add(value, value)
         End If
     End With
 End Function

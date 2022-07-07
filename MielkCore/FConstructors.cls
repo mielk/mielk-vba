@@ -12,6 +12,33 @@ Option Explicit
 Private Const CLASS_NAME As String = "FConstructors"
 '----------------------------------------------------------------------------------------------------------
 
+Public Function Prop(name As String, Optional dbField As String) As enumProperty
+    Set Prop = New enumProperty
+    With Prop
+        Call .setName(name)
+        Call .setDbField(dbField)
+    End With
+End Function
+
+Public Function DataType(name As String, Optional readDbTable As String, Optional writeDbTable As String) As enumDataType
+    Set DataType = New enumDataType
+    With DataType
+        Call .setName(name)
+        Call .setReadDbTable(readDbTable)
+        If VBA.Len(writeDbTable) Then Call .setWriteDbTable(writeDbTable) Else Call .setWriteDbTable(readDbTable)
+    End With
+End Function
+
+
+Private Function createEnumDataType(name As String, readDbTable As String, writeDbTable As String) As enumDataType
+    Set createEnumDataType = New enumDataType
+    With createEnumDataType
+        Call .setName(name)
+        Call .setReadDbTable(readDbTable)
+        Call .setWriteDbTable(writeDbTable)
+    End With
+End Function
+
 Public Function Repository() As Repository
     Set Repository = New Repository
 End Function
@@ -41,10 +68,10 @@ Public Function Limit(Optional ByVal low As Variant, Optional ByVal high As Vari
     End With
 End Function
 
-Public Function ValidationObject(Optional status As Boolean = True, Optional message As String) As ValidationObject
+Public Function ValidationObject(Optional Status As Variant = True, Optional message As String) As ValidationObject
     Set ValidationObject = New ValidationObject
     With ValidationObject
-        Call .setStatus(status)
+        Call .setStatus(Status)
         Call .setMessage(message)
     End With
 End Function
@@ -52,7 +79,7 @@ End Function
 
 
 
-Public Function ErrorObject(Optional className As String, Optional methodName As String, _
+Public Function ErrorObject(ByVal className As String, ByVal methodName As String, _
                       Optional number As Long, Optional description As String) As ErrorObject
     Set ErrorObject = New ErrorObject
     With ErrorObject
@@ -66,10 +93,10 @@ End Function
 
 
 
-Public Function ExcelFilter(sheet As Excel.Worksheet) As ExcelFilter
+Public Function ExcelFilter(Sheet As Excel.Worksheet) As ExcelFilter
     Set ExcelFilter = New ExcelFilter
     With ExcelFilter
-        Call .setSheet(sheet)
+        Call .setSheet(Sheet)
     End With
 End Function
 

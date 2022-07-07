@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufImages 
    Caption         =   "UserForm1"
-   ClientHeight    =   12210
+   ClientHeight    =   12204
    ClientLeft      =   120
-   ClientTop       =   465
-   ClientWidth     =   11085
+   ClientTop       =   468
+   ClientWidth     =   11088
    OleObjectBlob   =   "ufImages.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -15,14 +15,19 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
+Private Const CLASS_NAME As String = "ufImages"
 
 '[Icons]
 Public Function getAddIcon() As Variant
     Set getAddIcon = Me.icoAdd.picture
 End Function
 
-Public Function getRemoveIcon() As Variant
-    Set getRemoveIcon = Me.icoRemove.picture
+Public Function getDeleteIcon() As Variant
+    Set getDeleteIcon = Me.icoDelete.picture
+End Function
+
+Public Function getRemoveCircledIcon() As Variant
+    Set getRemoveCircledIcon = Me.icoRemove.picture
 End Function
 
 Public Function getRemoveRedCrossIcon() As Variant
@@ -39,6 +44,14 @@ End Function
 
 Public Function getWarningIcon() As Variant
     Set getWarningIcon = Me.icoWarning.picture
+End Function
+
+Public Function getWarningOrangeRedIcon() As Variant
+    Set getWarningOrangeRedIcon = Me.icoWarningOrangeRed.picture
+End Function
+
+Public Function getIgnoredIcon() As Variant
+    Set getIgnoredIcon = Me.icoIgnored.picture
 End Function
 
 Public Function getExclamationInCircle() As Variant
@@ -153,6 +166,29 @@ Public Function getRemoveItemNormalImage() As Variant
 End Function
 
 
+
+
+Public Function getCollapseGrayIcon() As Variant
+    Set getCollapseGrayIcon = Me.icoCollapseIgnored.picture
+End Function
+
+Public Function getExpandGrayIcon() As Variant
+    Set getExpandGrayIcon = Me.icoExpandIgnored.picture
+End Function
+
+Public Function getPreviewFileGrayImage() As Variant
+    Set getPreviewFileGrayImage = Me.icoPreviewFileGrey.picture
+End Function
+
+Public Function getRefreshGrayImage() As Variant
+    Set getRefreshGrayImage = Me.icoRefreshGrey.picture
+End Function
+Public Function getRemoveItemGrayImage() As Variant
+    Set getRemoveItemGrayImage = Me.icoRemoveItemGrey.picture
+End Function
+
+
+
 Public Function getListImage() As Variant
     Set getListImage = Me.icoList.picture
 End Function
@@ -263,9 +299,80 @@ Public Function getCollapseArrowsIcon_White() As Variant
 End Function
 
 
+Public Function getEye_Active_DarkBlue() As Variant
+    Set getEye_Active_DarkBlue = Me.icoEye_Active_DarkBlue.picture
+End Function
+
+Public Function getEye_Active_LightBlue() As Variant
+    Set getEye_Active_LightBlue = Me.icoEye_Active_LightBlue.picture
+End Function
+
+Public Function getEye_Active_Gray() As Variant
+    Set getEye_Active_Gray = Me.icoEye_Active_Gray.picture
+End Function
+
+Public Function getEye_Active_White() As Variant
+    Set getEye_Active_White = Me.icoEye_Active_White.picture
+End Function
+
+Public Function getEye_Inactive_DarkBlue() As Variant
+    Set getEye_Inactive_DarkBlue = Me.icoEye_Inactive_DarkBlue.picture
+End Function
+
+Public Function getEye_Inactive_LightBlue() As Variant
+    Set getEye_Inactive_LightBlue = Me.icoEye_Inactive_LightBlue.picture
+End Function
+
+Public Function getEye_Inactive_Gray() As Variant
+    Set getEye_Inactive_Gray = Me.icoEye_Inactive_Gray.picture
+End Function
+
+Public Function getEye_Inactive_White() As Variant
+    Set getEye_Inactive_White = Me.icoEye_Inactive_White.picture
+End Function
+
+
+'[Arrows]
+Public Function getArrowLeft(Optional whiteBackground As Boolean = True) As Variant
+    If whiteBackground Then
+        Set getArrowLeft = Me.icoArrowLeftWhite.picture
+    Else
+        Set getArrowLeft = Me.icoArrowLeft.picture
+    End If
+End Function
+
+Public Function getArrowRight(Optional whiteBackground As Boolean = True) As Variant
+    If whiteBackground Then
+        Set getArrowRight = Me.icoArrowRightWhite.picture
+    Else
+        Set getArrowRight = Me.icoArrowRight.picture
+    End If
+End Function
+
+Public Function getArrowDoubleLeft(Optional whiteBackground As Boolean = True) As Variant
+    If whiteBackground Then
+        Set getArrowDoubleLeft = Me.icoDoubleArrowLeftWhite.picture
+    Else
+        Set getArrowDoubleLeft = Me.icoDoubleArrowLeft.picture
+    End If
+End Function
+
+Public Function getArrowDoubleRight(Optional whiteBackground As Boolean = True) As Variant
+    If whiteBackground Then
+        Set getArrowDoubleRight = Me.icoDoubleArrowRightWhite.picture
+    Else
+        Set getArrowDoubleRight = Me.icoDoubleArrowRight.picture
+    End If
+End Function
+
 
 '[Pointers]
 Public Function getMousePointer() As Variant
     Set getMousePointer = Me.ctrlMousePointer.MouseIcon
+End Function
+
+
+Public Function getMouseIcon() As Variant
+    Set getMouseIcon = getMousePointer
 End Function
 

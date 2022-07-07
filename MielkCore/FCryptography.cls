@@ -46,7 +46,7 @@ End Type
 ' Author:       Gus Molina
 ' Date:         2000
     '----------------------------------------------------------------------------------------------------------
-Public Function createUUID() As String
+Public Function createUUID(Optional withHyphens As Boolean = True) As String
     Dim udtGUID As GUID
     '------------------------------------------------------------------------------------------------------
     
@@ -66,6 +66,10 @@ Public Function createUUID() As String
                 VBA.IIf(udtGUID.Data4(7) < &H10, "0", "") & VBA.Hex$(udtGUID.Data4(7))
     End If
 
+    If Not withHyphens Then
+        createUUID = VBA.replace(createUUID, "-", vbNullString)
+    End If
+
 End Function
 
 
@@ -81,7 +85,7 @@ Public Function SHA1HASH(str)
     For i = 0 To VBA.Len(str) - 1
         arr(i) = VBA.asc(VBA.mid(str, i + 1, 1))
     Next i
-    SHA1HASH = VBA.Replace(VBA.LCase(HexDefaultSHA1(arr)), " ", "")
+    SHA1HASH = VBA.replace(VBA.LCase(HexDefaultSHA1(arr)), " ", "")
     
 End Function
 

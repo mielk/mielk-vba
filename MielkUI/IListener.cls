@@ -14,5 +14,5 @@ Option Explicit
 Private Const CLASS_NAME As String = "IListener"
 '----------------------------------------------------------------------------------------------------------
 
-Public Sub catchEvent(source As Variant, eventName As String, Optional properties As Scripting.Dictionary)
+Public Sub catchEvent(Source As Variant, eventName As String, Optional properties As Scripting.Dictionary)
 End Sub

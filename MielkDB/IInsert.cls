@@ -35,7 +35,7 @@ End Function
 Public Sub Execute()
 End Sub
 
-Public Sub ExecuteWithId(ByRef id As Long, ByVal idFieldName As String)
+Public Sub ExecuteWithId(ByRef id As Long, Optional ByVal idFieldName As String)
 End Sub
 
 Public Sub fromExcelToTempTable(filepath As String, sheetName As String, tableName As String)

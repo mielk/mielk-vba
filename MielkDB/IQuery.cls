@@ -29,6 +29,9 @@ End Function
 Public Function FromFunction(functionName As String, Optional params As Variant) As IQuery
 End Function
 
+Public Function FromStoredProcedure(procName As String, Optional params As Scripting.Dictionary) As IQuery
+End Function
+
 Public Function Where(fieldName As String, comparisonMode As ComparisonModeEnum, comparedValue As Variant) As IQuery
 End Function
 

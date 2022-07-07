@@ -20,8 +20,8 @@ Private pDictByValue As Scripting.Dictionary
 
 
 Private Sub Class_Initialize()
-    Set pDictById = F.Dictionaries.Create(False)
-    Set pDictByValue = F.Dictionaries.Create(False)
+    Set pDictById = f.dictionaries.Create(False)
+    Set pDictByValue = f.dictionaries.Create(False)
 End Sub
 
 Private Sub Class_Terminate()
@@ -34,27 +34,27 @@ End Sub
 '[GETTERS]
 Public Function getId(value As Variant) As Variant
     If VBA.IsObject(value) Then
-        Call F.Variables.assign(getId, F.Dictionaries.getItem(pDictByValue, VBA.CLng(VBA.ObjPtr(value))))
+        Call f.Variables.assign(getId, f.dictionaries.getItem(pDictByValue, VBA.CLng(VBA.ObjPtr(value))))
     Else
-        Call F.Variables.assign(getId, F.Dictionaries.getItem(pDictByValue, value))
+        Call f.Variables.assign(getId, f.dictionaries.getItem(pDictByValue, value))
     End If
 End Function
 
-Public Function getValue(id As Variant) As Variant
-    If VBA.IsObject(id) Then
-        Call F.Variables.assign(getValue, F.Dictionaries.getItem(pDictById, VBA.CLng(VBA.ObjPtr(id))))
+Public Function getValue(Id As Variant) As Variant
+    If VBA.IsObject(Id) Then
+        Call f.Variables.assign(getValue, f.dictionaries.getItem(pDictById, VBA.CLng(VBA.ObjPtr(Id))))
     Else
-        Call F.Variables.assign(getValue, F.Dictionaries.getItem(pDictById, id))
+        Call f.Variables.assign(getValue, f.dictionaries.getItem(pDictById, Id))
     End If
 End Function
 
 
 Public Function getDictionaryById() As Scripting.Dictionary
-    Set getDictionaryById = F.Dictionaries.clone(pDictById)
+    Set getDictionaryById = f.dictionaries.clone(pDictById)
 End Function
 
 Public Function getDictionaryByValue() As Scripting.Dictionary
-    Set getDictionaryByValue = F.Dictionaries.clone(pDictByValue)
+    Set getDictionaryByValue = f.dictionaries.clone(pDictByValue)
 End Function
 
 
@@ -63,16 +63,16 @@ End Function
 
 
 '[ADDING ITEMS]
-Public Sub addItem(key As Variant, value As Variant)
-    If VBA.IsObject(key) Then
-        Call F.Dictionaries.addItem(pDictById, VBA.CLng(VBA.ObjPtr(key)), value)
+Public Sub addItem(Key As Variant, value As Variant)
+    If VBA.IsObject(Key) Then
+        Call f.dictionaries.addItem(pDictById, VBA.CLng(VBA.ObjPtr(Key)), value)
     Else
-        Call F.Dictionaries.addItem(pDictById, key, value)
+        Call f.dictionaries.addItem(pDictById, Key, value)
     End If
     
     If VBA.IsObject(value) Then
-        Call F.Dictionaries.addItem(pDictByValue, VBA.CLng(VBA.ObjPtr(value)), key)
+        Call f.dictionaries.addItem(pDictByValue, VBA.CLng(VBA.ObjPtr(value)), Key)
     Else
-        Call F.Dictionaries.addItem(pDictByValue, value, key)
+        Call f.dictionaries.addItem(pDictByValue, value, Key)
     End If
 End Sub

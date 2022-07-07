@@ -186,7 +186,7 @@ Public Function ParseJson(ByVal JsonString As String) As Object
     json_Index = 1
 
     ' Remove vbCr, vbLf, and vbTab from json_String
-    JsonString = VBA.Replace(VBA.Replace(VBA.Replace(JsonString, VBA.vbCr, ""), VBA.vbLf, ""), VBA.vbTab, "")
+    JsonString = VBA.replace(VBA.replace(VBA.replace(JsonString, VBA.vbCr, ""), VBA.vbLf, ""), VBA.vbTab, "")
 
     json_SkipSpaces JsonString, json_Index
     Select Case VBA.mid$(JsonString, json_Index, 1)
@@ -456,7 +456,7 @@ Public Function ConvertToJson(ByVal JsonValue As Variant, Optional ByVal Whitesp
         ConvertToJson = json_BufferToString(json_Buffer, json_BufferPosition)
     Case VBA.vbInteger, VBA.vbLong, VBA.vbSingle, VBA.vbDouble, VBA.vbCurrency, VBA.vbDecimal
         ' Number (use decimals for numbers)
-        ConvertToJson = VBA.Replace(JsonValue, ",", ".")
+        ConvertToJson = VBA.replace(JsonValue, ",", ".")
     Case Else
         ' vbEmpty, vbError, vbDataObject, vbByte, vbUserDefinedType
         ' Use VBA's built-in to-string
@@ -496,9 +496,9 @@ Private Function json_ParseObject(json_String As String, ByRef json_Index As Lon
             json_Key = json_ParseKey(json_String, json_Index)
             json_NextChar = json_Peek(json_String, json_Index)
             If json_NextChar = "[" Or json_NextChar = "{" Then
-                Set json_ParseObject.item(json_Key) = json_ParseValue(json_String, json_Index)
+                Set json_ParseObject.Item(json_Key) = json_ParseValue(json_String, json_Index)
             Else
-                json_ParseObject.item(json_Key) = json_ParseValue(json_String, json_Index)
+                json_ParseObject.Item(json_Key) = json_ParseValue(json_String, json_Index)
             End If
         Loop
     End If
@@ -523,7 +523,7 @@ Private Function json_ParseArray(json_String As String, ByRef json_Index As Long
                 json_SkipSpaces json_String, json_Index
             End If
 
-            json_ParseArray.Add json_ParseValue(json_String, json_Index)
+            json_ParseArray.add json_ParseValue(json_String, json_Index)
         Loop
     End If
 End Function
@@ -980,7 +980,7 @@ Public Function ParseIso(utc_IsoString As String) As Date
 
     If UBound(utc_Parts) > 0 Then
         If VBA.InStr(utc_Parts(1), "Z") Then
-            utc_TimeParts = VBA.Split(VBA.Replace(utc_Parts(1), "Z", ""), ":")
+            utc_TimeParts = VBA.Split(VBA.replace(utc_Parts(1), "Z", ""), ":")
         Else
             utc_OffsetIndex = VBA.InStr(1, utc_Parts(1), "+")
             If utc_OffsetIndex = 0 Then
@@ -1120,8 +1120,8 @@ End Function
 #Else
 
 Private Function utc_DateToSystemTime(utc_Value As Date) As utc_SYSTEMTIME
-    utc_DateToSystemTime.utc_wYear = VBA.year(utc_Value)
-    utc_DateToSystemTime.utc_wMonth = VBA.month(utc_Value)
+    utc_DateToSystemTime.utc_wYear = VBA.Year(utc_Value)
+    utc_DateToSystemTime.utc_wMonth = VBA.Month(utc_Value)
     utc_DateToSystemTime.utc_wDay = VBA.day(utc_Value)
     utc_DateToSystemTime.utc_wHour = VBA.hour(utc_Value)
     utc_DateToSystemTime.utc_wMinute = VBA.minute(utc_Value)
@@ -1139,85 +1139,29 @@ End Function
 
 
 
-
-Public Sub assignPropertyFromJSON(props As Scripting.Dictionary, ByRef prop As Variant, tag As String, _
-                                    Optional conversionFunction As String)
-    Dim value As Variant
-    '------------------------------------------------------------------------------------------------------
-    Call F.Variables.assign(value, getPropsValue(props, tag, conversionFunction))
-    If Not VBA.IsEmpty(value) Then
-        Call F.Variables.assign(prop, value)
-    End If
-End Sub
-
-Public Function getPropsValue(props As Scripting.Dictionary, tag As String, Optional conversionFunction As String) As Variant
-    Dim arrTags As Variant
-    Dim i As Long
-    Dim dict As Scripting.Dictionary
-    Dim value As Variant
-    '------------------------------------------------------------------------------------------------------
-    
-    arrTags = VBA.Split(tag, ".")
-    Set dict = props
-    
-    If F.Dictionaries.isNonEmptyDictionary(dict) Then
-        If F.arrays.isDefined(arrTags) Then
-            For i = LBound(arrTags) To UBound(arrTags)
-                With dict
-                    If .exists(arrTags(i)) Then
-                        If i = UBound(arrTags) Then
-                            If VBA.Len(conversionFunction) Then
-                                On Error GoTo ConversionException
-                                Call F.Variables.assign(getPropsValue, Application.Run(conversionFunction, .item(arrTags(i))))
-                            Else
-                                Call F.Variables.assign(getPropsValue, .item(arrTags(i)))
-                            End If
-                        Else
-                            Set dict = .item(arrTags(i))
-                        End If
-                    Else
-                        Exit For
-                    End If
-                End With
-            Next i
-        End If
-    End If
-    
-    
-'==========================================================================================================
-ExitPoint:
-    Exit Function
-
-    '----------------------------------------------------------------------------------------------------------
-ConversionException:
-    Debug.Print "Error when converting with function " & conversionFunction
-    GoTo ExitPoint
-
-End Function
-
-Public Function getJsonStringFromFile(filePath As String, Optional ignoreErrors As Boolean = True) As String
-    If F.files.fileExists(filePath) Then
-        getJsonStringFromFile = F.TextFiles.readTextFile(filePath)
+Public Function getJsonStringFromFile(filepath As String, Optional ignoreErrors As Boolean = True) As String
+    If f.files.fileExists(filepath) Then
+        getJsonStringFromFile = f.TextFiles.readTextFile(filepath)
         If VBA.left$(getJsonStringFromFile, 1) = "{" Then
         ElseIf VBA.left$(getJsonStringFromFile, 1) = "[" Then
         Else
             getJsonStringFromFile = VBA.mid$(getJsonStringFromFile, 2)
         End If
     ElseIf Not ignoreErrors Then
-        Call VBA.err.raise(1, description:="File " & filePath & " doesn't exist")
+        Call VBA.err.raise(1, description:="File " & filepath & " doesn't exist")
     End If
 End Function
 
-Public Function getJsonObjectFromFile(filePath As String, Optional ignoreErrors As Boolean = True) As Scripting.Dictionary
+Public Function getJsonObjectFromFile(filepath As String, Optional ignoreErrors As Boolean = True) As Scripting.Dictionary
     Dim json As String
     '------------------------------------------------------------------------------------------------------
-    If F.files.fileExists(filePath) Then
-        json = getJsonStringFromFile(filePath)
+    If f.files.fileExists(filepath) Then
+        json = getJsonStringFromFile(filepath)
         If VBA.Len(json) Then
             If ignoreErrors Then On Error Resume Next
-            Set getJsonObjectFromFile = F.json.ParseJson(json)
+            Set getJsonObjectFromFile = f.json.ParseJson(json)
         End If
     ElseIf Not ignoreErrors Then
-        Call VBA.err.raise(1, description:="File " & filePath & " doesn't exist")
+        Call VBA.err.raise(1, description:="File " & filepath & " doesn't exist")
     End If
 End Function

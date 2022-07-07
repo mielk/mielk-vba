@@ -15,25 +15,27 @@ Private Const CLASS_NAME As String = "FDialogs"
 
 
 
-Public Function selectItem(items As Scripting.Dictionary, Optional windowTitle As String, _
+Public Function selectItems(items As Scripting.Dictionary, Optional windowTitle As String, _
                             Optional defaultItem As Variant, _
                             Optional hasSearchPanel As Boolean = False, _
                             Optional hasTitleBar As Boolean = True, _
                             Optional multiSelectAllowed As Boolean = False, _
-                            Optional locationProps As DLocation) As Variant
-    Const METHOD_NAME As String = "selectItem"
+                            Optional addingAllowed As Boolean = False, _
+                            Optional locationProps As DLocation) As VBA.Collection
+    Const METHOD_NAME As String = "selectItems"
     '------------------------------------------------------------------------------------------------------
     Dim window As WSelectItem
     '------------------------------------------------------------------------------------------------------
     
     Set window = UI.Create.SelectItemWindow(items, windowTitle). _
+                    setAddingAllowed(addingAllowed). _
                     setMultiSelectAllowed(multiSelectAllowed). _
                     setHasTitlePanel(hasTitleBar). _
                     setHasSearchPanel(hasSearchPanel)
 
     With window
         Call .display(locationProps)
-        Call F.Variables.assign(selectItem, .getSelectedItem)
+        Set selectItems = .getSelectedItems
     End With
     
     Set window = Nothing
@@ -55,6 +57,7 @@ End Function
 '                       =
 '                     Call UI.Dialogs.SelectWindow(items).setHasSearchPanel(True).setMutliSelectAllowed(True).execute
 '----------------------------------------------------------------------------------------------------------
-Public Function selectWindow(items As Scripting.Dictionary) As WSelectItem
+Public Function selectWindow(items As Scripting.Dictionary, Optional captions As Scripting.Dictionary) As WSelectItem
     Set selectWindow = UI.Create.SelectItemWindow(items)
+    Call selectWindow.setCaptions(captions)
 End Function

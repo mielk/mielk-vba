@@ -32,6 +32,7 @@ Private Const DEFAULT_LINE_HEIGHT As Single = 24
 Private Const STATUS_ALL_TAG As String = "Status.All"
 '[UI components] ------------------------------------------------------------------------------------------
 Private WithEvents pProcessor As ItemsProcessor
+Attribute pProcessor.VB_VarHelpID = -1
 Private pController As IItemsProcessorViewer
 Private pWindow As MielkUI.WTemplate
 '[Internal UI components] ---------------------------------------------------------------------------------
@@ -70,7 +71,7 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub initializeContainers()
-    Set pControlsDictionary = F.Dictionaries.Create(False)
+    Set pControlsDictionary = F.dictionaries.Create(False)
 End Sub
 
 Private Sub initializeDefaultValues()
@@ -264,7 +265,7 @@ End Function
 
 
 '[Other]
-Public Function getController() As IItemsProcessorViewer
+Friend Function getController() As IItemsProcessorViewer
     Set getController = pController
 End Function
 
@@ -274,7 +275,7 @@ End Function
 
 '[API]
 Public Sub render()
-    If pIsRendered Then
+    If Not pIsRendered Then
         Call refreshBackgroundFrame
         Call generateAndInsertItems
         Call arrangeControls
@@ -298,10 +299,10 @@ End Sub
 
 '[RENDERING]
 Private Function getLabelName(controlType As ControlTypeEnum) As String
-    Dim tag As String
+    Dim TAG As String
     '----------------------------------------------------------------------------------------------------------
-    tag = CLASS_NAME & "|" & pUuid & "|" & controlType
-    getLabelName = "ctrl_" & VBA.left$(F.Crypto.SHA1HASH(tag), 25)
+    TAG = CLASS_NAME & "|" & pUuid & "|" & controlType
+    getLabelName = "ctrl_" & VBA.left$(F.Crypto.SHA1HASH(TAG), 25)
 End Function
 
 
@@ -337,15 +338,15 @@ Private Sub generateAndInsertItems()
     Dim control As xxProcessSummaryControl
     '----------------------------------------------------------------------------------------------------------
     
-    Set pControlsDictionary = F.Dictionaries.Create(False)
+    Set pControlsDictionary = F.dictionaries.Create(False)
     Set statuses = getStatusesDictionary
     
-    If F.Dictionaries.isNonEmptyDictionary(statuses) Then
+    If F.dictionaries.isNonEmptyDictionary(statuses) Then
         For Each key In statuses.Keys
             Set dto = statuses.item(key)
             Set control = MApp.Create.processSummaryControl(Me).setKey(key).loadDto(dto). _
                                     setLineHeight(pLineHeight).setWidth(pControlWidth).render
-            Call F.Dictionaries.addItem(pControlsDictionary, key, control)
+            Call F.dictionaries.addItem(pControlsDictionary, key, control)
             If control.isActive Then Set pActiveControl = control
         Next key
     End If
@@ -355,13 +356,13 @@ Private Sub generateAndInsertItems()
 End Sub
 
 Private Function getStatusesDictionary() As Scripting.Dictionary
-    Set getStatusesDictionary = F.Dictionaries.Create(False)
+    Set getStatusesDictionary = F.dictionaries.Create(False)
     Call getStatusesDictionary.Add(-1, createStatusAllDto)
-    Call F.Dictionaries.appendDictionary(getStatusesDictionary, pController.getStatusesDictionary, duplicateBehaviour_Override)
+    Call F.dictionaries.appendDictionary(getStatusesDictionary, pController.getStatusesDictionary, duplicateBehaviour_Override)
 End Function
 
 Private Function createStatusAllDto() As Scripting.Dictionary
-    Set createStatusAllDto = F.Dictionaries.Create(False)
+    Set createStatusAllDto = F.dictionaries.Create(False)
     With createStatusAllDto
         Call .Add(TAG_NAME, MsgService.getText(STATUS_ALL_TAG))
         Call .Add(TAG_MAIN_BACKGROUND, vbBlack)
@@ -379,7 +380,7 @@ Private Sub arrangeItems()
     Dim column As Long
     '------------------------------------------------------------------------------------------------------
     
-    If F.Dictionaries.isNonEmptyDictionary(pControlsDictionary) Then
+    If F.dictionaries.isNonEmptyDictionary(pControlsDictionary) Then
         columns = VBA.Int((pWidth - 2 * pLeftPadding) / pControlWidth)
         For Each key In pControlsDictionary.Keys
             If column = columns Then
@@ -430,11 +431,11 @@ Private Sub pProcessor_AfterStatusCountersChange(previousStatus As Variant, newS
     Call ErrorManager.clear
     
     '[Previous status]
-    Set control = F.Dictionaries.GetObject(pControlsDictionary, previousStatus)
+    Set control = F.dictionaries.GetObject(pControlsDictionary, previousStatus)
     If Not control Is Nothing Then Call control.updateCaption
     
     '[New status]
-    Set control = F.Dictionaries.GetObject(pControlsDictionary, newStatus)
+    Set control = F.dictionaries.GetObject(pControlsDictionary, newStatus)
     If Not control Is Nothing Then Call control.updateCaption
     
 End Sub

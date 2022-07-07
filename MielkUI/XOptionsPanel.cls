@@ -68,8 +68,8 @@ Event AfterValidationChange(validation As ValidationObject)
 
 
 Private Sub Class_Initialize()
-    Set pItems = F.Dictionaries.Create(False)
-    Set pLines = F.Dictionaries.Create(False)
+    Set pItems = F.dictionaries.Create(False)
+    Set pLines = F.dictionaries.Create(False)
     pCheckboxWidth = DEFAULT_CHECKBOX_WIDTH
     pLabelWidth = DEFAULT_LABEL_WIDTH
     pCheckboxValueSpace = DEFAULT_CHECKBOX_LABEL_SPACE
@@ -223,7 +223,7 @@ Public Function getBottom() As Single
 End Function
 
 Public Function getWidth() As Single
-    getWidth = pWidth
+    getWidth = pRight - pLeft
 End Function
 
 Public Function getCheckboxWidth() As Single
@@ -285,7 +285,7 @@ Private Sub insertFrame()
         With pFrame
             .SpecialEffect = fmSpecialEffectFlat
             .borderStyle = fmBorderStyleNone
-            .BackColor = pParentFrame.BackColor
+            .backColor = pParentFrame.backColor
             .width = 100
             .height = 100
         End With
@@ -298,10 +298,10 @@ Private Sub insertLines()
     Dim line As xxOptionLine
     '------------------------------------------------------------------------------------------------------
     
-    Set pLines = F.Dictionaries.Create(False)
+    Set pLines = F.dictionaries.Create(False)
     
-    If F.Dictionaries.isNonEmptyDictionary(pItems) Then
-        For Each key In pItems.Keys
+    If F.dictionaries.isNonEmptyDictionary(pItems) Then
+        For Each key In pItems.keys
             Set line = UI.Create.OptionLine(Me, key, pItems.item(key))
             Call line.render
             
@@ -353,7 +353,7 @@ Private Sub updateBorderVariable(ByRef borderLabel As MSForms.label, color As Lo
         With borderLabel
             .borderStyle = fmBorderStyleNone
             .BackStyle = fmBackStyleOpaque
-            .BackColor = color
+            .backColor = color
             .height = PIXEL_SIZE
         End With
     End If
@@ -435,8 +435,8 @@ Private Sub arrangeLines()
     Dim right As Single
     '------------------------------------------------------------------------------------------------------
     
-    If F.Dictionaries.isNonEmptyDictionary(pLines) Then
-        For Each key In pLines.Keys
+    If F.dictionaries.isNonEmptyDictionary(pLines) Then
+        For Each key In pLines.keys
             Set line = pLines.item(key)
             Call line.setTop(top)
             top = top + pLineHeight
@@ -500,17 +500,17 @@ Public Sub updateValidation()
             previousStatus = pValidation.getStatus
         End If
         
-        For Each key In pLines.Keys
+        For Each key In pLines.keys
             Set line = pLines.item(key)
             If line.isSelected Then countSelected = countSelected + 1
         Next key
         
         If pMinItemsSelected > 0 And pMinItemsSelected > countSelected Then
             Set pValidation = F.Create.ValidationObject(False, _
-                                    F.Strings.format(MsgService.getText(WARNING_TOO_LESS_ITEMS_SELECTED), pMinItemsSelected))
+                                    F.Strings.format(MsgService.GetText(WARNING_TOO_LESS_ITEMS_SELECTED), pMinItemsSelected))
         ElseIf pMaxItemsSelected > 0 And pMaxItemsSelected < countSelected Then
             Set pValidation = F.Create.ValidationObject(False, _
-                                    F.Strings.format(MsgService.getText(WARNING_TOO_MANY_ITEMS_SELECTED), pMaxItemsSelected))
+                                    F.Strings.format(MsgService.GetText(WARNING_TOO_MANY_ITEMS_SELECTED), pMaxItemsSelected))
         Else
             Set pValidation = F.Create.ValidationObject(True)
         End If
@@ -524,7 +524,7 @@ Public Sub updateValidation()
         Call updateValidationLabelView
         
         RaiseEvent AfterChange
-        If Not pListener Is Nothing Then Call pListener.catchEvent(Me, Events.Change.getName)
+        If Not pListener Is Nothing Then Call pListener.catchEvent(Me, Events.change.getName)
         
     End If
     
@@ -561,7 +561,7 @@ Public Function changeSelectionForAllItems(state As Boolean) As ValidationObject
     '------------------------------------------------------------------------------------------------------
     
     pDisableEvents = True
-    For Each key In pLines.Keys
+    For Each key In pLines.keys
         Set line = pLines.item(key)
         If Not line.isFixed Then
             Call line.setState(state)
@@ -584,13 +584,13 @@ Public Function getSelectedItemsDictionary() As Scripting.Dictionary
     Dim name As String
     '------------------------------------------------------------------------------------------------------
     
-    Set getSelectedItemsDictionary = F.Dictionaries.Create(False)
+    Set getSelectedItemsDictionary = F.dictionaries.Create(False)
     
-    If F.Dictionaries.isNonEmptyDictionary(pLines) Then
-        For Each key In pLines.Keys
+    If F.dictionaries.isNonEmptyDictionary(pLines) Then
+        For Each key In pLines.keys
             Set line = pLines.item(key)
             If line.isSelected Then
-                Call F.Dictionaries.addItem(getSelectedItemsDictionary, key, line.getItem)
+                Call F.dictionaries.addItem(getSelectedItemsDictionary, key, line.getItem)
             End If
         Next key
     End If
@@ -661,7 +661,7 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     Stop
 End Sub
 
-Private Function IControl_move(Optional x As Single, Optional y As Single) As IControl
+Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
     Stop
 End Function
 
@@ -702,7 +702,7 @@ Private Sub IPanel_render()
     Call render
 End Sub
 
-Private Function IPanel_setParentFrame(value As MSForms.IOptionFrame) As IPanel
+Private Function IPanel_setParentFrame(value As MSForms.frame) As IPanel
     Set IPanel_setParentFrame = setParentFrame(value)
 End Function
 
@@ -733,3 +733,14 @@ End Function
 Private Function IPanel_getValue() As Variant
     Set IPanel_getValue = getSelectedItemsDictionary
 End Function
+
+Private Function IPanel_setWindow(value As WTemplate) As IPanel
+    
+End Function
+
+Private Function IPanel_isVisible() As Boolean
+    If UI.Forms.isControlValid(pFrame) Then
+        IPanel_isVisible = pFrame.visible
+    End If
+End Function
+

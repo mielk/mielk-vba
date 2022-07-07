@@ -16,6 +16,15 @@ Public Function MApp() As MApp
 End Function
 
 
+Public Function ActionListener() As ActionListener
+    Static instance As ActionListener
+    '------------------------------------------------------------------------------------------------------
+    If instance Is Nothing Then
+        Set instance = New ActionListener
+    End If
+    Set ActionListener = instance
+End Function
+
 
 '
 ''[Constructors]

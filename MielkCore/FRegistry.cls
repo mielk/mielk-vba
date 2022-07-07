@@ -582,7 +582,7 @@ End Function
 Public Function getValueType(baseKey As Long, keyName As String, valueName As String) As Long
     Dim res As Long
     Dim hKey As Long
-    Dim dataType As Long
+    Dim DataType As Long
     '------------------------------------------------------------------------------------------------------
 
     Call resetErrorVariables
@@ -607,7 +607,7 @@ Public Function getValueType(baseKey As Long, keyName As String, valueName As St
         Exit Function
     End If
 
-    res = RegQueryValueEx(hKey, valueName, 0&, dataType, 0&, 0&)
+    res = RegQueryValueEx(hKey, valueName, 0&, DataType, 0&, 0&)
     If (res <> ERROR_SUCCESS) And (res <> ERROR_MORE_DATA) Then
         G_Reg_AppErrNum = C_REG_ERR_UBABLE_TO_READ_VALUE
         G_Reg_AppErrText = getAppErrText(G_Reg_AppErrNum)
@@ -616,7 +616,7 @@ Public Function getValueType(baseKey As Long, keyName As String, valueName As St
         Exit Function
     End If
 
-    Select Case dataType
+    Select Case DataType
         Case REG_SZ
             getValueType = REG_SZ
         Case REG_DWORD
@@ -633,7 +633,7 @@ Public Function createValue(baseKey As Long, keyName As String, valueName As Str
                             Optional CreateKeyIfNotExists As Boolean = False) As Boolean
     Dim hKey As Long
     Dim res As Long
-    Dim dataType As Long
+    Dim DataType As Long
     Dim LongValue As Long
     Dim StringValue As String
     '------------------------------------------------------------------------------------------------------
@@ -685,8 +685,8 @@ Public Function createValue(baseKey As Long, keyName As String, valueName As Str
     End If
 
     If valueExists(baseKey, keyName, valueName) Then
-        dataType = getValueType(baseKey, keyName, valueName)
-        If dataType = REG_SZ Then
+        DataType = getValueType(baseKey, keyName, valueName)
+        If DataType = REG_SZ Then
             If VBA.varType(ValueValue) <> VBA.vbString Then
                 G_Reg_AppErrNum = C_REG_ERR_DATA_TYPE_MISMATCH
                 G_Reg_AppErrText = getAppErrText(G_Reg_AppErrNum)
@@ -696,13 +696,13 @@ Public Function createValue(baseKey As Long, keyName As String, valueName As Str
         End If
     Else
         If VBA.varType(ValueValue) = VBA.vbString Then
-            dataType = REG_SZ
+            DataType = REG_SZ
         Else
-            dataType = REG_DWORD
+            DataType = REG_DWORD
         End If
     End If
 
-    If dataType = REG_DWORD Then
+    If DataType = REG_DWORD Then
         LongValue = VBA.CLng(ValueValue)
         hKey = openRegistryKey(baseKey, keyName)
         If hKey = 0 Then
@@ -753,7 +753,7 @@ End Function
 Public Function createKey(baseKey As Long, keyName As String) As Boolean
     Dim res As Long
     Dim hKey As Long
-    Dim dataType As Long
+    Dim DataType As Long
     Dim Disposition As Long
     Dim SecAttrib As SECURITY_ATTRIBUTES
     '------------------------------------------------------------------------------------------------------
@@ -794,7 +794,7 @@ End Function
 Public Function deleteValue(baseKey As Long, keyName As String, valueName As String) As Boolean
     Dim res As Long
     Dim hKey As Long
-    Dim dataType As Long
+    Dim DataType As Long
     Dim Disposition As Long
     Dim SecAttrib As SECURITY_ATTRIBUTES
     '------------------------------------------------------------------------------------------------------
@@ -852,7 +852,7 @@ End Function
 Public Function deleteKey(baseKey As Long, keyName As String) As Boolean
     Dim res As Long
     Dim hKey As Long
-    Dim dataType As Long
+    Dim DataType As Long
     Dim Disposition As Long
     Dim SecAttrib As SECURITY_ATTRIBUTES
     '------------------------------------------------------------------------------------------------------
@@ -1117,8 +1117,8 @@ Private Function isValidKeyName(keyName As String) As Boolean
 End Function
 
 
-Private Function isValidDataType(dataType As Long) As Boolean
-    Select Case dataType
+Private Function isValidDataType(DataType As Long) As Boolean
+    Select Case DataType
         Case REG_SZ, REG_DWORD
             isValidDataType = True
         Case Else

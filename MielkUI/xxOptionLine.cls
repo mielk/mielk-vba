@@ -11,7 +11,7 @@ Option Explicit
 
 Private Const CLASS_NAME As String = "xxOptionLine"
 '----------------------------------------------------------------------------------------------------------
-Private Const DEFAULT_FONT_FAMILY As String = "Segoe UI"
+Private Const DEFAULT_FONT_FAMILY As String = APP_FONT_FAMILY
 Private Const DEFAULT_FONT_SIZE As Single = 10
 Private Const DEFAULT_FONT_COLOR As Long = vbBlack
 Private Const DEFAULT_FONT_BOLD As Boolean = False
@@ -51,7 +51,7 @@ Private pEventsDisabled As Boolean
 
 
 Private Sub Class_Initialize()
-    pUuid = F.Crypto.createUuid
+    pUuid = F.Crypto.createUUID
     pFontFamily = DEFAULT_FONT_FAMILY
     pFontSize = DEFAULT_FONT_SIZE
     pFontColor = DEFAULT_FONT_COLOR
@@ -64,41 +64,41 @@ End Sub
 
 
 '[SETTERS]
-Public Function setParent(value As XOptionsPanel) As xxOptionLine
+Friend Function setParent(value As XOptionsPanel) As xxOptionLine
     Set setParent = Me
     Set pParent = value
 End Function
 
-Public Function setKey(value As String) As xxOptionLine
+Friend Function setKey(value As String) As xxOptionLine
     Set setKey = Me
     pKey = value
 End Function
 
-Public Function setItem(value As Variant) As xxOptionLine
+Friend Function setItem(value As Variant) As xxOptionLine
     Set setItem = Me
     Call F.Variables.assign(pItem, value)
 End Function
 
-Public Function setState(value As Boolean) As xxOptionLine
+Friend Function setState(value As Boolean) As xxOptionLine
     Set setState = Me
     pState = value
     Call updateView
     Call pParent.updateValidation
 End Function
 
-Public Function setTop(value As Single) As xxOptionLine
+Friend Function setTop(value As Single) As xxOptionLine
     Set setTop = Me
     pTop = value
     Call arrangeControls
 End Function
 
-Public Function setLeft(value As Single) As xxOptionLine
+Friend Function setLeft(value As Single) As xxOptionLine
     Set setLeft = Me
     pLeft = value
     Call arrangeControls
 End Function
 
-Public Function setAsFixed(value As Boolean) As xxOptionLine
+Friend Function setAsFixed(value As Boolean) As xxOptionLine
     Set setAsFixed = Me
     pIsFixed = value
     Call updateView
@@ -112,15 +112,15 @@ Private Function getFrame() As MSForms.frame
     Set getFrame = pParent.getItemsFrame
 End Function
 
-Public Function getRight() As Single
+Friend Function getRight() As Single
     getRight = UI.Forms.getRight(pLabel)
 End Function
 
-Private Function getKey() As String
+Friend Function getKey() As String
     getKey = pKey
 End Function
 
-Public Function getItem() As Variant
+Friend Function getItem() As Variant
     Call F.Variables.assign(getItem, pItem)
 End Function
 
@@ -155,9 +155,9 @@ Friend Sub render()
 End Sub
 
 Private Sub insertBackgroundLabel()
-    Set pBackground = getFrame.contrnols.Add(CREATE_LABEL_ID)
+    Set pBackground = getFrame.controls.Add(CREATE_LABEL_ID)
     With pBackground
-        .BackColor = pBackgroundColor
+        .backColor = pBackgroundColor
         .BackStyle = fmBackStyleTransparent
         .borderColor = pBorderColor
         .borderStyle = fmBorderStyleNone
@@ -192,7 +192,7 @@ Private Sub insertLabel()
         With .font
             .name = pFontFamily
             .size = pFontSize
-            .Bold = pFontBold
+            .Bold = VBA.IIf(pFontBold, 1, False)
         End With
         .MousePointer = fmMousePointerCustom
         Set .MouseIcon = Icons.getMousePointer
@@ -249,7 +249,11 @@ ExitPoint:
     pEventsDisabled = False
 End Sub
 
-
+Friend Sub move(left As Single, top As Single)
+    pLeft = left
+    pTop = top
+    Call arrangeControls
+End Sub
 
 Private Sub arrangeControls()
     Dim lineHeight As Single:               lineHeight = pParent.getLineHeight

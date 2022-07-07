@@ -7,16 +7,25 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
+'sprawdziæ czym siê ró¿ni getColumnIndexByHeader od getColumnIndex (to samo dla Row)
+'ogarn¹æ funkcje slice (wystêpuj¹ dwa razy)
+
 Option Explicit
 
 Private Const CLASS_NAME As String = "FArrays"
+'----------------------------------------------------------------------------------------------------------
+
+
+
+Public Function createEmpty1DArray() As Variant
+    Dim arr() As Variant
     '----------------------------------------------------------------------------------------------------------
-
-
+    createEmpty1DArray = arr
+End Function
 
 
 '[DIMENSIONS]
-    '----------------------------------------------------------------------------------------------------------
+'----------------------------------------------------------------------------------------------------------
 ' Description:          Function checks if the given parameter [arr] is an array and has at least as many
 '                       dimensions as the given parameter [dimensions].
 ' Returned value:       True - if the given parameter [arr] is a declared array and it has at least as many
@@ -34,7 +43,7 @@ Private Const CLASS_NAME As String = "FArrays"
 '   * dimension         Index of dimension to be checked.
 '   * dimension
 '                       Index of dimension to be checked.
-    '----------------------------------------------------------------------------------------------------------
+'----------------------------------------------------------------------------------------------------------
 Public Function hasDimension(arr As Variant, dimension As Integer) As Boolean
     Const METHOD_NAME As String = "hasDimension"
     Dim errLocal As Object, errNumber As Long, errDescription As String
@@ -75,7 +84,7 @@ ErrHandler:
     Dim errParams As Scripting.Dictionary
     '- - - - - - - - - - - - - - - - - - -
     Set errLocal = VBA.err: errNumber = errLocal.number: errDescription = errLocal.description
-    Set errParams = F.Dictionaries.createWithItems(False, KeyValue("arr", arr), _
+    Set errParams = f.dictionaries.createWithItems(False, KeyValue("arr", arr), _
             KeyValue("dimension", dimension), KeyValue("lowBound", lowBound), KeyValue("upBound", upBound))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, errParams)
     GoTo ExitPoint
@@ -89,7 +98,7 @@ End Function
 
 
 
-    '----------------------------------------------------------------------------------------------------------
+'----------------------------------------------------------------------------------------------------------
 ' Description:          Function checks if the given input parameter [arr] is an array and has its sizes
 '                       and dimensions already declared.
 ' Returned value:       True - if the given parameter [arr] is an array and has its sizes and dimensions
@@ -100,7 +109,7 @@ End Function
 '                               declared yet.
 ' Parameters:
 '   * arr               Array to be checked.
-    '----------------------------------------------------------------------------------------------------------
+'----------------------------------------------------------------------------------------------------------
 Public Function isDefined(arr As Variant) As Boolean
     Const METHOD_NAME As String = "isDefined"
     '------------------------------------------------------------------------------------------------------
@@ -122,7 +131,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr))
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
@@ -132,7 +141,7 @@ End Function
 
 
 
-    '----------------------------------------------------------------------------------------------------------
+'----------------------------------------------------------------------------------------------------------
 ' Description:          Function returns the number of dimensions for the given array [arr].
 ' Returned value:       * If the given parameter [arr] is not an array function returns -1.
 '                       * If the given parameter [arr] is an array but it has not been defined yet (it has
@@ -141,7 +150,7 @@ End Function
 '                         returns then number of dimensions of this array.
 ' Parameters:
 '   * arr               Array for which the number of dimensions is returned.
-    '----------------------------------------------------------------------------------------------------------
+'----------------------------------------------------------------------------------------------------------
 Public Function countDimensions(arr As Variant) As Long
     Const METHOD_NAME As String = "countDimensions"
     '------------------------------------------------------------------------------------------------------
@@ -169,7 +178,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr))
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
@@ -179,7 +188,7 @@ End Function
 
 
 
-    '----------------------------------------------------------------------------------------------------------
+'----------------------------------------------------------------------------------------------------------
 ' Description:          Wrapper function to check if the given parameter [value] is 1D array.
 ' Returned value:       True - if the given parameter [value] is a one-dimensional array.
 '                       False - in the following cases:
@@ -189,7 +198,7 @@ End Function
 '                           3) input parameter [value] is an array with more than one dimension.
 ' Parameters:
 '   * value             Array to be checked.
-    '----------------------------------------------------------------------------------------------------------
+'----------------------------------------------------------------------------------------------------------
 Public Function is1D(value As Variant) As Boolean
     Const METHOD_NAME As String = "is1D"
     '------------------------------------------------------------------------------------------------------
@@ -210,7 +219,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("value", value))
+    Set params = f.dictionaries.createWithItems(False, KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
@@ -280,7 +289,7 @@ NotDynamicArray:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr))
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
@@ -338,7 +347,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), _
                                                                         KeyValue("dimension", dimension))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
@@ -392,7 +401,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr))
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
@@ -459,7 +468,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
                                                 KeyValue("allowDifferentIndexing", allowDifferentIndexing))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
@@ -491,7 +500,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
                                                 KeyValue("allowDifferentIndexing", allowDifferentIndexing))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
@@ -548,7 +557,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr))
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
@@ -576,7 +585,7 @@ End Function
 '   * dimension         Dimension checked.
 '   * arr               Array for which index is checked.
     '----------------------------------------------------------------------------------------------------------
-Public Function isInBounds(index As Long, dimension As Long, arr As Variant) As Boolean
+Public Function isInBounds(Index As Long, dimension As Long, arr As Variant) As Boolean
     Const METHOD_NAME As String = "isInBounds"
     '------------------------------------------------------------------------------------------------------
     Dim lowBound As Long
@@ -589,7 +598,7 @@ Public Function isInBounds(index As Long, dimension As Long, arr As Variant) As 
         If countDimensions(arr) >= dimension Then
             lowBound = LBound(arr, dimension)
             upBound = UBound(arr, dimension)
-            If index >= lowBound And index <= upBound Then
+            If Index >= lowBound And Index <= upBound Then
                 isInBounds = True
             End If
         Else
@@ -608,7 +617,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("index", index), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("index", Index), _
                                                     KeyValue("dimension", dimension), KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
@@ -647,7 +656,7 @@ End Function
 '                                       to the given array [arr], i.e. array is declared as Long() and
 '                                       value is object.
 '----------------------------------------------------------------------------------------------------------
-Public Sub addEntry(ByRef arr As Variant, ByRef value As Variant)
+Public Sub addEntry(ByRef arr As Variant, ByVal value As Variant)
     Const METHOD_NAME As String = "addEntry"
     '------------------------------------------------------------------------------------------------------
     Const START_INDEX As Long = 1
@@ -655,9 +664,9 @@ Public Sub addEntry(ByRef arr As Variant, ByRef value As Variant)
 
     If Not DEV_MODE Then On Error GoTo ErrHandler
 
-    If F.Variables.isUndefined(arr) And Not VBA.IsObject(arr) Then
-        'Dynamic array with one item will be F.Variables.assigned to the variable [arr] later in this method.
-    ElseIf F.Variables.isPrimitive(arr) Then
+    If f.Variables.isUndefined(arr) And Not VBA.IsObject(arr) Then
+        'Dynamic array with one item will be assigned to the variable [arr] later in this method.
+    ElseIf f.Variables.isPrimitive(arr) Then
         Call Exceptions.NotArray.raise
     ElseIf VBA.IsObject(arr) Then
         Call Exceptions.NotArray.raise
@@ -688,7 +697,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr), KeyValue("value", value))
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
@@ -697,7 +706,7 @@ AssigningExceptionHandler:
     '[Restore previous array size] TODO
     errNumber = Exceptions.IllegalDataType.getNumber
     errDescription = Exceptions.IllegalDataType.getDescription
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr), KeyValue("value", value))
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
@@ -764,7 +773,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
             KeyValue("ignoreIndexingBase", ignoreIndexingBase), KeyValue("strictDataType", strictDataType))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
@@ -782,7 +791,7 @@ Private Function compare1DArrays(arr1 As Variant, arr2 As Variant, strictDataTyp
 
     compare1DArrays = True
     For i = LBound(arr1) To UBound(arr1)
-        If Not F.Variables.equals(arr1(i), arr2(i + baseDifference), strictDataType) Then
+        If Not f.Variables.equals(arr1(i), arr2(i + baseDifference), strictDataType) Then
             compare1DArrays = False
             Exit For
         End If
@@ -796,7 +805,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
                                                                 KeyValue("strictDataType", strictDataType))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
@@ -818,9 +827,9 @@ Private Function compare2DArrays(arr1 As Variant, arr2 As Variant, strictDataTyp
     compare2DArrays = True
     For i = LBound(arr1, 1) To UBound(arr1, 1)
         For j = LBound(arr1, 2) To UBound(arr1, 2)
-            Call F.Variables.assign(value1, arr1(i, j))
-            Call F.Variables.assign(value2, arr2(i + baseDifferences(1), j + baseDifferences(2)))
-            If Not F.Variables.equals(value1, value2, strictDataType) Then
+            Call f.Variables.assign(value1, arr1(i, j))
+            Call f.Variables.assign(value2, arr2(i + baseDifferences(1), j + baseDifferences(2)))
+            If Not f.Variables.equals(value1, value2, strictDataType) Then
                 compare2DArrays = False
                 Exit For
             End If
@@ -835,7 +844,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
                                                                 KeyValue("strictDataType", strictDataType))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
@@ -861,7 +870,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2))
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
@@ -926,10 +935,8 @@ Public Function toString(arr As Variant, _
         Case 2:         toString = arrayToString_2D(arr, stringifyMode, rowSeparator, rowStartTag, _
                                                             rowEndTag, columnSeparator, columnStartTag, _
                                                             columnEndTag, skipHeader)
-        Case Is > 2:    toString = F.strings.format(MULTIDIMENSIONAL_ARRAY_TAG, dimensions)
+        Case Is > 2:    toString = f.strings.format(MULTIDIMENSIONAL_ARRAY_TAG, dimensions)
     End Select
-
-    Stop
 
     If stringifyMode = StringifyMode_Xml Then
         Stop
@@ -944,7 +951,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), _
             KeyValue("stringifyMode", stringifyMode), KeyValue("columnSeparator", columnSeparator), _
             KeyValue("columnStartTag", columnStartTag), KeyValue("columnEndTag", columnEndTag), _
             KeyValue("rowSeparator", rowSeparator), KeyValue("rowStartTag", rowStartTag), _
@@ -959,7 +966,7 @@ Private Function arrayToString_1D(arr As Variant, stringifyMode As StringifyMode
                         ByVal itemEndTag As String, Optional skipHeader As Boolean = False) As String
     Const METHOD_NAME As String = "arrayToString_1D"
     '------------------------------------------------------------------------------------------------------
-    Dim items() As String
+    Dim Items() As String
     Dim itemText As String
     Dim i As Long
     Dim size As Long
@@ -975,12 +982,12 @@ Private Function arrayToString_1D(arr As Variant, stringifyMode As StringifyMode
 
     size = UBound(arr) - LBound(arr) + 1
     If size - VBA.IIf(skipHeader, 1, 0) > 0 Then
-        ReDim items(LBound(arr) + VBA.IIf(skipHeader, 1, 0) To UBound(arr))
+        ReDim Items(LBound(arr) + VBA.IIf(skipHeader, 1, 0) To UBound(arr))
         For i = LBound(arr) + VBA.IIf(skipHeader, 1, 0) To UBound(arr)
-            itemText = F.strings.stringify(arr(i), stringifyMode)
-            items(i) = itemStartTag & itemText & itemEndTag
+            itemText = f.strings.stringify(arr(i), stringifyMode)
+            Items(i) = itemStartTag & itemText & itemEndTag
         Next i
-        arrayToString_1D = VBA.join(items, itemSeparator)
+        arrayToString_1D = VBA.join(Items, itemSeparator)
     End If
     
 '==========================================================================================================
@@ -991,7 +998,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), _
             KeyValue("stringifyMode", stringifyMode), KeyValue("itemSeparator", itemSeparator), _
             KeyValue("itemStartTag", itemStartTag), KeyValue("itemEndTag", itemEndTag), _
             KeyValue("skipHeader", skipHeader))
@@ -1006,7 +1013,7 @@ Private Function arrayToString_2D(arr As Variant, stringifyMode As StringifyMode
                     Optional skipHeader As Boolean = False) As String
     Const METHOD_NAME As String = "arrayToString_2D"
     '------------------------------------------------------------------------------------------------------
-    Dim rows() As String
+    Dim Rows() As String
     Dim row As Long
     Dim size As Long
     '------------------------------------------------------------------------------------------------------
@@ -1024,12 +1031,12 @@ Private Function arrayToString_2D(arr As Variant, stringifyMode As StringifyMode
 
     size = UBound(arr, 1) - LBound(arr, 1) + 1
     If size - VBA.IIf(skipHeader, 1, 0) > 0 Then
-        ReDim rows(LBound(arr, 1) + VBA.IIf(skipHeader, 1, 0) To UBound(arr, 1))
+        ReDim Rows(LBound(arr, 1) + VBA.IIf(skipHeader, 1, 0) To UBound(arr, 1))
         For row = LBound(arr, 1) + VBA.IIf(skipHeader, 1, 0) To UBound(arr, 1)
-            rows(row) = rowStartTag & get2DArrayRowAsString(arr, stringifyMode, row, _
+            Rows(row) = rowStartTag & get2DArrayRowAsString(arr, stringifyMode, row, _
                                                         colSeparator, colStartTag, colEndTag) & rowEndTag
         Next row
-        arrayToString_2D = VBA.join(rows, rowSeparator)
+        arrayToString_2D = VBA.join(Rows, rowSeparator)
     End If
     
 '==========================================================================================================
@@ -1040,7 +1047,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), _
             KeyValue("stringifyMode", stringifyMode), KeyValue("colSeparator", colSeparator), _
             KeyValue("colStartTag", colStartTag), KeyValue("colEndTag", colEndTag), _
             KeyValue("rowSeparator", rowSeparator), KeyValue("rowStartTag", rowStartTag), _
@@ -1054,19 +1061,19 @@ Private Function get2DArrayRowAsString(arr As Variant, stringifyMode As Stringif
                         itemsDelimiter As String, itemStartTag As String, itemEndTag As String) As String
     Const METHOD_NAME As String = "get2DArrayRowAsString"
     '------------------------------------------------------------------------------------------------------
-    Dim items() As String
+    Dim Items() As String
     Dim column As Long
     Dim itemText As String
     '------------------------------------------------------------------------------------------------------
 
     If Not DEV_MODE Then On Error GoTo ErrHandler
 
-    ReDim items(LBound(arr, 2) To UBound(arr, 2))
+    ReDim Items(LBound(arr, 2) To UBound(arr, 2))
     For column = LBound(arr, 2) To UBound(arr, 2)
-        itemText = F.strings.stringify(arr(row, column), stringifyMode)
-        items(column) = itemStartTag & itemText & itemEndTag
+        itemText = f.strings.stringify(arr(row, column), stringifyMode)
+        Items(column) = itemStartTag & itemText & itemEndTag
     Next column
-    get2DArrayRowAsString = VBA.join(items, itemsDelimiter)
+    get2DArrayRowAsString = VBA.join(Items, itemsDelimiter)
     
 '==========================================================================================================
 ExitPoint:
@@ -1076,7 +1083,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), _
             KeyValue("stringifyMode", stringifyMode), KeyValue("itemsDelimiter", itemsDelimiter), _
             KeyValue("itemStartTag", itemStartTag), KeyValue("itemEndTag", itemEndTag))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
@@ -1108,12 +1115,12 @@ Public Function toCollection(arr As Variant) As VBA.Collection
     If Not DEV_MODE Then On Error GoTo ErrHandler
 
     If Not VBA.IsArray(arr) Then Call Exceptions.NotArray.raise
-    If F.arrays.countDimensions(arr) > 1 Then Call Exceptions.InvalidDimension.raise
+    If f.arrays.countDimensions(arr) > 1 Then Call Exceptions.InvalidDimension.raise
 
     Set toCollection = New VBA.Collection
     If isDefined(arr) Then
         For i = LBound(arr) To UBound(arr)
-            Call toCollection.Add(arr(i))
+            Call toCollection.add(arr(i))
         Next i
     End If
     
@@ -1125,7 +1132,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr))
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
@@ -1190,14 +1197,14 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("value", value))
+    Set params = f.dictionaries.createWithItems(False, KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
 Public Function to2DArray(value As Variant) As Variant
-    Call F.Variables.assign(to2DArray, to2D(value))
+    Call f.Variables.assign(to2DArray, to2D(value))
 End Function
 
 Private Function convertTo2DArray_From1DArray(sourceArr As Variant) As Variant
@@ -1216,7 +1223,7 @@ Private Function convertTo2DArray_From1DArray(sourceArr As Variant) As Variant
     lngUBound = UBound(sourceArr)
 
     For lngRow = lngLBound To lngUBound
-        Call F.Variables.assign(arr(lngRow - lngLBound + 1, 1), sourceArr(lngRow))
+        Call f.Variables.assign(arr(lngRow - lngLBound + 1, 1), sourceArr(lngRow))
     Next lngRow
     convertTo2DArray_From1DArray = arr
 
@@ -1229,7 +1236,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("sourceArr", sourceArr))
+    Set params = f.dictionaries.createWithItems(False, KeyValue("sourceArr", sourceArr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
@@ -1239,28 +1246,27 @@ Private Function convertTo2DArray_FromDictionary(value As Variant) As Variant
     Const METHOD_NAME As String = "convertTo2DArray_FromDictionary"
     '------------------------------------------------------------------------------------------------------
     Dim dict As Scripting.Dictionary
-    Dim key As Variant
+    Dim Key As Variant
     Dim arr() As Variant
     Dim counter As Long
     '------------------------------------------------------------------------------------------------------
 
     If Not DEV_MODE Then On Error GoTo ErrHandler
 
-    If F.Dictionaries.isDictionary(value) Then
+    If f.dictionaries.isDictionary(value) Then
         Set dict = value
     End If
 
-    If F.Dictionaries.isNonEmptyDictionary(dict) Then
+    If f.dictionaries.isNonEmptyDictionary(dict) Then
         ReDim arr(1 To dict.count, 1 To 2)
-        For Each key In dict.Keys
+        For Each Key In dict.Keys
             counter = counter + 1
-            Call F.Variables.assign(arr(counter, 1), key)
-            Call F.Variables.assign(arr(counter, 2), dict.item(key))
-        Next key
+            Call f.Variables.assign(arr(counter, 1), Key)
+            Call f.Variables.assign(arr(counter, 2), dict.Item(Key))
+        Next Key
     End If
 
     convertTo2DArray_FromDictionary = arr
-
 
 '==========================================================================================================
 ExitPoint:
@@ -1270,7 +1276,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("value", value))
+    Set params = f.dictionaries.createWithItems(False, KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
@@ -1280,23 +1286,23 @@ Private Function convertTo2DArray_FromCollection(value As Variant) As Variant
     Const METHOD_NAME As String = "convertTo2DArray_FromCollection"
     '------------------------------------------------------------------------------------------------------
     Dim col As Object
-    Dim item As Variant
+    Dim Item As Variant
     Dim arr() As Variant
     Dim counter As Long
     '------------------------------------------------------------------------------------------------------
     
     If Not DEV_MODE Then On Error GoTo ErrHandler
 
-    If F.Collections.isCollection(value) Then
+    If f.Collections.isCollection(value) Then
         Set col = value
     End If
 
-    If F.Collections.isNonEmptyCollection(col) Then
+    If f.Collections.isNonEmptyCollection(col) Then
         ReDim arr(1 To col.count, 1 To 1)
-        For Each item In col
+        For Each Item In col
             counter = counter + 1
-            Call F.Variables.assign(arr(counter, 1), item)
-        Next item
+            Call f.Variables.assign(arr(counter, 1), Item)
+        Next Item
     End If
 
     convertTo2DArray_FromCollection = arr
@@ -1310,7 +1316,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("value", value))
+    Set params = f.dictionaries.createWithItems(False, KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
@@ -1325,7 +1331,7 @@ Private Function convertTo2DArray_FromSingleValue(value As Variant) As Variant
     If Not DEV_MODE Then On Error GoTo ErrHandler
     
     ReDim arr(1 To 1, 1 To 1)
-    Call F.Variables.assign(arr(1, 1), value)
+    Call f.Variables.assign(arr(1, 1), value)
     convertTo2DArray_FromSingleValue = arr
 
 
@@ -1337,7 +1343,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("value", value))
+    Set params = f.dictionaries.createWithItems(False, KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
@@ -1385,12 +1391,12 @@ Public Function contains(arr As Variant, value As Variant, _
     If Not DEV_MODE Then On Error GoTo ErrHandler
 
     If Not VBA.IsArray(arr) Then Call Exceptions.NotArray.raise
-    If F.arrays.countDimensions(arr) > 1 Then Call Exceptions.InvalidDimension.raise
+    If f.arrays.countDimensions(arr) > 1 Then Call Exceptions.InvalidDimension.raise
     If VBA.IsArray(value) Then Call Exceptions.IllegalValue.raiseWithCustomMessage("Value cannot be of array type")
 
     If isDefined(arr) Then
         For i = LBound(arr, 1) To UBound(arr, 1)
-            If F.Variables.equals(arr(i), value, strictDataType, isCaseSensitive, trimIfValueIsString) Then
+            If f.Variables.equals(arr(i), value, strictDataType, isCaseSensitive, trimIfValueIsString) Then
                 contains = True
                 Exit For
             End If
@@ -1405,7 +1411,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("value", value), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("value", value), _
                 KeyValue("strictDataType", strictDataType), KeyValue("isCaseSensitive", isCaseSensitive), _
                 KeyValue("trimIfValueIsString", trimIfValueIsString))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
@@ -1454,11 +1460,11 @@ Public Function getFirstItem(arr As Variant, _
     
     If Not VBA.IsArray(arr) Then Call Exceptions.NotArray.raise
     If Not isDefined(arr) Then Call Exceptions.UndefinedArrayNotAllowed.raise
-    If F.arrays.countDimensions(arr) > 2 Then Call Exceptions.InvalidDimension.raise
+    If f.arrays.countDimensions(arr) > 2 Then Call Exceptions.InvalidDimension.raise
     Select Case countDimensions(arr)
-        Case 1: Call F.Variables.assign(getFirstItem, _
+        Case 1: Call f.Variables.assign(getFirstItem, _
                                 getFirstItem_1DArray(arr, skipUndefinedItems, skipEmptyStrings, skipZeros))
-        Case 2: Call F.Variables.assign(getFirstItem, _
+        Case 2: Call f.Variables.assign(getFirstItem, _
                                 getFirstItem_2DArray(arr, skipUndefinedItems, skipEmptyStrings, skipZeros))
     End Select
     
@@ -1470,7 +1476,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), _
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
@@ -1489,7 +1495,7 @@ Private Function getFirstItem_1DArray(arr As Variant, skipUndefinedItems As Bool
     
     For i = LBound(arr) To UBound(arr)
         If getItem_PassTest(arr(i), skipUndefinedItems, skipEmptyStrings, skipZeros) Then
-            Call F.Variables.assign(getFirstItem_1DArray, arr(i))
+            Call f.Variables.assign(getFirstItem_1DArray, arr(i))
             Exit For
         End If
     Next i
@@ -1502,7 +1508,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), _
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
@@ -1524,7 +1530,7 @@ Private Function getFirstItem_2DArray(arr As Variant, skipUndefinedItems As Bool
     For i = LBound(arr, 1) To UBound(arr, 1)
         For j = LBound(arr, 2) To UBound(arr, 2)
             If getItem_PassTest(arr(i, j), skipUndefinedItems, skipEmptyStrings, skipZeros) Then
-                Call F.Variables.assign(getFirstItem_2DArray, arr(i, j))
+                Call f.Variables.assign(getFirstItem_2DArray, arr(i, j))
                 isFound = True
                 Exit For
             End If
@@ -1540,7 +1546,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), _
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
@@ -1586,11 +1592,11 @@ Public Function getLastItem(arr As Variant, _
 
     If Not VBA.IsArray(arr) Then Call Exceptions.NotArray.raise
     If Not isDefined(arr) Then Call Exceptions.UndefinedArrayNotAllowed.raise
-    If F.arrays.countDimensions(arr) > 2 Then Call Exceptions.InvalidDimension.raise
+    If f.arrays.countDimensions(arr) > 2 Then Call Exceptions.InvalidDimension.raise
     Select Case countDimensions(arr)
-        Case 1: Call F.Variables.assign(getLastItem, _
+        Case 1: Call f.Variables.assign(getLastItem, _
                                 getLastItem_1DArray(arr, skipUndefinedItems, skipEmptyStrings, skipZeros))
-        Case 2: Call F.Variables.assign(getLastItem, _
+        Case 2: Call f.Variables.assign(getLastItem, _
                                 getLastItem_2DArray(arr, skipUndefinedItems, skipEmptyStrings, skipZeros))
     End Select
     
@@ -1602,7 +1608,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), _
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
@@ -1621,7 +1627,7 @@ Private Function getLastItem_1DArray(arr As Variant, skipUndefinedItems As Boole
     
     For i = UBound(arr) To LBound(arr) Step -1
         If getItem_PassTest(arr(i), skipUndefinedItems, skipEmptyStrings, skipZeros) Then
-            Call F.Variables.assign(getLastItem_1DArray, arr(i))
+            Call f.Variables.assign(getLastItem_1DArray, arr(i))
             Exit For
         End If
     Next i
@@ -1634,7 +1640,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), _
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
@@ -1656,7 +1662,7 @@ Private Function getLastItem_2DArray(arr As Variant, skipUndefinedItems As Boole
     For i = UBound(arr, 1) To LBound(arr, 1) Step -1
         For j = UBound(arr, 2) To LBound(arr, 2) Step -1
             If getItem_PassTest(arr(i, j), skipUndefinedItems, skipEmptyStrings, skipZeros) Then
-                Call F.Variables.assign(getLastItem_2DArray, arr(i, j))
+                Call f.Variables.assign(getLastItem_2DArray, arr(i, j))
                 isFound = True
                 Exit For
             End If
@@ -1672,7 +1678,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), _
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
@@ -1680,22 +1686,22 @@ ErrHandler:
         
 End Function
 
-Private Function getItem_PassTest(item As Variant, skipUndefinedItems As Boolean, _
+Private Function getItem_PassTest(Item As Variant, skipUndefinedItems As Boolean, _
                                             skipEmptyStrings As Boolean, skipZeros As Boolean) As Boolean
     Const METHOD_NAME As String = "getItem_PassTest"
     '------------------------------------------------------------------------------------------------------
 
     If Not DEV_MODE Then On Error GoTo ErrHandler
 
-    If F.Variables.isUndefined(item) Then
+    If f.Variables.isUndefined(Item) Then
         getItem_PassTest = (Not skipUndefinedItems)
-    ElseIf VBA.IsObject(item) Then
+    ElseIf VBA.IsObject(Item) Then
         getItem_PassTest = True
-    ElseIf VBA.IsArray(item) Then
+    ElseIf VBA.IsArray(Item) Then
         getItem_PassTest = True
-    ElseIf item = vbNullString Then
+    ElseIf Item = vbNullString Then
         getItem_PassTest = (Not skipEmptyStrings)
-    ElseIf item = 0 Then
+    ElseIf Item = 0 Then
         getItem_PassTest = (Not skipZeros)
     Else
         getItem_PassTest = True
@@ -1709,7 +1715,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("item", item), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("item", Item), _
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
@@ -1755,8 +1761,8 @@ Public Function slice1D_ByEndIndex(arr As Variant, startIndex As Long, endIndex 
     If Not DEV_MODE Then On Error GoTo ErrHandler
 
     If Not VBA.IsArray(arr) Then Call Exceptions.NotArray.raise
-    If Not F.arrays.isDefined(arr) Then Call Exceptions.UndefinedArrayNotAllowed.raise
-    If F.arrays.countDimensions(arr) > 1 Then Call Exceptions.InvalidDimension.raise
+    If Not f.arrays.isDefined(arr) Then Call Exceptions.UndefinedArrayNotAllowed.raise
+    If f.arrays.countDimensions(arr) > 1 Then Call Exceptions.InvalidDimension.raise
 
     If absoluteIndex Then
         slice1D_ByEndIndex = slice1D_ByEndIndex_absoluteIndex(arr, startIndex, endIndex)
@@ -1772,7 +1778,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), _
                 KeyValue("startIndex", startIndex), KeyValue("endIndex", endIndex), _
                 KeyValue("absoluteIndex", absoluteIndex))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
@@ -1809,9 +1815,9 @@ Private Function slice1D_ByEndIndex_absoluteIndex(sourceArray As Variant, _
 
     For i = lowerIndex To upperIndex
         If isReversed Then
-            Call F.Variables.assign(arr(i), sourceArray(upperIndex - i + lowerIndex))
+            Call f.Variables.assign(arr(i), sourceArray(upperIndex - i + lowerIndex))
         Else
-            Call F.Variables.assign(arr(i), sourceArray(i))
+            Call f.Variables.assign(arr(i), sourceArray(i))
         End If
     Next i
 
@@ -1827,7 +1833,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
                 KeyValue("startIndex", startIndex), KeyValue("endIndex", endIndex))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
@@ -1850,8 +1856,8 @@ Private Function slice1D_ByEndIndex_relativeIndex(sourceArray As Variant, _
     If Not DEV_MODE Then On Error GoTo ErrHandler
 
     sourceSize = getSize(sourceArray, 1)
-    If Not F.Numerics.isInRange(startIndex, 1, sourceSize) Then Call Exceptions.IndexOutOfBound.raiseWithCustomMessage("Parameter [startIndex] is out of range")
-    If Not F.Numerics.isInRange(endIndex, 1, sourceSize) Then Call Exceptions.IndexOutOfBound.raiseWithCustomMessage("Parameter [endIndex] is out of range")
+    If Not f.Numerics.isInRange(startIndex, 1, sourceSize) Then Call Exceptions.IndexOutOfBound.raiseWithCustomMessage("Parameter [startIndex] is out of range")
+    If Not f.Numerics.isInRange(endIndex, 1, sourceSize) Then Call Exceptions.IndexOutOfBound.raiseWithCustomMessage("Parameter [endIndex] is out of range")
 
     isReversed = startIndex > endIndex
     destinationSize = VBA.IIf(isReversed, startIndex - endIndex + 1, endIndex - startIndex + 1)
@@ -1859,7 +1865,7 @@ Private Function slice1D_ByEndIndex_relativeIndex(sourceArray As Variant, _
     ReDim arr(1 To destinationSize)
     For i = 1 To destinationSize
         sourceArrayIndex = startIndex - baseDifference + (i - 1) * VBA.IIf(isReversed, -1, 1)
-        Call F.Variables.assign(arr(i), sourceArray(sourceArrayIndex))
+        Call f.Variables.assign(arr(i), sourceArray(sourceArrayIndex))
     Next i
 
     slice1D_ByEndIndex_relativeIndex = arr
@@ -1872,7 +1878,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
                 KeyValue("startIndex", startIndex), KeyValue("endIndex", endIndex))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
@@ -1927,8 +1933,8 @@ Public Function slice2D_ByEndIndex(sourceArray As Variant, _
     Dim realStartColumnIndex As Long
     Dim realEndColumnIndex As Long
     Dim arr() As Variant
-    Dim rows As Long
-    Dim columns As Long
+    Dim Rows As Long
+    Dim Columns As Long
     Dim i As Long
     Dim row As Long
     Dim j As Long
@@ -1964,17 +1970,17 @@ Public Function slice2D_ByEndIndex(sourceArray As Variant, _
     End If
 
     'Creating final array.
-    rows = VBA.Abs(realStartRowIndex - realEndRowIndex) + 1
-    columns = VBA.Abs(realStartColumnIndex - realEndColumnIndex) + 1
+    Rows = VBA.Abs(realStartRowIndex - realEndRowIndex) + 1
+    Columns = VBA.Abs(realStartColumnIndex - realEndColumnIndex) + 1
 
-    ReDim arr(1 To rows, 1 To columns)
-    For i = 1 To rows
+    ReDim arr(1 To Rows, 1 To Columns)
+    For i = 1 To Rows
         row = VBA.IIf(realEndRowIndex < realStartRowIndex, realStartRowIndex - i + 1, _
                                                                             realStartRowIndex + i - 1)
-        For j = 1 To columns
+        For j = 1 To Columns
             column = VBA.IIf(realEndColumnIndex < realStartColumnIndex, _
                                            realStartColumnIndex - j + 1, realStartColumnIndex + j - 1)
-            Call F.Variables.assign(arr(i, j), sourceArray(row, column))
+            Call f.Variables.assign(arr(i, j), sourceArray(row, column))
         Next j
     Next i
 
@@ -1988,7 +1994,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
                 KeyValue("startRowIndex", startRowIndex), KeyValue("endRowIndex", endRowIndex), _
                 KeyValue("startColumnIndex", startColumnIndex), _
                 KeyValue("endColumnIndex", endColumnIndex), KeyValue("absoluteIndex", absoluteIndex))
@@ -2046,19 +2052,19 @@ Public Function getRow(sourceArray As Variant, rowIndex As Long, _
     If absoluteIndex Then
         If Not isInBounds(rowIndex, 1, sourceArray) Then Call Exceptions.IndexOutOfBound.raise
     Else
-        If Not F.Numerics.isInRange(rowIndex, 0, getSize(sourceArray, 1), False, True) Then _
+        If Not f.Numerics.isInRange(rowIndex, 0, getSize(sourceArray, 1), False, True) Then _
                                                                    Call Exceptions.IndexOutOfBound.raise
     End If
 
     If absoluteIndex Then
         ReDim arr(LBound(sourceArray, 2) To UBound(sourceArray, 2))
         For i = LBound(sourceArray, 2) To UBound(sourceArray, 2)
-            Call F.Variables.assign(arr(i), sourceArray(rowIndex, i))
+            Call f.Variables.assign(arr(i), sourceArray(rowIndex, i))
         Next i
     Else
         ReDim arr(1 To getSize(sourceArray, 2))
         For i = 1 To getSize(sourceArray, 2)
-            Call F.Variables.assign(arr(i), _
+            Call f.Variables.assign(arr(i), _
                         sourceArray(rowIndex + LBound(sourceArray, 1) - 1, i + LBound(sourceArray, 2) - 1))
         Next i
     End If
@@ -2073,7 +2079,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
                         KeyValue("rowIndex", rowIndex), KeyValue("absoluteIndex", absoluteIndex))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
@@ -2132,19 +2138,19 @@ Public Function getColumn(sourceArray As Variant, columnIndex As Long, _
     If absoluteIndex Then
         If Not isInBounds(columnIndex, 2, sourceArray) Then Call Exceptions.IndexOutOfBound.raise
     Else
-        If Not F.Numerics.isInRange(columnIndex, 0, getSize(sourceArray, 2), False, True) Then _
+        If Not f.Numerics.isInRange(columnIndex, 0, getSize(sourceArray, 2), False, True) Then _
                                                                       Call Exceptions.IndexOutOfBound.raise
     End If
 
     If absoluteIndex Then
         ReDim arr(LBound(sourceArray, 1) To UBound(sourceArray, 1))
         For i = LBound(sourceArray, 1) To UBound(sourceArray, 1)
-            Call F.Variables.assign(arr(i), sourceArray(i, columnIndex))
+            Call f.Variables.assign(arr(i), sourceArray(i, columnIndex))
         Next i
     Else
         ReDim arr(1 To getSize(sourceArray, 1))
         For i = 1 To getSize(sourceArray, 1)
-            Call F.Variables.assign(arr(i), _
+            Call f.Variables.assign(arr(i), _
                     sourceArray(i + LBound(sourceArray, 1) - 1, columnIndex + LBound(sourceArray, 2) - 1))
         Next i
     End If
@@ -2159,7 +2165,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
                         KeyValue("columnIndex", columnIndex), KeyValue("absoluteIndex", absoluteIndex))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
@@ -2216,12 +2222,12 @@ Public Function getUniqueValues(arr As Variant, Optional strictDataType As Boole
 
     If isDefined(arr) Then
 
-        Set dict = F.Dictionaries.Create(isCaseSensitive)
+        Set dict = f.dictionaries.Create(isCaseSensitive)
         For i = LBound(arr) To UBound(arr)
 
-            If F.Variables.isUndefined(arr(i)) Then
+            If f.Variables.isUndefined(arr(i)) Then
                 If strictDataType Then
-                    varKey = VBA.varType(arr(i)) & "|" & F.strings.stringify(arr(i))
+                    varKey = VBA.varType(arr(i)) & "|" & f.strings.stringify(arr(i))
                 Else
                     varKey = Empty
                 End If
@@ -2229,27 +2235,27 @@ Public Function getUniqueValues(arr As Variant, Optional strictDataType As Boole
                 Set varKey = arr(i)
             ElseIf strictDataType Then
                 If trimWhenComparingStrings Then
-                    varKey = VBA.varType(arr(i)) & "|" & F.strings.trimFull(F.strings.stringify(arr(i)))
+                    varKey = VBA.varType(arr(i)) & "|" & f.strings.trimFull(f.strings.stringify(arr(i)))
                 Else
-                    varKey = VBA.varType(arr(i)) & "|" & F.strings.stringify(arr(i))
+                    varKey = VBA.varType(arr(i)) & "|" & f.strings.stringify(arr(i))
                 End If
             Else
                 If trimWhenComparingStrings Then
-                    varKey = F.strings.trimFull(F.strings.stringify(arr(i)))
+                    varKey = f.strings.trimFull(f.strings.stringify(arr(i)))
                 Else
-                    varKey = F.strings.stringify(arr(i))
+                    varKey = f.strings.stringify(arr(i))
                 End If
             End If
 
             With dict
                 If Not .exists(varKey) Then
-                    Call .Add(varKey, arr(i))
+                    Call .add(varKey, arr(i))
                 End If
             End With
 
         Next i
 
-        getUniqueValues = dict.items
+        getUniqueValues = dict.Items
 
     Else
 
@@ -2265,7 +2271,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = F.Dictionaries.createWithItems(False, KeyValue("arr", arr), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), _
                         KeyValue("strictDataType", strictDataType), _
                         KeyValue("isCaseSensitive", isCaseSensitive), _
                         KeyValue("trimWhenComparingStrings", trimWhenComparingStrings))
@@ -2280,54 +2286,11 @@ End Function
 
 
 
-
-
-
-
-'***** WITHOUT UNIT TESTS *****
-
-
-Public Function slice(arr As Variant, startIndex As Long, length As Long, Optional ByVal dimensions As Long = 0) As Variant
-    If dimensions = 0 Then dimensions = F.arrays.countDimensions(arr)
-    If dimensions = 1 Then
-        slice = slice_1D(arr, startIndex, length)
-    ElseIf dimensions = 2 Then
-        slice = slice_2D(arr, startIndex, length)
-    End If
-End Function
-
-Private Function slice_1D(arr As Variant, startIndex As Long, length As Long) As Variant
-    Dim i As Long
-    Dim j As Long
-    Dim result() As Variant
-    '------------------------------------------------------------------------------------------------------
-    ReDim result(1 To length)
-    For i = 1 To length
-        Call F.Variables.assign(result(i), arr(i + startIndex - 1))
-    Next i
-    slice_1D = result
-End Function
-
-Private Function slice_2D(arr As Variant, startIndex As Long, length As Long) As Variant
-    Dim i As Long
-    Dim j As Long
-    Dim result() As Variant
-    '------------------------------------------------------------------------------------------------------
-    ReDim result(LBound(arr, 1) To UBound(arr, 1), 1 To length)
-    For i = 1 To length
-        For j = LBound(arr, 1) To UBound(arr, 1)
-            Call F.Variables.assign(result(j, i), arr(j, i + startIndex - 1))
-        Next j
-    Next i
-    slice_2D = result
-End Function
-
-
 '[SORTING ARRAYS]
 Public Function sort(arr As Variant, Optional sortAscending As Boolean = True, Optional sortColumn As Long = 1, Optional hasHeader As Boolean = False) As Variant
      Dim sorter As ArraySorter
     '------------------------------------------------------------------------------------------------------
-    If F.arrays.isDefined(arr) Then
+    If f.arrays.isDefined(arr) Then
         Set sorter = New ArraySorter
         sort = sorter.setArray(arr).sort(ascending:=sortAscending, sortColumn:=sortColumn, hasHeader:=hasHeader)
     Else
@@ -2338,7 +2301,7 @@ End Function
 
 
 Public Sub swapItems(arr As Variant, row1 As Long, row2 As Long, Optional ByVal dimensions As Long = 0)
-    If dimensions = 0 Then dimensions = F.arrays.countDimensions(arr)
+    If dimensions = 0 Then dimensions = f.arrays.countDimensions(arr)
     If dimensions = 1 Then
         Call swapItems_1D(arr, row1, row2)
     ElseIf dimensions = 2 Then
@@ -2349,9 +2312,9 @@ End Sub
 Private Sub swapItems_1D(arr As Variant, row1 As Long, row2 As Long)
     Dim tempItem As Variant
     '------------------------------------------------------------------------------------------------------
-    Call F.Variables.assign(tempItem, arr(row2))
-    Call F.Variables.assign(arr(row2), arr(row1))
-    Call F.Variables.assign(arr(row1), tempItem)
+    Call f.Variables.assign(tempItem, arr(row2))
+    Call f.Variables.assign(arr(row2), arr(row1))
+    Call f.Variables.assign(arr(row1), tempItem)
 End Sub
 
 Private Sub swapItems_2D(arr As Variant, row1 As Long, row2 As Long)
@@ -2361,15 +2324,15 @@ Private Sub swapItems_2D(arr As Variant, row1 As Long, row2 As Long)
 
     ReDim tempArr(LBound(arr, 1) To UBound(arr, 1))
     For i = LBound(arr, 1) To UBound(arr, 1)
-        Call F.Variables.assign(tempArr(i), arr(i, row2))
+        Call f.Variables.assign(tempArr(i), arr(i, row2))
     Next i
 
     For i = LBound(arr, 1) To UBound(arr, 1)
-        Call F.Variables.assign(arr(i, row2), arr(i, row1))
+        Call f.Variables.assign(arr(i, row2), arr(i, row1))
     Next i
 
     For i = LBound(arr, 1) To UBound(arr, 1)
-        Call F.Variables.assign(arr(i, row1), tempArr(i))
+        Call f.Variables.assign(arr(i, row1), tempArr(i))
     Next i
 
 End Sub
@@ -2377,7 +2340,7 @@ End Sub
 
 
 Public Function invert(arr As Variant, Optional hasHeader As Boolean = False, Optional ByVal dimensions As Long = 0) As Variant
-    If dimensions = 0 Then dimensions = F.arrays.countDimensions(arr)
+    If dimensions = 0 Then dimensions = f.arrays.countDimensions(arr)
     If dimensions = 1 Then
         invert = invert_1D(arr, hasHeader)
     ElseIf dimensions = 2 Then
@@ -2399,7 +2362,7 @@ Public Function invert_1D(arr As Variant, Optional hasHeader As Boolean = False)
     If hasHeader Then result(LBound(result)) = arr(LBound(arr))
 
     For i = UBound(arr) To firstRow Step -1
-        Call F.Variables.assign(result(i), arr(boundsSum - i))
+        Call f.Variables.assign(result(i), arr(boundsSum - i))
     Next i
     invert_1D = result
 
@@ -2425,7 +2388,7 @@ Public Function invert_2D(arr As Variant, Optional hasHeader As Boolean = False)
 
     For i = UBound(arr, 2) To firstRow Step -1
         For j = LBound(arr, 1) To UBound(arr, 1)
-            Call F.Variables.assign(result(j, i), arr(j, boundsSum - i))
+            Call f.Variables.assign(result(j, i), arr(j, boundsSum - i))
         Next j
     Next i
     invert_2D = result
@@ -2434,37 +2397,37 @@ End Function
 
 
 
-Public Function getColumnIndexByHeader(arr As Variant, header As Variant, Optional absoluteIndex As Boolean = False) As Long
+Public Function getColumnIndexByHeader(arr As Variant, Header As Variant, Optional absoluteIndex As Boolean = False) As Long
     Dim headers As Variant
     '------------------------------------------------------------------------------------------------------
-    headers = F.arrays.getColumn(arr, 1, True)
-    getColumnIndexByHeader = getItemIndex(headers, header)
+    headers = f.arrays.getColumn(arr, 1, True)
+    getColumnIndexByHeader = getItemIndex(headers, Header)
 End Function
 
 Public Function getRowIndexByFirstValue(arr As Variant, value As Variant, Optional absoluteIndex As Boolean = False) As Long
     Dim values As Variant
     '------------------------------------------------------------------------------------------------------
-    values = F.arrays.getRow(arr, 1, True)
+    values = f.arrays.getRow(arr, 1, True)
     getRowIndexByFirstValue = getItemIndex(values, value)
 End Function
 
 
-Public Function getItemIndex(arr As Variant, item As Variant, Optional useRegex As Boolean = False) As Variant
+Public Function getItemIndex(arr As Variant, Item As Variant, Optional useRegex As Boolean = False) As Variant
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
     
-    If Not F.arrays.isDefined(arr) Then
-    ElseIf Not F.arrays.countDimensions(arr) = 1 Then
+    If Not f.arrays.isDefined(arr) Then
+    ElseIf Not f.arrays.countDimensions(arr) = 1 Then
     Else
         getItemIndex = LBound(arr) - 1
         For i = LBound(arr) To UBound(arr)
             If useRegex Then
-                If F.regex.checkIfMatch(VBA.CStr(arr(i)), VBA.CStr(item)) Then
+                If f.regex.checkIfMatch(VBA.CStr(arr(i)), VBA.CStr(Item)) Then
                     getItemIndex = i
                     Exit For
                 End If
             Else
-                If F.Variables.equals(arr(i), item) Then
+                If f.Variables.equals(arr(i), Item) Then
                     getItemIndex = i
                     Exit For
                 End If
@@ -2488,9 +2451,9 @@ Public Function transpose(ByRef arr As Variant) As Variant()
     Dim dimensions As Integer
     '------------------------------------------------------------------------------------------------------
 
-    If Not F.arrays.isDefined(arr) Then Call Exceptions.NotArray.raise
+    If Not f.arrays.isDefined(arr) Then Call Exceptions.NotArray.raise
 
-    dimensions = F.arrays.countDimensions(arr)
+    dimensions = f.arrays.countDimensions(arr)
     If dimensions <> 2 Then Call Exceptions.InvalidDimension.raise
 
     stWidth = LBound(arr, 1)
@@ -2534,17 +2497,17 @@ End Function
 
 
 
-Public Sub expand(ByRef arr As Variant, Optional rows As Long = 1)
-    If F.arrays.countDimensions(arr) = 2 Then
-        ReDim Preserve arr(LBound(arr, 1) To UBound(arr, 1), LBound(arr, 2) To UBound(arr, 2) + rows)
+Public Sub expand(ByRef arr As Variant, Optional Rows As Long = 1)
+    If f.arrays.countDimensions(arr) = 2 Then
+        ReDim Preserve arr(LBound(arr, 1) To UBound(arr, 1), LBound(arr, 2) To UBound(arr, 2) + Rows)
     End If
 End Sub
 
 Public Function isNonEmptyArray(arr As Variant) As Boolean
     Dim dimensions As Integer
     '------------------------------------------------------------------------------------------------------
-    If F.arrays.isDefined(arr) Then
-        dimensions = F.arrays.countDimensions(arr)
+    If f.arrays.isDefined(arr) Then
+        dimensions = f.arrays.countDimensions(arr)
         Select Case dimensions
             Case 1: isNonEmptyArray = isNonEmptyArray_1D(arr)
             Case 2: isNonEmptyArray = isNonEmptyArray_2D(arr)
@@ -2582,7 +2545,7 @@ End Function
 Public Function hasAnyUndefined(arr As Variant) As Boolean
     Dim dimensions As Integer
     '------------------------------------------------------------------------------------------------------
-    dimensions = F.arrays.countDimensions(arr)
+    dimensions = f.arrays.countDimensions(arr)
     Select Case dimensions
         Case 1: hasAnyUndefined = hasAnyUndefined_1D(arr)
         Case 2: hasAnyUndefined = hasAnyUndefined_2D(arr)
@@ -2593,7 +2556,7 @@ Private Function hasAnyUndefined_1D(arr As Variant) As Boolean
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
     For i = LBound(arr) To UBound(arr)
-        If F.Variables.isUndefined(arr(i)) Then
+        If f.Variables.isUndefined(arr(i)) Then
             hasAnyUndefined_1D = True
             Exit For
         End If
@@ -2606,7 +2569,7 @@ Private Function hasAnyUndefined_2D(arr As Variant) As Boolean
     '------------------------------------------------------------------------------------------------------
     For i = LBound(arr, 1) To UBound(arr, 1)
         For j = LBound(arr, 2) To UBound(arr, 2)
-            If F.Variables.isUndefined(arr(i, j)) Then
+            If f.Variables.isUndefined(arr(i, j)) Then
                 hasAnyUndefined_2D = True
                 Exit For
             End If
@@ -2619,7 +2582,7 @@ End Function
 Public Function join(ParamArray arrays() As Variant) As Variant
     Dim arr() As Variant
     Dim colArrays As VBA.Collection
-    Dim items As Long
+    Dim Items As Long
     Dim varItem As Variant
     Dim i As Long
     Dim upBound As Long:                            upBound = 1
@@ -2627,13 +2590,13 @@ Public Function join(ParamArray arrays() As Variant) As Variant
 
     Set colArrays = New VBA.Collection
     For Each varItem In arrays
-        If F.arrays.countDimensions(varItem) = 1 Then
-            items = items + F.arrays.getSize(varItem)
-            Call colArrays.Add(varItem)
+        If f.arrays.countDimensions(varItem) = 1 Then
+            Items = Items + f.arrays.getSize(varItem)
+            Call colArrays.add(varItem)
         End If
     Next varItem
 
-    ReDim arr(upBound To items)
+    ReDim arr(upBound To Items)
     For Each varItem In colArrays
         For i = LBound(varItem) To UBound(varItem)
             arr(upBound + i - LBound(varItem)) = varItem(i)
@@ -2652,7 +2615,7 @@ Public Function join2D(ParamArray arrays() As Variant) As Variant
     Dim varArray As Variant
     Dim minColumn As Long
     Dim maxColumn As Long
-    Dim items As Long
+    Dim Items As Long
     Dim i As Long
     Dim j As Long
     Dim upBound As Long:                            upBound = 1
@@ -2660,25 +2623,25 @@ Public Function join2D(ParamArray arrays() As Variant) As Variant
 
     Set colArrays = New VBA.Collection
     For Each varContainer In arrays
-        For Each varArray In F.Collections.Create(varContainer)
-            If F.arrays.countDimensions(varArray) = 2 Then
+        For Each varArray In f.Collections.Create(varContainer)
+            If f.arrays.countDimensions(varArray) = 2 Then
                 maxColumn = Excel.Application.WorksheetFunction.Max(maxColumn, UBound(varArray, 1))
                 If minColumn = 0 Then
                     minColumn = LBound(varArray, 1)
                 Else
                     minColumn = Excel.Application.WorksheetFunction.Min(minColumn, LBound(varArray, 1))
                 End If
-                items = items + F.arrays.getSize(varArray, 2)
-                Call colArrays.Add(varArray)
+                Items = Items + f.arrays.getSize(varArray, 2)
+                Call colArrays.add(varArray)
             End If
         Next varArray
     Next varContainer
 
-    ReDim arr(minColumn To maxColumn, upBound To items)
+    ReDim arr(minColumn To maxColumn, upBound To Items)
     For j = minColumn To maxColumn
         upBound = 1
         For Each varArray In colArrays
-            If F.Numerics.isInRange(j, LBound(varArray, 1), UBound(varArray, 1)) Then
+            If f.Numerics.isInRange(j, LBound(varArray, 1), UBound(varArray, 1)) Then
                 For i = LBound(varArray, 2) To UBound(varArray, 2)
                     arr(j, upBound + i - LBound(varArray)) = varArray(j, i)
                 Next i
@@ -2699,36 +2662,36 @@ Public Function toDictionary(arr As Variant, Optional keyColumn As Long = 1, Opt
     '------------------------------------------------------------------------------------------------------
     Dim dimensions As Long
     Dim i As Long
-    Dim key As Variant
+    Dim Key As Variant
     Dim value As Variant
     '------------------------------------------------------------------------------------------------------
     
-    Set toDictionary = F.Dictionaries.Create(False)
+    Set toDictionary = f.dictionaries.Create(False)
     
-    If F.arrays.isDefined(arr) Then
-        dimensions = F.arrays.countDimensions(arr)
+    If f.arrays.isDefined(arr) Then
+        dimensions = f.arrays.countDimensions(arr)
         If dimensions > 2 Then Call Exceptions.InvalidDimension.raiseWithCustomMessage("Function supports only 1D and 2D arrays")
         For i = LBound(arr, dimensions) To UBound(arr, dimensions)
             Select Case dimensions
                 Case 1
-                    Call F.Variables.assign(key, F.Reflection.modifyValue(arr(i), keyFunction, keyFunctionInvoker))
-                    Call F.Variables.assign(value, arr(i))
+                    Call f.Variables.assign(Key, f.Reflection.modifyValue(arr(i), keyFunction, keyFunctionInvoker))
+                    Call f.Variables.assign(value, arr(i))
                 Case 2
-                    Call F.Variables.assign(key, F.Reflection.modifyValue(arr(keyColumn, i), keyFunction, keyFunctionInvoker))
-                    Call F.Variables.assign(value, arr(valueColumn, i))
+                    Call f.Variables.assign(Key, f.Reflection.modifyValue(arr(keyColumn, i), keyFunction, keyFunctionInvoker))
+                    Call f.Variables.assign(value, arr(valueColumn, i))
             End Select
         
             With toDictionary
-                If Not .exists(key) Then
-                    Call .Add(key, value)
+                If Not .exists(Key) Then
+                    Call .add(Key, value)
                 ElseIf duplicateBehaviour = duplicateBehaviour_Override Then
                     If VBA.IsObject(value) Then
-                        Set .item(key) = value
+                        Set .Item(Key) = value
                     Else
-                        .item(key) = value
+                        .Item(Key) = value
                     End If
                 ElseIf duplicateBehaviour = duplicateBehaviour_ThrowError Then
-                    Call Exceptions.DuplicateKey.raise(F.strings.stringify(key))
+                    Call Exceptions.DuplicateKey.raise(f.strings.stringify(Key))
                 End If
             End With
         Next i
@@ -2749,16 +2712,16 @@ Public Function getDescription(arr As Variant) As String
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
     
-    If F.arrays.isDefined(arr) Then
+    If f.arrays.isDefined(arr) Then
         dimensions = countDimensions(arr)
         ReDim sizes(1 To dimensions)
         
         For i = 1 To dimensions
             sizes(i) = LBound(arr, i) & " To " & UBound(arr, i)
         Next i
-        getDescription = F.strings.format(INITIALIZED_ARRAY_PATTERN, VBA.TypeName(arr), VBA.join(sizes, ", "))
+        getDescription = f.strings.format(INITIALIZED_ARRAY_PATTERN, VBA.TypeName(arr), VBA.join(sizes, ", "))
     Else
-        getDescription = F.strings.format(EMPTY_ARRAY_PATTERN, VBA.TypeName(arr))
+        getDescription = f.strings.format(EMPTY_ARRAY_PATTERN, VBA.TypeName(arr))
     End If
     
 End Function
@@ -2766,19 +2729,19 @@ End Function
 Public Function fromRange(rng As Excel.Range, Optional ifPossibleTo1D As Boolean = True) As Variant
     Dim arr As Variant
     '------------------------------------------------------------------------------------------------------
-    If F.ranges.isValid(rng) Then
+    If f.ranges.isValid(rng) Then
         If rng.Cells.count = 1 Then
             If ifPossibleTo1D Then
                 fromRange = VBA.Array(rng.value)
             Else
                 fromRange = to2D(VBA.Array(rng.value))
             End If
-        ElseIf rng.rows.count = 1 And ifPossibleTo1D Then
+        ElseIf rng.Rows.count = 1 And ifPossibleTo1D Then
             arr = rng
-            fromRange = F.arrays.getRow(arr, 1, False)
-        ElseIf rng.columns.count = 1 And ifPossibleTo1D Then
+            fromRange = f.arrays.getRow(arr, 1, False)
+        ElseIf rng.Columns.count = 1 And ifPossibleTo1D Then
             arr = rng
-            fromRange = F.arrays.getColumn(arr, 1, False)
+            fromRange = f.arrays.getColumn(arr, 1, False)
         Else
             fromRange = rng
         End If
@@ -2787,7 +2750,7 @@ End Function
 
 
 
-Public Function fromParamArray(ParamArray items() As Variant) As Variant
+Public Function fromParamArray(ParamArray Items() As Variant) As Variant
     Dim arr As Variant
     Dim isFirstItemArray As Boolean
     Dim isParamArray As Boolean
@@ -2797,7 +2760,7 @@ Public Function fromParamArray(ParamArray items() As Variant) As Variant
     
     'Only one item should be passed to this function (array of values). However to allow
     'passing ParamArray values directly to this function it has to be defined as ParamArray as well.
-    For Each varItem In items
+    For Each varItem In Items
         arr = varItem
         Exit For
     Next varItem
@@ -2813,7 +2776,7 @@ Public Function fromParamArray(ParamArray items() As Variant) As Variant
         isParamArray = (counter = 1 And isFirstItemArray)
         
         If isParamArray Then
-            For Each varItem In items
+            For Each varItem In Items
                 fromParamArray = varItem(LBound(varItem))
                 Exit For
             Next varItem
@@ -2832,14 +2795,14 @@ Public Function findLastNonEmptyIndex(arr As Variant) As Long
     
     If countDimensions(arr) = 1 Then
         findLastNonEmptyIndex = LBound(arr) - 1
-        For i = UBound(arr) To LBound(arr) - 1
-            If Not F.Variables.isUndefined(arr(i), True, True, True) Then
+        For i = UBound(arr) To LBound(arr) Step -1
+            If Not f.Variables.isUndefined(arr(i), True, True, True) Then
                 findLastNonEmptyIndex = i
                 Exit For
             End If
         Next i
     Else
-        Call Exceptions.InvalidDimension.raiseWithCustomMessage("!D array expected")
+        Call Exceptions.InvalidDimension.raiseWithCustomMessage("1D array expected")
     End If
     
 End Function
@@ -2854,21 +2817,23 @@ Public Function to1D(value As Variant) As Variant
         End Select
     ElseIf VBA.IsObject(value) Then
         If TypeOf value Is Scripting.Dictionary Then
-            to1D = F.cast.toDictionary(value).items
+            to1D = f.cast.toDictionary(value).Items
         ElseIf TypeOf value Is VBA.Collection Then
-            to1D = F.Collections.toArray(F.cast.toCollection(value))
+            to1D = f.Collections.toArray(f.cast.toCollection(value))
         Else
             to1D = VBA.Array(value)
         End If
+    Else
+        to1D = VBA.Array(value)
     End If
 
 End Function
 
 Private Function convertTo1DArray_From2DArray(arr As Variant) As Variant
-    If F.arrays.getSize(arr, 1) = 1 Then
-        convertTo1DArray_From2DArray = F.arrays.getRow(arr, 1, False)
-    ElseIf F.arrays.getSize(arr, 2) = 1 Then
-        convertTo1DArray_From2DArray = F.arrays.getColumn(arr, 1, False)
+    If f.arrays.getSize(arr, 1) = 1 Then
+        convertTo1DArray_From2DArray = f.arrays.getRow(arr, 1, False)
+    ElseIf f.arrays.getSize(arr, 2) = 1 Then
+        convertTo1DArray_From2DArray = f.arrays.getColumn(arr, 1, False)
     Else
         Stop
         'TODO: Return array of arrays.
@@ -2882,28 +2847,28 @@ Public Function hasDuplicates(arr As Variant, Optional column As Long) As Boolea
     Dim value As Variant
     '------------------------------------------------------------------------------------------------------
     
-    Set dict = F.Dictionaries.Create(False)
-    dimensions = F.arrays.countDimensions(arr)
+    Set dict = f.dictionaries.Create(False)
+    dimensions = f.arrays.countDimensions(arr)
     
     If dimensions < 1 Then
         '[arr] not declared
     ElseIf dimensions > 2 Then
         'array with more than 2 dimensions are not supported
-    ElseIf Not F.Math.isInRange(column, LBound(arr, 1), True, UBound(arr, 1), True) Then
+    ElseIf Not f.Math.isInRange(column, LBound(arr, 1), True, UBound(arr, 1), True) Then
         'column index out of bound
     Else
         For i = LBound(arr, dimensions) To UBound(arr, dimensions)
             If dimensions = 1 Then
-                Call F.Variables.assign(value, arr(i))
+                Call f.Variables.assign(value, arr(i))
             Else
-                Call F.Variables.assign(value, arr(column, i))
+                Call f.Variables.assign(value, arr(column, i))
             End If
             
             If dict.exists(value) Then
                 hasDuplicates = True
                 Exit For
             Else
-                Call dict.Add(value, vbEmpty)
+                Call dict.add(value, vbEmpty)
             End If
             
         Next i
@@ -2925,19 +2890,19 @@ Public Function flatArray(arr As Variant) As Variant
     
     If Not VBA.IsArray(arr) Then
         flatArray = VBA.Array(arr)
-    ElseIf Not F.arrays.isDefined(arr) Then
+    ElseIf Not f.arrays.isDefined(arr) Then
         flatArray = VBA.Array()
-    ElseIf F.arrays.countDimensions(arr) > 1 Then
+    ElseIf f.arrays.countDimensions(arr) > 1 Then
         flatArray = VBA.Array(arr)
     Else
         Set col = New VBA.Collection
         For i = LBound(arr) To UBound(arr)
-            Call col.Add(flatArray(arr(i)))
+            Call col.add(flatArray(arr(i)))
         Next i
         
         'Count total items in all subarrays
         For Each subarr In col
-            size = size + F.arrays.getSize(subarr)
+            size = size + f.arrays.getSize(subarr)
         Next subarr
         
         'Create final array
@@ -2958,46 +2923,59 @@ End Function
 
 Public Function getColumnsMap(arr As Variant, Optional columnsInSecondDimension As Boolean = True) As Scripting.Dictionary
     Dim i As Long
-    Dim header As String
+    Dim Header As String
     Dim rowsDimension As Long:              rowsDimension = VBA.IIf(columnsInSecondDimension, 1, 2)
     Dim columnsDimension As Long:           columnsDimension = VBA.IIf(columnsInSecondDimension, 2, 1)
     '------------------------------------------------------------------------------------------------------
     
     If Not VBA.IsArray(arr) Then Call Exceptions.NotArray.raise
-    If F.arrays.countDimensions(arr) <> 2 Then Call Exceptions.InvalidDimension.raise
+    If f.arrays.countDimensions(arr) <> 2 Then Call Exceptions.InvalidDimension.raise
     
-    Set getColumnsMap = F.Dictionaries.Create(False)
+    Set getColumnsMap = f.dictionaries.Create(False)
     
     For i = LBound(arr, columnsDimension) To UBound(arr, columnsDimension)
         If columnsInSecondDimension Then
-            header = arr(LBound(arr, columnsDimension), i)
+            Header = arr(LBound(arr, columnsDimension), i)
         Else
-            header = arr(i, LBound(arr, columnsDimension))
+            Header = arr(i, LBound(arr, columnsDimension))
         End If
-        Call F.Dictionaries.addItem(getColumnsMap, header, i, duplicateBehaviour_Skip)
+        Call f.dictionaries.addItem(getColumnsMap, Header, i, duplicateBehaviour_Skip)
     Next i
     
 End Function
 
 
 
-Public Function getColumnIndex(arr As Variant, header As Variant, _
+Public Function getColumnIndex(arr As Variant, Header As Variant, _
                                                     Optional absoluteIndex As Boolean = False, _
-                                                    Optional searchOnlyHeader As Boolean = True) As Long
+                                                    Optional searchOnlyHeader As Boolean = True, _
+                                                    Optional searchAsRegex As Boolean = False) As Long
     Dim headers As Variant
     Dim i As Long
     Dim j As Long
     Dim value As Variant
+    Dim match As Boolean
+    Dim objRegex As Object
     '------------------------------------------------------------------------------------------------------
     
+    If searchAsRegex Then Set objRegex = f.regex.Create(VBA.CStr(Header))
+    
     If searchOnlyHeader Then
-        headers = F.arrays.getColumn(arr, 1, False)
-        getColumnIndex = getItemIndex(headers, header)
+        headers = f.arrays.getColumn(arr, 1, False)
+        getColumnIndex = getItemIndex(headers, Header)
     Else
         For i = LBound(arr, 1) To UBound(arr, 1)
             For j = LBound(arr, 2) To UBound(arr, 2)
                 value = arr(i, j)
-                If value = header Then
+                If VBA.IsError(value) Then
+                    'Error from Excel cell - skip
+                ElseIf searchAsRegex Then
+                    match = objRegex.test(value)
+                Else
+                    match = (value = Header)
+                End If
+                
+                If match Then
                     getColumnIndex = i
                     Exit For
                 End If
@@ -3011,21 +2989,32 @@ End Function
 
 Public Function getRowIndex(arr As Variant, label As Variant, _
                             Optional absoluteIndex As Boolean = False, _
-                            Optional searchOnlyFirstColumn As Boolean = True) As Long
+                            Optional searchOnlyFirstColumn As Boolean = True, _
+                            Optional searchAsRegex As Boolean = False) As Long
     Dim labels As Variant
     Dim i As Long
     Dim j As Long
     Dim value As Variant
+    Dim match As Boolean
+    Dim objRegex As Object
     '------------------------------------------------------------------------------------------------------
     
+    If searchAsRegex Then Set objRegex = f.regex.Create(VBA.CStr(label))
+    
     If searchOnlyFirstColumn Then
-        labels = F.arrays.getRow(arr, 1, True)
+        labels = f.arrays.getRow(arr, 1, True)
         getRowIndex = getItemIndex(labels, label)
     Else
         For i = LBound(arr, 1) To UBound(arr, 1)
             For j = LBound(arr, 2) To UBound(arr, 2)
                 value = arr(i, j)
-                If value = label Then
+                If searchAsRegex Then
+                    match = objRegex.test(value)
+                Else
+                    match = (value = label)
+                End If
+                
+                If match Then
                     getRowIndex = j
                     Exit For
                 End If
@@ -3034,4 +3023,94 @@ Public Function getRowIndex(arr As Variant, label As Variant, _
         Next i
     End If
     
+End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'***** WITHOUT UNIT TESTS *****
+
+
+Public Function slice(arr As Variant, startIndex As Long, length As Long, Optional ByVal dimensions As Long = 0) As Variant
+    If dimensions = 0 Then dimensions = f.arrays.countDimensions(arr)
+    If dimensions = 1 Then
+        slice = slice_1D(arr, startIndex, length)
+    ElseIf dimensions = 2 Then
+        slice = slice_2D(arr, startIndex, length)
+    End If
+End Function
+
+Private Function slice_1D(arr As Variant, startIndex As Long, length As Long) As Variant
+    Dim i As Long
+    Dim j As Long
+    Dim result() As Variant
+    '------------------------------------------------------------------------------------------------------
+    ReDim result(1 To length)
+    For i = 1 To length
+        Call f.Variables.assign(result(i), arr(i + startIndex - 1))
+    Next i
+    slice_1D = result
+End Function
+
+Private Function slice_2D(arr As Variant, startIndex As Long, length As Long) As Variant
+    Dim i As Long
+    Dim j As Long
+    Dim result() As Variant
+    '------------------------------------------------------------------------------------------------------
+    ReDim result(LBound(arr, 1) To UBound(arr, 1), 1 To length)
+    For i = 1 To length
+        For j = LBound(arr, 1) To UBound(arr, 1)
+            Call f.Variables.assign(result(j, i), arr(j, i + startIndex - 1))
+        Next j
+    Next i
+    slice_2D = result
+End Function
+
+
+
+Public Function find2DArrayFieldByRegex(arr As Variant, regexPattern As String, Optional startFromEnd As Boolean = False) As Variant
+    Dim objRegex As Object
+    '------------------------------------------------------------------------------------------------------
+    Dim i As Long
+    Dim j As Long
+    Dim valueFound As Boolean
+    '------------------------------------------------------------------------------------------------------
+    
+    If countDimensions(arr) = 2 Then
+        Set objRegex = f.regex.Create(regexPattern)
+        If startFromEnd Then
+            For i = UBound(arr, 1) To LBound(arr, 1) Step -1
+                For j = UBound(arr, 2) To LBound(arr, 2) Step -1
+                    If objRegex.test(VBA.CStr(arr(i, j))) Then
+                        find2DArrayFieldByRegex = arr(i, j)
+                        valueFound = True
+                        Exit For
+                    End If
+                Next j
+                If valueFound Then Exit For
+            Next i
+        Else
+            For i = LBound(arr, 1) To UBound(arr, 1) Step -1
+                For j = LBound(arr, 2) To UBound(arr, 2) Step -1
+                    If objRegex.test(VBA.CStr(arr(i, j))) Then
+                        find2DArrayFieldByRegex = arr(i, j)
+                        valueFound = True
+                        Exit For
+                    End If
+                Next j
+                If valueFound Then Exit For
+            Next i
+        End If
+        
+    End If
 End Function

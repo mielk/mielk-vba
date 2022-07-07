@@ -16,8 +16,8 @@ Private Const CLASS_NAME As String = "WDefaultItemsProcessorViewer"
 '[Control label IDs & tags] -------------------------------------------------------------------------------
 Private Const PROGRESS_FRAME_ID As String = "frmProgress"
 Private Const ITEMS_LIST_FRAME_ID As String = "frmList"
-Private Const OK_BUTTTON_CAPTION_TAG As String = "Save"
-Private Const CANCEL_BUTTTON_CAPTION_TAG As String = "Cancel"
+Private Const OK_BUTTON_CAPTION_TAG As String = "Save"
+Private Const CANCEL_BUTTON_CAPTION_TAG As String = "Cancel"
 Private Const DEFAULT_WINDOW_TITLE_TAG As String = "ProcessingItems"
 Private Const DEFAULT_MAIN_PROGRESS_BAR_CAPTION_TAG As String = "ProcessingItems.Controls.MainProgressBarHeader"
 Private Const DEFAULT_DETAIL_PROGRESS_BAR_CAPTION_TAG As String = "ProcessingItems.Controls.DetailProgressBarHeader"
@@ -38,6 +38,7 @@ Private WithEvents pProcessor As ItemsProcessor
 Attribute pProcessor.VB_VarHelpID = -1
 '[UI components] ------------------------------------------------------------------------------------------
 Private WithEvents pWindow As MielkUI.WTemplate
+Attribute pWindow.VB_VarHelpID = -1
 Private pProgressPanel As MielkUI.XProgressPanel
 Private WithEvents pSummaryPanel As XProcessSummaryPanel
 Attribute pSummaryPanel.VB_VarHelpID = -1
@@ -139,6 +140,11 @@ Public Function setButtonsCaptions(Optional okButtonCaption As String, Optional 
     pCancelButtonCaption = cancelButtonCaption
 End Function
 
+Public Function setMainProgressPanelHeader(value As String) As WDefaultItemsProcessorViewer
+    Set setMainProgressPanelHeader = Me
+    pMainProgressBarCaption = value
+End Function
+
 
 
 
@@ -157,13 +163,13 @@ End Function
 
 '[DEFINING STATUSES]
 Private Function createDefaultStatusDictionary() As Scripting.Dictionary
-    Set createDefaultStatusDictionary = F.Dictionaries.Create(False)
+    Set createDefaultStatusDictionary = F.dictionaries.Create(False)
     With createDefaultStatusDictionary
-        Call .Add(ItemProcessStatus_Before, F.Dictionaries.createWithItems(False, _
+        Call .Add(ItemProcessStatus_Before, F.dictionaries.createWithItems(False, _
                         KeyValue(TAG_MAIN_BACKGROUND, 14079702), _
                         KeyValue(TAG_ICON_STATUS, UI.Icons.getQuestionMarkIcon) _
         ))
-        Call .Add(ItemProcessStatus_Right, F.Dictionaries.createWithItems(False, _
+        Call .Add(ItemProcessStatus_Right, F.dictionaries.createWithItems(False, _
                         KeyValue(TAG_MAIN_BACKGROUND, 12648384), _
                         KeyValue(TAG_DETAILS_BACKGROUND, 14221272), _
                         KeyValue(TAG_ICON_STATUS, UI.Icons.getSuccessIcon), _
@@ -173,7 +179,7 @@ Private Function createDefaultStatusDictionary() As Scripting.Dictionary
                         KeyValue(TAG_ICON_REPROCESS, UI.Icons.getRefreshNormalImage), _
                         KeyValue(TAG_ICON_REMOVE, UI.Icons.getRemoveItemNormalImage) _
         ))
-        Call .Add(ItemProcessStatus_Warning, F.Dictionaries.createWithItems(False, _
+        Call .Add(ItemProcessStatus_Warning, F.dictionaries.createWithItems(False, _
                         KeyValue(TAG_MAIN_BACKGROUND, 12641023), _
                         KeyValue(TAG_DETAILS_BACKGROUND, 14280943), _
                         KeyValue(TAG_ICON_STATUS, UI.Icons.getWarningIcon), _
@@ -183,7 +189,7 @@ Private Function createDefaultStatusDictionary() As Scripting.Dictionary
                         KeyValue(TAG_ICON_REPROCESS, UI.Icons.getRefreshWarningImage), _
                         KeyValue(TAG_ICON_REMOVE, UI.Icons.getRemoveItemWarningImage) _
         ))
-        Call .Add(ItemProcessStatus_Error, F.Dictionaries.createWithItems(False, _
+        Call .Add(ItemProcessStatus_Error, F.dictionaries.createWithItems(False, _
                         KeyValue(TAG_MAIN_BACKGROUND, 12632319), _
                         KeyValue(TAG_DETAILS_BACKGROUND, 14277103), _
                         KeyValue(TAG_ICON_STATUS, UI.Icons.getErrorIcon), _
@@ -203,13 +209,13 @@ End Function
 
 Public Function addStatus(value As Long, settings As Scripting.Dictionary) As WDefaultItemsProcessorViewer
     Set addStatus = Me
-    If pStatusesDict Is Nothing Then Set pStatusesDict = F.Dictionaries.Create(False)
-    Call F.Dictionaries.addItem(pStatusesDict, value, settings)
+    If pStatusesDict Is Nothing Then Set pStatusesDict = F.dictionaries.Create(False)
+    Call F.dictionaries.addItem(pStatusesDict, value, settings)
 End Function
 
 
 Public Function getStatusSettings(value As Long) As Scripting.Dictionary
-    Set getStatusSettings = F.Dictionaries.GetObject(pStatusesDict, value)
+    Set getStatusSettings = F.dictionaries.GetObject(pStatusesDict, value)
 End Function
 
 Public Function getStatusesDictionary() As Scripting.Dictionary
@@ -238,6 +244,7 @@ Private Sub createUserForm()
         Call .setHasCancelButton(pHasCancelButton)
         Call .setOkCaption(pOkButtonCaption)
         Call .setCancelCaption(pCancelButtonCaption)
+        Call .setWarningsForUnsavedData(False)
         Call .render
         Call .setValidation(F.Create.ValidationObject(False))
     End With
@@ -331,7 +338,7 @@ End Sub
 
 '[PROCESSING ITEMS]
 Private Sub pProcessor_BeforeProcessingItem(item As IProcessItem)
-    Call pProgressPanel.startNewMainItem(item.getName)
+    Call pProgressPanel.startNewMainItem(item.getCaption)
 End Sub
 
 Private Sub pProcessor_AfterFinish()
@@ -418,7 +425,7 @@ Private Sub cancelProcessing()
     pCancelledByUser = True
     Call pWindow.hide
     RaiseEvent Cancelled
-    Call pProcessor.cancel
+    Call pProcessor.Cancel
 End Sub
 
 Private Sub confirmProcessing()

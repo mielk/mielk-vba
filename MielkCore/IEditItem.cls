@@ -20,11 +20,26 @@ End Function
 Public Function getValue(valueKey As String) As Variant
 End Function
 
+Public Function getId() As Long
+End Function
+
+Public Function getName() As String
+End Function
+
 Public Function getValidation(validationFunction As String, Optional validationParams As Scripting.Dictionary) As ValidationObject
 End Function
 
-Public Function getBasicPropertiesDictionary(Optional includeId As Boolean = False) As Scripting.Dictionary
+Public Function getObjectsAffected() As VBA.Collection
 End Function
 
 Public Sub updateValue(valueKey As String, value As Variant)
+End Sub
+
+Public Sub runAction(actionName As String, Optional params As Scripting.Dictionary)
+End Sub
+
+Public Function edit(Optional params As Scripting.Dictionary) As ValidationObject
+End Function
+
+Public Sub delete()
 End Sub

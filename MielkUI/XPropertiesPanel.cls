@@ -6,7 +6,7 @@ Attribute VB_Name = "XPropertiesPanel"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
-Attribute VB_Exposed = False
+Attribute VB_Exposed = True
 Option Explicit
 
 Implements IPanel
@@ -44,15 +44,19 @@ Private pMaxWidth As Single
 Private pHeight As Single
 Private pMinHeight As Single
 Private pMaxHeight As Single
+Private pHorizontalAlignment As XlHAlign
 Private pHorizontalPadding As Single
 Private pVerticalPadding As Single
 '[State] --------------------------------------------------------------------------------------------------
 Private pName As String
 Private pIndex As Long
 Private pIsRendered As Boolean
+Private pIsVisible As Boolean
 Private pValidation As ValidationObject
 '----------------------------------------------------------------------------------------------------------
+Event AfterLayoutUpdate()
 Event AfterChange()
+Event AfterLineChange(line As xxPropertyLine)
 Event AfterValidationChange(validation As ValidationObject)
 '----------------------------------------------------------------------------------------------------------
 
@@ -61,11 +65,12 @@ Event AfterValidationChange(validation As ValidationObject)
 
 
 Private Sub Class_Initialize()
-    Set pLines = F.Dictionaries.Create(False)
+    Set pLines = F.dictionaries.Create(False)
     pLabelWidth = DEFAULT_LABEL_WIDTH
     pValueWidth = DEFAULT_VALUE_WIDTH
     pLabelValueSpace = DEFAULT_LABEL_VALUE_SPACE
     pLineHeight = DEFAULT_LINE_HEIGHT
+    pIsVisible = True
     
     '[Size]
     pWidth = -1
@@ -140,6 +145,16 @@ Public Function setIndex(value As Long) As XPropertiesPanel
     pIndex = value
 End Function
 
+Public Function setVerticalPadding(value As Single) As XPropertiesPanel
+    Set setVerticalPadding = Me
+    pVerticalPadding = value
+End Function
+
+Public Function setHorizontalAlignment(value As XlHAlign) As XPropertiesPanel
+    Set setHorizontalAlignment = Me
+    pHorizontalAlignment = value
+End Function
+
 Public Function setUiProperty(prop As UIProp, value As Variant) As XPropertiesPanel
     Set setUiProperty = Me
     Select Case prop.getId
@@ -166,6 +181,26 @@ Public Function setUiProperty(prop As UIProp, value As Variant) As XPropertiesPa
     
 End Function
 
+Public Function setVisibility(value As Boolean) As XPropertiesPanel
+    Dim key As Variant
+    Dim line As xxPropertyLine
+    '------------------------------------------------------------------------------------------------------
+    
+    Set setVisibility = Me
+    pIsVisible = value
+    
+    If UI.Forms.isControlValid(pInnerFrame) Then
+        pInnerFrame.visible = pIsVisible
+    End If
+    
+    For Each key In pLines.keys
+        Set line = pLines.item(key)
+        Call line.setValidationLabelVisibility(value)
+    Next key
+    
+    
+    
+End Function
 
 
 '[GETTERS]
@@ -230,7 +265,17 @@ Public Function getUiProperty(prop As UIProp) As Variant
     End If
 End Function
 
+Public Function getLine(key As String) As xxPropertyLine
+    Set getLine = F.dictionaries.getObject(pLines, key)
+End Function
 
+Public Function getVisibility() As Boolean
+    getVisibility = pIsVisible
+End Function
+
+Public Function getHorizontalAlignment() As XlHAlign
+    getHorizontalAlignment = pHorizontalAlignment
+End Function
 
 
 '[RENDERING]
@@ -242,10 +287,11 @@ Public Sub render()
         Call updatePosition
         Call updateValidation
         pIsRendered = True
+        RaiseEvent AfterValidationChange(pValidation)
     End If
 End Sub
 
-Public Sub insertInnerFrame()
+Private Sub insertInnerFrame()
     Set pInnerFrame = pParentFrame.controls.Add(CREATE_FRAME_ID)
     With pInnerFrame
         .borderStyle = fmBorderStyleNone
@@ -253,12 +299,12 @@ Public Sub insertInnerFrame()
     End With
 End Sub
 
-Public Sub insertLines()
+Private Sub insertLines()
     Dim dict As Scripting.Dictionary
     Dim line As xxPropertyLine
     '----------------------------------------------------------------------------------------------------------
     
-    Set pLines = F.Dictionaries.Create(False)
+    Set pLines = F.dictionaries.Create(False)
     For Each dict In pLinesDefinitions
         Set line = UI.Create.PropertyLine(Me, dict)
         Call pLines.Add(line.getProperty, line)
@@ -289,7 +335,7 @@ Private Sub updateBorderVariable(ByRef borderLabel As MSForms.label, color As Lo
     With borderLabel
         .borderStyle = fmBorderStyleNone
         .BackStyle = fmBackStyleOpaque
-        .BackColor = color
+        .backColor = color
         .height = PIXEL_SIZE
     End With
 End Sub
@@ -317,7 +363,7 @@ End Sub
 
 
 
-Private Sub arrangeLines()
+Friend Sub arrangeLines()
     Dim key As Variant
     Dim line As xxPropertyLine
     Dim top As Single:              top = pVerticalPadding
@@ -325,19 +371,26 @@ Private Sub arrangeLines()
     '----------------------------------------------------------------------------------------------------------
     
     If F.Collections.isNonEmptyCollection(pLinesDefinitions) Then
-        For Each key In pLines.Keys
-            Set line = pLines.Keys
-            Call line.Move(pHorizontalPadding, top)
-            right = line.getRight
-            If right > pRight Then pRight = right
-            top = top + pLineHeight
+        For Each key In pLines.keys
+            Set line = pLines.item(key)
+            If line.isVisible Then
+                Call line.move(pHorizontalPadding, top)
+                right = line.getRight
+                If right > pRight Then pRight = right
+                top = top + pLineHeight
+            Else
+                Call line.move(pHorizontalPadding, 0 - pLineHeight)
+            End If
         Next key
         pBottom = top
     End If
     
     Call updateSize
-    Call updateScrollBars
-    
+    Call updateValidationLabelsPosition
+    If pIsRendered Then
+        RaiseEvent AfterLayoutUpdate
+        If Not pListener Is Nothing Then Call pListener.catchEvent(Me, EVENT_LAYOUT_CHANGE)
+    End If
     
 End Sub
 
@@ -353,7 +406,7 @@ Private Sub updateSize()
             .width = pWidth
         ElseIf pMinWidth > 0 And lastPoint.x < pMinWidth Then
             .width = pMinWidth
-        ElseIf pMaxWidth > 0 And lastPoint.x < pMaxWidth Then
+        ElseIf pMaxWidth > 0 And lastPoint.x > pMaxWidth Then
             .width = pMaxWidth
         Else
             .width = lastPoint.x + pHorizontalPadding
@@ -364,10 +417,10 @@ Private Sub updateSize()
             .height = pHeight
         ElseIf pMinHeight > 0 And lastPoint.y < pMinHeight Then
             .height = pMinHeight
-        ElseIf pMaxHeight > 0 And lastPoint.y < pMaxHeight Then
+        ElseIf pMaxHeight > 0 And lastPoint.y > pMaxHeight Then
             .height = pMaxHeight
         Else
-            .height = lastPoint.y + pVerticalPadding
+            .height = lastPoint.y
         End If
         
     End With
@@ -407,19 +460,57 @@ Private Sub updatePosition()
     If UI.Forms.isControlValid(pInnerFrame) Then
         With pInnerFrame
             .left = pLeft
-            .top = pTop
+            If pTop <> .top Then
+                .top = pTop
+                    Call updateValidationLabelsPosition
+            End If
         End With
     End If
 End Sub
 
+Private Sub updateValidationLabelsPosition()
+    Dim line As xxPropertyLine
+    Dim key As Variant
+    Dim validationLabel As UIValidationLabel
+    '------------------------------------------------------------------------------------------------------
+    
+    For Each key In pLines.keys
+        Set line = pLines.item(key)
+        Set validationLabel = line.getValidationLabel
+        If Not validationLabel Is Nothing Then
+            If line.isVisible Then
+                Call validationLabel.setTop(pTop + line.getTop)
+            Else
+                Call validationLabel.setTop(line.getTop)
+            End If
+        End If
+    Next key
+    
+End Sub
 
-'[VALIDATION]
-Public Sub updateValidation()
+Public Sub updateLinesDisplayValues()
     Dim key As Variant
     Dim line As xxPropertyLine
-    Dim status As Boolean
+    '------------------------------------------------------------------------------------------------------
+    
+    If F.dictionaries.isNonEmptyDictionary(pLines) Then
+        For Each key In pLines.keys
+            Set line = pLines.item(key)
+            Call line.updateDisplayValue
+        Next key
+    End If
+    
+End Sub
+
+
+'[VALIDATION]
+Public Sub updateValidation(Optional checkLinesValidations As Boolean = False)
+    Dim key As Variant
+    Dim line As xxPropertyLine
+    Dim status As Variant
     Dim previousStatus As Boolean
     Dim validation As ValidationObject
+    Dim hasValidationWarnings As Boolean
     Dim hasValidationErrors As Boolean
     '----------------------------------------------------------------------------------------------------------
     
@@ -428,21 +519,26 @@ Public Sub updateValidation()
     End If
     
     status = True
-    For Each key In pLines.Keys
+    For Each key In pLines.keys
         Set line = pLines.item(key)
+        If checkLinesValidations Then Call line.validate
         Set validation = line.getValidation
         If validation Is Nothing Then
             hasValidationErrors = True
-        ElseIf Not validation.getStatus Then
+        ElseIf validation.getStatus = WARNING_CODE Then
+            hasValidationWarnings = True
+        ElseIf validation.getStatus = False Then
             hasValidationErrors = True
         End If
         
         If hasValidationErrors Then
             status = False
             Exit For
+        ElseIf hasValidationWarnings Then
+            status = WARNING_CODE
         End If
-        
     Next key
+    
     Set pValidation = F.Create.ValidationObject(status)
     
     If previousStatus <> status Then
@@ -457,13 +553,13 @@ Public Function getValidation() As ValidationObject
     Set getValidation = pValidation
 End Function
 
-Public Sub validateLineByProperty(propertyName As String)
+Public Sub validateLineByProperty(propertyName As String, Optional isLinkedValidation As Boolean = False)
     Dim line As xxPropertyLine
     '----------------------------------------------------------------------------------------------------------
     
-    Set line = F.Dictionaries.getObject(pLines, propertyName)
+    Set line = F.dictionaries.getObject(pLines, propertyName)
     If Not line Is Nothing Then
-        Call line.validate
+        Call line.validate(isLinkedValidation:=isLinkedValidation)
     End If
     
 End Sub
@@ -475,18 +571,23 @@ End Sub
 
 
 Public Sub setFocus()
+    Dim key As Variant
     Dim line As xxPropertyLine
     '----------------------------------------------------------------------------------------------------------
     
-    On Error Resume Next
-    Set line = pLines.items(0)
-    If Not DEV_MODE Then On Error GoTo ErrHandler
+    For Each key In pLines.keys
+        Set line = pLines.items(0)
+        If Not line Is Nothing Then
+            If Not line.isReadOnly Then
+                Call line.setFocus
+                Exit For
+            End If
+        End If
+    Next key
     
-    If Not line Is Nothing Then
-        Call line.setFocus
-    End If
-    
-    
+ExitPoint:
+    Exit Sub
+
 ErrHandler:
     Stop
     
@@ -498,6 +599,10 @@ Public Sub triggerConfirm()
     If pValidation.getStatus Then
         Call pWindow.triggerConfirm
     End If
+End Sub
+
+Public Sub triggerChangeCallbackMethod(line As xxPropertyLine)
+    RaiseEvent AfterLineChange(line)
 End Sub
 
 
@@ -531,7 +636,7 @@ Private Sub IPanel_render()
     Call render
 End Sub
 
-Private Function IPanel_setParentFrame(value As MSForms.IOptionFrame) As IPanel
+Private Function IPanel_setParentFrame(value As MSForms.frame) As IPanel
     Set IPanel_setParentFrame = setParentFrame(value)
 End Function
 
@@ -561,4 +666,12 @@ End Function
 
 Private Function IPanel_getValue() As Variant
     Set IPanel_getValue = pEditItem
+End Function
+
+Private Function IPanel_setWindow(value As WTemplate) As IPanel
+    Set IPanel_setWindow = setWindow(value)
+End Function
+
+Private Function IPanel_isVisible() As Boolean
+    IPanel_isVisible = getVisibility
 End Function

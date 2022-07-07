@@ -42,26 +42,28 @@ Private Function getComponentExtension(component As VBIDE.VBComponent) As String
     End Select
 End Function
 
-
+Public Function getProcTypes() As Variant
+    getProcTypes = VBA.Array(vbext_pk_Proc, vbext_pk_Let, vbext_pk_Get, vbext_pk_Set)
+End Function
 
 
 '[CHECKING DATA TYPE]
 Public Function isVbProject(value As Variant) As Boolean
     Const VB_PROJECT_CLASS_NAME As String = "VbProject"
     '------------------------------------------------------------------------------------------------------
-    isVbProject = F.strings.compareStrings(VBA.TypeName(value), VB_PROJECT_CLASS_NAME)
+    isVbProject = f.strings.compareStrings(VBA.TypeName(value), VB_PROJECT_CLASS_NAME)
 End Function
 
 Public Function isVbComponent(value As Variant) As Boolean
     Const VB_COMPONENT_CLASS_NAME As String = "VbComponent"
     '------------------------------------------------------------------------------------------------------
-    isVbComponent = F.strings.compareStrings(VBA.TypeName(value), VB_COMPONENT_CLASS_NAME)
+    isVbComponent = f.strings.compareStrings(VBA.TypeName(value), VB_COMPONENT_CLASS_NAME)
 End Function
 
 Public Function isVbCodeModule(value As Variant) As Boolean
     Const VB_CODE_MODULE_CLASS_NAME As String = "CodeModule"
     '------------------------------------------------------------------------------------------------------
-    isVbCodeModule = F.strings.compareStrings(VBA.TypeName(value), VB_CODE_MODULE_CLASS_NAME)
+    isVbCodeModule = f.strings.compareStrings(VBA.TypeName(value), VB_CODE_MODULE_CLASS_NAME)
 End Function
 
 
@@ -69,14 +71,19 @@ End Function
 
 '[PROJECTS]
 
-Public Function getVbProjectByName(name As String) As Object 'VBIDE.VBProject
+Public Function getVbProjectByName(name As String, Optional ByVal instance As Excel.Application) As Object 'VBIDE.VBProject
     Dim wkb As Excel.Workbook
     '------------------------------------------------------------------------------------------------------
+    
+    If instance Is Nothing Then Set instance = Excel.Application
+    
     On Error Resume Next
-    Set wkb = Excel.Workbooks(name)
+    Set wkb = instance.Workbooks(name)
+    
     If Not wkb Is Nothing Then
         Set getVbProjectByName = getVbProject(wkb)
     End If
+    
 End Function
 
 Public Function getVbProject(Optional project As Variant) As Object 'VBIDE.VBProject
@@ -98,7 +105,7 @@ Public Function getVbComponentsDictionary(project As Variant) As Scripting.Dicti
     Set projectObject = getVbProject(project)
     If Not projectObject Is Nothing Then
         For Each component In projectObject.VBComponents
-            Call getVbComponentsDictionary.Add(component.name, component)
+            Call getVbComponentsDictionary.add(component.name, component)
         Next component
     End If
         
@@ -110,7 +117,7 @@ Public Function getVbComponent(project As Variant, componentName As String) As O
     
     If Not project Is Nothing Then
         For Each component In project.VBComponents
-            If F.strings.compareStrings(componentName, component.name) Then
+            If f.strings.compareStrings(componentName, component.name) Then
                 Set getVbComponent = component
                 Exit For
             End If
@@ -180,7 +187,7 @@ Public Function getCodeModuleMethods(cm As Object) As Scripting.Dictionary
                     End If
                 Next varProcType
                 
-                Call F.Dictionaries.addItem(getCodeModuleMethods, methodName, methodBody, duplicateBehaviour_Skip)
+                Call f.dictionaries.addItem(getCodeModuleMethods, methodName, methodBody, duplicateBehaviour_Skip)
                 
                 If line = previousLine Then line = line + 1
                 
@@ -193,41 +200,34 @@ End Function
 
 Public Function getProjectMethods(book As Excel.Workbook) As Scripting.Dictionary
     Dim project As Object
-    Dim key As Variant
+    Dim Key As Variant
     '------------------------------------------------------------------------------------------------------
     
     Set project = getVbProject(book)
     If Not project Is Nothing Then
         Set getProjectMethods = getVbComponentsDictionary(project)
-        For Each key In getProjectMethods.Keys
-            Set getProjectMethods.item(key) = getCodeModuleMethods(getProjectMethods.item(key))
-        Next key
+        For Each Key In getProjectMethods.Keys
+            Set getProjectMethods.Item(Key) = getCodeModuleMethods(getProjectMethods.Item(Key))
+        Next Key
     End If
     
 End Function
-
-
-Sub test()
-    Call exportModules(Workbooks("mielk-core.xlam"), "C:\Users\Tomek\Desktop\vba")
-    Call exportModules(Workbooks("mielk-db.xlam"), "C:\Users\Tomek\Desktop\vba")
-    Call exportModules(Workbooks("mielk-ui.xlam"), "C:\Users\Tomek\Desktop\vba")
-End Sub
 
 Public Sub exportModules(book As Excel.Workbook, folderPath As String)
     Dim project As VBIDE.vbProject
     Dim component As VBIDE.VBComponent
     '------------------------------------------------------------------------------------------------------
     Dim subfolder As Scripting.folder
-    Dim fileName As String
+    Dim FileName As String
     '------------------------------------------------------------------------------------------------------
     
     Set project = getVbProject(book)
     If Not project Is Nothing Then
-        Set subfolder = F.files.createFolder(F.files.concatenatePath(folderPath, project.name))
+        Set subfolder = f.files.createFolder(f.files.concatenatePath(folderPath, project.name))
         For Each component In project.VBComponents
             If isComponentExportable(component) Then
-                fileName = F.files.concatenatePath(subfolder.path, component.name & getComponentExtension(component))
-                Call component.Export(fileName)
+                FileName = f.files.concatenatePath(subfolder.path, component.name & getComponentExtension(component))
+                Call component.Export(FileName)
             End If
         Next component
     End If

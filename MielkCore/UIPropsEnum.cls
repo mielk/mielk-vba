@@ -82,6 +82,8 @@ Private Const PROP_SCROLL_BARS As String = "scrollBars"
 Private Const PROP_INDENT_LEVEL As String = "indent"
 Private Const PROP_WRAP_TEXT As String = "wrapText"
 Private Const PROP_AUTO_FIT As String = "autoFit"
+Private Const PROP_ROW_AUTO_FIT As String = "rowAutoFit"
+Private Const PROP_COLUMN_AUTO_FIT As String = "columnAutoFit"
 Private Const PROP_NUMBER_FORMAT As String = "numberFormat"
 
 '----------------------------------------------------------------------------------------------------------
@@ -100,9 +102,9 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub initializeProps()
-    Set pPropsByAliases = F.Dictionaries.Create(False)
-    Set pPropsByName = F.Dictionaries.Create(False)
-    Set pPropsById = F.Dictionaries.Create(False)
+    Set pPropsByAliases = f.dictionaries.Create(False)
+    Set pPropsByName = f.dictionaries.Create(False)
+    Set pPropsById = f.dictionaries.Create(False)
     '[Size]
     Call addProp(1, PROP_WIDTH, False, "width", "size.width").setIsSizeProperty(True)
     Call addProp(2, PROP_MIN_WIDTH, False, "min-width", "minWidth", "size.minWidth", "size.width.min").setIsSizeProperty(True)
@@ -110,7 +112,7 @@ Private Sub initializeProps()
     Call addProp(4, PROP_HEIGHT, False, "height", "size.height").setIsSizeProperty(True)
     Call addProp(5, PROP_MIN_HEIGHT, False, "min-height", "minHeight", "size.minHeight", "size.height.min").setIsSizeProperty(True)
     Call addProp(6, PROP_MAX_HEIGHT, False, "max-height", "maxHeight", "size.maxHeight", "size.height.max").setIsSizeProperty(True)
-    '[Positions
+    '[Positions]
     Call addProp(7, PROP_TOP, False, "top", "position.top").setIsPositionProperty(True)
     Call addProp(8, PROP_RIGHT, False, "right", "position.right").setIsPositionProperty(True)
     Call addProp(9, PROP_BOTTOM, False, "bottom", "position.bottom").setIsPositionProperty(True)
@@ -136,19 +138,19 @@ Private Sub initializeProps()
     Call addProp(23, PROP_PADDING_BOTTOM, False, "padding-bottom", "paddingBottom", "bottom-padding", "bottomPadding", "padding.bottom").setIsLayoutProperty(True)
     Call addProp(24, PROP_PADDING_LEFT, False, "padding-left", "paddingLeft", "left-padding", "leftPadding", "padding.left").setIsLayoutProperty(True)
     '[Background]
-    Call addProp(25, PROP_BACKGROUND_STYLE, False, "backgroundStyle", "background-style", "background.style")
-    Call addProp(26, PROP_BACKGROUND_COLOR, False, "backgroundColor", "background-color", "background.color", _
-                        "backColor", "back.color", "back_color").setConvertionFunction("convertRgbToColor")
+    Call addProp(25, PROP_BACKGROUND_STYLE, False, "backgroundStyle", "background-style", "background.style").setIsLookProperty(True)
+    Call addProp(26, PROP_BACKGROUND_COLOR, False, "backgroundColor", "background-color", "background.color", "backColor", "back.color", "back_color"). _
+                                setConvertionFunction("convertRgbToLong").setIsLookProperty(True)
     '[Font]
     Call addProp(27, PROP_FONT_SIZE, True, "fontSize", "font-size", "font.size")
-    Call addProp(28, PROP_FONT_COLOR, True, "fontColor", "font-color", "font.color").setConvertionFunction("convertRgbToColor")
+    Call addProp(28, PROP_FONT_COLOR, True, "fontColor", "font-color", "font.color").setConvertionFunction("convertRgbToLong").setIsLookProperty(True)
     Call addProp(29, PROP_FONT_FAMILY, True, "fontName", "font-name", "font.name", "fontFamily", "font-family", "font.family")
     Call addProp(30, PROP_FONT_BOLD, True, "fontBold", "font-bold", "font.bold")
     Call addProp(31, PROP_FONT_ITALIC, True, "fontItalic", "font-italic", "font.italic")
     '[Border]
     Call addProp(32, PROP_BORDERS, False, "borders")
     Call addProp(33, PROP_BORDER_VISIBLE, False, "borderVisible", "border-visible", "border.visible")
-    Call addProp(34, PROP_BORDER_COLOR, True, "borderColor", "border-color", "border.color").setConvertionFunction("convertRgbToColor")
+    Call addProp(34, PROP_BORDER_COLOR, True, "borderColor", "border-color", "border.color").setConvertionFunction("convertRgbToLong").setIsLookProperty(True)
     Call addProp(35, PROP_BORDER_WIDTH, False, "borderWidth", "border-width", "border.width", _
                         "borderSize", "border-size", "border.size", "borderWeight", "border-weight", "border.weight")
     Call addProp(36, PROP_BORDER_STYLE, False, "borderStyle", "border-style", "border.style")
@@ -165,7 +167,7 @@ Private Sub initializeProps()
     Call addProp(39, PROP_TEXT_UPPERCASE, False, "textUppercase", "text-uppercase", "text.uppercase")
     
     '[Picture]
-    Call addProp(40, PROP_PICTURE, False, "picture")
+    Call addProp(40, PROP_PICTURE, False, "picture").setIsLookProperty(True)
     Call addProp(41, PROP_PICTURE_HEIGHT, False, "pictureHeight", "picture-height", "picture.height")
     Call addProp(42, PROP_PICTURE_WIDTH, False, "pictureWidth", "picture-width", "picture.width")
     Call addProp(43, PROP_PICTURE_MARGIN, False, "pictureMargin", "picture-margin", "picture.margin")
@@ -186,25 +188,27 @@ Private Sub initializeProps()
                                             "wrapWord", "wordWrap", "wrap-word", "wrap.word", _
                                             "wrap_word", "word-wrap", "word.wrap", "word_wrap")
     Call addProp(50, PROP_AUTO_FIT, False, "autoFit", "auto-fit", "auto_fit", "auto.fit")
-    Call addProp(51, PROP_NUMBER_FORMAT, False, "numberFormat", "number-format", "number_format", "number.format")
+    Call addProp(51, PROP_COLUMN_AUTO_FIT, False, "columnAutoFit", "column-auto-fit", "column_auto_fit", "column.auto.fit")
+    Call addProp(52, PROP_ROW_AUTO_FIT, False, "rowAutoFit", "row-auto-fit", "row_auto_fit", "row.auto.fit")
+    Call addProp(53, PROP_NUMBER_FORMAT, False, "numberFormat", "number-format", "number_format", "number.format")
     
 End Sub
 
-Private Function addProp(id As Long, propName As String, isInheritable As Boolean, ParamArray aliases() As Variant) As UIProp
+Private Function addProp(Id As Long, propName As String, isInheritable As Boolean, ParamArray Aliases() As Variant) As UIProp
     Dim varAlias As Variant
     '----------------------------------------------------------------------------------------------------------
     Set addProp = New UIProp
     With addProp
-        Call .setId(id)
+        Call .setId(Id)
         Call .setName(propName)
         Call .setIsInheritable(isInheritable)
         '[Add to repositories]
-        Call pPropsByName.Add(propName, addProp)
-        Call pPropsById.Add(id, addProp)
+        Call pPropsByName.add(propName, addProp)
+        Call pPropsById.add(Id, addProp)
         '[Add aliases]
-        For Each varAlias In aliases
+        For Each varAlias In Aliases
             Call addProp.addAlias(VBA.CStr(varAlias))
-            Call F.Dictionaries.addItem(pPropsByAliases, varAlias, addProp, duplicateBehaviour_WarningInImmediateWindow)
+            Call f.dictionaries.addItem(pPropsByAliases, varAlias, addProp, duplicateBehaviour_WarningInImmediateWindow)
         Next varAlias
     End With
 End Function
@@ -213,16 +217,16 @@ End Function
 
 
 '[API]
-Public Function getPropById(id As Long) As UIProp
-    Set getPropById = F.Dictionaries.getObject(pPropsById, id)
+Public Function getPropById(Id As Long) As UIProp
+    Set getPropById = f.dictionaries.getObject(pPropsById, Id)
 End Function
 
 Public Function getPropByName(name As String) As UIProp
-    Set getPropByName = F.Dictionaries.getObject(pPropsByName, name)
+    Set getPropByName = f.dictionaries.getObject(pPropsByName, name)
 End Function
 
-Public Function getPropByAlias(alias As String) As UIProp
-    Set getPropByAlias = F.Dictionaries.getObject(pPropsByAliases, alias)
+Public Function getPropByAlias(Alias As String) As UIProp
+    Set getPropByAlias = f.dictionaries.getObject(pPropsByAliases, Alias)
 End Function
 
 Public Function getPropsArray(Optional withDefaultValues As Boolean = True) As Variant
@@ -240,65 +244,67 @@ End Function
 
 '[Quick Access]
 '[Size]
-Public Function minWidth() As UIProp: Set minWidth = F.Dictionaries.getObject(pPropsByAliases, PROP_MIN_WIDTH): End Function
-Public Function width() As UIProp: Set width = F.Dictionaries.getObject(pPropsByAliases, PROP_WIDTH): End Function
-Public Function maxWidth() As UIProp: Set maxWidth = F.Dictionaries.getObject(pPropsByAliases, PROP_MAX_WIDTH): End Function
-Public Function minHeight() As UIProp: Set minHeight = F.Dictionaries.getObject(pPropsByAliases, PROP_MIN_HEIGHT): End Function
-Public Function height() As UIProp: Set height = F.Dictionaries.getObject(pPropsByAliases, PROP_HEIGHT): End Function
-Public Function maxHeight() As UIProp: Set maxHeight = F.Dictionaries.getObject(pPropsByAliases, PROP_MAX_HEIGHT): End Function
+Public Function minWidth() As UIProp: Set minWidth = f.dictionaries.getObject(pPropsByAliases, PROP_MIN_WIDTH): End Function
+Public Function width() As UIProp: Set width = f.dictionaries.getObject(pPropsByAliases, PROP_WIDTH): End Function
+Public Function maxWidth() As UIProp: Set maxWidth = f.dictionaries.getObject(pPropsByAliases, PROP_MAX_WIDTH): End Function
+Public Function minHeight() As UIProp: Set minHeight = f.dictionaries.getObject(pPropsByAliases, PROP_MIN_HEIGHT): End Function
+Public Function height() As UIProp: Set height = f.dictionaries.getObject(pPropsByAliases, PROP_HEIGHT): End Function
+Public Function maxHeight() As UIProp: Set maxHeight = f.dictionaries.getObject(pPropsByAliases, PROP_MAX_HEIGHT): End Function
 '[Position]
-Public Function top() As UIProp: Set top = F.Dictionaries.getObject(pPropsByAliases, PROP_TOP): End Function
-Public Function right() As UIProp: Set right = F.Dictionaries.getObject(pPropsByAliases, PROP_RIGHT): End Function
-Public Function bottom() As UIProp: Set bottom = F.Dictionaries.getObject(pPropsByAliases, PROP_BOTTOM): End Function
-Public Function left() As UIProp: Set left = F.Dictionaries.getObject(pPropsByAliases, PROP_LEFT): End Function
+Public Function top() As UIProp: Set top = f.dictionaries.getObject(pPropsByAliases, PROP_TOP): End Function
+Public Function right() As UIProp: Set right = f.dictionaries.getObject(pPropsByAliases, PROP_RIGHT): End Function
+Public Function bottom() As UIProp: Set bottom = f.dictionaries.getObject(pPropsByAliases, PROP_BOTTOM): End Function
+Public Function left() As UIProp: Set left = f.dictionaries.getObject(pPropsByAliases, PROP_LEFT): End Function
 '[Margins & paddings]
-Public Function Margin() As UIProp: Set Margin = F.Dictionaries.getObject(pPropsByAliases, PROP_MARGIN): End Function
-Public Function MarginVertical() As UIProp: Set MarginVertical = F.Dictionaries.getObject(pPropsByAliases, PROP_MARGIN_VERTICAL): End Function
-Public Function MarginHorizontal() As UIProp: Set MarginHorizontal = F.Dictionaries.getObject(pPropsByAliases, PROP_MARGIN_HORIZONTAL): End Function
-Public Function MarginTop() As UIProp: Set MarginTop = F.Dictionaries.getObject(pPropsByAliases, PROP_MARGIN_TOP): End Function
-Public Function MarginRight() As UIProp: Set MarginRight = F.Dictionaries.getObject(pPropsByAliases, PROP_MARGIN_RIGHT): End Function
-Public Function MarginBottom() As UIProp: Set MarginBottom = F.Dictionaries.getObject(pPropsByAliases, PROP_MARGIN_BOTTOM): End Function
-Public Function MarginLeft() As UIProp: Set MarginLeft = F.Dictionaries.getObject(pPropsByAliases, PROP_MARGIN_LEFT): End Function
-Public Function Padding() As UIProp: Set Padding = F.Dictionaries.getObject(pPropsByAliases, PROP_PADDING): End Function
-Public Function PaddingVertical() As UIProp: Set PaddingVertical = F.Dictionaries.getObject(pPropsByAliases, PROP_PADDING_VERTICAL): End Function
-Public Function PaddingHorizontal() As UIProp: Set PaddingHorizontal = F.Dictionaries.getObject(pPropsByAliases, PROP_PADDING_HORIZONTAL): End Function
-Public Function PaddingTop() As UIProp: Set PaddingTop = F.Dictionaries.getObject(pPropsByAliases, PROP_PADDING_TOP): End Function
-Public Function PaddingRight() As UIProp: Set PaddingRight = F.Dictionaries.getObject(pPropsByAliases, PROP_PADDING_RIGHT): End Function
-Public Function PaddingBottom() As UIProp: Set PaddingBottom = F.Dictionaries.getObject(pPropsByAliases, PROP_PADDING_BOTTOM): End Function
-Public Function PaddingLeft() As UIProp: Set PaddingLeft = F.Dictionaries.getObject(pPropsByAliases, PROP_PADDING_LEFT): End Function
+Public Function Margin() As UIProp: Set Margin = f.dictionaries.getObject(pPropsByAliases, PROP_MARGIN): End Function
+Public Function MarginVertical() As UIProp: Set MarginVertical = f.dictionaries.getObject(pPropsByAliases, PROP_MARGIN_VERTICAL): End Function
+Public Function MarginHorizontal() As UIProp: Set MarginHorizontal = f.dictionaries.getObject(pPropsByAliases, PROP_MARGIN_HORIZONTAL): End Function
+Public Function MarginTop() As UIProp: Set MarginTop = f.dictionaries.getObject(pPropsByAliases, PROP_MARGIN_TOP): End Function
+Public Function MarginRight() As UIProp: Set MarginRight = f.dictionaries.getObject(pPropsByAliases, PROP_MARGIN_RIGHT): End Function
+Public Function MarginBottom() As UIProp: Set MarginBottom = f.dictionaries.getObject(pPropsByAliases, PROP_MARGIN_BOTTOM): End Function
+Public Function MarginLeft() As UIProp: Set MarginLeft = f.dictionaries.getObject(pPropsByAliases, PROP_MARGIN_LEFT): End Function
+Public Function Padding() As UIProp: Set Padding = f.dictionaries.getObject(pPropsByAliases, PROP_PADDING): End Function
+Public Function PaddingVertical() As UIProp: Set PaddingVertical = f.dictionaries.getObject(pPropsByAliases, PROP_PADDING_VERTICAL): End Function
+Public Function PaddingHorizontal() As UIProp: Set PaddingHorizontal = f.dictionaries.getObject(pPropsByAliases, PROP_PADDING_HORIZONTAL): End Function
+Public Function PaddingTop() As UIProp: Set PaddingTop = f.dictionaries.getObject(pPropsByAliases, PROP_PADDING_TOP): End Function
+Public Function PaddingRight() As UIProp: Set PaddingRight = f.dictionaries.getObject(pPropsByAliases, PROP_PADDING_RIGHT): End Function
+Public Function PaddingBottom() As UIProp: Set PaddingBottom = f.dictionaries.getObject(pPropsByAliases, PROP_PADDING_BOTTOM): End Function
+Public Function PaddingLeft() As UIProp: Set PaddingLeft = f.dictionaries.getObject(pPropsByAliases, PROP_PADDING_LEFT): End Function
 '[Background]
-Public Function BackgroundStyle() As UIProp: Set BackgroundStyle = F.Dictionaries.getObject(pPropsByAliases, PROP_BACKGROUND_STYLE): End Function
-Public Function BackgroundColor() As UIProp: Set BackgroundColor = F.Dictionaries.getObject(pPropsByAliases, PROP_BACKGROUND_COLOR): End Function
+Public Function BackgroundStyle() As UIProp: Set BackgroundStyle = f.dictionaries.getObject(pPropsByAliases, PROP_BACKGROUND_STYLE): End Function
+Public Function BackgroundColor() As UIProp: Set BackgroundColor = f.dictionaries.getObject(pPropsByAliases, PROP_BACKGROUND_COLOR): End Function
 '[Font]
-Public Function fontSize() As UIProp: Set fontSize = F.Dictionaries.getObject(pPropsByAliases, PROP_FONT_SIZE): End Function
-Public Function FontColor() As UIProp: Set FontColor = F.Dictionaries.getObject(pPropsByAliases, PROP_FONT_COLOR): End Function
-Public Function FontFamily() As UIProp: Set FontFamily = F.Dictionaries.getObject(pPropsByAliases, PROP_FONT_FAMILY): End Function
-Public Function FontBold() As UIProp: Set FontBold = F.Dictionaries.getObject(pPropsByAliases, PROP_FONT_BOLD): End Function
-Public Function FontItalic() As UIProp: Set FontItalic = F.Dictionaries.getObject(pPropsByAliases, PROP_FONT_ITALIC): End Function
+Public Function fontSize() As UIProp: Set fontSize = f.dictionaries.getObject(pPropsByAliases, PROP_FONT_SIZE): End Function
+Public Function FontColor() As UIProp: Set FontColor = f.dictionaries.getObject(pPropsByAliases, PROP_FONT_COLOR): End Function
+Public Function FontFamily() As UIProp: Set FontFamily = f.dictionaries.getObject(pPropsByAliases, PROP_FONT_FAMILY): End Function
+Public Function FontBold() As UIProp: Set FontBold = f.dictionaries.getObject(pPropsByAliases, PROP_FONT_BOLD): End Function
+Public Function FontItalic() As UIProp: Set FontItalic = f.dictionaries.getObject(pPropsByAliases, PROP_FONT_ITALIC): End Function
 '[Border]
-Public Function Borders() As UIProp: Set Borders = F.Dictionaries.getObject(pPropsByAliases, PROP_BORDERS): End Function
-Public Function BorderVisible() As UIProp: Set BorderVisible = F.Dictionaries.getObject(pPropsByAliases, PROP_BORDER_VISIBLE): End Function
-Public Function BorderColor() As UIProp: Set BorderColor = F.Dictionaries.getObject(pPropsByAliases, PROP_BORDER_COLOR): End Function
-Public Function borderWidth() As UIProp: Set borderWidth = F.Dictionaries.getObject(pPropsByAliases, PROP_BORDER_WIDTH): End Function
-Public Function BorderStyle() As UIProp: Set BorderStyle = F.Dictionaries.getObject(pPropsByAliases, PROP_BORDER_STYLE): End Function
+Public Function Borders() As UIProp: Set Borders = f.dictionaries.getObject(pPropsByAliases, PROP_BORDERS): End Function
+Public Function BorderVisible() As UIProp: Set BorderVisible = f.dictionaries.getObject(pPropsByAliases, PROP_BORDER_VISIBLE): End Function
+Public Function BorderColor() As UIProp: Set BorderColor = f.dictionaries.getObject(pPropsByAliases, PROP_BORDER_COLOR): End Function
+Public Function borderWidth() As UIProp: Set borderWidth = f.dictionaries.getObject(pPropsByAliases, PROP_BORDER_WIDTH): End Function
+Public Function BorderStyle() As UIProp: Set BorderStyle = f.dictionaries.getObject(pPropsByAliases, PROP_BORDER_STYLE): End Function
 '[Text]
-Public Function HorizontalAlignment() As UIProp: Set HorizontalAlignment = F.Dictionaries.getObject(pPropsByAliases, PROP_HORIZONTAL_ALIGNMENT): End Function
-Public Function VerticalAlignment() As UIProp: Set VerticalAlignment = F.Dictionaries.getObject(pPropsByAliases, PROP_VERTICAL_ALIGNMENT): End Function
-Public Function TextUppercase() As UIProp: Set TextUppercase = F.Dictionaries.getObject(pPropsByAliases, PROP_TEXT_UPPERCASE): End Function
+Public Function HorizontalAlignment() As UIProp: Set HorizontalAlignment = f.dictionaries.getObject(pPropsByAliases, PROP_HORIZONTAL_ALIGNMENT): End Function
+Public Function VerticalAlignment() As UIProp: Set VerticalAlignment = f.dictionaries.getObject(pPropsByAliases, PROP_VERTICAL_ALIGNMENT): End Function
+Public Function TextUppercase() As UIProp: Set TextUppercase = f.dictionaries.getObject(pPropsByAliases, PROP_TEXT_UPPERCASE): End Function
 '[Pictures]
-Public Function Picture() As UIProp: Set Picture = F.Dictionaries.getObject(pPropsByAliases, PROP_PICTURE): End Function
-Public Function PictureWidth() As UIProp: Set PictureWidth = F.Dictionaries.getObject(pPropsByAliases, PROP_PICTURE_WIDTH): End Function
-Public Function PictureHeight() As UIProp: Set PictureHeight = F.Dictionaries.getObject(pPropsByAliases, PROP_PICTURE_HEIGHT): End Function
-Public Function PictureMargin() As UIProp: Set PictureMargin = F.Dictionaries.getObject(pPropsByAliases, PROP_PICTURE_MARGIN): End Function
+Public Function Picture() As UIProp: Set Picture = f.dictionaries.getObject(pPropsByAliases, PROP_PICTURE): End Function
+Public Function PictureWidth() As UIProp: Set PictureWidth = f.dictionaries.getObject(pPropsByAliases, PROP_PICTURE_WIDTH): End Function
+Public Function PictureHeight() As UIProp: Set PictureHeight = f.dictionaries.getObject(pPropsByAliases, PROP_PICTURE_HEIGHT): End Function
+Public Function PictureMargin() As UIProp: Set PictureMargin = f.dictionaries.getObject(pPropsByAliases, PROP_PICTURE_MARGIN): End Function
 '[Combo boxes]
-Public Function MatchRequired() As UIProp: Set MatchRequired = F.Dictionaries.getObject(pPropsByAliases, PROP_MATCH_REQUIRED): End Function
+Public Function MatchRequired() As UIProp: Set MatchRequired = f.dictionaries.getObject(pPropsByAliases, PROP_MATCH_REQUIRED): End Function
 '[Checkbox]
-Public Function TripleState() As UIProp: Set TripleState = F.Dictionaries.getObject(pPropsByAliases, PROP_TRIPLE_STATE): End Function
+Public Function TripleState() As UIProp: Set TripleState = f.dictionaries.getObject(pPropsByAliases, PROP_TRIPLE_STATE): End Function
 '[List]
-Public Function LineHeight() As UIProp: Set LineHeight = F.Dictionaries.getObject(pPropsByAliases, PROP_LINE_HEIGHT): End Function
-Public Function ScrollBars() As UIProp: Set ScrollBars = F.Dictionaries.getObject(pPropsByAliases, PROP_SCROLL_BARS): End Function
+Public Function LineHeight() As UIProp: Set LineHeight = f.dictionaries.getObject(pPropsByAliases, PROP_LINE_HEIGHT): End Function
+Public Function ScrollBars() As UIProp: Set ScrollBars = f.dictionaries.getObject(pPropsByAliases, PROP_SCROLL_BARS): End Function
 '[Worksheet]
-Public Function IndentLevel() As UIProp: Set IndentLevel = F.Dictionaries.getObject(pPropsByAliases, PROP_INDENT_LEVEL): End Function
-Public Function WrapText() As UIProp: Set WrapText = F.Dictionaries.getObject(pPropsByAliases, PROP_WRAP_TEXT): End Function
-Public Function AutoFit() As UIProp: Set AutoFit = F.Dictionaries.getObject(pPropsByAliases, PROP_AUTO_FIT): End Function
-Public Function NumberFormat() As UIProp: Set NumberFormat = F.Dictionaries.getObject(pPropsByAliases, PROP_NUMBER_FORMAT): End Function
+Public Function IndentLevel() As UIProp: Set IndentLevel = f.dictionaries.getObject(pPropsByAliases, PROP_INDENT_LEVEL): End Function
+Public Function WrapText() As UIProp: Set WrapText = f.dictionaries.getObject(pPropsByAliases, PROP_WRAP_TEXT): End Function
+Public Function AutoFit() As UIProp: Set AutoFit = f.dictionaries.getObject(pPropsByAliases, PROP_AUTO_FIT): End Function
+Public Function ColumnAutoFit() As UIProp: Set ColumnAutoFit = f.dictionaries.getObject(pPropsByAliases, PROP_COLUMN_AUTO_FIT): End Function
+Public Function RowAutoFit() As UIProp: Set RowAutoFit = f.dictionaries.getObject(pPropsByAliases, PROP_ROW_AUTO_FIT): End Function
+Public Function NumberFormat() As UIProp: Set NumberFormat = f.dictionaries.getObject(pPropsByAliases, PROP_NUMBER_FORMAT): End Function

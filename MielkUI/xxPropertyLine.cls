@@ -6,20 +6,23 @@ Attribute VB_Name = "xxPropertyLine"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
-Attribute VB_Exposed = False
+Attribute VB_Exposed = True
 Option Explicit
 
 Private Const CLASS_NAME As String = "xxPropertyLine"
 '----------------------------------------------------------------------------------------------------------
-Private Const DEFAULT_FONT_FAMILY As String = "Segoe UI"
+Private Const DEFAULT_FONT_FAMILY As String = APP_FONT_FAMILY
 Private Const DEFAULT_FONT_SIZE As Single = 10
 Private Const DEFAULT_FONT_COLOR As Long = vbBlack
 Private Const DEFAULT_FONT_BOLD As Boolean = False
-Private Const DEFAULT_ALIGNMENT As Variant = xlCenter
+Private Const DEFAULT_ALIGNMENT As Variant = fmTextAlignCenter
 '[Textbox]
 Private Const VALID_TEXTBOX_BACK_COLOR As Long = 16777215
 Private Const VALID_TEXTBOX_BORDER_COLOR As Long = 0
 Private Const VALID_TEXTBOX_FONT_COLOR As Long = 0
+Private Const WARNING_TEXTBOX_BACK_COLOR As Long = 13035765         'rgb(245, 232, 198)
+Private Const WARNING_TEXTBOX_BORDER_COLOR As Long = 0
+Private Const WARNING_TEXTBOX_FONT_COLOR As Long = 0
 Private Const INVALID_TEXTBOX_BACK_COLOR As Long = 12632319
 Private Const INVALID_TEXTBOX_BORDER_COLOR As Long = 166
 Private Const INVALID_TEXTBOX_FONT_COLOR As Long = 166
@@ -58,12 +61,17 @@ Private pEventsDisabled As Boolean
 Private pValidation As ValidationObject
 '----------------------------------------------------------------------------------------------------------
 Private pValidationParams As Scripting.Dictionary
+Private pActionWhenValid As Variant
+Private pChangeCallbackMethod As String
+Private pUpdateView As Boolean
+Private pVisibilityProperty As String
+Private pIsLocked As Boolean
 '----------------------------------------------------------------------------------------------------------
 
 
 
 Private Sub Class_Initialize()
-    pUuid = F.Crypto.createUuid
+    pUuid = F.Crypto.createUUID
     pFontFamily = DEFAULT_FONT_FAMILY
     pFontSize = DEFAULT_FONT_SIZE
     pFontColor = DEFAULT_FONT_COLOR
@@ -84,17 +92,22 @@ Public Function setDefinition(value As Scripting.Dictionary) As xxPropertyLine
     
     '[Cache some values to improve performance when re-using them later]
     Set pValidationParams = createValidationParamsDictionary( _
-                                F.Dictionaries.getObject(pDictDefinition, TAG_VALIDATION_PARAMS))
+                                F.dictionaries.getObject(pDictDefinition, TAG_VALIDATION_PARAMS))
+    Call F.Variables.assign(pActionWhenValid, F.dictionaries.getItem(pDictDefinition, TAG_ACTION_WHEN_VALID))
+    pChangeCallbackMethod = F.dictionaries.getItem(pDictDefinition, TAG_CHANGE_CALLBACK)
+    pUpdateView = F.dictionaries.getItem(pDictDefinition, TAG_UPDATE_VIEW)
+    pVisibilityProperty = F.dictionaries.getItem(pDictDefinition, TAG_VISIBILITY_PROPERTY)
+    pIsLocked = F.dictionaries.getItem(pDictDefinition, TAG_IS_LOCKED)
 End Function
 
 Public Function createValidationParamsDictionary(value As Variant) As Scripting.Dictionary
-    If F.Dictionaries.isNonEmptyDictionary(value) Then
+    If F.dictionaries.isNonEmptyDictionary(value) Then
         Set createValidationParamsDictionary = F.Cast.toDictionary(value)
     Else
-        Set createValidationParamsDictionary = F.Dictionaries.Create(False)
+        Set createValidationParamsDictionary = F.dictionaries.Create(False)
     End If
     
-    Call F.Dictionaries.addItem(createValidationParamsDictionary, TAG_PROPERTY, getProperty)
+    Call F.dictionaries.addItem(createValidationParamsDictionary, TAG_PROPERTY, getProperty)
     
 End Function
 
@@ -108,6 +121,23 @@ Public Function setLeft(value As Single) As xxPropertyLine
     Set setLeft = Me
     pLeft = value
     Call arrangeControls
+End Function
+
+Public Function setItemsList(value As Scripting.Dictionary) As xxPropertyLine
+    Dim selectedValue As Variant
+    '------------------------------------------------------------------------------------------------------
+    Set setItemsList = Me
+    Call F.dictionaries.addItem(pDictDefinition, TAG_ITEMS, value)
+    
+    Call UI.Forms.fillListBox(pComboBox, getItems)
+    pComboBox.value = getComboBoxDefaultValue
+    
+End Function
+
+Public Function setIsLocked(value As Boolean) As xxPropertyLine
+    Set setIsLocked = Me
+    pIsLocked = value
+    Call updateValueControlView
 End Function
 
 
@@ -131,15 +161,15 @@ Public Function getRight() As Single
 End Function
 
 Private Function getLabelCaption() As String
-    getLabelCaption = F.Dictionaries.getItem(pDictDefinition, TAG_CAPTION)
+    getLabelCaption = F.dictionaries.getItem(pDictDefinition, TAG_CAPTION)
 End Function
 
 Public Function getValueKey() As String
-    getValueKey = F.Dictionaries.getItem(pDictDefinition, TAG_PROPERTY)
+    getValueKey = F.dictionaries.getItem(pDictDefinition, TAG_PROPERTY)
 End Function
 
 Public Function getValidationWidth() As String
-    getValidationWidth = F.Dictionaries.getItem(pDictDefinition, TAG_VALIDATION_WIDTH)
+    getValidationWidth = F.dictionaries.getItem(pDictDefinition, TAG_VALIDATION_WIDTH)
 End Function
 
 Public Function getNumberFormat() As String
@@ -167,7 +197,7 @@ End Function
 Public Function getTextAlign() As fmTextAlign
     With pDictDefinition
         If .Exists(TAG_TEXT_ALIGN) Then
-            getTextAlign = .item(TAG_TEXT_ALIGN)
+            getTextAlign = convertAlignTextToEnum(.item(TAG_TEXT_ALIGN), True)
         Else
             getTextAlign = DEFAULT_ALIGNMENT
         End If
@@ -175,23 +205,23 @@ Public Function getTextAlign() As fmTextAlign
 End Function
 
 Public Function isReadOnly() As Boolean
-    isReadOnly = F.Dictionaries.getItem(pDictDefinition, TAG_READ_ONLY)
+    isReadOnly = F.dictionaries.getItem(pDictDefinition, TAG_READ_ONLY)
 End Function
 
 Public Function getActionButtonPicture() As Variant
-    Set getActionButtonPicture = F.Dictionaries.getObject(pDictDefinition, TAG_PICTURE)
+    Set getActionButtonPicture = F.dictionaries.getObject(pDictDefinition, TAG_PICTURE)
 End Function
 
 Public Function getControlType() As ControlTypeEnum
-    getControlType = F.Dictionaries.getItem(pDictDefinition, TAG_CONTROL_TYPE)
+    getControlType = F.dictionaries.getItem(pDictDefinition, TAG_CONTROL_TYPE)
 End Function
 
 Private Function getItems() As Scripting.Dictionary
-    Set getItems = F.Dictionaries.sortByKey(F.Dictionaries.getObject(pDictDefinition, TAG_ITEMS))
+    Set getItems = F.dictionaries.sortByKey(F.dictionaries.getObject(pDictDefinition, TAG_ITEMS))
 End Function
 
 Private Function getValue() As Variant
-    getValue = getItem.getValue(getValueKey)
+    Call F.Variables.assign(getValue, getItem.getValue(getValueKey))
 End Function
 
 Public Function getValidation() As ValidationObject
@@ -199,27 +229,47 @@ Public Function getValidation() As ValidationObject
 End Function
 
 Public Function getProperty() As String
-    getProperty = F.Dictionaries.getItem(pDictDefinition, TAG_PROPERTY)
+    getProperty = F.dictionaries.getItem(pDictDefinition, TAG_PROPERTY)
 End Function
 
 Public Function getItem() As IEditItem
     Set getItem = pParent.getEditItem
 End Function
 
-Public Function getStatus() As Boolean
+Public Function getStatus() As Variant
     If pValidation Is Nothing Then
         getStatus = True
     Else
-        getStatus = VBA.CBool(pValidation.getStatus)
+        getStatus = pValidation.getStatus
     End If
 End Function
 
 Private Function getValidationLinks() As VBA.Collection
-    Set getValidationLinks = F.Dictionaries.getObject(pDictDefinition, TAG_VALIDATION_LINKS)
+    Set getValidationLinks = F.dictionaries.getObject(pDictDefinition, TAG_VALIDATION_LINKS)
+End Function
+
+Public Function getChangeCallbackMethod() As String
+    getChangeCallbackMethod = pChangeCallbackMethod
+End Function
+
+Public Function getParent() As XPropertiesPanel
+    Set getParent = pParent
+End Function
+
+Public Function getValidationLabel() As UIValidationLabel
+    Set getValidationLabel = pValidationLabel
+End Function
+
+Public Function getTop() As Single
+    If UI.Forms.isControlValid(pLabel) Then
+        getTop = pLabel.top
+    Else
+        getTop = pTop
+    End If
 End Function
 
 Private Function confirmAfterEnterClick() As Boolean
-    confirmAfterEnterClick = F.Dictionaries.getItem(pDictDefinition, TAG_CONFIRM_WITH_ENTER)
+    confirmAfterEnterClick = F.dictionaries.getItem(pDictDefinition, TAG_CONFIRM_WITH_ENTER)
 End Function
 
 
@@ -229,6 +279,10 @@ Public Sub render()
     If Not pIsRendered Then
         pEventsDisabled = True
         Call insertLabel
+        Call insertValueControl
+        Call insertValidationLabel
+        Call validate
+        pIsRendered = True
         pEventsDisabled = False
     End If
 End Sub
@@ -242,17 +296,18 @@ Private Sub insertLabel()
         With .font
             .name = pFontFamily
             .size = pFontSize
-            .Bold = pFontBold
+            .Bold = VBA.IIf(pFontBold, 1, False)
         End With
         .width = pParent.getLabelWidth
+        .WordWrap = False
         .AutoSize = True
-        .AutoSize = False
         .width = pParent.getLabelWidth
     End With
 End Sub
 
 Private Sub insertValueControl()
     Select Case getControlType
+        Case ControlType_Label:                         Call insertTextBox
         Case ControlType_TextBox:                       Call insertTextBox
         Case ControlType_CheckBox:                      Call insertCheckBox
         Case ControlType_ComboBox:                      Call insertComboBox
@@ -266,6 +321,7 @@ Private Sub insertCheckBox()
         .AutoSize = True
         .width = .height
         .value = getValue
+        If .Enabled = pIsLocked Then .Enabled = Not pIsLocked
     End With
     Set pValueControl = pCheckBox
 End Sub
@@ -279,16 +335,33 @@ Private Sub insertComboBox()
         With .font
             .name = pFontFamily
             .size = pFontSize
-            .Bold = pFontBold
+            .Bold = VBA.IIf(pFontBold, 1, False)
         End With
         Call UI.Forms.fillListBox(pComboBox, getItems)
-        pComboBox.value = VBA.format(getValue, getNumberFormat)
+        pComboBox.value = getComboBoxDefaultValue
     End With
     
     Set pValueControl = pComboBox
     Call updateValueControlView
     
 End Sub
+
+Private Function getComboBoxDefaultValue() As String
+    Dim items As Scripting.Dictionary
+    Dim value As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set items = getItems
+    Call F.Variables.assign(value, getValue)
+    
+    If Not F.dictionaries.isNonEmptyDictionary(items) Then
+        ' Items not loaded.
+    ElseIf F.Variables.isUndefined(value) Then
+        ' Default value not set.
+    Else
+        getComboBoxDefaultValue = F.dictionaries.getKeyByItem(items, value)
+    End If
+End Function
 
 Private Sub insertTextBox()
     Set pTextBox = getFrame.controls.Add(CREATE_TEXTBOX_ID)
@@ -298,7 +371,7 @@ Private Sub insertTextBox()
         With .font
             .name = pFontFamily
             .size = pFontSize
-            .Bold = pFontBold
+            .Bold = VBA.IIf(pFontBold, 1, False)
         End With
         .TextAlign = getTextAlign
         .value = VBA.format(getValue, getNumberFormat)
@@ -318,9 +391,9 @@ Private Sub insertLabelWithActionButton()
         With .font
             .name = pFontFamily
             .size = pFontSize
-            .Bold = pFontBold
+            .Bold = VBA.IIf(pFontBold, 1, False)
         End With
-        .Locked = getIsLocked
+        .Locked = pIsLocked
         .TextAlign = getTextAlign
         .value = VBA.format(getValue, getNumberFormat)
     End With
@@ -341,20 +414,68 @@ End Sub
 
 
 Private Sub updateValueControlView()
-    Dim status As Boolean:          status = getStatus
+    Dim status As Variant:          status = getStatus
     '------------------------------------------------------------------------------------------------------
     
     If UI.Forms.isControlValid(pValueControl) Then
         If TypeOf pValueControl Is MSForms.textBox Or TypeOf pValueControl Is MSForms.comboBox Then
             With pValueControl
-                .BackColor = VBA.IIf(isReadOnly, READ_ONLY_TEXTBOX_BACK_COLOR, _
-                                VBA.IIf(status, VALID_TEXTBOX_BACK_COLOR, INVALID_TEXTBOX_BACK_COLOR))
-                .borderColor = VBA.IIf(status, VALID_TEXTBOX_BORDER_COLOR, INVALID_TEXTBOX_BORDER_COLOR)
-                .ForeColor = VBA.IIf(status, VALID_TEXTBOX_FONT_COLOR, INVALID_TEXTBOX_FONT_COLOR)
+                .backColor = getBackColorByStatus(status)
+                .borderColor = getBorderColorByStatus(status)
+                .ForeColor = getFontColorByStatus(status)
+                .Locked = pIsLocked
             End With
         End If
     End If
     
+End Sub
+
+Private Function getBackColorByStatus(status As Variant) As Long
+    If isReadOnly Then
+        getBackColorByStatus = READ_ONLY_TEXTBOX_BACK_COLOR
+    ElseIf status = True Then
+        getBackColorByStatus = VALID_TEXTBOX_BACK_COLOR
+    ElseIf status = False Then
+        getBackColorByStatus = INVALID_TEXTBOX_BACK_COLOR
+    ElseIf status = WARNING_CODE Then
+        getBackColorByStatus = WARNING_TEXTBOX_BACK_COLOR
+    End If
+End Function
+
+Private Function getBorderColorByStatus(status As Variant) As Long
+    If status = True Then
+        getBorderColorByStatus = VALID_TEXTBOX_BORDER_COLOR
+    ElseIf status = False Then
+        getBorderColorByStatus = INVALID_TEXTBOX_BORDER_COLOR
+    ElseIf status = WARNING_CODE Then
+        getBorderColorByStatus = WARNING_TEXTBOX_BORDER_COLOR
+    End If
+End Function
+
+Private Function getFontColorByStatus(status As Variant) As Long
+    If status = True Then
+        getFontColorByStatus = VALID_TEXTBOX_FONT_COLOR
+    ElseIf status = False Then
+        getFontColorByStatus = INVALID_TEXTBOX_FONT_COLOR
+    ElseIf status = WARNING_CODE Then
+        getFontColorByStatus = WARNING_TEXTBOX_FONT_COLOR
+    End If
+End Function
+
+
+
+Public Sub updateDisplayValue()
+    If UI.Forms.isControlValid(pValueControl) Then
+        If pValueControl Is pComboBox Then
+            pComboBox.value = getComboBoxDefaultValue
+        Else
+            pValueControl.value = getValue
+        End If
+    End If
+End Sub
+
+Public Sub updateLockStatus()
+    Stop
 End Sub
 
 Private Sub insertValidationLabel()
@@ -375,13 +496,13 @@ Private Sub insertValidationLabel()
     
 End Sub
 
-Public Sub Move(left As Single, top As Single)
+Public Sub move(left As Single, top As Single)
     pLeft = left
     pTop = top
     Call arrangeControls
 End Sub
 
-Private Sub arrangeControls()
+Public Sub arrangeControls()
     Dim lineHeight As Single:               lineHeight = pParent.getLineHeight
     '------------------------------------------------------------------------------------------------------
     
@@ -404,20 +525,33 @@ Private Sub arrangeControls()
     
 End Sub
 
-Public Sub validate()
+Public Sub validate(Optional value As Variant, Optional isLinkedValidation As Boolean = False)
     Dim functions As Variant
     Dim varFunction As Variant
     Dim validation As ValidationObject
+    Dim status As Variant
     '------------------------------------------------------------------------------------------------------
     
-    functions = F.Dictionaries.getItem(pDictDefinition, TAG_VALIDATION_FUNCTION)
+    functions = F.dictionaries.getItem(pDictDefinition, TAG_VALIDATION_FUNCTION)
     If F.Variables.isPrimitive(functions) Then functions = VBA.Array(functions)
+    
+    If VBA.IsMissing(value) Then
+        Call F.dictionaries.addItem(pValidationParams, VALUE_____, getValue, duplicateBehaviour_Override)
+    Else
+        Call F.dictionaries.addItem(pValidationParams, VALUE_____, value, duplicateBehaviour_Override)
+    End If
     
     Set pValidation = F.Create.ValidationObject(True)
     For Each varFunction In functions
         If Not F.Variables.isUndefined(varFunction, True, True) Then
             Set validation = getItem.getValidation(VBA.CStr(varFunction), pValidationParams)
-            If Not validation.getStatus Then
+            status = validation.getStatus
+            
+            If status = True Then
+                'don't change
+            ElseIf status = WARNING_CODE Then
+                Set pValidation = validation
+            ElseIf status = False Then
                 Set pValidation = validation
                 Exit For
             End If
@@ -429,6 +563,36 @@ Public Sub validate()
     
 End Sub
 
+Public Sub runActionWhenValid()
+    Dim dict As Scripting.Dictionary
+    Dim methodName As String
+    Dim methodInvoker As Object
+    Dim methodParams As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    
+    '[Trigger action-when-valid]
+    If Not pIsRendered Then
+        '
+    ElseIf F.Variables.isUndefined(pActionWhenValid, True) Then
+        '
+    ElseIf F.dictionaries.isNonEmptyDictionary(pActionWhenValid) Then
+        If pValidation.getStatus Then
+            Set dict = pActionWhenValid
+            methodName = F.dictionaries.getItem(dict, TAG_METHOD_NAME)
+            Set methodInvoker = F.dictionaries.getObject(dict, TAG_METHOD_INVOKER)
+            Set methodParams = F.dictionaries.createSingleEntryDict(VALUE_____, getValue)
+            Call F.Reflection.runMethod(Me, methodName, VBA.IIf(methodInvoker Is Nothing, getItem, methodInvoker), methodParams)
+            Call pParent.updateLinesDisplayValues
+        End If
+    ElseIf F.Variables.isString(pActionWhenValid) Then
+        If pValidation.getStatus Then
+            Call getItem.runAction(VBA.CStr(pActionWhenValid), pValidationParams)
+            Call pParent.updateLinesDisplayValues
+        End If
+    End If
+
+End Sub
+
 Public Sub runLinkedValidations()
     Dim validationLinks As VBA.Collection
     Dim value As Variant
@@ -437,7 +601,7 @@ Public Sub runLinkedValidations()
     Set validationLinks = getValidationLinks
     If Not validationLinks Is Nothing Then
         For Each value In validationLinks
-            Call pParent.validateLineByProperty(VBA.CStr(value))
+            Call pParent.validateLineByProperty(VBA.CStr(value), True)
         Next value
     End If
     
@@ -448,13 +612,32 @@ Private Sub updateValidationLabel()
         'This line is not editable, therefore it has no validation label.
     ElseIf pValidation Is Nothing Then
         'This line has not been validated yet.
-    ElseIf pValidation.getStatus Then
+    ElseIf pValidation.getStatus = True Then
         Call pValidationLabel.setVisible(False)
     Else
         With pValidationLabel
             Call .setVisible(True)
             Call .setCaption(pValidation.getMessage)
+            Call .setState(pValidation.getStatus)
         End With
+    End If
+End Sub
+
+Public Function isVisible() As Boolean
+    If VBA.Len(pVisibilityProperty) Then
+        isVisible = pParent.getEditItem.getValue(pVisibilityProperty)
+    Else
+        isVisible = True
+    End If
+End Function
+
+Friend Sub setValidationLabelVisibility(value As Boolean)
+    If pValidationLabel Is Nothing Then
+        '
+    ElseIf Not value Then
+        Call pValidationLabel.setVisible(False)
+    Else
+        Call pValidationLabel.setVisible(Not pValidation.getStatus = True)
     End If
 End Sub
 
@@ -467,35 +650,62 @@ Private Sub pCheckBox_Change()
     Call ErrorManager.clear
     If Not pEventsDisabled Then
         Call getItem.updateValue(getValueKey, pCheckBox.value)
-        Call validate
+        Call validate(pCheckBox.value)
         Call runLinkedValidations
         Call pParent.updateValidation
+        Call runChangeCallbackMethod
     End If
+End Sub
+
+Private Sub pComboBox_Change()
+    Call ErrorManager.clear
+    If Not pEventsDisabled Then
+        Call getItem.updateValue(getValueKey, getComboBoxSelectedItem)
+        Call validate(getComboBoxSelectedItem)
+        Call runLinkedValidations
+        Call pParent.updateValidation
+        Call runChangeCallbackMethod
+    End If
+End Sub
+
+Private Sub runChangeCallbackMethod()
+    If VBA.Len(pChangeCallbackMethod) Then
+        Call pParent.triggerChangeCallbackMethod(Me)
+    End If
+    If pUpdateView Then Call pParent.arrangeLines
 End Sub
 
 Private Function getComboBoxSelectedItem() As Variant
     Dim name As String
     '------------------------------------------------------------------------------------------------------
     name = pComboBox.value
-    Call F.Variables.assign(getComboBoxSelectedItem, F.Dictionaries.getItem(getItems, name))
+    Call F.Variables.assign(getComboBoxSelectedItem, F.dictionaries.getItem(getItems, name))
 End Function
 
 Private Sub pTextBox_Change()
     Call ErrorManager.clear
     If Not pEventsDisabled Then
         Call getItem.updateValue(getValueKey, pTextBox.value)
-        Call validate
+        Call validate(pTextBox.value)
+        Call runActionWhenValid
         Call runLinkedValidations
         Call pParent.updateValidation
     End If
 End Sub
 
 Private Sub pTextBox_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
+    Dim clipboardText As String
+    '------------------------------------------------------------------------------------------------------
+    
     If KeyCode = vbKeyReturn Then
         If confirmAfterEnterClick Then
             Call pParent.triggerConfirm
         End If
+    ElseIf pIsLocked And KeyCode = vbKeyV And Shift = 2 Then
+        clipboardText = F.System.getClipboardContentAsString
+        If VBA.Len(clipboardText) Then pTextBox.value = clipboardText
     End If
+    
 End Sub
 
 
@@ -511,23 +721,25 @@ Private Sub pActionButton_Click()
     
     Call ErrorManager.clear
     
-    Set actionParams = F.Dictionaries.getObject(pDictDefinition, TAG_ACTION_PARAMS)
-    If F.Dictionaries.isNonEmptyDictionary(actionParams) Then
-        Set actionParent = F.Dictionaries.getObject(actionParams, TAG_PARENT)
+    Set actionParams = F.dictionaries.getObject(pDictDefinition, TAG_ACTION_PARAMS)
+    If F.dictionaries.isNonEmptyDictionary(actionParams) Then
+        Set actionParent = F.dictionaries.getObject(actionParams, TAG_PARENT)
         If Not actionParent Is Nothing Then
-            methodName = F.Dictionaries.getItem(actionParams, TAG_METHOD_NAME)
-            Set methodParams = F.Objects.coalesce( _
-                                    F.Dictionaries.getObject(actionParams, TAG_METHOD_PARAMS), _
-                                    F.Dictionaries.Create(False))
-            Call F.Dictionaries.addItem(methodParams, VALUE_____, getValue, duplicateBehaviour_Override)
-            value = VBA.CallByName(actionParams, methodName, VbMethod, methodParams)
+            methodName = F.dictionaries.getItem(actionParams, TAG_METHOD_NAME)
+            Set methodParams = F.objects.coalesce( _
+                                    F.dictionaries.getObject(actionParams, TAG_METHOD_PARAMS), _
+                                    F.dictionaries.Create(False))
+            Call F.dictionaries.addItem(methodParams, VALUE_____, getValue, duplicateBehaviour_Override)
+            Call F.dictionaries.addItem(methodParams, TAG_PARENT, pParent, duplicateBehaviour_Override)
+            Call F.dictionaries.addItem(methodParams, TAG_WINDOW, pParent.getWindow, duplicateBehaviour_Override)
+            value = VBA.CallByName(actionParent, methodName, VbMethod, methodParams)
             
             If VBA.Len(value) Then
                 pTextBox.text = value
-                Call getItem.updateValue(getValueKey, value)
-                Call validate
-                Call runLinkedValidations
-                Call pParent.updateValidation
+'                Call getItem.updateValue(getValueKey, value)
+'                Call validate
+'                Call runLinkedValidations
+'                Call pParent.updateValidation
             End If
             
         End If

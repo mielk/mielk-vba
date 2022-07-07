@@ -32,6 +32,8 @@ Attribute VB_Exposed = True
 '-------------------------------------------------------------------------
 Option Explicit
 
+Implements IListener
+
 Private mbExpanded As Boolean
 
 Private mcolChildNodes As Collection
@@ -56,6 +58,7 @@ Private mlBackColor As Long         ' PT
 Private mbBold As Boolean           ' PT
 Private mlForeColor As Long         ' PT
 Private mvTag
+Private mbHighlightPreviousActiveNode As Boolean
 
 Private WithEvents mctlControl As MSForms.label
 Attribute mctlControl.VB_VarHelpID = -1
@@ -96,22 +99,57 @@ End Enum
 Private moLabSizer As MSForms.label
 Private Const mcBreak As String = "¶ " '"• "
 
+
+'----------------------------------------------------------------------------------------------------------
+Private Const BUTTONS_LEFT_MARGIN As Single = 0
+Private Const BUTTONS_SPACE As Single = 3
+Private Const SPECIAL_BUTTON_SIZE As Single = 10.5
+Private Const MOVE_LAYER_MARGIN As Single = 3
+Private Const MOVE_LAYER_PADDING As Single = 6
+Private Const MOVE_LAYER_BACK_COLOR As Long = 11462647
+Private Const MOVE_LAYER_BORDER_COLOR As Long = 1489127
+Private Const DROP_VIEW_BACK_COLOR As Long = 9296036
+Private Const DROP_VIEW_BORDER_COLOR As Long = 2651456
+Private Const CTRL_RIGHT_PADDING As Single = 6
+'----------------------------------------------------------------------------------------------------------
+Private pTreeView As clsTreeView
+Private pObject As ITreeViewItem
+Private pCurrentHover As Boolean
+Private pSpecialActionDtos As VBA.Collection
+Private pSpecialButtons As VBA.Collection
+'---------------------------------------------------------------------------------------------------------
+Private WithEvents pHoverBackground As MSForms.label
+Attribute pHoverBackground.VB_VarHelpID = -1
+Private WithEvents pMoveCaptionLabel As MSForms.label
+Attribute pMoveCaptionLabel.VB_VarHelpID = -1
+Private WithEvents pMoveLabel As MSForms.label
+Attribute pMoveLabel.VB_VarHelpID = -1
+Private WithEvents pDropCaptionLabel As MSForms.label
+Attribute pDropCaptionLabel.VB_VarHelpID = -1
+Private WithEvents pDropLabel As MSForms.label
+Attribute pDropLabel.VB_VarHelpID = -1
+Private pMoveMode As Boolean
+Attribute pMoveMode.VB_VarHelpID = -1
+Private pMoveAnchorPoint As Point
+'----------------------------------------------------------------------------------------------------------
+
+
 '*********************
 '* Public Properties *
 '*********************
 
-Public Property Get BackColor() As Long
+Public Property Get backColor() As Long
 
-    BackColor = mlBackColor ' if zero the treecaller will apply the frame container's backcolor
+    backColor = mlBackColor ' if zero the treecaller will apply the frame container's backcolor
 
 End Property
 
-Public Property Let BackColor(lColor As Long)
+Public Property Let backColor(lColor As Long)
 'PT if lColor is written as 0/black, change it to 1 as 0 means default
     mlBackColor = lColor
     If mlBackColor = 0 Then mlBackColor = 1
     If Not mctlControl Is Nothing Then
-        mctlControl.BackColor = lColor
+        mctlControl.backColor = lColor
     End If
 End Property
 
@@ -143,6 +181,7 @@ Dim sngWd As Single
             mctlControl.AutoSize = True
             msngTextWidth = mctlControl.width
             mctlControl.AutoSize = False
+            Call locateSpecialButtons
         End If
     End If
 End Property
@@ -174,15 +213,15 @@ Public Property Let Checked(vChecked)  ' PT
     mlChecked = lChecked
 
     If Not mctlCheckBox Is Nothing And bFlag Then
-        moTree.Changed = True
+        moTree.changed = True
         UpdateCheckbox
     End If
     
     If Not moTree Is Nothing Then    ' eg during clone
         bFlag = moTree.CheckBoxes(bTriState)
         If bTriState Then
-            If ParentNode.caption <> "RootHolder" Then
-                ParentNode.CheckTriStateParent
+            If parentNode.caption <> "RootHolder" Then
+                parentNode.CheckTriStateParent
             End If
             
             If Not childNodes Is Nothing Then
@@ -377,7 +416,7 @@ Public Property Let key(ByVal sKey As String)
 
     Exit Property
 errH:
-    Err.Raise Err.Number, "Let Key", Err.Description
+    Err.Raise Err.Number, "Let Key", Err.description
 End Property
 
 Public Property Get Level() As Long
@@ -386,10 +425,10 @@ Public Property Get Level() As Long
 
     On Error GoTo errH
     lLevel = -1
-    Set cNode = Me.ParentNode
+    Set cNode = Me.parentNode
     While Not cNode Is Nothing
         lLevel = lLevel + 1
-        Set cNode = cNode.ParentNode
+        Set cNode = cNode.parentNode
     Wend
     Level = lLevel
     Exit Property
@@ -405,7 +444,7 @@ Public Property Get NextNode() As clsNode    ' can't name this proc 'Next' in VB
     Dim i As Long
     Dim cNode As clsNode
 
-    With Me.ParentNode
+    With Me.parentNode
         For Each cNode In .childNodes
             i = i + 1
             If cNode Is Me Then
@@ -418,11 +457,11 @@ Public Property Get NextNode() As clsNode    ' can't name this proc 'Next' in VB
     End With
 End Property
 
-Public Property Get ParentNode() As clsNode
-    Set ParentNode = moParentNode
+Public Property Get parentNode() As clsNode
+    Set parentNode = moParentNode
 End Property
 
-Public Property Set ParentNode(oParentNode As clsNode)
+Public Property Set parentNode(oParentNode As clsNode)
     Set moParentNode = oParentNode
 End Property
 
@@ -431,8 +470,8 @@ Public Property Get Previous() As clsNode
     Dim i As Long
     Dim cNode As clsNode
 
-    With Me.ParentNode
-        For Each cNode In Me.ParentNode.childNodes
+    With Me.parentNode
+        For Each cNode In Me.parentNode.childNodes
             i = i + 1
             If cNode Is Me Then
                 Exit For
@@ -447,8 +486,8 @@ End Property
 Public Property Get root() As clsNode
     Dim cTmp As clsNode
     Set cTmp = Me
-    Do While Not cTmp.ParentNode.ParentNode Is Nothing
-        Set cTmp = cTmp.ParentNode
+    Do While Not cTmp.parentNode.parentNode Is Nothing
+        Set cTmp = cTmp.parentNode
     Loop
     Set root = cTmp
 End Property
@@ -568,7 +607,7 @@ Public Function AddChild(Optional sKey As String, _
         End If
         
         Set .tree = moTree
-        Set .ParentNode = Me
+        Set .parentNode = Me
     End With
 
     Set AddChild = cChild
@@ -583,7 +622,7 @@ errH:
     If Erl = 100 And Err.Number = 457 Then
         Err.Raise vbObjectError + 1, "clsNode.AddChild", "Duplicate key: '" & sKey & "'"
     Else
-        Err.Raise Err.Number, "clsNode.AddChild", Err.Description
+        Err.Raise Err.Number, "clsNode.AddChild", Err.description
     End If
 End Function
 
@@ -620,7 +659,7 @@ Public Function FullPath() As String
     Set cNode = Me
 
     While Err.Number = 0
-        Set cNode = cNode.ParentNode
+        Set cNode = cNode.parentNode
         s = cNode.key & "\" & s
     Wend
 
@@ -679,6 +718,7 @@ Friend Property Set control(ctlControl As MSForms.label)
     If Not mctlControl Is Nothing Then
         If Not moTree Is Nothing Then
             Set mctlControl.font = moTree.TreeControl.font
+            mctlControl.BackStyle = fmBackStyleTransparent
         Else
             Stop
         End If
@@ -794,8 +834,8 @@ Friend Sub CheckTriStateParent()
     End If
     
     If Not Me.caption = "RootHolder" Then
-        If Not ParentNode.ParentNode Is Nothing Then
-            ParentNode.CheckTriStateParent
+        If Not parentNode.parentNode Is Nothing Then
+            parentNode.CheckTriStateParent
         End If
     End If
 
@@ -979,7 +1019,7 @@ Dim cTmp As clsNode
 
     Exit Function
 errH:
-    Err.Raise vbObjectError, "RemoveChild", Err.Description
+    Err.Raise vbObjectError, "RemoveChild", Err.description
 End Function
 
 Friend Sub RemoveNodeControls()
@@ -1093,6 +1133,8 @@ Private Sub DeleteNodeControls(bClearIndex As Boolean)
             End If
         End If
 
+        Call removeCustomControls
+
         If Not mctlExpander Is Nothing Then
             .remove mctlExpander.name
             Set mctlExpander = Nothing
@@ -1116,26 +1158,26 @@ Private Sub DeleteNodeControls(bClearIndex As Boolean)
             Set mctlCheckBox = Nothing
         End If
 
-        If Not Me.ParentNode Is Nothing Then
+        If Not Me.parentNode Is Nothing Then
             ' if Me is the last child delete parent's expander and VLine (if it has one)
             If FirstSibling Is LastSibling Then
 
-                If Not Me.ParentNode.VLine Is Nothing Then
-                    .remove Me.ParentNode.VLine.name
-                    Set Me.ParentNode.VLine = Nothing
+                If Not Me.parentNode.VLine Is Nothing Then
+                    .remove Me.parentNode.VLine.name
+                    Set Me.parentNode.VLine = Nothing
                 End If
                 
-                If Not Me.ParentNode.ExpanderBox Is Nothing Then
-                    .remove Me.ParentNode.ExpanderBox.name
-                    Set Me.ParentNode.ExpanderBox = Nothing
+                If Not Me.parentNode.ExpanderBox Is Nothing Then
+                    .remove Me.parentNode.ExpanderBox.name
+                    Set Me.parentNode.ExpanderBox = Nothing
                 End If
 
-                If Not Me.ParentNode.Expander Is Nothing Then
-                    .remove Me.ParentNode.Expander.name
-                    Set Me.ParentNode.Expander = Nothing
+                If Not Me.parentNode.Expander Is Nothing Then
+                    .remove Me.parentNode.Expander.name
+                    Set Me.parentNode.Expander = Nothing
                 End If
 
-                Me.ParentNode.Expanded = False
+                Me.parentNode.Expanded = False
 
             End If
 
@@ -1214,6 +1256,7 @@ errExit:
 End Sub
 
 
+
 '***********************
 '*   Node Events       *
 '***********************
@@ -1241,9 +1284,6 @@ Private Sub mctlCheckBox_Click()    ' PT new in 006PT2
 
         moTree.NodeEventRouter Me, "Caption", 1    ' share the checkbox click event
     End If
-    
-    Call moTree.triggerSelectionChangeEvent(Me)
-    
 End Sub
 
 Private Sub mctlControl_Click()
@@ -1259,6 +1299,7 @@ Private Sub mctlControl_Click()
 Dim bFlag As Boolean
 
     If Not moLastActiveNode Is Nothing Then
+        Call moLastActiveNode.deactivate
         moLastActiveNode.control.borderStyle = fmBorderStyleNone
         Set moLastActiveNode = Nothing
         bFlag = True
@@ -1280,7 +1321,7 @@ Dim bFlag As Boolean
 
 End Sub
 
-Private Sub mctlControl_DblClick(ByVal cancel As MSForms.ReturnBoolean)
+Private Sub mctlControl_DblClick(ByVal Cancel As MSForms.ReturnBoolean)
 ' PT  a node label has been double-clicked, enter edit-mode if manual editing is enabled
     Dim bDummy As Boolean
 
@@ -1296,19 +1337,23 @@ End Sub
 Private Sub mctlControl_MouseDown(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
 'PT temporarily activate and highlight the MouseDown node and a grey border to the previous activenode
 '   MouseUp and Click events will confirm the action or reset the previous active node
-Dim bFlag As Boolean
+    Dim bFlag As Boolean
+    Dim previousActiveNode As clsNode:         Set previousActiveNode = moTree.ActiveNode
+    
 
     If moTree.ActiveNode Is Me Then
-        bFlag = Me.control.BackColor = vbHighlight
-       ' bFlag = bFlag Or Me.Control.BorderStyle = fmBorderStyleSingle ' in Access this should be uncommented
+        bFlag = Me.control.backColor = vbHighlight
+        'bFlag = bFlag Or Me.control.borderStyle = fmBorderStyleSingle ' in Access this should be uncommented
     End If
     
     If Not bFlag Then
         Set moLastActiveNode = moTree.ActiveNode
         Set moTree.ActiveNode = Me
-        If Not moLastActiveNode Is Nothing Then
-            moLastActiveNode.control.borderStyle = fmBorderStyleSingle
-            moLastActiveNode.control.borderColor = RGB(200, 200, 200)
+        If mbHighlightPreviousActiveNode Then
+            If Not moLastActiveNode Is Nothing Then
+                moLastActiveNode.control.borderStyle = fmBorderStyleSingle
+                moLastActiveNode.control.borderColor = RGB(200, 200, 200)
+            End If
         End If
     End If
 
@@ -1318,6 +1363,12 @@ Dim bFlag As Boolean
     End If
     
     ' moTree.NodeEventRouter Me, "Caption", tvDown, Button, Shift, X, Y
+End Sub
+
+
+
+Private Sub mctlControl_MouseMove(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+    Call setAsHoveredNode
 End Sub
 
 Private Sub mctlControl_MouseUp(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
@@ -1353,7 +1404,7 @@ Dim bMoveCopy As Boolean
             
         ElseIf button = 2 Then
             ' the click event doesn't fire with right click so explicitly call it
-            mctlControl_Click
+            moTree.NodeEventRouter Me, "Caption", tvRightClick
         End If
     End If
     
@@ -1561,10 +1612,10 @@ Private Sub moEditBox_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shif
                     control.width = mcFullWidth
                 End If
                 
-                moTree.Changed = True
+                moTree.changed = True
 
                 If bSort Then
-                    If Me.ParentNode.sort Then
+                    If Me.parentNode.sort Then
                         moTree.Refresh
                     End If
                 End If
@@ -1584,6 +1635,9 @@ End Sub
 
 
 Private Sub Class_Initialize()
+
+    Set pSpecialButtons = New VBA.Collection
+    
 ' default properties
     mbExpanded = True  ' default
     
@@ -1597,24 +1651,395 @@ Private Sub Class_Terminate()
         gClsNodeTerm = gClsNodeTerm + 1    ' PT, for testing,
     #End If
     Set moTree = Nothing
+    Set pSpecialButtons = Nothing
 End Sub
 
 
 
 
 '[mielk]
-Public Function isLeaf() As Boolean
-    isLeaf = Not F.Collections.isNonEmptyCollection(childNodes)
+'Public Function isLeaf() As Boolean
+'    isLeaf = Not F.Collections.isNonEmptyCollection(childNodes)
+'End Function
+'
+'Public Function isVisible() As Boolean
+'    If UI.Forms.isControlValid(mctlControl) Then
+'        isVisible = mctlControl.visible
+'    End If
+'End Function
+'
+'Public Function getBottomY() As Single
+'    If UI.Forms.isControlValid(mctlControl) Then
+'        getBottomY = UI.Forms.getBottom(mctlControl)
+'    End If
+'End Function
+
+Public Function setObject(value As ITreeViewItem) As clsNode
+    Set setObject = Me
+    Set pObject = value
 End Function
 
-Public Function isVisible() As Boolean
+Public Function setTreeView(tv As clsTreeView) As clsNode
+    Set setTreeView = Me
+    Set pTreeView = tv
+End Function
+
+Public Function setSpecialActions(dtos As VBA.Collection) As clsNode
+    Set setSpecialActions = Me
+    Set pSpecialActionDtos = dtos
     If UI.Forms.isControlValid(mctlControl) Then
-        isVisible = mctlControl.visible
+        Call addHoverBackground
+        Call addSpecialButtons(pSpecialActionDtos)
     End If
 End Function
 
-Public Function getBottomY() As Single
+Private Sub addSpecialButtons(buttonDtos As VBA.Collection)
+    Dim dto As Scripting.Dictionary
+    Dim key As Variant
+    '------------------------------------------------------------------------------------------------------
+    Dim button As UIIcon
+    Dim left As Single:             left = getRightX + BUTTONS_LEFT_MARGIN
+    '------------------------------------------------------------------------------------------------------
+    
+    Set pSpecialButtons = New VBA.Collection
+    
+    If F.Collections.isNonEmptyCollection(buttonDtos) Then
+        For Each dto In buttonDtos
+            Set button = UI.Create.UIIcon(getFrame). _
+                            setListener(Me). _
+                            setActionName(F.dictionaries.getItem(dto, UI_PROP_ACTION_NAME)). _
+                            render. _
+                            move(left). _
+                            setHeight(SPECIAL_BUTTON_SIZE). _
+                            setWidth(SPECIAL_BUTTON_SIZE). _
+                            setTooltip(F.dictionaries.getItem(dto, UI_PROP_TOOLTIP)). _
+                            setPicture(F.dictionaries.getItem(dto, UI_PROP_PICTURE)). _
+                            alignVertically(mctlControl)
+                            
+                left = button.getRight + 0 ' BUTTONS_SPACE
+                Call pSpecialButtons.Add(button)
+        Next dto
+    End If
+    
+    If UI.Forms.isControlValid(pHoverBackground) Then
+        pHoverBackground.width = left - pHoverBackground.left
+    End If
+    
+End Sub
+
+Private Sub addHoverBackground()
+    If pHoverBackground Is Nothing Then
+        Set pHoverBackground = pTreeView.TreeControl.controls.Add(CREATE_LABEL_ID, visible:=False)
+        With pHoverBackground
+            .width = mctlControl.width + 2 * MOVE_LAYER_MARGIN
+            .height = mctlControl.height + 2 * MOVE_LAYER_MARGIN
+            .top = mctlControl.top - MOVE_LAYER_MARGIN
+            .left = mctlControl.left - MOVE_LAYER_MARGIN
+            .BackStyle = fmBackStyleTransparent
+            .borderStyle = fmBorderStyleNone
+            .visible = True
+        End With
+    End If
+End Sub
+
+Public Sub updateSpecialButtons()
+    If Not mctlControl Is Nothing Then
+        Call addHoverBackground
+        Call addSpecialButtons(pSpecialActionDtos)
+    End If
+End Sub
+
+Public Sub setHoveredStatus(value As Boolean)
+    If Not pTreeView.isInDragDropMode Then
+        pCurrentHover = value
+        Call showHideSpecialButtons(value)
+        Call createMoveLabel(True)
+    End If
+End Sub
+
+Private Sub showHideHoveBackground(visibility As Boolean)
+    On Error Resume Next
+    pHoverBackground.visible = visibility
+End Sub
+
+Private Sub showHideSpecialButtons(visibility As Boolean)
+    Dim label As UIIcon
+    Dim right As Single
+    '------------------------------------------------------------------------------------------------------
+    
+    For Each label In pSpecialButtons
+        Call label.alignVertically(mctlControl).setVisibility(visibility)
+        right = label.getRight
+    Next label
+    
+    If Not pHoverBackground Is Nothing Then
+        pHoverBackground.width = F.Numerics.getMax(0, right - pHoverBackground.left + MOVE_LAYER_MARGIN)
+    End If
+
+End Sub
+
+Public Function getObject() As ITreeViewItem
+    Set getObject = pObject
+End Function
+
+Public Function getRightX() As Single
     If UI.Forms.isControlValid(mctlControl) Then
-        getBottomY = UI.Forms.getBottom(mctlControl)
+        getRightX = mctlControl.left + mctlControl.width
     End If
 End Function
+
+Private Function getFrame() As MSForms.frame
+    If moTree Is Nothing Then
+        If Not pTreeView Is Nothing Then
+            Set getFrame = pTreeView.TreeControl
+        End If
+    Else
+        Set getFrame = moTree.TreeControl
+    End If
+End Function
+
+Private Sub removeCustomControls()
+    Call destroyMoveLabels
+    Call destroyDropLabels
+    Call destroySpecialButtons
+End Sub
+
+Private Sub destroyMoveLabels()
+    Call UI.Forms.removeControls(pTreeView.TreeControl, pMoveLabel, pMoveCaptionLabel)
+    Set pMoveLabel = Nothing
+    Set pMoveCaptionLabel = Nothing
+End Sub
+
+Private Sub destroyDropLabels()
+    Call UI.Forms.removeControls(pTreeView.TreeControl, pDropLabel, pDropCaptionLabel)
+    Set pDropLabel = Nothing
+    Set pDropCaptionLabel = Nothing
+End Sub
+
+Private Sub destroySpecialButtons()
+    Dim btn As UIIcon
+    '------------------------------------------------------------------------------------------------------
+    For Each btn In pSpecialButtons
+        Call btn.delete
+    Next btn
+End Sub
+
+
+
+'[Drag & Drop]
+Public Sub deactivate()
+    Call destroyMoveLabels
+    pMoveMode = False
+End Sub
+
+Private Sub createMoveLabel(Optional reset As Boolean = False)
+    If reset Then Call destroyMoveLabels
+    If pMoveLabel Is Nothing Then
+        Set pMoveLabel = moTree.TreeControl.controls.Add(CREATE_LABEL_ID, visible:=False)
+    End If
+    If pMoveCaptionLabel Is Nothing Then
+        Set pMoveCaptionLabel = moTree.TreeControl.controls.Add(CREATE_LABEL_ID, visible:=False)
+    End If
+    Call showHideMoveLabel(False)
+End Sub
+
+Private Sub createDropLabel(Optional reset As Boolean = False)
+    If reset Then Call destroyDropLabels
+    If pDropLabel Is Nothing Then
+        Set pDropLabel = moTree.TreeControl.controls.Add(CREATE_LABEL_ID, visible:=False)
+    End If
+    If pDropCaptionLabel Is Nothing Then
+        Set pDropCaptionLabel = moTree.TreeControl.controls.Add(CREATE_LABEL_ID, visible:=False)
+    End If
+    Call showHideDropLabel(False)
+End Sub
+
+Public Sub setDragView(value As Boolean)
+    If value Then
+        Call createMoveLabel
+        Call showHideMoveLabel(True)
+    Else
+        Call destroyMoveLabels
+    End If
+End Sub
+
+Public Sub setDropView(value As Boolean)
+    If value Then
+        Call createDropLabel
+        Call showHideDropLabel(True)
+    Else
+        Call destroyDropLabels
+    End If
+End Sub
+
+Public Sub quitDragMode()
+    Call destroyMoveLabels
+    pMoveMode = False
+End Sub
+
+Public Sub showEventsLayer(value As Boolean)
+    If UI.Forms.isControlValid(pHoverBackground) Then
+        pHoverBackground.visible = value
+    End If
+End Sub
+
+Private Sub showHideDropLabel(value As Boolean)
+    Call showHideSpecialLabels(value, pDropLabel, pDropCaptionLabel, DROP_VIEW_BACK_COLOR, DROP_VIEW_BORDER_COLOR, True)
+End Sub
+
+Private Sub showHideMoveLabel(value As Boolean)
+    Call showHideSpecialLabels(value, pMoveLabel, pMoveCaptionLabel, MOVE_LAYER_BACK_COLOR, MOVE_LAYER_BORDER_COLOR)
+End Sub
+
+Private Sub showHideSpecialLabels(value As Boolean, mainLabel As MSForms.label, _
+                captionLabel As MSForms.label, backColor As Long, borderColor As Long, _
+                Optional handCursor As Boolean = False)
+    With mainLabel
+        .width = mctlControl.width + 2 * MOVE_LAYER_MARGIN
+        .height = mctlControl.height + 2 * MOVE_LAYER_MARGIN
+        .top = mctlControl.top - MOVE_LAYER_MARGIN
+        .left = mctlControl.left - MOVE_LAYER_MARGIN
+        .caption = vbNullString
+        .visible = value
+        
+        If value Then
+            .BackStyle = fmBackStyleOpaque
+            .backColor = backColor
+            .borderStyle = fmBorderStyleSingle
+            .borderColor = borderColor
+            If handCursor Then
+                .MousePointer = fmMousePointerCustom
+                Set .MouseIcon = Icons.getMouseIcon
+            Else
+                .MousePointer = fmMousePointerDefault
+            End If
+        Else
+            .BackStyle = fmBackStyleTransparent
+            .borderStyle = fmBorderStyleNone
+            .MousePointer = fmMousePointerDefault
+        End If
+    End With
+    
+    With captionLabel
+        .BackStyle = fmBackStyleTransparent
+        .borderStyle = fmBorderStyleNone
+        If handCursor Then
+            .MousePointer = fmMousePointerCross
+            Set .MouseIcon = Icons.getMouseIcon
+        Else
+            .MousePointer = fmMousePointerDefault
+        End If
+        .caption = mctlControl.caption
+        .font.size = mctlControl.font.size
+        .font.Bold = mctlControl.font.Bold
+        .ForeColor = vbBlack
+        .width = mainLabel.width
+        .AutoSize = True
+        .AutoSize = False
+        .left = (mctlControl.width - .width) / 2 + mctlControl.left
+        .top = (mctlControl.height - .height) / 2 + mctlControl.top
+        .visible = value
+    End With
+    
+    Call locateSpecialButtons
+    
+End Sub
+
+Public Sub setFontSize(size As Single)
+    With mctlControl
+        .font.size = size
+        .AutoSize = True
+        .AutoSize = False
+        .width = .width + CTRL_RIGHT_PADDING
+        .height = F.Numerics.roundTo(.height, PIXEL_SIZE) + PIXEL_SIZE / 3
+        .font.size = F.Numerics.roundTo(.font.size, PIXEL_SIZE) + PIXEL_SIZE / 3
+        .top = F.Numerics.roundTo(.top, PIXEL_SIZE) + PIXEL_SIZE / 3
+    End With
+End Sub
+
+
+
+'[Implementation of IListener]
+Private Sub IListener_catchEvent(Source As Variant, eventName As String, Optional properties As Scripting.IDictionary)
+    Call moTree.NodeEventRouter(Me, Source.getActionName, tvClick)
+End Sub
+
+Public Sub updatePosition(x As Single, y As Single)
+    Dim offsetY As Single
+    Dim offsetX As Single
+    '------------------------------------------------------------------------------------------------------
+    
+    If pMoveMode Then
+        offsetX = x - pMoveAnchorPoint.x
+        offsetY = y - pMoveAnchorPoint.y
+        
+        With pMoveLabel
+            .top = y
+            .left = x
+        End With
+        
+        With pMoveCaptionLabel
+            .top = y
+            .left = x
+        End With
+    End If
+    
+End Sub
+
+Private Sub pDropCaptionLabel_Click()
+    Call pTreeView.setAsSelectedDropNode(Me)
+End Sub
+
+Private Sub pDropLabel_Click()
+    Call pTreeView.setAsSelectedDropNode(Me)
+End Sub
+
+Private Sub pHoverBackground_MouseMove(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+    Call setAsHoveredNode
+End Sub
+
+Private Sub setAsHoveredNode()
+    If Not pMoveMode Then
+        If Not pCurrentHover Then
+            Call moTree.setHoveredNode(Me)
+            Call setHoveredStatus(True)
+        End If
+    End If
+End Sub
+
+Public Sub locateSpecialButtons()
+    Dim img As UIIcon
+    Dim backgroundTop As Single
+    Dim iconsTop As Single
+    Dim left As Single:             left = getRightX + BUTTONS_LEFT_MARGIN
+    '------------------------------------------------------------------------------------------------------
+    
+    If Not F.Collections.isNonEmptyCollection(pSpecialButtons) Then
+        '
+    ElseIf pHoverBackground Is Nothing Then
+        '
+    ElseIf mctlControl.visible Then
+        With mctlControl
+            backgroundTop = F.Numerics.roundTo(.top + (.height - pHoverBackground.height) / 2, PIXEL_SIZE)
+            iconsTop = F.Numerics.roundTo(.top + (.height - SPECIAL_BUTTON_SIZE) / 2, PIXEL_SIZE)
+        End With
+        For Each img In pSpecialButtons
+            With img
+                Call .setEnability(True)
+                Call .move(x:=left, y:=iconsTop)
+                left = .getRight + BUTTONS_SPACE
+            End With
+        Next img
+        
+        With pHoverBackground
+            .visible = True
+            .top = backgroundTop
+            .width = left - .left
+        End With
+    Else
+        pHoverBackground.visible = False
+        For Each img In pSpecialButtons
+            Call img.setEnability(False)
+        Next img
+    End If
+End Sub

@@ -5,13 +5,13 @@ Private Const CLASS_NAME As String = "modCreators"
     '----------------------------------------------------------------------------------------------------------
 
 
-Public Function F() As Functions
+Public Function f() As Functions
     Static instance As Functions
     '------------------------------------------------------------------------------------------------------
     If instance Is Nothing Then
         Set instance = New Functions
     End If
-    Set F = instance
+    Set f = instance
 End Function
 
 Public Function fso() As Scripting.FileSystemObject
@@ -30,19 +30,19 @@ Public Function ErrorManager() As ErrorManager
     Set ErrorManager = instance
 End Function
 
-Public Function app() As ParentApp
+Public Function ParentApp() As ParentApp
     Static instance As ParentApp
     If instance Is Nothing Then
         Set instance = New ParentApp
     End If
-    Set app = instance
+    Set ParentApp = instance
 End Function
 
-Public Function KeyValue(key As Variant, value As Variant) As Variant
+Public Function KeyValue(Key As Variant, value As Variant) As Variant
     Dim arr(1 To 2) As Variant
     '------------------------------------------------------------------------------------------------------
-    Call F.Variables.assign(arr(1), key)
-    Call F.Variables.assign(arr(2), value)
+    Call f.Variables.assign(arr(1), Key)
+    Call f.Variables.assign(arr(2), value)
     KeyValue = arr
 End Function
 
@@ -82,6 +82,13 @@ Public Function Exceptions() As ExceptionsEnum
         Set instance = New ExceptionsEnum
     End If
     Set Exceptions = instance
+End Function
+
+Public Function Props() As CommonProperties
+    Static instance As CommonProperties
+    '------------------------------------------------------------------------------------------------------
+    If instance Is Nothing Then Set instance = New CommonProperties
+    Set Props = instance
 End Function
 
 Public Function UIProps() As UIPropsEnum

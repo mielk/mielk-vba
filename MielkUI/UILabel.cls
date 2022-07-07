@@ -33,6 +33,7 @@ Private pTop As Single
 Private pVisible As Boolean
 Private pTooltip As String
 Private pCaption As String
+Private pNumberFormat As String
 Private pTextAlignment As fmTextAlign
 Private pIsUnderlined As Boolean
 Private pMousePointer As Object
@@ -47,8 +48,9 @@ Private pFontColor As Long
 
 
 Private Sub Class_Initialize()
-    pUuid = F.Crypto.createUuid
+    pUuid = F.Crypto.createUUID
     pTextAlignment = fmTextAlignLeft
+    pNumberFormat = "@"
     pVisible = True
 End Sub
 
@@ -134,6 +136,12 @@ Public Function setTextAlignment(value As fmTextAlign) As UILabel
     Call updateTextAlignment
 End Function
 
+Public Function setNumberFormat(value As String) As UILabel
+    Set setNumberFormat = Me
+    pNumberFormat = value
+    Call updateCaption
+End Function
+
 Public Function setIsUnderlined(value As Boolean) As UILabel
     Set setIsUnderlined = Me
     pIsUnderlined = value
@@ -197,6 +205,10 @@ Public Function getTextAlignment() As fmTextAlign
     getTextAlignment = pTextAlignment
 End Function
 
+Public Function getNumberFormat() As String
+    getNumberFormat = pNumberFormat
+End Function
+
 
 
 
@@ -243,12 +255,12 @@ End Sub
 
 
 
-Public Function Move(Optional x As Variant, Optional y As Variant) As UILabel
+Public Function move(Optional x As Variant, Optional y As Variant) As UILabel
     Dim offsetX As Single
     Dim offsetY As Single
     '------------------------------------------------------------------------------------------------------
     
-    Set Move = Me
+    Set move = Me
     
     With pBackgroundLabel
         If VBA.IsNumeric(x) Then
@@ -263,7 +275,7 @@ Public Function Move(Optional x As Variant, Optional y As Variant) As UILabel
     
 End Function
 
-Public Function offset(Optional x As Single, Optional y As Single)
+Public Function offset(Optional x As Single, Optional y As Single) As UILabel
     Set offset = Me
     Call UI.Forms.offsetControls(x, y, pBackgroundLabel, pCaptionLabel)
     With pBackgroundLabel
@@ -293,6 +305,21 @@ Public Function alignVertically(ctrl As MSForms.control) As UILabel
     
 End Function
 
+Public Function alignHorizontally(column As DColumn) As UILabel
+    Set alignHorizontally = Me
+    With column
+        If .getTextAlignment = fmTextAlignLeft Then
+            pCaptionLabel.left = .getLeft + .getIndent
+        ElseIf .getTextAlignment = fmTextAlignCenter Then
+            pCaptionLabel.left = .getLeft + (.getWidth - pCaptionLabel.width) / 2
+            pCaptionLabel.TextAlign = fmTextAlignCenter
+        ElseIf .getTextAlignment = fmTextAlignRight Then
+            pCaptionLabel.left = .getLeft + (.getWidth - pCaptionLabel.width) - .getIndent
+            pCaptionLabel.TextAlign = fmTextAlignRight
+        End If
+    End With
+End Function
+
 Public Sub delete()
     On Error Resume Next
     With pFrame.controls
@@ -312,10 +339,11 @@ End Sub
 Private Sub updateCaption()
     If UI.Forms.isControlValid(pCaptionLabel) Then
         With pCaptionLabel
-            .caption = pCaption
+            .caption = VBA.format(pCaption, pNumberFormat)
+            '.WordWrap = (VBA.Instr(1, .caption, vba.vbcrlf) > 0)
             With .font
                 .name = pFontName
-                .Bold = pFontBold
+                .Bold = VBA.IIf(pFontBold, 1, False)
                 .size = pFontSize
                 .Underline = pIsUnderlined
             End With
@@ -399,7 +427,7 @@ Private Function getWrappedCaptionForLine(caption As String) As String
     '------------------------------------------------------------------------------------------------------
     
     With pCaptionLabel
-        .caption = pCaption
+        .caption = caption
         .AutoSize = True
         If .width > pBackgroundLabel.width Then
             ratio = pBackgroundLabel.width / .width
@@ -480,7 +508,7 @@ Private Function IControl_getTop() As Single
     IControl_getTop = getTop
 End Function
 
-Private Function IControl_getRectangle() As MielkCore.RECT
+Private Function IControl_getRectangle() As RECT
     Stop
 End Function
 
@@ -492,8 +520,8 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     Call alignVertically(baseCtrl)
 End Sub
 
-Private Function IControl_move(Optional x As Single, Optional y As Single) As IControl
-    Set IControl_move = Move(x, y)
+Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
+    Set IControl_move = move(x, y)
 End Function
 
 Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl

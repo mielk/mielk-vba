@@ -22,7 +22,8 @@ Private Const DEFAULT_TOP_MARGIN As Single = 3
 '----------------------------------------------------------------------------------------------------------
 Private WithEvents pForm As WTemplate
 Attribute pForm.VB_VarHelpID = -1
-Private pCalendar As cCalendar
+Private WithEvents pCalendar As cCalendar
+Attribute pCalendar.VB_VarHelpID = -1
 Private pTitle As String
 '[State] --------------------------------------------------------------------------------------------------
 Private pDate As Date
@@ -36,7 +37,7 @@ Private pCancelledByUser As Boolean
 
 
 Private Sub Class_Initialize()
-    pTitle = MsgService.getText(DEFAULT_TITLE_TAG)
+    pTitle = MsgService.GetText(DEFAULT_TITLE_TAG)
 End Sub
 
 
@@ -127,7 +128,9 @@ End Sub
 
 
 
-
+Private Sub pCalendar_DblClick()
+    Call pForm.hide
+End Sub
 
 
 

@@ -11,15 +11,16 @@ Option Explicit
 
 Private Const CLASS_NAME As String = "Validation"
 '----------------------------------------------------------------------------------------------------------
-Private pStatus As Boolean
+Private pStatus As Variant
 Private pMessage As String
-Private pCode As Variant
+Private pErrors As Scripting.Dictionary
+'Private pCode As Variant
 '----------------------------------------------------------------------------------------------------------
 
 
 
 '[SETTERS]
-Public Function setStatus(value As Boolean) As ValidationObject
+Public Function setStatus(value As Variant) As ValidationObject
     Set setStatus = Me
     pStatus = value
 End Function
@@ -29,15 +30,21 @@ Public Function setMessage(value As String) As ValidationObject
     pMessage = value
 End Function
 
-Public Function setCode(value As String) As ValidationObject
-    Set setCode = Me
-    pCode = value
+Public Function addError(code As Variant, message As Variant) As ValidationObject
+    Set addError = Me
+    If pErrors Is Nothing Then Set pErrors = f.dictionaries.Create(False)
+    Call f.dictionaries.addItem(pErrors, code, message)
 End Function
+
+'Public Function setCode(value As String) As ValidationObject
+'    Set setCode = Me
+'    pCode = value
+'End Function
 
 
 
 '[GETTERS]
-Public Function getStatus() As Boolean
+Public Function getStatus() As Variant
     getStatus = pStatus
 End Function
 
@@ -45,9 +52,17 @@ Public Function getMessage() As String
     getMessage = pMessage
 End Function
 
-Public Function getCode() As Variant
-    getCode = pCode
+Public Function getErrors() As Scripting.Dictionary
+    If pErrors Is Nothing Then
+        Set getErrors = f.dictionaries.Create(False)
+    Else
+        Set getErrors = pErrors
+    End If
 End Function
+
+'Public Function getCode() As Variant
+'    getCode = pCode
+'End Function
 
 
 
@@ -82,9 +97,27 @@ Public Function compare(validation As ValidationObject) As Boolean
         compare = False
     ElseIf pStatus <> validation.getStatus Then
         compare = False
-    ElseIf Not F.strings.compareStrings(pMessage, validation.getMessage) Then
+    ElseIf Not f.strings.compareStrings(pMessage, validation.getMessage) Then
         compare = False
     Else
         compare = True
     End If
 End Function
+
+Public Sub merge(validation As ValidationObject)
+    If Not validation Is Nothing Then
+        If validation.getStatus <> True Then pStatus = validation.getStatus
+        
+        If VBA.Len(validation.getMessage) = 0 Then
+        ElseIf VBA.Len(pMessage) > 0 Then
+            pMessage = pMessage & VBA.vbCrLf & validation.getMessage
+        Else
+            pMessage = validation.getMessage
+        End If
+        
+        If Not pErrors Is Nothing Then
+            Call f.dictionaries.appendDictionary(pErrors, validation.getErrors)
+        End If
+        
+    End If
+End Sub

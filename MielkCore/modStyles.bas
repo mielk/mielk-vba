@@ -2,15 +2,24 @@ Attribute VB_Name = "modStyles"
 Option Explicit
 
 Private Const CLASS_NAME As String = "modStyles"
-    '----------------------------------------------------------------------------------------------------------
+'----------------------------------------------------------------------------------------------------------
+Public Const DEFAULT_OUTSIDE_BORDER_COLOR As Long = 8421504
+Public Const DEFAULT_INSIDE_BORDER_COLOR As Long = 14277081
+Public Const DEFAULT_BORDER_WEIGHT As Long = xlMedium
+Public Const DEFAULT_BORDER_STYLE As Long = xlContinuous
+Public Const BORDER_WEIGHT_TAG As String = "weight"
+Public Const BORDER_COLOR_TAG As String = "color"
+Public Const BORDER_STYLE_TAG As String = "style"
+'----------------------------------------------------------------------------------------------------------
+
 
 
 '[ALIGNMENTS]
-Public Function convertAlignTextToEnum(value As String) As Variant
+Public Function convertAlignTextToEnum(value As String, Optional form As Boolean = False) As Variant
     Select Case VBA.LCase$(value)
-        Case "center":  convertAlignTextToEnum = xlCenter
-        Case "left":    convertAlignTextToEnum = xlLeft
-        Case "right":   convertAlignTextToEnum = xlRight
+        Case "center":  convertAlignTextToEnum = VBA.IIf(form, fmTextAlignCenter, xlCenter)
+        Case "left":    convertAlignTextToEnum = VBA.IIf(form, fmTextAlignLeft, xlLeft)
+        Case "right":   convertAlignTextToEnum = VBA.IIf(form, fmTextAlignRight, xlRight)
         Case "top":     convertAlignTextToEnum = xlTop
         Case "bottom":  convertAlignTextToEnum = xlBottom
         Case Else:      convertAlignTextToEnum = xlCenter
@@ -72,7 +81,38 @@ Public Function isOutsideBorder(borderIndex As XlBordersIndex)
 End Function
 
 Public Function convertRgbToLong(ByVal text As String) As Long
-    convertRgbToLong = F.colors.convertCssRgbToLong(text)
+    convertRgbToLong = f.colors.convertCssRgbToLong(text)
+End Function
+
+Public Function getDefaultBordersStylesDictionary() As Scripting.Dictionary
+    Static dict As Scripting.Dictionary
+    '----------------------------------------------------------------------------------------------------------
+    Dim dictInside As Scripting.Dictionary
+    Dim dictOutside As Scripting.Dictionary
+    '----------------------------------------------------------------------------------------------------------
+    
+    If dict Is Nothing Then
+        Set dictInside = f.dictionaries.createWithItems(False, _
+                            KeyValue(BORDER_WEIGHT_TAG, "thin"), _
+                            KeyValue(BORDER_STYLE_TAG, "continuous"), _
+                            KeyValue(BORDER_COLOR_TAG, DEFAULT_INSIDE_BORDER_COLOR))
+        Set dictOutside = f.dictionaries.createWithItems(False, _
+                            KeyValue(BORDER_WEIGHT_TAG, "medium"), _
+                            KeyValue(BORDER_STYLE_TAG, "continuous"), _
+                            KeyValue(BORDER_COLOR_TAG, DEFAULT_OUTSIDE_BORDER_COLOR))
+        Set dict = f.dictionaries.Create(False)
+        With dict
+            Call .add("left", dictOutside)
+            Call .add("right", dictOutside)
+            Call .add("top", dictOutside)
+            Call .add("bottom", dictOutside)
+            Call .add("inside-vertical", dictInside)
+            Call .add("inside-horizontal", dictInside)
+        End With
+    End If
+    
+    Set getDefaultBordersStylesDictionary = dict
+    
 End Function
 
 

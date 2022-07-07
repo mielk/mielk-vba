@@ -30,9 +30,12 @@ Private Const DEFAULT_ACTIVE_BORDER_COLOR As Long = 1684223
 '[UI components] ------------------------------------------------------------------------------------------
 Private pParent As XProcessSummaryPanel
 Private pFrame As MSForms.frame
-Private WithEvents pBackgroundLabel As MSForms.Label
-Private WithEvents pStatusIcon As MSForms.Label
-Private WithEvents pNameLabel As MSForms.Label
+Private WithEvents pBackgroundLabel As MSForms.label
+Attribute pBackgroundLabel.VB_VarHelpID = -1
+Private WithEvents pStatusIcon As MSForms.label
+Attribute pStatusIcon.VB_VarHelpID = -1
+Private WithEvents pNameLabel As MSForms.label
+Attribute pNameLabel.VB_VarHelpID = -1
 '[UI variables] -------------------------------------------------------------------------------------------
 Private pActiveItemBackColor As Long
 Private pActiveItemBorderColor As Long
@@ -83,9 +86,9 @@ End Function
 
 Public Function loadDto(dto As Scripting.Dictionary) As xxProcessSummaryControl
     Set loadDto = Me
-    Call F.Dictionaries.assignValueFromDictToVariable(dto, pName, TAG_NAME)
-    Call F.Dictionaries.assignValueFromDictToVariable(dto, pColor, TAG_MAIN_BACKGROUND)
-    Call F.Dictionaries.assignValueFromDictToVariable(dto, pIsActive, TAG_IS_ACTIVE)
+    Call F.dictionaries.assignValueFromDictToVariable(dto, pName, TAG_NAME)
+    Call F.dictionaries.assignValueFromDictToVariable(dto, pColor, TAG_MAIN_BACKGROUND)
+    Call F.dictionaries.assignValueFromDictToVariable(dto, pIsActive, TAG_IS_ACTIVE)
 End Function
 
 Public Function setIsActive(value As Boolean) As xxProcessSummaryControl
@@ -198,7 +201,7 @@ End Function
 
 '[Size]
 Public Function getWidth() As Single
-    getWidth = pParent.getWidth
+    getWidth = pParent.getControlWidth
 End Function
 
 Public Function getHeight() As Single
@@ -236,10 +239,10 @@ End Sub
 
 '[RENDERING]
 Private Function getLabelName(controlType As ControlTypeEnum) As String
-    Dim tag As String
+    Dim TAG As String
     '----------------------------------------------------------------------------------------------------------
-    tag = CLASS_NAME & "|" & pName & "|" & controlType
-    getLabelName = "ctrl_" & VBA.left$(F.Crypto.SHA1HASH(tag), 25)
+    TAG = CLASS_NAME & "|" & pName & "|" & controlType
+    getLabelName = "ctrl_" & VBA.left$(F.Crypto.SHA1HASH(TAG), 25)
 End Function
 
 
@@ -288,7 +291,8 @@ Private Sub refreshNameLabel()
     With pNameLabel
         .BackStyle = fmBackStyleTransparent
         .Font.name = pFontFamily
-        .Font.size = UI.Normalize.size(pFontSize)
+        .Font.size = UI.Normalize.FontSize(pFontSize)
+        .Font.Bold = 0
         .TextAlign = fmTextAlignLeft
         .caption = getCaption
         .MousePointer = fmMousePointerCustom
@@ -300,19 +304,12 @@ End Sub
 
 '[Size & location]
 Private Sub arrangeControls()
-    Dim left As Single
-    Dim top As Single
-    Dim buttons As VBA.Collection
-    Dim button As MSForms.Label
-    '------------------------------------------------------------------------------------------------------
-    
     On Error Resume Next
     Call resizeControls
     Call UI.Forms.locateControl(pBackgroundLabel, pLeft, pTop)
     Call UI.Forms.locateControl(pStatusIcon, pLeft + STATUS_ICON_LEFT_OFFSET, pTop + STATUS_ICON_TOP_OFFSET + 0 * PIXEL_SIZE)
     Call UI.Forms.locateControl(pNameLabel, UI.Forms.getRight(pStatusIcon) + NAME_LABEL_TO_ICON_OFFSET, _
                                         pTop + (pLineHeight - pNameLabel.height) / 2)
-
 End Sub
 
 Private Sub resizeControls()
@@ -337,7 +334,7 @@ Private Sub resizeNameLabel()
         .caption = "tj"
         .AutoSize = True
         .AutoSize = False
-        .width = getWidth - 1 = 2 * STATUS_ICON_LEFT_OFFSET - NAME_LABEL_TO_ICON_OFFSET
+        .width = getWidth - pStatusIcon.width - 2 * STATUS_ICON_LEFT_OFFSET - NAME_LABEL_TO_ICON_OFFSET
         .caption = getCaption
     End With
     
@@ -350,7 +347,7 @@ End Function
 Private Sub updateActiveness()
     pBackgroundLabel.BackStyle = VBA.IIf(pIsActive, fmBackStyleOpaque, fmBackStyleTransparent)
     pBackgroundLabel.BorderStyle = VBA.IIf(pIsActive, fmBorderStyleSingle, fmBorderStyleNone)
-    pNameLabel.Font.Bold = pIsActive
+    pNameLabel.Font.Bold = VBA.IIf(pIsActive, 1, 0)
 End Sub
 
 Public Sub updateCaption()

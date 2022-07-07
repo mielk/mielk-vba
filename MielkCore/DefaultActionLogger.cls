@@ -22,11 +22,13 @@ Public Sub addLog(action As String, Optional params As Variant, Optional forceLo
     If Not forceLog And Not LOGGING_MODE Then
         'skip - log not required in such case
     Else
-        entry = F.System.getWindowsUserName & ";" & VBA.format(VBA.Now, "YYYY-MM-DD HH:MM:SS") & ";" & action & ";"
-        If F.Variables.isPrimitive(params) Then
+        entry = f.System.getWindowsUserName & ";" & VBA.format(VBA.Now, "YYYY-MM-DD HH:MM:SS") & ";" & action & ";"
+        If f.Variables.isUndefined(params) Then
+            '
+        ElseIf f.Variables.isPrimitive(params) Then
             entry = entry & VBA.CStr(params)
-        ElseIf F.Dictionaries.isNonEmptyDictionary(params) Then
-            entry = entry & F.Dictionaries.toString(F.cast.toDictionary(params))
+        ElseIf f.dictionaries.isNonEmptyDictionary(params) Then
+            entry = entry & f.dictionaries.toString(f.cast.toDictionary(params))
         End If
         Debug.Print entry
     End If

@@ -9,6 +9,8 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
 Option Explicit
 
+Implements IGridParentWindow
+
 Private Type MoveCache
     isActive As Boolean
     x As Single
@@ -31,7 +33,7 @@ Private Const VALIDATION_FRAME_NAME As String = "frmValidation"
 Private Const WINDOW_PADDING As Single = 6
 Private Const DEFAULT_WIDTH As Single = 400
 Private Const DEFAULT_MIN_WIDTH As Single = 200
-Private Const DEFAULT_MAX_WIDTH As Single = 600
+Private Const DEFAULT_MAX_WIDTH As Single = 900
 Private Const DEFAULT_MIN_HEIGHT As Single = 60
 Private Const DEFAULT_MAX_HEIGHT As Single = 600
 Private Const DEFAULT_CONTENT_HEIGHT As Single = 24
@@ -63,7 +65,8 @@ Private pHasUnsavedData As Boolean
 Private pHelpFileTag As String
 Private pBackgroundActive As Boolean
 '[UI components] ------------------------------------------------------------------------------------------
-Private pForm As ufTemplate
+Private WithEvents pForm As ufTemplate
+Attribute pForm.VB_VarHelpID = -1
 Private pBackgroundWindow As WBackground
 Private pCanvas As MSForms.frame
 Private pBody As MSForms.frame
@@ -103,8 +106,10 @@ Private pValidationLabels As Scripting.Dictionary
 Private pMoveCache As MoveCache
 Private pPosition As FormPosition
 '[Events] -------------------------------------------------------------------------------------------------
-Event cancel()
+Event AfterDisplayed()
+Event Cancel()
 Event Confirm()
+Event CustomAction(actionTag As String, params As Scripting.Dictionary)
 Event HelpFileButtonClicked()
 '----------------------------------------------------------------------------------------------------------
 
@@ -118,7 +123,7 @@ End Sub
 
 Private Sub setDefaultValues()
     Set pForm = New ufTemplate
-    pUuid = F.Crypto.createUuid
+    pUuid = F.Crypto.createUUID
     pBorderColor = MIELK_COLOR
     pMinWidth = DEFAULT_MIN_WIDTH
     pMaxWidth = DEFAULT_MAX_WIDTH
@@ -133,10 +138,12 @@ Private Sub setDefaultValues()
     '[Captions]
     pOkCaption = DEFAULT_OK_CAPTION
     pCancelCaption = DEFAULT_CANCEL_CAPTION
+    pHasOkButton = True
+    pHasCancelButton = True
     
     With pForm
         .caption = pUuid
-        .BackColor = TRANSPARENCY_LAYER_COLOR
+        .backColor = TRANSPARENCY_LAYER_COLOR
     End With
     
     '[Temp]
@@ -146,8 +153,8 @@ Private Sub setDefaultValues()
 End Sub
 
 Private Sub initializeContainers()
-    Set pExtraFrames = F.Dictionaries.Create(False)
-    Set pValidationLabels = F.Dictionaries.Create(False)
+    Set pExtraFrames = F.dictionaries.Create(False)
+    Set pValidationLabels = F.dictionaries.Create(False)
 End Sub
 
 Private Sub Class_Terminate()
@@ -242,7 +249,9 @@ End Function
 Public Function setHasUnsavedData(value As Boolean) As WTemplate
     Set setHasUnsavedData = Me
     pHasUnsavedData = value
-    Call pButtonsPanel.setHasUnsavedData(value)
+    If pDisplayWarningsForUnsavedData Then
+        Call pButtonsPanel.setHasUnsavedData(value)
+    End If
 End Function
 
 Public Function setWarningsForUnsavedData(value As Boolean) As WTemplate
@@ -290,7 +299,9 @@ Friend Function getForm() As ufTemplate
 End Function
 
 Public Function isVisible() As Boolean
-    isVisible = pForm.isVisible
+    If Not pForm Is Nothing Then
+        isVisible = pForm.isVisible
+    End If
 End Function
 
 Public Function getSizeAndLocation(Optional onlyVisiblePart As Boolean = False) As area
@@ -332,7 +343,7 @@ Public Function getContentFrame() As MSForms.frame
 End Function
 
 Public Function getExtraFrame(tag As String) As MSForms.frame
-    Set getExtraFrame = F.Dictionaries.getObject(pExtraFrames, tag)
+    Set getExtraFrame = F.dictionaries.getObject(pExtraFrames, tag)
 End Function
 
 Public Function getValidationFrame() As MSForms.frame
@@ -381,7 +392,7 @@ End Function
 
 
 '[RENDERING]
-Public Sub display(Optional mode As FormShowConstants, Optional hasBackground As Boolean = True)
+Public Sub display(Optional mode As FormShowConstants = vbModal, Optional hasBackground As Boolean = True)
     If mode = vbModal And hasBackground Then
         pBackgroundActive = True
         Call pBackgroundWindow.show
@@ -415,7 +426,7 @@ End Function
 Private Sub insertCanvas()
     Set pCanvas = pForm.controls.Add(CREATE_FRAME_ID, CANVAS_FRAME_NAME, True)
     With pCanvas
-        .BackColor = TRANSPARENCY_LAYER_COLOR
+        .backColor = TRANSPARENCY_LAYER_COLOR
         .SpecialEffect = fmSpecialEffectFlat
         .borderStyle = fmBorderStyleNone
         .top = 0
@@ -428,7 +439,7 @@ End Sub
 Private Sub insertBody()
     Set pBody = pCanvas.controls.Add(CREATE_FRAME_ID, BODY_FRAME_NAME, True)
     With pBody
-        .BackColor = vbWhite
+        .backColor = vbWhite
         .SpecialEffect = fmSpecialEffectFlat
         .borderStyle = fmBorderStyleSingle
         .borderColor = pBorderColor
@@ -458,7 +469,7 @@ End Sub
 Private Sub insertContentFrame()
     Set pContentFrame = pBody.controls.Add(CREATE_FRAME_ID, CONTENT_FRAME_NAME, True)
     With pContentFrame
-        .BackColor = vbWhite
+        .backColor = vbWhite
         .borderStyle = fmBorderStyleNone
         .SpecialEffect = fmSpecialEffectFlat
         .width = pMaxWidth
@@ -472,7 +483,7 @@ Private Sub insertExtraFrames()
     Dim props As Scripting.Dictionary
     '----------------------------------------------------------------------------------------------------------
     
-    For Each key In pExtraFrames.Keys
+    For Each key In pExtraFrames.keys
         Set props = pExtraFrames.item(key)
         Set frame = pBody.controls.Add(CREATE_FRAME_ID, VBA.CStr(key), True)
         Call applyPropsForExtraFrame(frame, props)
@@ -489,14 +500,14 @@ Private Sub applyPropsForExtraFrame(frame As MSForms.frame, props As Scripting.D
     
     '[Default props]
     With frame
-        .BackColor = EXTRA_FRAME_DEFAULT_BACK_COLOR
+        .backColor = EXTRA_FRAME_DEFAULT_BACK_COLOR
         .borderStyle = EXTRA_FRAME_DEFAULT_BORDER_STYLE
         .ScrollBars = EXTRA_FRAME_DEFAULT_SCROLL_BARS
     End With
     
     '[Custom props]
     propTypes = VBA.Array(UI.props.backgroundColor, UI.props.borderStyle, UI.props.ScrollBars)
-    If F.Dictionaries.isNonEmptyDictionary(props) Then
+    If F.dictionaries.isNonEmptyDictionary(props) Then
         For Each prop In propTypes
             If props.Exists(prop) Then
                 Call UI.Forms.setControlProperty(frame, UI.Cast.toProp(prop), props.item(prop))
@@ -515,6 +526,8 @@ Private Sub insertButtonsPanel()
         Call .setWidth(DEFAULT_WIDTH)
         Call .setOkCaption(pOkCaption)
         Call .setCancelCaption(pCancelCaption)
+        Call .setHasCancelButton(pHasCancelButton)
+        Call .setHasOkButton(pHasOkButton)
         Call .render
     End With
 End Sub
@@ -523,7 +536,7 @@ Private Sub insertValidationPanel()
     If pHasValidationPanel Then
         Set pValidationFrame = pCanvas.controls.Add(CREATE_FRAME_ID, VALIDATION_FRAME_NAME, True)
         With pValidationFrame
-            .BackColor = TRANSPARENCY_LAYER_COLOR
+            .backColor = TRANSPARENCY_LAYER_COLOR
             .borderStyle = fmBorderStyleNone
             .SpecialEffect = fmSpecialEffectFlat
             .width = pValidationPanelWidth
@@ -615,7 +628,7 @@ Public Sub arrangeComponents()
     
     With pCanvas
         .height = pBody.height + pBody.top
-        .width = pValidationFrame.left + pValidationFrame.height
+        .width = pValidationFrame.left + pValidationFrame.width
         .top = 0
         .left = 0
     End With
@@ -670,7 +683,7 @@ Private Function getExtraFramesBottomRightPoint() As Coordinate
     '----------------------------------------------------------------------------------------------------------
     
     With getExtraFramesBottomRightPoint
-        For Each key In pExtraFrames.Keys
+        For Each key In pExtraFrames.keys
             Set frame = pExtraFrames.item(key)
             If UI.Forms.isControlValid(frame) Then
                 width = frame.left + frame.width
@@ -680,7 +693,7 @@ Private Function getExtraFramesBottomRightPoint() As Coordinate
             End If
         Next key
         
-        .x = .x = pContentFrameHorizontalMargin
+        .x = .x + pContentFrameHorizontalMargin
         .y = .y + pContentFrameVerticalMargin
         
     End With
@@ -770,14 +783,13 @@ End Sub
 
 '[EXTRA CONTENTS]
 Public Sub addExtraFrame(tagName As String, Optional frameProps As Scripting.Dictionary)
-    Call F.Dictionaries.addItem(pExtraFrames, tagName, frameProps)
+    Call F.dictionaries.addItem(pExtraFrames, tagName, frameProps)
 End Sub
 
 Public Sub addExtraButton(id As String, caption As String, Optional backgroundColor As Long = 13273922, _
                             Optional fontColor As Long = vbWhite)
     If Not pButtonsPanel Is Nothing Then
-        Stop
-        'Cal pButtonsPanel.addExtraButton(id, caption, backgroundColor, fontColor)
+        Call pButtonsPanel.addExtraButton(id, caption, backgroundColor, fontColor)
     End If
 End Sub
 
@@ -787,6 +799,12 @@ Public Sub hide()
     Call pForm.hide
 End Sub
 
+
+
+
+Private Sub pForm_AfterDisplayed()
+    RaiseEvent AfterDisplayed
+End Sub
 
 '[Events]
 Private Sub pTitlePanel_AfterClose()
@@ -829,16 +847,21 @@ Public Sub triggerCancel()
     If pBackgroundActive Then
         Call pBackgroundWindow.hide
     End If
-    RaiseEvent cancel
+    RaiseEvent Cancel
     Call unload(pForm)
 End Sub
+
+Public Sub triggerCustomAction(actionTag As String, Optional params As Scripting.Dictionary)
+    RaiseEvent CustomAction(actionTag, params)
+End Sub
+
 
 
 
 '[VALIDATION]
 Public Function insertValidationLabel(key As Variant) As UIValidationLabel
-    Set insertValidationLabel = UI.Create.ValidationLabel(pValidationFrame)
-    Call F.Dictionaries.addItem(pValidationLabels, key, insertValidationLabel)
+    Set insertValidationLabel = UI.Create.validationLabel(pValidationFrame)
+    Call F.dictionaries.addItem(pValidationLabels, key, insertValidationLabel)
     Call insertValidationLabel.render
 End Function
 
@@ -856,7 +879,7 @@ Private Sub pButtonsPanel_Confirm()
     Call triggerConfirm
 End Sub
 
-Private Sub UserForm_QueryClose(cancel As Integer, closeMode As Integer)
+Private Sub UserForm_QueryClose(Cancel As Integer, closeMode As Integer)
     Call ErrorManager.clear
     If pForm.isVisible Then
         Call triggerCancel
@@ -945,4 +968,21 @@ End Sub
 
 Public Sub toFront()
     Call pForm.toFront
+End Sub
+
+
+
+
+'[Implementation of IGridParentWindow]
+
+Private Function IGridParentWindow_getDefaultLocationProps() As DLocation
+    Set IGridParentWindow_getDefaultLocationProps = getDefaultLocationProps
+End Function
+
+Private Sub IGridParentWindow_restoreFromBackground()
+    Call restoreFromBackground
+End Sub
+
+Private Sub IGridParentWindow_sendToBackground()
+    Call sendToBackground
 End Sub

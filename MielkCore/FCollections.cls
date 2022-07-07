@@ -17,37 +17,37 @@ Private Const CLASS_NAME As String = "FCollections"
 
 
 '[CREATING COLLECTIONS]
-Public Function Create(ParamArray items() As Variant) As VBA.Collection
-    Dim item As Variant
+Public Function Create(ParamArray Items() As Variant) As VBA.Collection
+    Dim Item As Variant
     Dim hasContainer As Boolean
     '------------------------------------------------------------------------------------------------------
     
-    If UBound(items) - LBound(items) = 0 Then
-        If F.Variables.isContainer(items(LBound(items))) Then hasContainer = True
+    If UBound(Items) - LBound(Items) = 0 Then
+        If f.Variables.isContainer(Items(LBound(Items))) Then hasContainer = True
     End If
     
     If hasContainer Then
-        Set Create = createFrom(items(LBound(items)))
+        Set Create = createFrom(Items(LBound(Items)))
     Else
         Set Create = New VBA.Collection
-        For Each item In items
-            Call Create.Add(item)
-        Next item
+        For Each Item In Items
+            Call Create.add(Item)
+        Next Item
     End If
     
 End Function
 
-Private Function createFrom(container As Variant) As VBA.Collection
-    If F.Variables.isUndefined(container) Then
+Public Function createFrom(container As Variant) As VBA.Collection
+    If f.Variables.isUndefined(container) Then
         Set createFrom = New VBA.Collection
-    ElseIf F.arrays.countDimensions(container) = 1 Then
+    ElseIf f.arrays.countDimensions(container) = 1 Then
         Set createFrom = fromArray(container)
     ElseIf Not VBA.IsObject(container) Then
         Set createFrom = Create(container)
     ElseIf TypeOf container Is VBA.Collection Then
-        Set createFrom = clone(F.cast.toCollection(container))
+        Set createFrom = clone(f.cast.toCollection(container))
     ElseIf TypeOf container Is Scripting.Dictionary Then
-        Set createFrom = F.cast.toDictionary(container).items
+        Set createFrom = f.dictionaries.toCollection(f.cast.toDictionary(container), DictPart_ValueOnly)
     Else
         Set createFrom = Create(container)
     End If
@@ -57,9 +57,9 @@ Public Function fromArray(arr As Variant) As VBA.Collection
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
     Set fromArray = New VBA.Collection
-    If F.arrays.countDimensions(arr) = 1 Then
+    If f.arrays.countDimensions(arr) = 1 Then
         For i = LBound(arr) To UBound(arr)
-            Call fromArray.Add(arr(i))
+            Call fromArray.add(arr(i))
         Next i
     End If
 End Function
@@ -104,15 +104,15 @@ End Function
 
 '#todo - add [deepClone] parameter
 Public Function clone(col As VBA.Collection) As VBA.Collection
-    Dim item As Variant
+    Dim Item As Variant
     '------------------------------------------------------------------------------------------------------
     
     If col Is Nothing Then
     Else
         Set clone = New VBA.Collection
-        For Each item In col
-            Call clone.Add(item)
-        Next item
+        For Each Item In col
+            Call clone.add(Item)
+        Next Item
     End If
     
 End Function
@@ -125,18 +125,18 @@ Public Function toString(col As VBA.Collection, _
                                     Optional ByVal callbackMethod As String, _
                                     Optional ByVal callbackInvoker As Object, _
                                     Optional ByVal callbackParams As Scripting.Dictionary) As String
-    Dim items() As String
+    Dim Items() As String
     '------------------------------------------------------------------------------------------------------
     
     If col Is Nothing Then
-        toString = F.strings.stringify(Nothing, stringifyMode)
+        toString = f.strings.stringify(Nothing, stringifyMode)
     Else
         If fastModeForStringCollection Then
-            items = convertStringCollectionToArray(col)
+            Items = convertStringCollectionToArray(col)
         Else
-            items = toStringifedArray(col, stringifyMode, callbackMethod, callbackInvoker, callbackParams)
+            Items = toStringifedArray(col, stringifyMode, callbackMethod, callbackInvoker, callbackParams)
         End If
-        toString = VBA.join(items, itemsDelimiter)
+        toString = VBA.join(Items, itemsDelimiter)
     End If
     
 End Function
@@ -157,9 +157,9 @@ Private Function toStringifedArray(col As VBA.Collection, stringifyMode As Strin
         For Each varItem In col
             counter = counter + 1
             If VBA.Len(callbackMethod) Then
-                itemText = F.Reflection.modifyValue(varItem, callbackMethod, callbackInvoker, callbackParams)
+                itemText = f.Reflection.modifyValue(varItem, callbackMethod, callbackInvoker, callbackParams)
             Else
-                itemText = F.strings.stringify(varItem, stringifyMode)
+                itemText = f.strings.stringify(varItem, stringifyMode)
             End If
             values(counter) = itemText
         Next varItem
@@ -212,32 +212,32 @@ Public Function toDictionary(col As VBA.Collection, _
                     Optional keyFunctionParams As Scripting.Dictionary) As Scripting.Dictionary
     Const METHOD_NAME As String = "toDictionary"
     '------------------------------------------------------------------------------------------------------
-    Dim key As Variant
-    Dim item As Variant
+    Dim Key As Variant
+    Dim Item As Variant
     '------------------------------------------------------------------------------------------------------
     
-    Set toDictionary = F.Dictionaries.Create(False)
+    Set toDictionary = f.dictionaries.Create(False)
     
     If isNonEmptyCollection(col) Then
-        For Each item In col
+        For Each Item In col
             
             '[Calculate key]
-            Call F.Variables.assign(key, F.Reflection.modifyValue(item, keyFunction, keyFunctionInvoker, keyFunctionParams))
+            Call f.Variables.assign(Key, f.Reflection.modifyValue(Item, keyFunction, keyFunctionInvoker, keyFunctionParams))
             
             With toDictionary
-                If Not .exists(key) Then
-                    Call .Add(key, item)
+                If Not .exists(Key) Then
+                    Call .add(Key, Item)
                 ElseIf duplicateBehaviour = duplicateBehaviour_ThrowError Then
-                    Call Exceptions.DuplicateKey.raise(key)
+                    Call Exceptions.DuplicateKey.raise(Key)
                 ElseIf duplicateBehaviour = duplicateBehaviour_Override Then
-                    If VBA.IsObject(item) Then
-                        Set .item(key) = item
+                    If VBA.IsObject(Item) Then
+                        Set .Item(Key) = Item
                     Else
-                        .item(key) = item
+                        .Item(Key) = Item
                     End If
                 End If
             End With
-        Next item
+        Next Item
     End If
     
 End Function
@@ -247,17 +247,17 @@ Public Function toArray(col As VBA.Collection, _
                         Optional callbackFunction As String = vbNullString, _
                         Optional callbackInvoker As Object) As Variant
     Dim arr() As Variant
-    Dim index As Long
+    Dim Index As Long
     '------------------------------------------------------------------------------------------------------
     
-    If F.Collections.isNonEmptyCollection(col) Then
+    If f.Collections.isNonEmptyCollection(col) Then
         ReDim arr(1 To col.count)
-        For index = 1 To col.count
-            Call F.Variables.assign(arr(index), _
-                        F.Reflection.modifyValue(col.item(index), callbackFunction, callbackInvoker))
-        Next index
+        For Index = 1 To col.count
+            Call f.Variables.assign(arr(Index), _
+                        f.Reflection.modifyValue(col.Item(Index), callbackFunction, callbackInvoker))
+        Next Index
         toArray = arr
-    ElseIf F.Collections.isCollection(col) Then
+    ElseIf f.Collections.isCollection(col) Then
         toArray = arr
     End If
     
@@ -299,7 +299,7 @@ Private Function compare_orderSensitive( _
     
     compare_orderSensitive = True
     For i = 1 To baseCollection.count
-        If Not F.Variables.equals(baseCollection.item(i), comparedCollection.item(i), strictDataType, isCaseSensitive) Then
+        If Not f.Variables.equals(baseCollection.Item(i), comparedCollection.Item(i), strictDataType, isCaseSensitive) Then
             compare_orderSensitive = False
             Exit For
         End If
@@ -314,37 +314,37 @@ Private Function compare_orderInsensitive( _
                             isCaseSensitive As Boolean) As Boolean
     Dim baseCollectionClone As VBA.Collection
     Dim comparedCollectionClone As VBA.Collection
-    Dim item As Variant
-    Dim index As Long
+    Dim Item As Variant
+    Dim Index As Long
     '------------------------------------------------------------------------------------------------------
     
-    Set baseCollectionClone = F.Collections.clone(baseCollection)
-    Set comparedCollectionClone = F.Collections.clone(comparedCollection)
+    Set baseCollectionClone = f.Collections.clone(baseCollection)
+    Set comparedCollectionClone = f.Collections.clone(comparedCollection)
     
     compare_orderInsensitive = True
-    For Each item In baseCollectionClone
-        index = F.Collections.getItemIndex(comparedCollectionClone, item, strictDataType)
-        If index = 0 Then
+    For Each Item In baseCollectionClone
+        Index = f.Collections.getItemIndex(comparedCollectionClone, Item, strictDataType)
+        If Index = 0 Then
             compare_orderInsensitive = False
             Exit For
         Else
-            Call comparedCollectionClone.Remove(index)
+            Call comparedCollectionClone.Remove(Index)
         End If
-    Next item
+    Next Item
     
 End Function
 
 Public Function hasAnyCommonItemWithDictionary(col As VBA.Collection, dict As Scripting.Dictionary) As Boolean
-    Dim item As Variant
+    Dim Item As Variant
     '------------------------------------------------------------------------------------------------------
     
-    If F.Dictionaries.isNonEmptyDictionary(dict) Then
-        For Each item In col
-            If dict.exists(item) Then
+    If f.dictionaries.isNonEmptyDictionary(dict) Then
+        For Each Item In col
+            If dict.exists(Item) Then
                 hasAnyCommonItemWithDictionary = True
                 Exit For
             End If
-        Next item
+        Next Item
     End If
     
 End Function
@@ -356,46 +356,67 @@ End Function
 '[LOOKING FOR ITEMS]
 
 Public Function getLastItem(col As VBA.Collection) As Variant
-    If Not col Is Nothing Then
-        If col.count Then
-            Call F.Variables.assign(getLastItem, col.item(col.count))
-        End If
+    If isNonEmptyCollection(col) Then
+        Call f.Variables.assign(getLastItem, col.Item(col.count))
+    Else
+        getLastItem = Empty
     End If
 End Function
 
 Public Function getLastObject(col As VBA.Collection) As Object
-    If Not col Is Nothing Then
-        If col.count Then
-            On Error Resume Next
-            Set getLastObject = col.item(col.count)
-        End If
+    If isNonEmptyCollection(col) Then
+        Set getLastObject = col.Item(col.count)
+    Else
+        Set getLastObject = Nothing
     End If
 End Function
 
-Public Function contains(baseCollection As VBA.Collection, item As Variant, _
+Public Function getItemByIndex(col As VBA.Collection, Index As Long, Optional throwError As Boolean = False) As Variant
+    If col Is Nothing Then
+        If throwError Then Call Exceptions.NullNotAllowed.raise
+    ElseIf Index < 1 Or Index > col.count Then
+        If throwError Then Call Exceptions.IndexOutOfBound.raise
+    Else
+        getItemByIndex = col.Item(Index)
+    End If
+End Function
+
+Public Function getObjectByIndex(col As VBA.Collection, Index As Long, Optional throwError As Boolean = False) As Variant
+    If col Is Nothing Then
+        If throwError Then Call Exceptions.NullNotAllowed.raise
+    ElseIf Index < 1 Or Index > col.count Then
+        If throwError Then Call Exceptions.IndexOutOfBound.raise
+    ElseIf Not VBA.IsObject(col.Item(Index)) Then
+        If throwError Then Call Exceptions.ObjectExpected.raise
+    Else
+        Set getObjectByIndex = col.Item(Index)
+    End If
+End Function
+
+Public Function contains(baseCollection As VBA.Collection, Item As Variant, _
                                         Optional strictDataType As Boolean = False, _
                                         Optional isCaseSensitive As Boolean = False, _
                                         Optional trimIfValueIsString As Boolean = True) As Boolean
-    Dim index As Long
+    Dim Index As Long
     '------------------------------------------------------------------------------------------------------
-    index = getItemIndex(baseCollection, item, strictDataType, isCaseSensitive, trimIfValueIsString)
-    contains = (index > 0)
+    Index = getItemIndex(baseCollection, Item, strictDataType, isCaseSensitive, trimIfValueIsString)
+    contains = (Index > 0)
 End Function
 
-Public Function getItemIndex(baseCollection As VBA.Collection, item As Variant, _
+Public Function getItemIndex(baseCollection As VBA.Collection, Item As Variant, _
                                         Optional strictDataType As Boolean = False, _
                                         Optional isCaseSensitive As Boolean = False, _
                                         Optional trimIfValueIsString As Boolean = True) As Long
     Dim collectionItem As Variant
-    Dim index As Long
+    Dim Index As Long
     '------------------------------------------------------------------------------------------------------
 
-    If VBA.IsArray(item) Then Call Exceptions.IllegalDataType.raise
+    If VBA.IsArray(Item) Then Call Exceptions.IllegalDataType.raise
 
     For Each collectionItem In baseCollection
-        index = index + 1
-        If F.Variables.equals(item, collectionItem, strictDataType, isCaseSensitive, trimIfValueIsString) Then
-            getItemIndex = index
+        Index = Index + 1
+        If f.Variables.equals(Item, collectionItem, strictDataType, isCaseSensitive, trimIfValueIsString) Then
+            getItemIndex = Index
             Exit For
         End If
     Next collectionItem
@@ -404,22 +425,22 @@ End Function
 
 Public Function hasDuplicates(col As VBA.Collection, Optional modifyingFunction As String) As Boolean
     Dim dict As Scripting.Dictionary
-    Dim item As Variant
-    Dim key As Variant
+    Dim Item As Variant
+    Dim Key As Variant
     '------------------------------------------------------------------------------------------------------
     
-    Set dict = F.Dictionaries.Create(False)
+    Set dict = f.dictionaries.Create(False)
     
     If isNonEmptyCollection(col) Then
-        For Each item In col
-            Call F.Variables.assign(key, F.Reflection.modifyValue(item, modifyingFunction))
-            If dict.exists(key) Then
+        For Each Item In col
+            Call f.Variables.assign(Key, f.Reflection.modifyValue(Item, modifyingFunction))
+            If dict.exists(Key) Then
                 hasDuplicates = True
                 Exit For
             Else
-                Call dict.Add(key, vbNull)
+                Call dict.add(Key, vbNull)
             End If
-        Next item
+        Next Item
     End If
     
     Set dict = Nothing
@@ -433,37 +454,41 @@ End Function
 
 '[APPENDING ITEMS]
 Public Sub appendCollection(baseCollection As VBA.Collection, appendedCollection As VBA.Collection)
-    Dim item As Variant
+    Dim Item As Variant
     '------------------------------------------------------------------------------------------------------
-    For Each item In appendedCollection
-        Call baseCollection.Add(item)
-    Next item
+    If appendedCollection Is Nothing Then
+    ElseIf baseCollection Is Nothing Then
+    Else
+        For Each Item In appendedCollection
+            Call baseCollection.add(Item)
+        Next Item
+    End If
 End Sub
 
 Public Function join(ParamArray containers() As Variant) As VBA.Collection
     Dim container As Variant
-    Dim key As Variant
-    Dim item As Variant
+    Dim Key As Variant
+    Dim Item As Variant
     '------------------------------------------------------------------------------------------------------
     
     Set join = New VBA.Collection
     
     For Each container In containers
         If VBA.IsArray(container) Then
-            If F.arrays.countDimensions(container) = 1 Then
-                For Each item In container
-                    Call join.Add(item)
-                Next item
+            If f.arrays.countDimensions(container) = 1 Then
+                For Each Item In container
+                    Call join.add(Item)
+                Next Item
             End If
         ElseIf VBA.IsObject(container) Then
             If isNonEmptyCollection(container) Then
-                For Each item In container
-                    Call join.Add(item)
-                Next item
-            ElseIf F.Dictionaries.isNonEmptyDictionary(container) Then
-                For Each key In container.Keys
-                    Call join.Add(container.item(key))
-                Next key
+                For Each Item In container
+                    Call join.add(Item)
+                Next Item
+            ElseIf f.dictionaries.isNonEmptyDictionary(container) Then
+                For Each Key In container.Keys
+                    Call join.add(container.Item(Key))
+                Next Key
             End If
         End If
     Next container
@@ -477,40 +502,40 @@ End Function
 '[REMOVING ITEMS]
 Public Function removeDuplicates(col As VBA.Collection) As VBA.Collection
     Dim dict As Scripting.Dictionary
-    Dim item As Variant
-    Dim key As Variant
+    Dim Item As Variant
+    Dim Key As Variant
     '------------------------------------------------------------------------------------------------------
     
     Set removeDuplicates = New VBA.Collection
-    Set dict = F.Dictionaries.Create(False)
+    Set dict = f.dictionaries.Create(False)
     
-    For Each item In col
-        Call F.Dictionaries.addItem(dict, item, item, duplicateBehaviour_Skip)
-    Next item
+    For Each Item In col
+        Call f.dictionaries.addItem(dict, Item, Item, duplicateBehaviour_Skip)
+    Next Item
     
-    For Each key In dict.Keys
-        Call removeDuplicates.Add(key)
-    Next key
+    For Each Key In dict.Keys
+        Call removeDuplicates.add(Key)
+    Next Key
     
 End Function
 
-Public Sub removeItem(col As VBA.Collection, item As Variant)
+Public Sub removeItem(col As VBA.Collection, Item As Variant)
     Dim i As Long
     Dim colItem As Variant
     '------------------------------------------------------------------------------------------------------
     
-    If F.Collections.isNonEmptyCollection(col) Then
+    If f.Collections.isNonEmptyCollection(col) Then
         For i = col.count To 1 Step -1
-            Call F.Variables.assign(colItem, col.item(i))
-            If VBA.IsObject(item) Then
+            Call f.Variables.assign(colItem, col.Item(i))
+            If VBA.IsObject(Item) Then
                 If VBA.IsObject(colItem) Then
-                    If item Is colItem Then
+                    If Item Is colItem Then
                         Call col.Remove(i)
                     End If
                 End If
-            ElseIf Not VBA.IsArray(item) Then
+            ElseIf Not VBA.IsArray(Item) Then
                 If Not VBA.IsObject(colItem) And Not VBA.IsArray(colItem) Then
-                    If item = colItem Then
+                    If Item = colItem Then
                         Call col.Remove(i)
                     End If
                 End If
@@ -527,19 +552,19 @@ End Sub
 '[FILTERING & SORTING]
 Public Function getUniqueItems(col As VBA.Collection) As VBA.Collection
     Dim dict As Scripting.Dictionary
-    Dim item As Variant
+    Dim Item As Variant
     '------------------------------------------------------------------------------------------------------
     
-    Set dict = F.Dictionaries.Create(False)
+    Set dict = f.dictionaries.Create(False)
     With dict
-        For Each item In col
-            If Not .exists(item) Then
-                Call .Add(item, item)
+        For Each Item In col
+            If Not .exists(Item) Then
+                Call .add(Item, Item)
             End If
-        Next item
+        Next Item
     End With
     
-    Set getUniqueItems = F.Dictionaries.toCollection(dict)
+    Set getUniqueItems = f.dictionaries.toCollection(dict)
     
 End Function
 
@@ -549,34 +574,34 @@ End Function
 ' Description:          Method to filter the given collection using the given evaluation rule.
 '----------------------------------------------------------------------------------------------------------
 Public Function filterObjects(col As VBA.Collection, evaluationFunction As String) As VBA.Collection
-    Dim item As Variant
+    Dim Item As Variant
     Dim value As Variant
     '------------------------------------------------------------------------------------------------------
     
     Set filterObjects = New VBA.Collection
-    For Each item In col
-        If VBA.IsObject(item) Then
-            If Not item Is Nothing Then
-                If checkIfIncludeItem(F.cast.toObject(item), evaluationFunction) Then
-                    Call filterObjects.Add(item)
+    For Each Item In col
+        If VBA.IsObject(Item) Then
+            If Not Item Is Nothing Then
+                If checkIfIncludeItem(f.cast.toObject(Item), evaluationFunction) Then
+                    Call filterObjects.add(Item)
                 End If
             End If
         End If
-    Next item
+    Next Item
     
 End Function
 
 
-Private Function checkIfIncludeItem(item As Object, ByVal evaluationFunction As String) As Boolean
+Private Function checkIfIncludeItem(Item As Object, ByVal evaluationFunction As String) As Boolean
     Dim substr As String
     Dim value As Variant
     '------------------------------------------------------------------------------------------------------
     
     Do
-        substr = F.strings.substring(evaluationFunction, METHOD_START_TAG, METHOD_END_TAG)
+        substr = f.strings.substring(evaluationFunction, METHOD_START_TAG, METHOD_END_TAG)
         If VBA.Len(substr) Then
-            value = VBA.CallByName(item, substr, VbMethod)
-            evaluationFunction = VBA.Replace(evaluationFunction, METHOD_START_TAG & substr & METHOD_END_TAG, value)
+            value = VBA.CallByName(Item, substr, VbMethod)
+            evaluationFunction = VBA.replace(evaluationFunction, METHOD_START_TAG & substr & METHOD_END_TAG, value)
         End If
     Loop While VBA.Len(substr)
     
@@ -598,12 +623,12 @@ Public Function sort(col As VBA.Collection, Optional ByVal ascending As Boolean 
     If isNonEmptyCollection(col) Then
         ReDim arr(1 To 2, 1 To col.count)
         For i = LBound(arr, 2) To UBound(arr, 2)
-            arr(1, i) = F.Reflection.modifyValue(col.item(i), sortFunction, sortFunctionInvoker)
-            Call F.Variables.assign(arr(2, i), col.item(i))
+            arr(1, i) = f.Reflection.modifyValue(col.Item(i), sortFunction, sortFunctionInvoker)
+            Call f.Variables.assign(arr(2, i), col.Item(i))
         Next i
-        Call F.arrays.sort(arr, False, 1)
+        arr = f.arrays.sort(arr, ascending, 1)
         For i = LBound(arr, 2) To UBound(arr, 2)
-            Call sort.Add(arr(2, i))
+            Call sort.add(arr(2, i))
         Next i
     End If
 
@@ -614,24 +639,24 @@ Public Function filter(col As VBA.Collection, _
                         Optional filterMethod As String = vbNullString, _
                         Optional filterMethodInvoker As Object, _
                         Optional filterMethodParams As Scripting.Dictionary) As VBA.Collection
-    Dim item As Variant
+    Dim Item As Variant
     Dim include As Variant
     '------------------------------------------------------------------------------------------------------
     
     Set filter = New VBA.Collection
     If Not col Is Nothing Then
-        For Each item In col
+        For Each Item In col
             If VBA.Len(filterMethod) Then
-                include = F.Reflection.modifyValue(item, filterMethod, filterMethodInvoker, filterMethodParams)
+                include = f.Reflection.modifyValue(Item, filterMethod, filterMethodInvoker, filterMethodParams)
             Else
                 include = False
             End If
             
             If include Then
-                Call filter.Add(item)
+                Call filter.add(Item)
             End If
             
-        Next item
+        Next Item
     End If
     
 
@@ -640,27 +665,70 @@ End Function
 Public Function map(col As VBA.Collection, modifyMethod As String, _
                         Optional modifyMethodInvoker As Object, _
                         Optional modifyMethodParams As Scripting.Dictionary) As VBA.Collection
-    Dim item As Variant
+    Dim Item As Variant
     '------------------------------------------------------------------------------------------------------
     
     Set map = New VBA.Collection
     
     If isNonEmptyCollection(col) Then
-        For Each item In col
-            Call map.Add(F.Reflection.modifyValue(item, modifyMethod, modifyMethodInvoker, modifyMethodParams))
-        Next item
+        For Each Item In col
+            Call map.add(f.Reflection.modifyValue(Item, modifyMethod, modifyMethodInvoker, modifyMethodParams))
+        Next Item
     End If
     
 End Function
 
 
+Public Function forEach(col As VBA.Collection, methodName As String, _
+                                Optional methodInvoker As Object, _
+                                Optional methodParams As Scripting.Dictionary)
+    Dim Item As Variant
+    '------------------------------------------------------------------------------------------------------
+    If isNonEmptyCollection(col) Then
+        For Each Item In col
+            Call f.Reflection.runMethod(Item, methodName, methodInvoker, methodParams)
+        Next Item
+    End If
+End Function
 
 
+Public Function removeUndefined(col As VBA.Collection, Optional includeEmptyString As Boolean = False, _
+                                    Optional includeZero As Boolean = False, _
+                                    Optional includeUndefinedArray As Boolean = True) As VBA.Collection
+    Dim Item As Variant
+    '------------------------------------------------------------------------------------------------------
+                                    
+    If isCollection(col) Then
+        Set removeUndefined = New VBA.Collection
+        For Each Item In col
+            If f.Variables.isUndefined(Item, includeEmptyString, includeZero, includeUndefinedArray) Then
+            Else
+                Call removeUndefined.add(Item)
+            End If
+        Next Item
+    End If
+                                    
+End Function
 
 
-
-
-
+Public Function slice(col As VBA.Collection, startIndex As Long, size As Long) As VBA.Collection
+    Dim i As Long
+    Dim endIndex As Long
+    '------------------------------------------------------------------------------------------------------
+    
+    Set slice = New VBA.Collection
+    If Not f.Collections.isNonEmptyCollection(col) Then
+        '
+    ElseIf startIndex > col.count Then
+        '
+    Else
+        endIndex = f.Numerics.getMin(startIndex + size - 1, col.count)
+        For i = startIndex To endIndex
+            Call slice.add(col.Item(i))
+        Next i
+    End If
+    
+End Function
 
 
 '

@@ -13,22 +13,31 @@ Private Const CLASS_NAME As String = "IRepoParent"
 '----------------------------------------------------------------------------------------------------------
 
 
-Public Function getWindowTitle() As String
+Public Function getName() As String
 End Function
 
-Public Function getFrameHeight() As Single
+Public Function getSheetName() As String
 End Function
 
-Public Function getFrameWidth() As Single
+Public Function isAddingAllowed() As Boolean
 End Function
 
-Public Function getColumnsDictionary() As Scripting.Dictionary
+Public Function isDeletingAllowed() As Boolean
 End Function
 
-Public Function getFilterColumns() As VBA.Collection
+Public Function isFilteringAllowed() As Boolean
 End Function
 
-Public Function getSortColumnKey() As String
+Public Function isSortingAllowed() As Boolean
+End Function
+
+Public Function getIdField() As String
+End Function
+
+Public Function getColumns() As VBA.Collection
+End Function
+
+Public Function getSortingRules() As Scripting.Dictionary
 End Function
 
 Public Function getDeleteSuccessInfo() As String
@@ -40,18 +49,9 @@ End Function
 Public Function getDeleteItemWindowTitle() As String
 End Function
 
-Public Function hasRecordsCounter() As Boolean
-End Function
-
-Public Function isAddingAllowed() As Boolean
-End Function
-
-Public Function getModalState() As FormShowConstants
-End Function
-
 
 '[Actions]
-Public Function createNewItem() As IEdititem
+Public Function createNewItem() As IEditItem
 End Function
 
 Public Function runAfterEditAction(ByRef updateView As Boolean)

@@ -11,7 +11,8 @@ Option Explicit
 
 Private Const CLASS_NAME As String = "UIValidationLabel"
 '[Default UI properties] ----------------------------------------------------------------------------------
-Private Const DEFAULT_BACK_COLOR As Long = vbRed
+Private Const DEFAULT_ERROR_BACK_COLOR As Long = vbRed
+Private Const DEFAULT_WARNING_BACK_COLOR As Long = 4244467       'rgb(243, 195, 64)
 Private Const DEFAULT_FONT_COLOR As Long = vbWhite
 Private Const DEFAULT_FONT_NAME As String = APP_FONT_FAMILY
 Private Const DEFAULT_FONT_SIZE As Single = 10
@@ -25,7 +26,8 @@ Private pCaptionLabel As MSForms.label
 Attribute pCaptionLabel.VB_VarHelpID = -1
 '----------------------------------------------------------------------------------------------------------
 Private pCaption As String
-Private pBackColor As Long
+Private pErrorBackColor As Long
+Private pWarningBackColor As Long
 Private pFontName As String
 Private pFontColor As Long
 Private pFontSize As Single
@@ -38,6 +40,7 @@ Private pHeight As Single
 Private pWidth As Single
 Private pVisible As Boolean
 '----------------------------------------------------------------------------------------------------------
+Private pState As Variant
 Private pIsRendered As Boolean
 '----------------------------------------------------------------------------------------------------------
 
@@ -45,12 +48,14 @@ Private pIsRendered As Boolean
 
 
 Private Sub Class_Initialize()
-    pBackColor = DEFAULT_BACK_COLOR
+    pErrorBackColor = DEFAULT_ERROR_BACK_COLOR
+    pWarningBackColor = DEFAULT_WARNING_BACK_COLOR
     pFontColor = DEFAULT_FONT_COLOR
     pFontBold = DEFAULT_FONT_BOLD
     pFontSize = DEFAULT_FONT_SIZE
     pFontName = DEFAULT_FONT_NAME
     pPadding = DEFAULT_PADDING
+    pState = False
 End Sub
 
 
@@ -75,12 +80,24 @@ Public Function setVisible(value As Boolean) As UIValidationLabel
     Call updateVisibility
 End Function
 
+Public Function setState(value As Variant) As UIValidationLabel
+    'Introduced with validation WARNING status.
+    pState = value
+    Call updateView
+End Function
 
 
 
-Public Function setBackColor(value As Long) As UIValidationLabel
-    Set setBackColor = Me
-    pBackColor = value
+
+Public Function setErrorBackColor(value As Long) As UIValidationLabel
+    Set setErrorBackColor = Me
+    pErrorBackColor = value
+    Call updateView
+End Function
+
+Public Function setWarningBackColor(value As Long) As UIValidationLabel
+    Set setWarningBackColor = Me
+    pWarningBackColor = value
     Call updateView
 End Function
 
@@ -200,6 +217,14 @@ Public Function getWidth() As Single
     End If
 End Function
 
+Private Function getBackColorByState() As Long
+    If pState = WARNING_CODE Then
+        getBackColorByState = pWarningBackColor
+    Else
+        getBackColorByState = pErrorBackColor
+    End If
+End Function
+
 
 
 
@@ -226,7 +251,7 @@ Private Sub insertErrorBackground()
     Set pBackgroundLabel = pFrame.controls.Add(CREATE_LABEL_ID, visible:=False)
     With pBackgroundLabel
         .BackStyle = fmBackStyleOpaque
-        .BackColor = pBackColor
+        .backColor = pErrorBackColor
         .height = pHeight
         .width = pFrame.InsideWidth
         .left = 0
@@ -243,7 +268,7 @@ Private Sub insertErrorCaptionLabel()
         With .font
             .name = pFontName
             .size = pFontSize
-            .Bold = pFontBold
+            .Bold = VBA.IIf(pFontBold, 1, False)
         End With
         .height = pHeight
         .width = pBackgroundLabel.width - 2 * pPadding
@@ -257,7 +282,7 @@ End Sub
 Private Sub updateView()
     With pBackgroundLabel
         .BackStyle = fmBackStyleOpaque
-        .BackColor = pBackColor
+        .backColor = getBackColorByState
     End With
     
     With pCaptionLabel
@@ -265,7 +290,7 @@ Private Sub updateView()
         .caption = pCaption
         .ForeColor = pFontColor
         With .font
-            .Bold = pFontBold
+            .Bold = VBA.IIf(pFontBold, 1, False)
             .size = pFontSize
             .name = pFontName
         End With
@@ -296,6 +321,7 @@ Private Sub updateSize()
         .height = pHeight
         .AutoSize = True
         .AutoSize = False
+        If .height < 0 Then .height = 0
         .BackStyle = fmBackStyleTransparent
     End With
     

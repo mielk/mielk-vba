@@ -96,11 +96,11 @@ Public Sub setConnectionDetails(dataSource As String, readWriteMode As ReadWrite
     Call recreateConnection
 End Sub
 
-Public Function getConnection() As ADODB.connection
+Public Function getConnection() As Object 'ADODB.connection
     Set getConnection = pConnection
 End Function
 
-Private Sub openConnection()
+Friend Sub openConnection()
     Call ensureConnectionIsSet
     Call ensureConnectionIsOpen
 End Sub
@@ -113,22 +113,40 @@ End Function
 
 Private Function ensureConnectionIsOpen()
     Const METHOD_NAME As String = "ensureConnectionIsOpen"
-    Const MAX_ATTEMPTS As Integer = 3
+    Const MAX_ATTEMPTS As Integer = 50
+    Const MAX_TIME As Integer = 30
     '------------------------------------------------------------------------------------------------------
     Dim attempt As Integer
+    Dim startTime As Double
     '------------------------------------------------------------------------------------------------------
+
+    startTime = VBA.Timer
 
     For attempt = 1 To MAX_ATTEMPTS
         Call D.Functions.reopenConnection(pConnection)
         If pConnection.State >= 1 Then Exit For
+        Call sleep(250)
+        If (VBA.Timer - startTime) > MAX_TIME Then Exit For
+        Call recreateConnection
     Next attempt
 
     DoEvents
 
     If pConnection.State = 0 Then
-        Call Exceptions.DbConnectionException.Raise(pConnection.ConnectionString)
+        Call Exceptions.DbConnectionException.Raise(getConnectionStringFromAdodbConnection)
     End If
 
+End Function
+
+Private Function getConnectionStringFromAdodbConnection(Optional maskPassword As Boolean = True) As String
+    Const PWRD_REGEX As String = "(password|pwrd)=""?[^""]+?""?;"
+    Const PWRD_REPLACEMENT As String = "Password=***;"
+    '------------------------------------------------------------------------------------------------------
+    Dim str As String
+    '------------------------------------------------------------------------------------------------------
+    str = VBA.CStr(pConnection.ConnectionString)
+    If maskPassword Then str = F.regex.Replace(str, PWRD_REGEX, PWRD_REPLACEMENT)
+    getConnectionStringFromAdodbConnection = str
 End Function
 
 Public Sub reconnect()
@@ -137,11 +155,12 @@ Public Sub reconnect()
 End Sub
 
 Private Sub recreateConnection()
+    Set pConnection = Nothing
     Set pConnection = VBA.CreateObject(ADODB_CONNECTION) ' New ADODB.connection
     pConnection.ConnectionString = pConnectionString
 End Sub
 
-Public Function clone() As SqlServerConnection
+Public Function clone() As IDbConnection
     Set clone = New AccessConnection
     Call clone.setConnectionString(pConnectionString)
 End Function
@@ -149,18 +168,35 @@ End Function
 Private Sub closeConnection(Optional rollbackTransactionIfOpen As Boolean = False, _
                             Optional ignoreCloseWhileInTransactionError As Boolean = True)
                             
-    If Not pConnection Is Nothing Then
-        If pConnection.State = 1 Then
-            If isTransactionOpen Then
-                If rollbackTransactionIfOpen Then
-                    Call rollbackTransaction(vbNullString)
-                    Call pConnection.Close
-                End If
-            Else
+    If pConnection Is Nothing Then
+        '
+    ElseIf pConnection.State = 0 Then
+        '
+    Else
+        If isTransactionOpen Then
+            If rollbackTransactionIfOpen Then
+                Call rollbackTransaction(vbNullString)
                 Call pConnection.Close
             End If
+        Else
+            Call pConnection.Close
         End If
     End If
+    
+ExitPoint:
+    Dim errNumber As Long, errDescription As String
+    Exit Sub
+
+ErrHandler:
+    errNumber = Err.Number: errDescription = Err.Description
+    If ignoreCloseWhileInTransactionError And errNumber = Exceptions.DbClosingWhileInTransaction.getNumber Then
+        If F.System.isDeveloper Then Stop
+        Call VBA.Err.Clear
+    Else
+        Stop
+        'Call ErrorManager.addError
+    End If
+    GoTo ExitPoint
     
 End Sub
 
@@ -169,7 +205,15 @@ End Sub
 
 
 '[TRANSACTIONS]
-Public Sub beginTransaction(uuid As String)
+Public Sub beginTransaction(uuid As String, Optional forceNewTransaction As Boolean = False)
+    If forceNewTransaction Then
+        On Error Resume Next
+        Call pConnection.RollbackTrans
+        Call pConnection.Close
+        pIsTransactionOpen = False
+        If Not DEV_MODE Then On Error GoTo ErrHandler
+    End If
+    
     If Not pIsTransactionOpen Then
         Set pErrors = New VBA.Collection
         Call openConnection
@@ -177,9 +221,12 @@ Public Sub beginTransaction(uuid As String)
         pTransactionUuid = uuid
         pIsTransactionOpen = True
     End If
+    
+    
+ErrHandler:
 End Sub
 
-Public Sub rollbackTransaction(uuid As String)
+Public Sub rollbackTransaction(Optional uuid As String)
     If VBA.Len(uuid) = 0 Or F.Strings.compareStrings(uuid, pTransactionUuid) Then
         On Error Resume Next
         Call getConnection.RollbackTrans
@@ -200,8 +247,6 @@ Public Sub commitTransaction(uuid As String)
     Dim startTime As Double
     Dim attempts As Long
     '----------------------------------------------------------------------------------------------------------
-    
-    On Error GoTo ErrHandler
     
     If pIsTransactionOpen Then
         uuidMatched = F.Strings.compareStrings(uuid, pTransactionUuid)
@@ -226,13 +271,20 @@ Public Sub commitTransaction(uuid As String)
                 If errNumber = 0 Then
                     pIsSuccessful = True
                     Exit Do
-                Else
+                ElseIf D.isConcurrencyError(errNumber, errDescription) Then
                     If VBA.Timer - startTime > timeout And attempts >= maxAttempts Then
-                        If Not dev_mode Then On Error GoTo ErrHandler
-                        Call VBA.Err.Raise(1, Description:="Timeout (" & timeout & "s)")
+                        If Not DEV_MODE Then On Error GoTo ErrHandler
+                        Call VBA.Err.Raise(1, Description:="Timeout (" & timeout & "s) | " & _
+                                                            errNumber & " | " & errDescription)
                     End If
+                Else
+                    If Not DEV_MODE Then On Error GoTo ErrHandler
+                    Call VBA.Err.Raise(errNumber, , errDescription)
                 End If
+                
                 attempts = attempts + 1
+                Call sleep(150)
+                
             Loop
             '--------------------------------------------------------------------------------------|
             
@@ -240,6 +292,7 @@ Public Sub commitTransaction(uuid As String)
     
         pTransactionUuid = vbNullString
         pIsTransactionOpen = False
+        Call closeConnection
     
     End If
     
@@ -251,7 +304,8 @@ ExitPoint:
 '----------------------------------------------------------------------------------------------------------
 ErrHandler:
     errNumber = VBA.Err.Number: errDescription = VBA.Err.Description
-    Call Exceptions.DbTransactionCommitException.Raise
+    Stop
+    'Call ErrorManager.addError(CLASS_NAME, method_name, errNumber, err
     
 End Sub
 
@@ -277,7 +331,8 @@ End Function
 
 '[FETCHING DATA]
 '[Basic operations]
-Public Function Execute(sqlString As String, Optional lockType As Long = adLockPessimistic) As Object 'ADODB.recordset
+Public Function Execute(sqlString As String, Optional lockType As Long = adLockPessimistic, _
+                            Optional handleErrors As Boolean = True) As Object 'ADODB.recordset
     Dim errNumber As Long, errDescription As String
     '----------------------------------------------------------------------------------------------------------
     Dim timeout As Long
@@ -286,7 +341,7 @@ Public Function Execute(sqlString As String, Optional lockType As Long = adLockP
     Dim attempts As Long
     '----------------------------------------------------------------------------------------------------------
 
-    Set Execute = New ADODB.recordset
+    Set Execute = VBA.CreateObject(ADODB_CONNECTION) ' New ADODB.recordset
     Call openConnection
 
     'Try to execute query as long as it is successful or timeout is exceeded.----- --------|
@@ -301,31 +356,45 @@ Public Function Execute(sqlString As String, Optional lockType As Long = adLockP
         errNumber = VBA.Err.Number: errDescription = VBA.Err.Description
         If errNumber = 0 Then
             Exit Do
-        Else
+        ElseIf D.isConcurrencyError(errNumber, errDescription) Then
             If VBA.Timer - startTime > timeout And attempts >= maxAttempts Then
-                If Not dev_mode Then On Error GoTo ErrHandler
-                Call VBA.Err.Raise(1, Description:="Timeout (" & timeout & "s)")
+                If Not DEV_MODE Then On Error GoTo ErrHandler
+                Call VBA.Err.Raise(1, Description:="Timeout (" & timeout & "s) | " & _
+                                                    errNumber & " | " & errDescription)
             End If
+        Else
+            If Not DEV_MODE Then On Error GoTo ErrHandler
+            Call VBA.Err.Raise(errNumber, , errDescription)
         End If
         attempts = attempts + 1
+        Call sleep(150)
     Loop
     '--------------------------------------------------------------------------------------|
 
     '[Restore error handling]
-    If Not dev_mode Then On Error GoTo ErrHandler
-    
-    If Not pIsTransactionOpen Then
-        Call closeConnection
-    End If
+    If Not DEV_MODE Then On Error GoTo ErrHandler
     
 '==========================================================================================================
 ExitPoint:
+    
+    If Not pIsTransactionOpen Then
+        Call closeConnection
+    ElseIf errNumber And handleErrors Then
+        Call closeConnection
+    End If
+    
+    Stop
+    'if errNumber then call vba.Err.Raise(errNumber
     Exit Function
     
 '----------------------------------------------------------------------------------------------------------
 ErrHandler:
     errNumber = VBA.Err.Number: errDescription = VBA.Err.Description
-    'Call Exceptions.DbTransactionCommitException.Raise
+    If handleErrors Then
+        Stop
+        'call ErrorManager.addError
+    End If
+    GoTo ExitPoint
     
 End Function
 
@@ -361,24 +430,33 @@ Public Function getRecordset(sqlString As String, Optional lockType As Long = ad
         errNumber = VBA.Err.Number: errDescription = VBA.Err.Description
         If errNumber = 0 Then
             Exit Do
-        Else
+        ElseIf D.isConcurrencyError(errNumber, errDescription) Then
             If VBA.Timer - startTime > timeout And attempts >= maxAttempts Then
-                If Not dev_mode Then On Error GoTo ErrHandler
-                Call VBA.Err.Raise(1, Description:="Timeout (" & timeout & "s)")
+                If Not DEV_MODE Then On Error GoTo ErrHandler
+                Call VBA.Err.Raise(1, Description:="Timeout (" & timeout & "s) | " & _
+                                                    errNumber & " | " & errDescription)
             End If
+        Else
+            If Not DEV_MODE Then On Error GoTo ErrHandler
+            Call VBA.Err.Raise(errNumber, , errDescription)
         End If
         attempts = attempts + 1
+        Call sleep(150)
     Loop
     '--------------------------------------------------------------------------------------|
 
 '==========================================================================================================
 ExitPoint:
+    If errNumber Then
+        Call closeConnection
+        Stop
+        'call vba.Err.Raise(errNumber,
+    End If
     Exit Function
     
 '----------------------------------------------------------------------------------------------------------
 ErrHandler:
     errNumber = VBA.Err.Number: errDescription = VBA.Err.Description
-    'Call Exceptions.DbTransactionCommitException.Raise
     
 End Function
 
@@ -388,7 +466,7 @@ End Function
 
 
 '[Wrappers]
-Public Function getPrimitiveValue(sqlString As String, Optional lockType As ADODB.LockTypeEnum = adLockOptimistic) As Variant
+Public Function getPrimitiveValue(sqlString As String, Optional lockType As ADODB.LockTypeEnum = adLockPessimistic) As Variant
     Dim rs As Object 'ADODB.recordset
     '----------------------------------------------------------------------------------------------------------
     
@@ -397,11 +475,7 @@ Public Function getPrimitiveValue(sqlString As String, Optional lockType As ADOD
         getPrimitiveValue = rs.Fields(0).value
         Exit Do
     Loop
-    
-ExitPoint:
-    If Not pConnection Is Nothing Then Call D.Connections.closeRecordset(rs, Not pConnection.isTransactionOpen, True)
         
-    
 End Function
 
 
@@ -431,6 +505,7 @@ ExitPoint:
     If Not pConnection Is Nothing Then Call D.Connections.closeRecordset(rs, Not pConnection.isTransactionOpen, True)
 
 End Function
+
 
 
 
@@ -488,15 +563,15 @@ Private Sub IDbConnection_closeConnection(Optional rollbackTransactionIfOpen As 
     Call closeConnection(rollbackTransactionIfOpen)
 End Sub
 
-Private Sub IDbConnection_beginTransaction(uuid As String)
-    Call beginTransaction(uuid)
+Private Sub IDbConnection_beginTransaction(uuid As String, Optional forceNewTransaction As Boolean = False)
+    Call beginTransaction(uuid, forceNewTransaction)
 End Sub
 
 Private Sub IDbConnection_commitTransaction(uuid As String)
     Call commitTransaction(uuid)
 End Sub
 
-Private Sub IDbConnection_rollbackTransaction(uuid As String)
+Private Sub IDbConnection_rollbackTransaction(Optional uuid As String)
     Call rollbackTransaction(uuid)
 End Sub
 
@@ -512,12 +587,24 @@ Private Function IDbConnection_hasErrors() As Boolean
     IDbConnection_hasErrors = hasErrors
 End Function
 
-Private Function IDbConnection_execute(sqlString As String, Optional lockType As Long = adLockPessimistic) As Object 'ADODB.recordset
-    Set IDbConnection_execute = Execute(sqlString, lockType)
+Private Function IDbConnection_execute(sqlString As String, Optional lockType As Long = adLockPessimistic, Optional handleErrors As Boolean = True) As Object 'ADODB.recordset
+    Set IDbConnection_execute = Execute(sqlString, lockType, handleErrors)
 End Function
 
 Private Function IDbConnection_getRecordset(sqlString As String, Optional lockType As Long = adLockPessimistic) As Object 'ADODB.recordset
     Set IDbConnection_getRecordset = getRecordset(sqlString, lockType)
+End Function
+
+Private Function IDbConnection_getRecordsetFromStoredProcedure(procName As String, params As Scripting.IDictionary) As Object
+    'N/A
+End Function
+
+Private Function IDbConnection_getState() As Long
+    If pConnection Is Nothing Then
+        IDbConnection_getState = -1
+    Else
+        IDbConnection_getState = pConnection.State
+    End If
 End Function
 
 Private Function IDbConnection_getDtos(sqlString As String, Optional lockType As Long = adLockPessimistic) As VBA.Collection

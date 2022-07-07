@@ -13,14 +13,27 @@ Private Const CLASS_NAME As String = "FColors"
 '[Windows API functions] ----------------------------------------------------------------------------------
 
 #If VBA7 And Win64 Then
-    Private Declare PtrSafe Function ChooseColorDlg Lib "comdlg32.dll" Alias "ChooseColorA" (pChoosecolor As CHOOSECOLOR) As Long
+    Private Declare PtrSafe Function ChooseColorDlg Lib "comdlg32.dll" Alias "ChooseColorA" (pChoosecolor As ChooseColor) As Long
 #ElseIf VBA7 Then
-    Private Declare PtrSafe Function ChooseColorDlg Lib "comdlg32.dll" Alias "ChooseColorA" (pChoosecolor As CHOOSECOLOR) As Long
+    Private Declare PtrSafe Function ChooseColorDlg Lib "comdlg32.dll" Alias "ChooseColorA" (pChoosecolor As ChooseColor) As Long
 #Else
     Private Declare Function ChooseColorDlg Lib "comdlg32.dll" Alias "ChooseColorA" (pChoosecolor As CHOOSECOLOR) As Long
 #End If
 '[Windows API types] --------------------------------------------------------------------------------------
-Private Type CHOOSECOLOR
+#If VBA7 Then
+Private Type ChooseColor
+    lStructSize As Long
+    hwndOwner As LongPtr
+    hInstance As LongPtr
+    rgbResult As Long
+    lpCustColors As LongPtr
+    flags As Long
+    lCustData As LongPtr
+    lpfnHook As LongPtr
+    lpTemplateName As String
+End Type
+#Else
+Private Type ChooseColor
     lStructSize As Long
     hwndOwner As Long
     hInstance As Long
@@ -31,6 +44,7 @@ Private Type CHOOSECOLOR
     lpfnHook As Long
     lpTemplateName As String
 End Type
+#End If
 '[Windows API constants] ----------------------------------------------------------------------------------
 Private Const CC_RGBINIT = &H1&
 Private Const CC_FULLOPEN = &H2&
@@ -51,8 +65,8 @@ Public Function convertCssRgbToLong(ByVal text As String) As Long
     If VBA.isNumeric(text) Then
         convertCssRgbToLong = VBA.CLng(text)
     Else
-        colors = F.regex.getMatchArray(text, REGEX_PATTERN)
-        If F.arrays.isDefined(colors) Then
+        colors = f.regex.getMatchArray(text, REGEX_PATTERN)
+        If f.arrays.isDefined(colors) Then
             red = colors(LBound(colors))
             green = colors(LBound(colors) + 1)
             blue = colors(LBound(colors) + 2)
@@ -129,7 +143,7 @@ Public Function isValidRgbColor(ByVal value As Long) As Boolean
 End Function
 
 Public Function pickColor(Optional ByVal defaultColor As Long) As Long
-    Dim lpChoosecolor As CHOOSECOLOR
+    Dim lpChoosecolor As ChooseColor
     Dim dwCustClrs(0 To 15) As Long
     '------------------------------------------------------------------------------------------------------
     

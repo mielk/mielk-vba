@@ -20,14 +20,19 @@ Public Function isOpenConnection(value As Variant) As Boolean
     End If
 End Function
 
-Public Sub reopenConnection(connection As ADODB.connection)
+Public Sub reopenConnection(connection As Object) 'ADODB.connection)
     On Error Resume Next
+    If Not connection Is Nothing Then
+        Call connection.Close
+        Call sleep(100)
+        DoEvents
+    End If
     Call connection.Open
 End Sub
 
 
 Public Function CConnection(value As Variant, _
-                            Optional createNewConnectionForUndefined As Boolean = False) As ADODB.connection
+                            Optional createNewConnectionForUndefined As Boolean = False) As Object 'ADODB.connection
     Const METHOD_NAME As String = "CConnection"
     Const ERR_DESC As String = "ADODB.Connection was expected"
     '------------------------------------------------------------------------------------------------------
@@ -72,10 +77,10 @@ Public Function convertWheresCollectionToWhereSqlPart(wheres As VBA.Collection) 
     '----------------------------------------------------------------------------------------------------------
     
     For Each whereObj In wheres
-        Call F.Arrays.addEntry(arr, whereObj.toString)
+        Call F.arrays.addEntry(arr, whereObj.toString)
     Next whereObj
     
-    If F.Arrays.isDefined(arr) Then
+    If F.arrays.isDefined(arr) Then
         convertWheresCollectionToWhereSqlPart = " WHERE " & VBA.Join(arr, " AND ")
     End If
     
@@ -86,7 +91,7 @@ End Function
 
 
 '[Data manipulation]
-Public Function convertRecordsetToArray(rs As ADODB.recordset, Optional includeHeaders As Boolean = False) As Variant
+Public Function convertRecordsetToArray(rs As Object, Optional includeHeaders As Boolean = False) As Variant
     Const REDIM_STEP As Long = 1000
     '------------------------------------------------------------------------------------------------------
     Dim results() As Variant
@@ -153,18 +158,18 @@ Public Function convertRecordsetToDtosDictionary(rs As Object, keyField As Strin
     Dim keyValue As Variant
     Dim dto As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
-    Set convertRecordsetToDtosDictionary = F.Dictionaries.Create(False)
+    Set convertRecordsetToDtosDictionary = F.dictionaries.Create(False)
     If rs.State = 1 Then
         Do Until rs.EOF
             Set dto = getCurrentRecordPropertiesMap(rs)
-            keyValue = F.Dictionaries.getItem(dto, keyField)
+            keyValue = F.dictionaries.getItem(dto, keyField)
             Call convertRecordsetToDtosDictionary.Add(keyValue, dto)
             Call rs.MoveNext
         Loop
     End If
 End Function
 
-Public Function convertRecordsetToDtosCollection(rs As ADODB.recordset) As VBA.Collection
+Public Function convertRecordsetToDtosCollection(rs As Object) As VBA.Collection
     Set convertRecordsetToDtosCollection = New VBA.Collection
     If rs.State = 1 Then
         Do Until rs.EOF
@@ -174,12 +179,12 @@ Public Function convertRecordsetToDtosCollection(rs As ADODB.recordset) As VBA.C
     End If
 End Function
 
-Public Function convertRecordsetToDto(rs As ADODB.recordset) As Scripting.Dictionary
-    Set convertRecordsetToDto = F.Dictionaries.Create(False)
+Public Function convertRecordsetToDto(rs As Object) As Scripting.Dictionary
+    Set convertRecordsetToDto = F.dictionaries.Create(False)
     If rs.State = 1 Then
         On Error Resume Next
         Call rs.MoveFirst
-        If Not dev_mode Then On Error GoTo ErrHandler
+        If Not DEV_MODE Then On Error GoTo ErrHandler
         
         Do Until rs.EOF
             Set convertRecordsetToDto = getCurrentRecordPropertiesMap(rs)
@@ -192,11 +197,11 @@ ErrHandler:
 
 End Function
 
-Private Function getCurrentRecordPropertiesMap(rs As ADODB.recordset) As Scripting.Dictionary
+Private Function getCurrentRecordPropertiesMap(rs As Object) As Scripting.Dictionary
     Dim field As Variant
     Dim fieldValue As Variant
     '------------------------------------------------------------------------------------------------------
-    Set getCurrentRecordPropertiesMap = F.Dictionaries.Create(False)
+    Set getCurrentRecordPropertiesMap = F.dictionaries.Create(False)
     For Each field In rs.Fields
         fieldValue = rs.Fields(field.Name).value
         Call getCurrentRecordPropertiesMap.Add(field.Name, fieldValue)

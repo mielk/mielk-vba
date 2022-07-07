@@ -38,7 +38,7 @@ Public Function setArray(arr As Variant) As ArraySorter
     Set setArray = Me
     If VBA.IsArray(arr) Then
         pArray = arr
-        pDimensions = F.arrays.countDimensions(pArray)
+        pDimensions = f.arrays.countDimensions(pArray)
     Else
         Call err.raise(1, "Array expected")
     End If
@@ -119,8 +119,8 @@ Private Function determineSortType() As SortTypeEnum
             determineSortType = SortType_None
         Else
             If nextLess > nextGreater Then
-                pArray = F.arrays.invert(pArray, dimensions:=pDimensions)
-                Call F.Variables.swapValues(nextGreater, nextLess)
+                pArray = f.arrays.invert(pArray, dimensions:=pDimensions)
+                Call f.Variables.swapValues(nextGreater, nextLess)
             End If
             bubbleSortComplexity = calculateBubbleSortTimeComplexity(itemsCounter, nextGreater)
             mergeSortComplexity = calculateMergeSortTimeComplexity(itemsCounter)
@@ -137,8 +137,8 @@ Private Function determineSortType() As SortTypeEnum
             determineSortType = SortType_None
         Else
             If nextGreater > nextLess Then
-                pArray = F.arrays.invert(pArray, dimensions:=pDimensions)
-                Call F.Variables.swapValues(nextGreater, nextLess)
+                pArray = f.arrays.invert(pArray, dimensions:=pDimensions)
+                Call f.Variables.swapValues(nextGreater, nextLess)
             End If
             bubbleSortComplexity = calculateBubbleSortTimeComplexity(itemsCounter, nextLess)
             mergeSortComplexity = calculateMergeSortTimeComplexity(itemsCounter)
@@ -179,7 +179,7 @@ Private Function bubbleSort_1D(arr As Variant) As Variant 'arr As Variant, colum
         noSwaps = True
         For j = LBound(arr) To i - 1
             If (arr(j) > arr(j + 1)) = pOrderAscending Then
-                Call F.arrays.swapItems(arr, j, j + 1, dimensions:=pDimensions)
+                Call f.arrays.swapItems(arr, j, j + 1, dimensions:=pDimensions)
                 noSwaps = False
             End If
         Next j
@@ -199,7 +199,7 @@ Private Function bubbleSort_2D(arr As Variant) As Variant 'arr As Variant, colum
         noSwaps = True
         For j = LBound(arr, 2) To i - 1
             If (arr(pSortColumn, j) > arr(pSortColumn, j + 1)) = pOrderAscending Then
-                Call F.arrays.swapItems(arr, j, j + 1, dimensions:=pDimensions)
+                Call f.arrays.swapItems(arr, j, j + 1, dimensions:=pDimensions)
                 noSwaps = False
             End If
         Next j
@@ -232,8 +232,8 @@ Private Function mergeSort_1D(arr As Variant) As Variant ', column As Long, Opti
         mergeSort_1D = arr
     Else
         mid = VBA.Int(counter / 2)
-        left = mergeSort_1D(F.arrays.slice(arr, LBound(arr, 1), mid, 1))
-        right = mergeSort_1D(F.arrays.slice(arr, LBound(arr, 1) + mid, counter - mid, 1))
+        left = mergeSort_1D(f.arrays.slice(arr, LBound(arr, 1), mid, 1))
+        right = mergeSort_1D(f.arrays.slice(arr, LBound(arr, 1) + mid, counter - mid, 1))
         mergeSort_1D = mergeArrays_1D(left, right)
     End If
     
@@ -253,23 +253,23 @@ Private Function mergeArrays_1D(arr1 As Variant, arr2 As Variant) As Variant ', 
     Do While (i <= counter1 And j <= counter2)
         inserted = inserted + 1
         If ((arr2(j) >= arr1(i)) = pOrderAscending) Then
-            Call F.Variables.assign(result(inserted), arr1(i))
+            Call f.Variables.assign(result(inserted), arr1(i))
             i = i + 1
         Else
-            Call F.Variables.assign(result(inserted), arr2(j))
+            Call f.Variables.assign(result(inserted), arr2(j))
             j = j + 1
         End If
     Loop
     
     Do While (i <= counter1)
         inserted = inserted + 1
-        Call F.Variables.assign(result(inserted), arr1(i))
+        Call f.Variables.assign(result(inserted), arr1(i))
         i = i + 1
     Loop
     
     Do While (j <= counter2)
         inserted = inserted + 1
-        Call F.Variables.assign(result(inserted), arr2(j))
+        Call f.Variables.assign(result(inserted), arr2(j))
         j = j + 1
     Loop
     
@@ -288,8 +288,8 @@ Private Function mergeSort_2D(arr As Variant) As Variant ', column As Long, Opti
         mergeSort_2D = arr
     Else
         mid = VBA.Int(counter / 2)
-        left = mergeSort_2D(F.arrays.slice(arr, LBound(arr, 2), mid, 2))
-        right = mergeSort_2D(F.arrays.slice(arr, LBound(arr, 2) + mid, counter - mid, 2))
+        left = mergeSort_2D(f.arrays.slice(arr, LBound(arr, 2), mid, 2))
+        right = mergeSort_2D(f.arrays.slice(arr, LBound(arr, 2) + mid, counter - mid, 2))
         mergeSort_2D = mergeArrays_2D(left, right)
     End If
     
@@ -310,12 +310,12 @@ Private Function mergeArrays_2D(arr1 As Variant, arr2 As Variant) As Variant ', 
         inserted = inserted + 1
         If ((arr2(pSortColumn, j) >= arr1(pSortColumn, i)) = pOrderAscending) Then
             For k = LBound(arr2, 1) To UBound(arr2, 1)
-                Call F.Variables.assign(result(k, inserted), arr1(k, i))
+                Call f.Variables.assign(result(k, inserted), arr1(k, i))
             Next k
             i = i + 1
         Else
             For k = LBound(arr2, 1) To UBound(arr2, 1)
-                Call F.Variables.assign(result(k, inserted), arr2(k, j))
+                Call f.Variables.assign(result(k, inserted), arr2(k, j))
             Next k
             j = j + 1
         End If
@@ -324,7 +324,7 @@ Private Function mergeArrays_2D(arr1 As Variant, arr2 As Variant) As Variant ', 
     Do While (i <= counter1)
         inserted = inserted + 1
         For k = LBound(arr2, 1) To UBound(arr2, 1)
-            Call F.Variables.assign(result(k, inserted), arr1(k, i))
+            Call f.Variables.assign(result(k, inserted), arr1(k, i))
         Next k
         i = i + 1
     Loop
@@ -332,7 +332,7 @@ Private Function mergeArrays_2D(arr1 As Variant, arr2 As Variant) As Variant ', 
     Do While (j <= counter2)
         inserted = inserted + 1
         For k = LBound(arr2, 1) To UBound(arr2, 1)
-            Call F.Variables.assign(result(k, inserted), arr2(k, j))
+            Call f.Variables.assign(result(k, inserted), arr2(k, j))
         Next k
         j = j + 1
     Loop

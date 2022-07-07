@@ -68,14 +68,14 @@ Public Function startsWith(text As String, prefix As String, Optional isCaseSens
     Dim length As Long
     '------------------------------------------------------------------------------------------------------
     length = VBA.Len(prefix)
-    startsWith = F.strings.compareStrings(VBA.left$(text, length), prefix, isCaseSensitive)
+    startsWith = compareStrings(VBA.left$(text, length), prefix, isCaseSensitive)
 End Function
 
 Public Function endsWith(text As String, substr As String, Optional isCaseSensitive As Boolean = False) As Boolean
     Dim length As Long
     '------------------------------------------------------------------------------------------------------
     length = VBA.Len(substr)
-    endsWith = F.strings.compareStrings(VBA.right$(text, length), substr, isCaseSensitive)
+    endsWith = compareStrings(VBA.right$(text, length), substr, isCaseSensitive)
 End Function
 
 
@@ -147,7 +147,7 @@ Public Function format(pattern As String, ParamArray replacements() As Variant) 
     Const SLASH_TEMP_REPLACEMENT As String = "$%^#$%^#$%"
     '------------------------------------------------------------------------------------------------------
     Dim arr As Variant
-    Dim index As Long
+    Dim Index As Long
     Dim tag As String
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
@@ -155,17 +155,17 @@ Public Function format(pattern As String, ParamArray replacements() As Variant) 
     If Not DEV_MODE Then On Error GoTo ErrHandler
 
     'New line symbols
-    format = VBA.Replace(pattern, "\\", SLASH_TEMP_REPLACEMENT)
-    format = VBA.Replace(format, NEW_LINE_SYMBOL, VBA.vbCrLf)
-    format = VBA.Replace(format, SLASH_TEMP_REPLACEMENT, "\")
+    format = VBA.replace(pattern, "\\", SLASH_TEMP_REPLACEMENT)
+    format = VBA.replace(format, NEW_LINE_SYMBOL, VBA.vbCrLf)
+    format = VBA.replace(format, SLASH_TEMP_REPLACEMENT, "\")
 
     'Replacements
-    arr = F.arrays.flatArray(F.arrays.fromParamArray(replacements))
+    arr = f.arrays.flatArray(f.arrays.fromParamArray(replacements))
     
     For i = LBound(arr) To UBound(arr)
-        index = i - LBound(arr)
-        tag = "{" & index & "}"
-        format = VBA.Replace(format, tag, arr(i))
+        Index = i - LBound(arr)
+        tag = "{" & Index & "}"
+        format = VBA.replace(format, tag, arr(i))
     Next i
 
 '==========================================================================================================
@@ -179,7 +179,7 @@ ErrHandler:
     errNumber = err.number: errDescription = err.description
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, _
                         "pattern; replacements; arr; index; tag", _
-                         pattern, replacements, arr, index, tag)
+                         pattern, replacements, arr, Index, tag)
     GoTo ExitPoint
 
 End Function
@@ -190,7 +190,7 @@ Public Function toDbValue(value As Variant, Optional throwErrorIfIllegalDataType
     Const METHOD_NAME As String = "toDbValue"
     '------------------------------------------------------------------------------------------------------
 
-    If F.Variables.isUndefined(value) Then
+    If f.Variables.isUndefined(value) Then
         toDbValue = "NULL"
     ElseIf VBA.IsObject(value) Then
         If throwErrorIfIllegalDataType Then Call Exceptions.IllegalDataType.raise Else toDbValue = "NULL"
@@ -200,9 +200,9 @@ Public Function toDbValue(value As Variant, Optional throwErrorIfIllegalDataType
         toDbValue = VBA.IIf(value, 1, 0)
     ElseIf VBA.varType(value) = VBA.vbString Then
         toDbValue = toDbString_typeAlreadyChecked(value)
-    ElseIf F.Variables.isOfNumericType(value) Then
+    ElseIf f.Variables.isOfNumericType(value) Then
         toDbValue = toDbNumber_typeAlreadyChecked(value)
-    ElseIf F.Dates.isTimeString(value) Then
+    ElseIf f.Dates.isTimeString(value) Then
         toDbValue = "'" & VBA.format(value, "HH:MM:SS") & "'"
     ElseIf VBA.isDate(value) Then
         toDbValue = "'" & VBA.format(value, "YYYY-MM-DD HH:MM:SS") & "'"
@@ -214,8 +214,8 @@ Public Function toDbString(value As Variant) As String
     Const METHOD_NAME As String = "toDbString"
     '------------------------------------------------------------------------------------------------------
 
-    If Not F.Variables.isPrimitive(value) Then Call Exceptions.IllegalDataType.raise
-    If F.Variables.isUndefined(value) Then
+    If Not f.Variables.isPrimitive(value) Then Call Exceptions.IllegalDataType.raise
+    If f.Variables.isUndefined(value) Then
         toDbString = "NULL"
     Else
         toDbString = toDbString_typeAlreadyChecked(value)
@@ -226,18 +226,16 @@ End Function
 Private Function toDbString_typeAlreadyChecked(ByVal value As Variant) As String
     Const METHOD_NAME As String = "toDbString_typeAlreadyChecked"
     '------------------------------------------------------------------------------------------------------
-
-    '#todo - uøyÊ regexa
-    'zastπpiÊ znaki CHR(9, 10, 13) - uøyÊ zapisu ASCII uøywanego w regexach
-    'usunπÊ funkcje hasAnyBlankCharacters, toDbString_replaceBlankCharacters, isAsciiForBlank
-
-    Stop
-
-'    If hasAnyBlankCharacters(value) Then
-'        toDbString_typeAlreadyChecked = toDbString_replaceBlankCharacters(value)
-'    Else
-'        toDbString_typeAlreadyChecked = "'" & VBA.Replace(stringify(value), "'", "''") & "'"
-'    End If
+    Const REGEX_NON_PRINTABLE_CHARACTERS As String = "[\x00-\x1F]"
+    Static objRegex As Object
+    '------------------------------------------------------------------------------------------------------
+    Dim withoutNonPrintableCharacters As String
+    '------------------------------------------------------------------------------------------------------
+    
+    If objRegex Is Nothing Then Set objRegex = f.regex.Create(REGEX_NON_PRINTABLE_CHARACTERS)
+    
+    withoutNonPrintableCharacters = objRegex.replace(VBA.CStr(value), vbNullString)
+    toDbString_typeAlreadyChecked = "'" & VBA.replace(withoutNonPrintableCharacters, "'", "''") & "'"
 
 End Function
 
@@ -326,11 +324,11 @@ Public Function toDbNumber(value As Variant) As String
     Dim stringified As String
     '------------------------------------------------------------------------------------------------------
 
-    If Not F.Variables.isPrimitive(value) Then Call Exceptions.IllegalDataType.raise
+    If Not f.Variables.isPrimitive(value) Then Call Exceptions.IllegalDataType.raise
     
-    If F.Variables.isUndefined(value) Then
+    If f.Variables.isUndefined(value) Then
         toDbNumber = "NULL"
-    ElseIf F.Variables.isOfNumericType(value) Then
+    ElseIf f.Variables.isOfNumericType(value) Then
         toDbNumber = toDbNumber_typeAlreadyChecked(value)
     Else
         stringified = VBA.CStr(value)
@@ -346,9 +344,7 @@ End Function
 Private Function toDbNumber_typeAlreadyChecked(value As Variant) As String
     Const METHOD_NAME As String = "toDbNumber_typeAlreadyChecked"
     '------------------------------------------------------------------------------------------------------
-
-    toDbNumber_typeAlreadyChecked = trimLeft(trimRight(VBA.Replace(value, ",", ".")))
-
+    toDbNumber_typeAlreadyChecked = trimLeft(trimRight(VBA.replace(value, ",", ".")))
 End Function
 
 
@@ -389,22 +385,22 @@ Public Function stringify(value As Variant, _
     Const METHOD_NAME As String = "stringify"
     '------------------------------------------------------------------------------------------------------
 
-    If F.Variables.isUndefined(value, False, False, False) Then
+    If f.Variables.isUndefined(value, False, False, False) Then
         stringify = stringifyUndefined(value, stringifyMode)
     ElseIf VBA.IsObject(value) Then
-        stringify = stringifyObject(F.cast.toObject(value), stringifyMode, includeNonPrimitiveDetails)
-    ElseIf F.Variables.isOfNumericType(value) Then
-        stringify = VBA.CStr(value)
+        stringify = stringifyObject(f.cast.toObject(value), stringifyMode, includeNonPrimitiveDetails)
+    ElseIf f.Variables.isOfNumericType(value) Then
+        stringify = stringifyNumericValue(value, stringifyMode)
     ElseIf VBA.IsArray(value) Then
         If includeNonPrimitiveDetails Then
-            stringify = F.arrays.toString(value, stringifyMode)
+            stringify = f.arrays.toString(value, stringifyMode)
         Else
-            stringify = F.arrays.getDescription(value)
+            stringify = f.arrays.getDescription(value)
         End If
     Else
         If stringifyMode = StringifyMode_Db Then
             stringify = toDbValue(value)
-        ElseIf F.Dates.isTimeString(value) Then
+        ElseIf f.Dates.isTimeString(value) Then
             stringify = VBA.format(value, "HH:MM:SS")
         ElseIf VBA.isDate(value) And Not VBA.varType(value) = VBA.vbString Then
             stringify = VBA.format(value, "YYYY-MM-DD HH:MM:SS")
@@ -449,13 +445,13 @@ Private Function stringifyObject(value As Object, stringifyMode As StringifyMode
     If value Is Nothing Then
         stringifyObject = VBA.IIf(stringifyMode = StringifyMode_Xml, XML_NOTHING, vbNullString)
     ElseIf Not includeNonPrimitiveDetails Then
-        stringifyObject = F.strings.format(OBJECT_TAG, VBA.TypeName(value), VBA.ObjPtr(value))
+        stringifyObject = f.strings.format(OBJECT_TAG, VBA.TypeName(value), VBA.ObjPtr(value))
     ElseIf TypeOf value Is VBA.Collection Then
-        stringifyObject = F.Collections.toString(value, stringifyMode:=stringifyMode)
-    ElseIf F.Dictionaries.isDictionary(value) Then
-        stringifyObject = F.Dictionaries.toString(value, DictPart_KeyAndValue, stringifyMode:=stringifyMode)
+        stringifyObject = f.Collections.toString(value, stringifyMode:=stringifyMode)
+    ElseIf f.dictionaries.isDictionary(value) Then
+        stringifyObject = f.dictionaries.toString(value, DictPart_KeyAndValue, stringifyMode:=stringifyMode)
     ElseIf TypeOf value Is Excel.Range Then
-        stringifyObject = F.ranges.toString(value)
+        stringifyObject = f.ranges.toString(value)
     Else
         stringifyObject = stringifyNotContainerObject(value, stringifyMode)
     End If
@@ -488,7 +484,7 @@ Private Function stringifyNotContainerObject(value As Object, stringifyMode As S
 
     If errNumber = Exceptions.MethodNotSupported.getNumber Then
         pattern = OBJECT_TAG
-        stringifyNotContainerObject = F.strings.format(pattern, VBA.TypeName(value), VBA.CLng(VBA.ObjPtr(value)))
+        stringifyNotContainerObject = f.strings.format(pattern, VBA.TypeName(value), VBA.CLng(VBA.ObjPtr(value)))
         errNumber = 0
     ElseIf errNumber > 0 Then
         Call VBA.err.raise(errNumber, description:=errDescription)
@@ -498,8 +494,6 @@ Private Function stringifyNotContainerObject(value As Object, stringifyMode As S
     If stringifyMode = StringifyMode_Db Then
         stringifyNotContainerObject = toDbString_typeAlreadyChecked(stringifyNotContainerObject)
     End If
-
-
 
 '==========================================================================================================
 ExitPoint:
@@ -515,6 +509,17 @@ ErrHandler:
 
 End Function
 
+Private Function stringifyNumericValue(value As Variant, stringifyMode As StringifyModeEnum) As String
+    Const METHOD_NAME As String = "stringifyNumericValue"
+    '------------------------------------------------------------------------------------------------------
+
+    If stringifyMode = StringifyMode_Db Then
+        stringifyNumericValue = toDbNumber(value)
+    Else
+        stringifyNumericValue = VBA.CStr(value)
+    End If
+
+End Function
 
 
 
@@ -594,7 +599,7 @@ End Function
 ' 2011-07-20    mielk       Function created.
 '**********************************************************************************************************
 Public Function substring(sourceText As String, leftSubstr As String, rightSubstr As String, _
-                                                                Optional isCaseSensitive As Boolean = True)
+                                                    Optional isCaseSensitive As Boolean = True) As String
     Const METHOD_NAME As String = "substring"
     '------------------------------------------------------------------------------------------------------
     Dim startPosition As Long
@@ -631,7 +636,9 @@ Public Function substring(sourceText As String, leftSubstr As String, rightSubst
 '==========================================================================================================
 ExitPoint:
     Dim errNumber As Long, errDescription As String
-    Call VBA.err.raise(errNumber, CLASS_NAME & "." & METHOD_NAME, errDescription)
+    If errNumber Then
+        Call VBA.err.raise(errNumber, CLASS_NAME & "." & METHOD_NAME, errDescription)
+    End If
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
@@ -690,7 +697,7 @@ ExitPoint:
 ErrHandler:
     errNumber = err.number: errDescription = err.description
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, _
-                    "strings; varString", F.arrays.fromParamArray(strings), varString)
+                    "strings; varString", f.arrays.fromParamArray(strings), varString)
     GoTo ExitPoint
 
 End Function
@@ -702,7 +709,7 @@ Private Function isDefinedPrimitiveVariable(value As Variant) As Boolean
 
     If Not DEV_MODE Then On Error GoTo ErrHandler
 
-    If F.Variables.isUndefined(value) Then
+    If f.Variables.isUndefined(value) Then
         isDefinedPrimitiveVariable = False
     ElseIf VBA.IsArray(value) Then
         isDefinedPrimitiveVariable = False
@@ -818,14 +825,14 @@ Public Function trimLeft(text As String) As String
     If Not DEV_MODE Then On Error GoTo ErrHandler
 
     If objRegex Is Nothing Then
-        Set objRegex = F.regex.Create(REGEX_PATTERN)
+        Set objRegex = f.regex.Create(REGEX_PATTERN)
     End If
-    trimLeft = objRegex.Replace(text, vbNullString)
+    trimLeft = objRegex.replace(text, vbNullString)
 
 '==========================================================================================================
 ExitPoint:
     Dim errNumber As Long, errDescription As String
-    Call VBA.err.raise(errNumber, CLASS_NAME & "." & METHOD_NAME, errDescription)
+    If errNumber Then Call VBA.err.raise(errNumber, CLASS_NAME & "." & METHOD_NAME, errDescription)
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
@@ -856,16 +863,16 @@ Public Function trimRight(text As String) As String
     '------------------------------------------------------------------------------------------------------
 
     If Not DEV_MODE Then On Error GoTo ErrHandler
-
+    
     If objRegex Is Nothing Then
-        Set objRegex = F.regex.Create(REGEX_PATTERN)
+        Set objRegex = f.regex.Create(REGEX_PATTERN)
     End If
-    trimRight = objRegex.Replace(text, vbNullString)
+    trimRight = objRegex.replace(text, vbNullString)
 
 '==========================================================================================================
 ExitPoint:
     Dim errNumber As Long, errDescription As String
-    Call VBA.err.raise(errNumber, CLASS_NAME & "." & METHOD_NAME, errDescription)
+    If errNumber Then Call VBA.err.raise(errNumber, CLASS_NAME & "." & METHOD_NAME, errDescription)
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
@@ -905,18 +912,18 @@ Public Function trimInside(text As String) As String
 
     If Not DEV_MODE Then On Error GoTo ErrHandler
 
-    If objRegexNewLine Is Nothing Then Set objRegexNewLine = F.regex.Create(REGEX_PATTERN_NEW_LINE)
-    If objRegexTab Is Nothing Then Set objRegexTab = F.regex.Create(REGEX_PATTERN_TAB)
-    If objRegexSpace Is Nothing Then Set objRegexSpace = F.regex.Create(REGEX_PATTERN_SPACES)
+    If objRegexNewLine Is Nothing Then Set objRegexNewLine = f.regex.Create(REGEX_PATTERN_NEW_LINE)
+    If objRegexTab Is Nothing Then Set objRegexTab = f.regex.Create(REGEX_PATTERN_TAB)
+    If objRegexSpace Is Nothing Then Set objRegexSpace = f.regex.Create(REGEX_PATTERN_SPACES)
 
-    trimInside = objRegexNewLine.Replace(text, vbCrLf)
-    trimInside = objRegexTab.Replace(trimInside, vbTab)
-    trimInside = objRegexSpace.Replace(trimInside, " ")
+    trimInside = objRegexNewLine.replace(text, vbCrLf)
+    trimInside = objRegexTab.replace(trimInside, vbTab)
+    trimInside = objRegexSpace.replace(trimInside, " ")
 
 '==========================================================================================================
 ExitPoint:
     Dim errNumber As Long, errDescription As String
-    Call VBA.err.raise(errNumber, CLASS_NAME & "." & METHOD_NAME, errDescription)
+    If errNumber Then Call VBA.err.raise(errNumber, CLASS_NAME & "." & METHOD_NAME, errDescription)
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
@@ -955,7 +962,7 @@ Public Function trimFull(text As String) As String
 '==========================================================================================================
 ExitPoint:
     Dim errNumber As Long, errDescription As String
-    Call VBA.err.raise(errNumber, CLASS_NAME & "." & METHOD_NAME, errDescription)
+    If errNumber Then Call VBA.err.raise(errNumber, CLASS_NAME & "." & METHOD_NAME, errDescription)
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
@@ -1001,7 +1008,7 @@ End Function
 Public Function cutFromEnd(baseText As String, textToCut As String, Optional caseSensitive As Boolean = False) As String
     If VBA.Len(textToCut) = 0 Or VBA.Len(baseText) = 0 Then
         cutFromEnd = baseText
-    ElseIf F.strings.compareStrings(VBA.right$(baseText, VBA.Len(textToCut)), textToCut, caseSensitive) Then
+    ElseIf f.strings.compareStrings(VBA.right$(baseText, VBA.Len(textToCut)), textToCut, caseSensitive) Then
         cutFromEnd = VBA.left$(baseText, VBA.Len(baseText) - VBA.Len(textToCut))
     Else
         cutFromEnd = baseText
@@ -1043,7 +1050,7 @@ Public Function countOccurrences(sourceText As String, substr As String, _
 '==========================================================================================================
 ExitPoint:
     Dim errNumber As Long, errDescription As String
-    Call VBA.err.raise(errNumber, CLASS_NAME & "." & METHOD_NAME, errDescription)
+    If errNumber Then Call VBA.err.raise(errNumber, CLASS_NAME & "." & METHOD_NAME, errDescription)
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
@@ -1054,6 +1061,55 @@ ErrHandler:
                                  sourceText, substr, isCaseSensitive)
     GoTo ExitPoint
 
+End Function
+
+
+Public Function latinize(ByVal text As String) As String
+    Dim str As String:              str = text
+    '------------------------------------------------------------------------------------------------------
+    str = VBA.replace(str, "π", "a")
+    str = VBA.replace(str, "•", "A")
+    str = VBA.replace(str, "Ê", "c")
+    str = VBA.replace(str, "∆", "C")
+    str = VBA.replace(str, "Í", "e")
+    str = VBA.replace(str, " ", "E")
+    str = VBA.replace(str, "≥", "l")
+    str = VBA.replace(str, "£", "L")
+    str = VBA.replace(str, "Ò", "n")
+    str = VBA.replace(str, "—", "N")
+    str = VBA.replace(str, "Û", "o")
+    str = VBA.replace(str, "”", "O")
+    str = VBA.replace(str, "ú", "s")
+    str = VBA.replace(str, "å", "S")
+    str = VBA.replace(str, "ü", "z")
+    str = VBA.replace(str, "è", "Z")
+    str = VBA.replace(str, "ø", "z")
+    str = VBA.replace(str, "Ø", "Z")
+    latinize = str
+End Function
+
+
+
+
+Public Function removeNonWordCharacters(text As String) As String
+    Const REGEX_PATTERN As String = "[^\w]"
+    '------------------------------------------------------------------------------------------------------
+    removeNonWordCharacters = f.regex.replace(text, REGEX_PATTERN, vbNullString)
+End Function
+
+Public Function toCharactersArray(text As String) As Variant
+    Dim arr As Variant
+    Dim i As Long
+    '------------------------------------------------------------------------------------------------------
+    If VBA.Len(text) Then
+        ReDim arr(1 To VBA.Len(text))
+        For i = 1 To VBA.Len(text)
+            arr(i) = VBA.mid$(text, i, 1)
+        Next i
+        toCharactersArray = arr
+    Else
+        toCharactersArray = f.arrays.createEmpty1DArray
+    End If
 End Function
 
 
@@ -1193,29 +1249,7 @@ End Function
 '
 '
 ''***** WITHOUT UNIT TESTS *****
-'Public Function latinize(ByVal text As String) As String
-'    Dim str As String:              str = text
-'    '------------------------------------------------------------------------------------------------------
-'    str = VBA.Replace(str, "π", "a")
-'    str = VBA.Replace(str, "•", "A")
-'    str = VBA.Replace(str, "Ê", "c")
-'    str = VBA.Replace(str, "∆", "C")
-'    str = VBA.Replace(str, "Í", "e")
-'    str = VBA.Replace(str, " ", "E")
-'    str = VBA.Replace(str, "≥", "l")
-'    str = VBA.Replace(str, "£", "L")
-'    str = VBA.Replace(str, "Ò", "n")
-'    str = VBA.Replace(str, "—", "N")
-'    str = VBA.Replace(str, "Û", "o")
-'    str = VBA.Replace(str, "”", "O")
-'    str = VBA.Replace(str, "ú", "s")
-'    str = VBA.Replace(str, "å", "S")
-'    str = VBA.Replace(str, "ü", "z")
-'    str = VBA.Replace(str, "è", "Z")
-'    str = VBA.Replace(str, "ø", "z")
-'    str = VBA.Replace(str, "Ø", "Z")
-'    latinize = str
-'End Function
+
 ''
 ''
 '''*** TODO: unit testy ***
@@ -1346,18 +1380,7 @@ End Function
 'Public Function toSentenceCase(text As String) As String
 '    toSentenceCase = VBA.UCase$(VBA.mid$(text, 1, 1)) & VBA.mid$(text, 2)
 'End Function
-'
-'
-'Public Function onlyAlphaNumeric(text As String) As String
-'    Const REGEX_PATTERN As String = "[^0-9a-zA-ZπÊÍ≥ÒÛúüø•∆ £—”åèØ]"
-'    '------------------------------------------------------------------------------------------------------
-'    Static objRegex As Object
-'    '------------------------------------------------------------------------------------------------------
-'
-'    If objRegex Is Nothing Then Set objRegex = F.regex.Create(REGEX_PATTERN)
-'    onlyAlphaNumeric = objRegex.Replace(text, vbNullString)
-'
-'End Function
+
 '
 'Public Function clearJsonString(value As String) As String
 '    Dim pos As Long
@@ -1367,3 +1390,5 @@ End Function
 '        clearJsonString = VBA.mid(value, pos)
 '    End If
 'End Function
+
+

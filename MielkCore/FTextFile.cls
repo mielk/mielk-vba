@@ -23,32 +23,32 @@ Private Const CLASS_NAME As String = "FTextfiles"
         ByVal lpWideCharStr As Long, ByVal cchWideChar As Long) As Long
 #End If
 '------------------------------------------------------------------------------------------------------
-Private Const CP_UTF8 = 65001
+Private Const CP_UTF8 As Long = 65001
 '------------------------------------------------------------------------------------------------------
 
 
 
 '[WRITING TO TEXT FILES]
 
-Public Sub printToTextFile(content As Variant, filePath As String, Optional override As Boolean = False)
+Public Sub printToTextFile(content As Variant, filepath As String, Optional override As Boolean = False)
     Dim intFile As Integer
     '------------------------------------------------------------------------------------------------------
     
-    If override Then Call F.files.deleteFile(filePath)
+    If override Then Call f.files.deleteFile(filepath)
     
-    If F.files.createFolder(F.files.getParentFolder(filePath)) Is Nothing Then
+    If f.files.createFolder(f.files.getParentFolder(filepath)) Is Nothing Then
         Call VBA.err.raise(1, description:="Error while creating parent folder")
     End If
     
     intFile = VBA.FreeFile
-    Open filePath For Append As #intFile
+    Open filepath For Append As #intFile
     Print #intFile, content;
     Close intFile
 
 End Sub
 
 
-Public Sub printToTextFile_Scripting(content As String, filePath As String, Optional override As Boolean = False)
+Public Sub printToTextFile_Scripting(content As String, filepath As String, Optional override As Boolean = False)
     Const MAX_ATTEMPTS As Long = 1000000
     '----------------------------------------------------------------------------------------------------------------------
     Dim fileStream As TextStream
@@ -56,8 +56,11 @@ Public Sub printToTextFile_Scripting(content As String, filePath As String, Opti
     '----------------------------------------------------------------------------------------------------------------------
     
     On Error Resume Next
+    
+    Call f.files.createFolder(f.files.getFileFolderPath(filepath))
+    
     Do While fileStream Is Nothing
-        Set fileStream = fso.OpenTextFile(filePath, ForAppending, True, -1)
+        Set fileStream = fso.OpenTextFile(filepath, ForAppending, True, -1)
         attemptsCounter = attemptsCounter + 1
         If attemptsCounter > MAX_ATTEMPTS Then Exit Do
     Loop
@@ -74,30 +77,30 @@ Public Sub printToTextFile_Scripting(content As String, filePath As String, Opti
 End Sub
 
 
-Public Sub printToTextFileUnicode(content As Variant, filePath As String, Optional override As Boolean)
+Public Sub printToTextFileUnicode(content As Variant, filepath As String, Optional override As Boolean)
     Dim objStream As Object
     '------------------------------------------------------------------------------------------------------
     
     If override Then
-        Call F.files.deleteFile(filePath)
+        Call f.files.deleteFile(filepath)
     End If
     
-    Call F.files.createFolder(F.files.getParentFolder(filePath))
+    Call f.files.createFolder(f.files.getParentFolder(filepath))
     
-    If Not F.Variables.isUndefined(content, True, False, True) Then
+    If Not f.Variables.isUndefined(content, True, False, True) Then
         Set objStream = VBA.CreateObject("ADODB.Stream")
         With objStream
             .Type = 2                       'Specify stream type - we want To save text/string data.
             .Charset = "unicode"            'Specify charset For the source text data.
             .Open                           'Open the stream And write binary data To the object
             .WriteText VBA.CStr(content)    'M.Strings.stringify(content, StringifyMode_Normal)
-            .SaveToFile filePath, 2         'Save binary data To disk
+            .SaveToFile filepath, 2         'Save binary data To disk
         End With
     End If
 End Sub
 
 
-Public Function isTextfileWriteable(filePath As String) As Boolean
+Public Function isTextfileWriteable(filepath As String) As Boolean
     Dim TEXT_EXTENSIONS As Variant:         TEXT_EXTENSIONS = Array("txt", "csv")
     '------------------------------------------------------------------------------------------------------
     Dim strDriveName As String
@@ -107,25 +110,25 @@ Public Function isTextfileWriteable(filePath As String) As Boolean
     '------------------------------------------------------------------------------------------------------
     
     With fso
-        If .fileExists(filePath) Then
-            isTextfileWriteable = Not (VBA.GetAttr(filePath) And VBA.vbReadOnly)
+        If .fileExists(filepath) Then
+            isTextfileWriteable = Not (VBA.GetAttr(filepath) And VBA.vbReadOnly)
         Else
             
-            strDriveName = .GetDriveName(filePath)
+            strDriveName = .GetDriveName(filepath)
             If .DriveExists(strDriveName) Then
-                strExtension = .GetExtensionName(filePath)
+                strExtension = .GetExtensionName(filepath)
                 
-                If F.arrays.contains(TEXT_EXTENSIONS, strExtension, False) Then
-                    strParentFolder = .GetParentFolderName(filePath)
-                    strBaseFolder = .GetParentFolderName(filePath)
+                If f.arrays.contains(TEXT_EXTENSIONS, strExtension, False) Then
+                    strParentFolder = .GetParentFolderName(filepath)
+                    strBaseFolder = .GetParentFolderName(filepath)
                     Do Until .folderExists(strBaseFolder)
                         strBaseFolder = .GetParentFolderName(strBaseFolder)
                     Loop
                     
                     If VBA.StrComp(strBaseFolder, strParentFolder, vbTextCompare) = 0 Then
-                        isTextfileWriteable = F.files.isFolderWriteable(strParentFolder)
+                        isTextfileWriteable = f.files.isFolderWriteable(strParentFolder)
                     Else
-                        isTextfileWriteable = F.files.isSubfoldersAddingAllowed(strBaseFolder)
+                        isTextfileWriteable = f.files.isSubfoldersAddingAllowed(strBaseFolder)
                     End If
                 
                 Else
@@ -146,19 +149,19 @@ End Function
 
 '[READING TEXT FILES]
 
-Public Function readTextFile(filePath As String) As String
-    Dim fileSize As Long
+Public Function readTextFile(filepath As String) As String
+    Dim FileSize As Long
     Dim fileIndex As Integer
     Dim byteArray() As Byte
     '----------------------------------------------------------------------------------------------------------------------
     
-    fileSize = VBA.FileLen(filePath)
-    If fileSize > 0 Then
-        ReDim byteArray(0 To fileSize - 1)
+    FileSize = VBA.FileLen(filepath)
+    If FileSize > 0 Then
+        ReDim byteArray(0 To FileSize - 1)
 
         ' Read the existing UTF-8 file
         fileIndex = VBA.FreeFile()
-        Open filePath For Binary As #fileIndex
+        Open filepath For Binary As #fileIndex
         Get #fileIndex, , byteArray
         Close #fileIndex
 
@@ -176,7 +179,7 @@ Private Function convertUTF8ToUni(data() As Byte) As String
     Dim ret As Long
     '----------------------------------------------------------------------------------------------------------------------
 
-    size = F.arrays.getSize(data, 1)
+    size = f.arrays.getSize(data, 1)
     nc = size
     convertUTF8ToUni = VBA.String$(nc, VBA.Chr(0))
     ret = MultiByteToWideChar(CP_UTF8, 0, VBA.VarPtr(data(LBound(data))), _
@@ -185,7 +188,7 @@ Private Function convertUTF8ToUni(data() As Byte) As String
 
 End Function
 
-Public Function readTextFile2(filePath As String) As String
+Public Function readTextFile2(filepath As String) As String
     Const METHOD_NAME As String = "readTextFile"
     '----------------------------------------------------------------------------------------------------------------------
     Dim fileIndex As Integer
@@ -196,48 +199,48 @@ Public Function readTextFile2(filePath As String) As String
     fileIndex = VBA.FreeFile()
     Set col = New VBA.Collection
     
-    Open filePath For Input As #fileIndex
+    Open filepath For Input As #fileIndex
         Do Until EOF(fileIndex)
             Line Input #fileIndex, textLine
-            Call col.Add(textLine)
+            Call col.add(textLine)
         Loop
     Close #fileIndex
     
-    readTextFile2 = F.Collections.toString(col, StringifyMode_Normal, VBA.vbCrLf)
+    readTextFile2 = f.Collections.toString(col, StringifyMode_Normal, VBA.vbCrLf)
 
 End Function
 
-Public Function getCsvContentAsArray(filePath As String, Optional delimiter As String = ",") As Variant
+Public Function getCsvContentAsArray(filepath As String, Optional delimiter As String = ",") As Variant
     Dim content As String
     Dim lines() As String
-    Dim columns() As Variant
+    Dim Columns() As Variant
     Dim maxColumns As Long
     Dim arr() As Variant
     Dim i As Long
     Dim j As Long
     '----------------------------------------------------------------------------------------------------------------------
     
-    content = F.strings.cutFromEnd(readTextFile(filePath), VBA.vbCrLf)
+    content = f.strings.cutFromEnd(readTextFile(filepath), VBA.vbCrLf)
     
     If VBA.Len(content) Then
         lines = VBA.Split(content, VBA.vbLf)
-        If F.arrays.isDefined(lines) Then
-            ReDim columns(LBound(lines) To UBound(lines))
+        If f.arrays.isDefined(lines) Then
+            ReDim Columns(LBound(lines) To UBound(lines))
             For i = LBound(lines) To UBound(lines)
-                columns(i) = VBA.Split(lines(i), delimiter)
-                If F.arrays.isDefined(columns(i)) Then
-                    maxColumns = F.Math.getMax(maxColumns, F.arrays.getSize(columns(i)))
+                Columns(i) = VBA.Split(lines(i), delimiter)
+                If f.arrays.isDefined(Columns(i)) Then
+                    maxColumns = f.Math.getMax(maxColumns, f.arrays.getSize(Columns(i)))
                 End If
             Next i
         End If
     End If
     
-    ReDim arr(1 To F.arrays.getSize(columns), 1 To maxColumns)
+    ReDim arr(1 To f.arrays.getSize(Columns), 1 To maxColumns)
     
-    For i = LBound(columns) To UBound(columns)
-        If F.arrays.isDefined(columns(i)) Then
-            For j = LBound(columns(i)) To UBound(columns(i))
-                arr(i + LBound(arr, 1) - LBound(columns, 1), j + LBound(arr, 2) - LBound(columns(i))) = columns(i)(j)
+    For i = LBound(Columns) To UBound(Columns)
+        If f.arrays.isDefined(Columns(i)) Then
+            For j = LBound(Columns(i)) To UBound(Columns(i))
+                arr(i + LBound(arr, 1) - LBound(Columns, 1), j + LBound(arr, 2) - LBound(Columns(i))) = Columns(i)(j)
             Next j
         End If
     Next i

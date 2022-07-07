@@ -13,26 +13,30 @@ Private Const CLASS_NAME As String = "FNumerics"
 '----------------------------------------------------------------------------------------------------------
 
 Public Function getMin(ParamArray values() As Variant) As Variant
-    Dim varItem As Variant
-    '------------------------------------------------------------------------------------------------------
-    
-    For Each varItem In values
-        If VBA.IsEmpty(getMin) Then
-            getMin = varItem
-        ElseIf getMin > varItem Then
-            getMin = varItem
-        End If
-    Next varItem
-    
-End Function
-
-Public Function getMax(ParamArray values() As Variant) As Variant
+    Dim isValueSet As Boolean
     Dim varValue As Variant
     '------------------------------------------------------------------------------------------------------
     
     For Each varValue In values
-        If VBA.IsEmpty(getMax) Then
+        If Not isValueSet Then
+            getMin = varValue
+            isValueSet = True
+        ElseIf getMin > varValue Then
+            getMin = varValue
+        End If
+    Next varValue
+    
+End Function
+
+Public Function getMax(ParamArray values() As Variant) As Variant
+    Dim isValueSet As Boolean
+    Dim varValue As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    For Each varValue In values
+        If Not isValueSet Then
             getMax = varValue
+            isValueSet = True
         ElseIf getMax < varValue Then
             getMax = varValue
         End If
@@ -98,12 +102,13 @@ End Function
 
 Public Function isInteger(value As Variant) As Boolean
     Const REGEX_PATTERN As String = "^\s*-?\d+\s*$"
+    'Const REGEX_PATTERN As String = "^(-?\d+(?:\.|\,)\d+)$|^(-?\d+)$"        'check, other regex in
     '------------------------------------------------------------------------------------------------------
-    If F.Variables.isUndefined(value) Then
+    If f.Variables.isUndefined(value) Then
     ElseIf VBA.IsArray(value) Then
     ElseIf VBA.IsObject(value) Then
     Else
-        isInteger = F.regex.checkIfMatch(VBA.CStr(value), REGEX_PATTERN)
+        isInteger = f.regex.checkIfMatch(VBA.CStr(value), REGEX_PATTERN)
     End If
 End Function
 
@@ -151,32 +156,32 @@ End Function
 
 Public Function isNumeric(value As Variant) As Boolean
     'Const REGEX_PATTERN As String = "^(-?\d+(?:\.|\,)\d+)$|^(-?\d+)$"
-    Const REGEX_PATTERN As String = "^\s*-?(\d+[.,]{0,1}|)\d+%?\s*$"
+    Const REGEX_PATTERN As String = "^\s*-?([\s\d]+[.,]{0,1}|)\d+%?\s*$"
     '------------------------------------------------------------------------------------------------------
     Static objRegex As Object
     '------------------------------------------------------------------------------------------------------
     
-    If F.Variables.isUndefined(value) Then
+    If f.Variables.isUndefined(value) Then
     ElseIf VBA.IsArray(value) Then
     ElseIf VBA.IsObject(value) Then
     Else
-        isNumeric = F.regex.checkIfMatch(VBA.CStr(value), REGEX_PATTERN)
+        isNumeric = f.regex.checkIfMatch(VBA.CStr(value), REGEX_PATTERN)
     End If
     
 End Function
 
 Public Function toNumeric(ByVal value As Variant) As Variant
-    If F.Variables.isPrimitive(value) Then
-        value = VBA.Replace(value, " ", vbNullString)
-        value = VBA.Replace(value, VBA.Chr(160), vbNullString)
-        
-        If F.Numerics.isNumeric(value) Then
-            On Error Resume Next
-            toNumeric = VBA.CDbl(VBA.Replace(value, ".", ","))
-            toNumeric = VBA.CDbl(VBA.Replace(value, ",", "."))
-        End If
-        
+    Dim Separator As String:                Separator = f.System.getDecimalSeparator
+    
+    If f.Variables.isUndefined(value) Then
+        toNumeric = 0
+    ElseIf f.Variables.isPrimitive(value) Then
+        value = VBA.replace(value, " ", vbNullString)
+        toNumeric = VBA.replace(VBA.replace(value, ".", Separator), ",", Separator) * 1
+    Else
+        toNumeric = 0
     End If
+
 End Function
 
 Public Function coalesce(ParamArray values() As Variant) As String
@@ -184,9 +189,9 @@ Public Function coalesce(ParamArray values() As Variant) As String
     '------------------------------------------------------------------------------------------------------
     
     For Each varNumber In values
-        If F.Numerics.isNumeric(varNumber) Then
+        If f.Numerics.isNumeric(varNumber) Then
             If varNumber <> 0 Then
-                coalesce = F.Numerics.toNumeric(varNumber)
+                coalesce = f.Numerics.toNumeric(varNumber)
                 Exit For
             End If
         End If
@@ -217,23 +222,24 @@ End Function
 '    End If
 'End Function
 '
-'Public Function isNotNegative(value As Variant, Optional strictType As Boolean = False) As Boolean
-'    Dim variableType As VBA.VbVarType
-'    '------------------------------------------------------------------------------------------------------
-'    If Not isNumeric(value) Then
-'
-'    ElseIf VBA.Val(value) >= 0 Then
-'        variableType = VBA.varType(value)
-'        If variableType = vbBoolean Or variableType = vbEmpty Then
-'            isNotNegative = False
-'        ElseIf strictType Then
-'            variableType = VBA.varType(value)
-'            isNotNegative = (variableType <> vbString)
-'        Else
-'            isNotNegative = True
-'        End If
-'    End If
-'End Function
+Public Function isNotNegative(value As Variant, Optional strictType As Boolean = False) As Boolean
+    Dim variableType As VBA.VbVarType
+    '------------------------------------------------------------------------------------------------------
+
+    If Not isNumeric(value) Then
+
+    ElseIf VBA.Val(value) >= 0 Then
+        variableType = VBA.varType(value)
+        If variableType = vbBoolean Or variableType = vbEmpty Then
+            isNotNegative = False
+        ElseIf strictType Then
+            variableType = VBA.varType(value)
+            isNotNegative = (variableType <> vbString)
+        Else
+            isNotNegative = True
+        End If
+    End If
+End Function
 '
 'Public Function isNegative(value As Variant, Optional strictType As Boolean = False) As Boolean
 '    Dim variableType As VBA.VbVarType

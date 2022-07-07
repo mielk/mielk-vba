@@ -1,0 +1,6 @@
+1) narzędzie do printowania kwerend accessowych
++ narzędzie do kompaktowania kodu VBA
+3) unit testy
+4) narzędzie do porównywania kodu
++ przykład encji zdefiniowanej do użycia w RepoManagerze (z LLB)
++ przykład encji do edytowania w XPropertiesPanel (z LLB)

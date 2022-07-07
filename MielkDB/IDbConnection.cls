@@ -24,6 +24,9 @@ End Function
 Public Function getConnection() As Object ' ADODB.connection
 End Function
 
+Public Function getState() As Long
+End Function
+
 Public Sub openConnection()
 End Sub
 
@@ -42,13 +45,13 @@ End Function
 Public Function isTransactionOpen() As Boolean
 End Function
 
-Public Sub beginTransaction(uuid As String)
+Public Sub beginTransaction(uuid As String, Optional forceNewTransaction As Boolean = False)
 End Sub
 
 Public Sub commitTransaction(uuid As String)
 End Sub
 
-Public Sub rollbackTransaction(uuid As String)
+Public Sub rollbackTransaction(Optional uuid As String)
 End Sub
 
 
@@ -63,10 +66,13 @@ End Function
 
 
 '[Fetching data and executing queries]
-Public Function Execute(sqlString As String, Optional lockType As Long = adLockPessimistic) As Object ' ADODB.recordset
+Public Function Execute(sqlString As String, Optional lockType As Long = adLockPessimistic, Optional handleErrors As Boolean = True) As Object ' ADODB.recordset
 End Function
 
 Public Function getRecordset(sqlString As String, Optional lockType As Long = adLockPessimistic) As Object 'ADODB.recordset
+End Function
+
+Public Function getRecordsetFromStoredProcedure(procName As String, params As Scripting.Dictionary) As Object 'ADODB.recordset
 End Function
 
 Public Function getDtos(sqlString As String, Optional lockType As Long = adLockPessimistic) As VBA.Collection

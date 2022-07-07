@@ -42,14 +42,14 @@ End Function
 
 
 Public Function getDescription(ParamArray params() As Variant) As String
-    getDescription = F.strings.format(MsgService.getText(pName), params)
+    getDescription = f.strings.format(MsgService.getText(pName), params)
 End Function
 
 Public Sub raise(ParamArray params() As Variant)
     Dim description As String
     '----------------------------------------------------------------------------------------------------------
     
-    description = F.strings.format(MsgService.getText(pName), params)
+    description = f.strings.format(MsgService.getText(pName), params)
     Call VBA.err.raise(number:=pNumber, description:=description)
     
 End Sub

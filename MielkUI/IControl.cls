@@ -40,7 +40,7 @@ Public Function getRectangle() As RECT
 End Function
 
 
-Public Function Move(Optional x As Single, Optional y As Single) As IControl
+Public Function move(Optional x As Variant, Optional y As Variant) As IControl
 End Function
 
 Public Function offset(Optional x As Single, Optional y As Single) As IControl

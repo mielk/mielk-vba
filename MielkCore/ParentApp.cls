@@ -6,7 +6,7 @@ Attribute VB_Name = "ParentApp"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
-Attribute VB_Exposed = False
+Attribute VB_Exposed = True
 Option Explicit
 
 'The purpose of this class is to store information about parent application that uses this library file.
@@ -53,5 +53,5 @@ Public Function getPath() As String
 End Function
 
 Public Function getUncPath() As String
-    getUncPath = F.files.getUncPath(pPath)
+    getUncPath = f.files.getUncPath(pPath)
 End Function

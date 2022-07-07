@@ -12,15 +12,15 @@ Option Explicit
 Private Const CLASS_NAME As String = "FExcelNames"
     '----------------------------------------------------------------------------------------------------------
 
-Public Function addValue(parent As Variant, name As String, ByVal value As Variant) As Excel.name
+Public Function addValue(Parent As Variant, name As String, ByVal value As Variant) As Excel.name
     If Len(value) = 0 Then value = "_"
-    Call parent.names.Add(name, value)
+    Call Parent.names.add(name, value)
 End Function
 
-Public Function getValue(parent As Object, name As String) As Variant
+Public Function getValue(Parent As Object, name As String) As Variant
     Dim objName As Excel.name
     '------------------------------------------------------------------------------------------------------
-    Set objName = get_(parent, name)
+    Set objName = get_(Parent, name)
     If Not objName Is Nothing Then
         If checkIfNameHasConstValue(objName) Then
             getValue = evaluateExcelNameConstValue(objName)
@@ -30,44 +30,44 @@ Public Function getValue(parent As Object, name As String) As Variant
     End If
 End Function
 
-Public Function get_(parent As Object, name As String) As Excel.name
-    Dim rangeName As String
+Public Function get_(Parent As Object, name As String) As Excel.name
+    Dim RangeName As String
     '------------------------------------------------------------------------------------------------------
-    rangeName = getFullPath(parent, name)
-    If exists(parent, name) Then
-        Set get_ = parent.names(rangeName)
+    RangeName = getFullPath(Parent, name)
+    If exists(Parent, name) Then
+        Set get_ = Parent.names(RangeName)
     End If
 End Function
 
-Public Function getFullPath(parent As Object, name As String) As String
+Public Function getFullPath(Parent As Object, name As String) As String
     Const EXCEL_NAME_PATTERN As String = "{0}!{1}"
     '------------------------------------------------------------------------------------------------------
     Dim parentName As String
     '------------------------------------------------------------------------------------------------------
-    If TypeOf parent Is Excel.Workbook Then
+    If TypeOf Parent Is Excel.Workbook Then
         getFullPath = name
-    ElseIf TypeOf parent Is Excel.Worksheet Then
-        parentName = VBA.IIf(VBA.InStr(1, parent.name, " "), "'" & parent.name & "'", parent.name)
-        getFullPath = F.strings.format(EXCEL_NAME_PATTERN, parentName, name)
+    ElseIf TypeOf Parent Is Excel.Worksheet Then
+        parentName = VBA.IIf(VBA.InStr(1, Parent.name, " "), "'" & Parent.name & "'", Parent.name)
+        getFullPath = f.strings.format(EXCEL_NAME_PATTERN, parentName, name)
     End If
 End Function
 
-Public Function exists(parent As Object, name As String) As Boolean
-    Dim rangeName As String
+Public Function exists(Parent As Object, name As String) As Boolean
+    Dim RangeName As String
     Dim objName As Excel.name
     Dim names As Variant
     '------------------------------------------------------------------------------------------------------
     
-    rangeName = getFullPath(parent, name)
+    RangeName = getFullPath(Parent, name)
     
-    If VBA.Len(rangeName) Then
+    If VBA.Len(RangeName) Then
         On Error Resume Next
-        Set names = parent.names
+        Set names = Parent.names
         On Error GoTo 0
         
         If Not VBA.IsEmpty(names) Then
-            For Each objName In parent.names
-                If F.strings.compareStrings(objName.name, rangeName) Then
+            For Each objName In Parent.names
+                If f.strings.compareStrings(objName.name, RangeName) Then
                     exists = True
                     Exit For
                 End If
@@ -78,44 +78,46 @@ Public Function exists(parent As Object, name As String) As Boolean
 End Function
 
 Private Function checkIfNameHasConstValue(excelName As Excel.name) As Boolean
-    checkIfNameHasConstValue = F.strings.compareStrings(excelName.RefersTo, excelName.RefersToR1C1)
+    checkIfNameHasConstValue = f.strings.compareStrings(excelName.RefersTo, excelName.RefersToR1C1)
 End Function
 
 Private Function evaluateExcelNameConstValue(namedRange As Excel.name) As Variant
+    Const REGEX_PATTERN As String = "^(?:=\""*|)(.*?)(?:\""|)$"
+    '------------------------------------------------------------------------------------------------------
     Dim strValue As String
     '------------------------------------------------------------------------------------------------------
-    strValue = VBA.mid$(F.strings.stringify(namedRange.value), 2)    'Remove equal sign.
+    strValue = f.regex.getFirstGroupMatch(VBA.CStr(namedRange.value), REGEX_PATTERN)
     If VBA.isNumeric(strValue) Then
         evaluateExcelNameConstValue = strValue * 1
-    ElseIf F.Variables.isBoolean(strValue, allowStringRepresentation:=True) Then
+    ElseIf f.Variables.isBoolean(strValue, allowStringRepresentation:=True) Then
         evaluateExcelNameConstValue = VBA.CBool(strValue)
     Else
-        evaluateExcelNameConstValue = F.strings.substring(strValue, VBA.Chr(34), VBA.Chr(34))
+        evaluateExcelNameConstValue = strValue
     End If
 End Function
 
 Private Function evaluateExcelNameRangeValue(namedRange As Excel.name) As Variant
     Dim rng As Excel.Range
     '------------------------------------------------------------------------------------------------------
-    Set rng = F.ranges.getFirstCell(getReferredRange(namedRange))
+    Set rng = f.ranges.getFirstCell(getReferredRange(namedRange))
     evaluateExcelNameRangeValue = rng.value
 End Function
 
 Public Function getReferredRange(excelName As Excel.name) As Excel.Range
     Dim wks As Excel.Worksheet
-    Dim sheetName As String
+    Dim SheetName As String
     Dim address As String
     '------------------------------------------------------------------------------------------------------
     
     With excelName
-        sheetName = VBA.Replace(F.strings.substring(.RefersTo, "=", "!"), "'", vbNullString)
-        address = F.strings.substring(.RefersTo, "!", "")
+        SheetName = VBA.replace(f.strings.substring(.RefersTo, "=", "!"), "'", vbNullString)
+        address = f.strings.substring(.RefersTo, "!", "")
         
         On Error Resume Next
-        If TypeOf excelName.parent Is Excel.Worksheet Then
-            Set wks = excelName.parent
-        ElseIf TypeOf excelName.parent Is Excel.Workbook Then
-            Set wks = excelName.parent.Worksheets(sheetName)
+        If TypeOf excelName.Parent Is Excel.Worksheet Then
+            Set wks = excelName.Parent
+        ElseIf TypeOf excelName.Parent Is Excel.Workbook Then
+            Set wks = excelName.Parent.Worksheets(SheetName)
         End If
         On Error GoTo 0
         
@@ -128,15 +130,15 @@ Public Function getReferredRange(excelName As Excel.name) As Excel.Range
 End Function
 
 
-Public Function assignRange(parent As Object, name As String, rng As Excel.Range, _
+Public Function assignRange(Parent As Object, name As String, rng As Excel.Range, _
                  Optional visible As Boolean = True) As Excel.name
-    Dim fullName As String:             fullName = getFullPath(parent, name)
+    Dim fullName As String:             fullName = getFullPath(Parent, name)
     Dim excelName As Excel.name
     '------------------------------------------------------------------------------------------------------
 
-    Set assignRange = get_(parent, name)
+    Set assignRange = get_(Parent, name)
 
-    If F.ranges.isValid(rng) Then
+    If f.ranges.isValid(rng) Then
         If assignRange Is Nothing Then
             rng.name = fullName
         Else
@@ -146,23 +148,23 @@ Public Function assignRange(parent As Object, name As String, rng As Excel.Range
             End With
         End If
     ElseIf Not assignRange Is Nothing Then
-        Call delete(parent, name)
+        Call delete(Parent, name)
     End If
         
 End Function
 
-Public Sub assignValue(parent As Object, name As String, value As Variant, _
+Public Sub assignValue(Parent As Object, name As String, value As Variant, _
                                                                      Optional isVisible As Boolean = False)
-    Dim fullName As String:             fullName = getFullPath(parent, name)
+    Dim fullName As String:             fullName = getFullPath(Parent, name)
     Dim excelName As Excel.name
     '------------------------------------------------------------------------------------------------------
 
-    Set excelName = get_(parent, name)
+    Set excelName = get_(Parent, name)
     If Not excelName Is Nothing Then
-        Call delete(parent, name)
+        Call delete(Parent, name)
     End If
         
-    Call parent.names.Add(name:=name, RefersTo:=value, visible:=isVisible)
+    Call Parent.names.add(name:=name, RefersTo:=value, visible:=isVisible)
 
 End Sub
 
@@ -174,7 +176,7 @@ Public Function getWorkbookExcelNames(wkb As Excel.Workbook) As Variant
     Dim arr As Variant
     '------------------------------------------------------------------------------------------------------
     
-    If F.Books.isValid(wkb) Then
+    If f.Books.isValid(wkb) Then
         If wkb.names.count Then
             ReDim arr(1 To 5, 1 To wkb.names.count)
             For Each en In wkb.names
@@ -183,7 +185,7 @@ Public Function getWorkbookExcelNames(wkb As Excel.Workbook) As Variant
                 arr(2, i) = en.RefersTo
                 arr(3, i) = en.value
                 arr(4, i) = en.Comment
-                If Not en.parent Is Nothing Then arr(5, i) = en.parent.name
+                If Not en.Parent Is Nothing Then arr(5, i) = en.Parent.name
             Next en
         End If
     End If
@@ -195,20 +197,20 @@ End Function
 
 
 '[DELETING]
-Public Sub delete(parent As Object, name As String)
+Public Sub delete(Parent As Object, name As String)
     Dim Events As Boolean
     '------------------------------------------------------------------------------------------------------
 
-    With parent.Application
+    With Parent.Application
         Events = .EnableEvents
         .EnableEvents = False
     End With
 
-    If exists(parent, name) Then
-        Call parent.names(getFullPath(parent, name)).delete
+    If exists(Parent, name) Then
+        Call Parent.names(getFullPath(Parent, name)).delete
     End If
 
-    parent.Application.EnableEvents = Events
+    Parent.Application.EnableEvents = Events
 
 End Sub
 
@@ -220,7 +222,7 @@ Public Sub deleteAll(ParamArray parents() As Variant)
         If TypeOf varParent Is Excel.Worksheet Or TypeOf varParent Is Excel.Workbook Then
             For Each name In varParent.names
                 On Error Resume Next
-                If name.parent Is varParent Then
+                If name.Parent Is varParent Then
                     Call name.delete
                 End If
             Next name

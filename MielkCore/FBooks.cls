@@ -23,7 +23,7 @@ Public Function isValid(wkb As Excel.Workbook) As Boolean
     isValid = VBA.Len(strBookName)
 End Function
 
-Public Function open_(filePath As String, Optional readOnly As Boolean = False, _
+Public Function open_(filepath As String, Optional readOnly As Boolean = False, _
                          Optional excelInstance As Excel.Application, _
                          Optional createIfNotExists As Boolean = False, _
                          Optional forceReopen As Boolean = False, _
@@ -46,9 +46,9 @@ Public Function open_(filePath As String, Optional readOnly As Boolean = False, 
     End With
 
 
-    If isOpen(filePath, xls) Then
+    If isOpen(filepath, xls) Then
         wasOpen = True
-        Set open_ = xls.Workbooks(F.files.getFileName(filePath))
+        Set open_ = xls.Workbooks(f.files.getFileName(filepath))
         If forceReopen Then
             Call open_.Close(False)
             Set open_ = Nothing
@@ -58,9 +58,12 @@ Public Function open_(filePath As String, Optional readOnly As Boolean = False, 
     End If
     
     If open_ Is Nothing Then
-        If F.files.fileExists(filePath) Then
+        If f.files.fileExists(filepath) Then
             On Error Resume Next
-            Set open_ = xls.Workbooks.Open(filePath, readOnly:=readOnly, UpdateLinks:=False)
+            Set open_ = xls.Workbooks.Open(filepath, readOnly:=readOnly, UpdateLinks:=False, IgnoreReadOnlyRecommended:=True)
+            If open_ Is Nothing And readOnly = False Then
+                Set open_ = xls.Workbooks.Open(filepath, readOnly:=readOnly, UpdateLinks:=False, IgnoreReadOnlyRecommended:=True, CorruptLoad:=xlRepairFile)
+            End If
             On Error GoTo 0
         End If
     End If
@@ -73,9 +76,9 @@ Public Function open_(filePath As String, Optional readOnly As Boolean = False, 
   
 End Function
 
-Public Function isOpen(filePath As String, Optional excelInstance As Excel.Application) As Boolean
+Public Function isOpen(filepath As String, Optional excelInstance As Excel.Application) As Boolean
     Dim xls As Excel.Application
-    Dim fileName As String:             fileName = F.files.getFileName(filePath)
+    Dim FileName As String:             FileName = f.files.getFileName(filepath)
     Dim wkb As Excel.Workbook
     '------------------------------------------------------------------------------------------------------
     
@@ -87,14 +90,14 @@ Public Function isOpen(filePath As String, Optional excelInstance As Excel.Appli
     
     
     On Error Resume Next
-    Set wkb = xls.Workbooks(fileName)
+    Set wkb = xls.Workbooks(FileName)
     On Error GoTo 0
 
     
     If wkb Is Nothing Then
         isOpen = False
     Else
-        isOpen = F.strings.compareStrings(wkb.fullName, filePath)
+        isOpen = f.strings.compareStrings(wkb.fullName, filepath)
     End If
     
     
@@ -115,13 +118,13 @@ Public Function addNew(sheetsNumber As Integer, excelInstance As Excel.Applicati
         .SheetsInNewWorkbook = sheetsNumber
     End With
     
-    Set addNew = xls.Workbooks.Add
+    Set addNew = xls.Workbooks.add
     
     For Each varName In names
         i = i + 1
         If i <= addNew.Worksheets.count Then
             Set wks = addNew.Worksheets(i)
-            wks.name = F.Sheets.getLegalSheetName(VBA.CStr(varName))
+            wks.name = f.Sheets.getLegalSheetName(VBA.CStr(varName))
         End If
     Next varName
     
@@ -134,12 +137,12 @@ Public Function getLastSheet(wkb As Excel.Workbook) As Excel.Worksheet
     Set getLastSheet = wkb.Worksheets(wkb.Worksheets.count)
 End Function
 
-Public Sub openInNewExcel(filePath As String, Optional readOnly As BookmarkEnum = False)
+Public Sub openInNewExcel(filepath As String, Optional readOnly As Boolean = False)
     Dim xls As Excel.Application
     Dim cursor As XlMousePointer:                       cursor = xlDefault
     '------------------------------------------------------------------------------------------------------
     
-    If F.files.fileExists(filePath) Then
+    If f.files.fileExists(filepath) Then
         With Excel.Application
             cursor = .cursor
             .cursor = xlWait
@@ -148,11 +151,14 @@ Public Sub openInNewExcel(filePath As String, Optional readOnly As BookmarkEnum 
         Set xls = VBA.CreateObject("Excel.Application")
         With xls
             .visible = True
-            Call .Workbooks.Open(filePath, readOnly:=readOnly)
+            Call .Workbooks.Open(filepath, readOnly:=readOnly)
             Call BringWindowToTop(.hWnd)
         End With
     Else
         Call Exceptions.FileNotFound.raise
     End If
+    
+ExitPoint:
+    Excel.Application.cursor = cursor
     
 End Sub

@@ -68,6 +68,9 @@ Public Sub fromExcelToTempTable(filepath As String, sheetName As String, destina
         Call .Execute(sql)
     End With
     
+ExitPoint:
+    If Not pConnection Is Nothing Then Call D.Connections.closeConnection(pConnection)
+    
 End Sub
     
 
@@ -98,19 +101,23 @@ Public Sub ExecuteWithId(ByRef id As Long, ByVal idFieldName As String)
         errNumber = VBA.Err.Number: errDescription = VBA.Err.Description
         If errNumber = 0 Then
             Exit Do
-        Else
+        ElseIf D.isConcurrencyError(errNumber, errDescription) Then
             If VBA.Timer - startTime > timeout And attempts >= maxAttempts Then
-                If Not dev_mode Then On Error GoTo ErrHandler
-                Call VBA.Err.Raise(1, Description:="Timeout (" & timeout & "s)")
+                If Not DEV_MODE Then On Error GoTo ErrHandler
+                Call VBA.Err.Raise(1, Description:="Timeout (" & timeout & "s) | " & _
+                                                    errNumber & " | " & errDescription)
             End If
+        Else
+            If Not DEV_MODE Then On Error GoTo ErrHandler
+            Call VBA.Err.Raise(errNumber, , errDescription)
         End If
         attempts = attempts + 1
-        
+        Call sleep(150)
     Loop
     '----------------------------------------------------------------------------------------|
     
     '[Restore error handling]
-    If Not dev_mode Then On Error GoTo ErrHandler
+    If Not DEV_MODE Then On Error GoTo ErrHandler
     
     If VBA.Len(idFieldName) Then
         '------------------------------------------------------------------------------------|
@@ -122,7 +129,7 @@ Public Sub ExecuteWithId(ByRef id As Long, ByVal idFieldName As String)
             If errNumber = 0 Then
                 Exit Do
             Else
-                Stop
+                If F.System.isDeveloper Then Stop
             End If
         Loop
         '------------------------------------------------------------------------------------|
@@ -130,8 +137,12 @@ Public Sub ExecuteWithId(ByRef id As Long, ByVal idFieldName As String)
     
     
 ExitPoint:
-    If Not pConnection Is Nothing And errNumber = 0 Then
-        Call D.Connections.closeRecordset(rs, Not pConnection.isTransactionOpen)
+    If Not pConnection Is Nothing Then
+        If errNumber = 0 Then
+            Call D.Connections.closeRecordset(rs, Not pConnection.isTransactionOpen)
+        Else
+            Call pConnection.closeConnection(True)
+        End If
     End If
 
 ErrHandler:
@@ -158,11 +169,11 @@ Private Function getIntoPart() As String
 End Function
 
 Private Function getFieldsPart() As String
-    getFieldsPart = F.Arrays.toString(pValues.Keys, StringifyMode_Normal, ", ", "[", "]")
+    getFieldsPart = F.arrays.toString(pValues.Keys, StringifyMode_Normal, ", ", "[", "]")
 End Function
 
 Private Function getValuesPart() As String
-    getValuesPart = "SELECT " & F.Arrays.toString(pValues.Items, StringifyMode_Db)
+    getValuesPart = "SELECT " & F.arrays.toString(pValues.Items, StringifyMode_Db)
 End Function
 
 
@@ -196,7 +207,7 @@ Private Sub IInsert_Execute()
     Call Execute
 End Sub
 
-Private Sub IInsert_ExecuteWithId(id As Long, ByVal idFieldName As String)
+Private Sub IInsert_ExecuteWithId(ByRef id As Long, Optional ByVal idFieldName As String)
     Call ExecuteWithId(id, idFieldName)
 End Sub
 

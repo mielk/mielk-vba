@@ -34,7 +34,7 @@ Private pView As IItemsProcessorViewer
 Private pWindow As MielkUI.WTemplate
 '[Internal UI components] ---------------------------------------------------------------------------------
 Private pContainerFrame As MSForms.frame
-Private pBottomBorder As MSForms.Label
+Private pBottomBorder As MSForms.label
 '[UI properties] ------------------------------------------------------------------------------------------
 Private pTop As Single
 Private pLeft As Single
@@ -71,12 +71,13 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub initializeContainers()
-    Set pItemLinesDictionary = F.Dictionaries.Create(False)
+    Set pItemLinesDictionary = F.dictionaries.Create(False)
 End Sub
 
 Private Sub initializeDefaultValues()
     pUuid = F.Crypto.createUUID
     pWidth = DEFAULT_WIDTH
+    pLineHeight = DEFAULT_LINE_HEIGHT
     pContainerMinHeight = DEFAULT_CONTAINER_MIN_HEIGHT
     pContainerMaxHeight = DEFAULT_CONTAINER_MAX_HEIGHT
     pTopPadding = DEFAULT_TOP_PADDING
@@ -262,19 +263,19 @@ End Function
 
 
 '[Other]
-Public Function getItemLinesContainerFrame() As MSForms.frame
+Friend Function getItemLinesContainerFrame() As MSForms.frame
     Set getItemLinesContainerFrame = pContainerFrame
 End Function
 
-Public Function getView() As IItemsProcessorViewer
+Friend Function getView() As IItemsProcessorViewer
     Set getView = pView
 End Function
 
-Public Function getProcessor() As ItemsProcessor
+Friend Function getProcessor() As ItemsProcessor
     Set getProcessor = pProcessor
 End Function
 
-Public Function getStatusesDictionary() As Scripting.Dictionary
+Friend Function getStatusesDictionary() As Scripting.Dictionary
     Set getStatusesDictionary = pView.getStatusesDictionary
 End Function
 
@@ -306,10 +307,10 @@ End Sub
 
 '[RENDERING]
 Private Function getLabelName(controlType As ControlTypeEnum) As String
-    Dim tag As String
+    Dim TAG As String
     '----------------------------------------------------------------------------------------------------------
-    tag = CLASS_NAME & "|" & pUuid & "|" & controlType
-    getLabelName = "ctrl_" & VBA.left$(F.Crypto.SHA1HASH(tag), 25)
+    TAG = CLASS_NAME & "|" & pUuid & "|" & controlType
+    getLabelName = "ctrl_" & VBA.left$(F.Crypto.SHA1HASH(TAG), 25)
 End Function
 
 
@@ -368,7 +369,7 @@ Public Sub updateScrollBarVisibility()
     '------------------------------------------------------------------------------------------------------
     
     endPoint = UI.Forms.calculateRightBottomPoint(pContainerFrame, True)
-    bottom = endPoint.y
+    bottom = endPoint.Y
     
     With pContainerFrame
         If bottom > .InsideHeight Then
@@ -443,7 +444,7 @@ Private Sub addItemLineToContainers(itemLine As xxProcessItemLine)
 End Sub
 
 Private Function getItemLineByName(name As String) As xxProcessItemLine
-    Set getItemLineByName = F.Dictionaries.GetObject(pItemLinesDictionary, name)
+    Set getItemLineByName = F.dictionaries.GetObject(pItemLinesDictionary, name)
 End Function
 
 Friend Sub arrangeItemLines(Optional arrangeProcessBeginItem As xxProcessItemLine)
@@ -494,7 +495,7 @@ End Sub
 Public Sub updateItemLine(itemName As String, status As ItemProcessStatusEnum, message As String)
     Dim itemLine As xxProcessItemLine
     '------------------------------------------------------------------------------------------------------
-    Set itemLine = F.Dictionaries.getItem(pItemLinesDictionary, itemName)
+    Set itemLine = F.dictionaries.getItem(pItemLinesDictionary, itemName)
     If Not itemLine Is Nothing Then
         Call itemLine.updateInfo(status, message)
     End If

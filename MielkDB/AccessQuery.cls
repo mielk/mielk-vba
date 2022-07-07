@@ -34,7 +34,7 @@ End Sub
 Private Sub initializeContainers()
     Set pWheres = New VBA.Collection
     Set pFields = New VBA.Collection
-    Set pOrderFields = F.Dictionaries.Create
+    Set pOrderFields = F.dictionaries.Create
 End Sub
 
 
@@ -50,7 +50,7 @@ End Sub
 
 '[DEFINING QUERY]
 Public Function Fields(ParamArray fieldNames() As Variant) As IQuery
-    Dim arr As Variant:             arr = F.Arrays.fromParamArray(fieldNames)
+    Dim arr As Variant:             arr = F.arrays.fromParamArray(fieldNames)
     Dim varItem As Variant
     Dim fieldName As String
     '------------------------------------------------------------------------------------------------------
@@ -109,7 +109,10 @@ End Function
 
 '[RETURNING DATA]
 Public Function toRecordset() As Object 'ADODB.recordset
-    Set toRecordset = pConnection.getRecordset(getSqlString)
+    Dim sql As String
+    '------------------------------------------------------------------------------------------------------
+    If VBA.Len(pSql) Then sql = pSql Else sql = getSqlString
+    Set toRecordset = pConnection.getRecordset(sql)
 End Function
 
 Public Function toDto() As Scripting.Dictionary
@@ -158,12 +161,14 @@ Private Function getScalarFunctionSqlString() As String
     Const SQL_PATTERN As String = "SELECT {0}({1})"
     Dim params As String
     '------------------------------------------------------------------------------------------------------
-    params = F.Dictionaries.toString(F.Cast.toDictionary(pFunctionParams), DictPart_ValueOnly)
+    params = F.dictionaries.toString(F.Cast.toDictionary(pFunctionParams), DictPart_ValueOnly)
     getScalarFunctionSqlString = F.Strings.Format(SQL_PATTERN, pFunction, params)
 End Function
 
 Private Sub cleanUp(rs As Object)
-    If Not pConnection Then Call D.Connections.closeRecordset(rs, Not pConnection.isTransactionOpen, True)
+    If Not pConnection Is Nothing Then
+        Call D.Connections.closeRecordset(rs, Not pConnection.isTransactionOpen, True)
+    End If
 End Sub
 
 
@@ -202,15 +207,15 @@ Private Function getOrderPart() As String
     Dim orderDirection As String
     '------------------------------------------------------------------------------------------------------
     
-    If F.Dictionaries.isNonEmptyDictionary(pOrderFields) Then
+    If F.dictionaries.isNonEmptyDictionary(pOrderFields) Then
         For Each varKey In pOrderFields.Keys
             fieldName = D.Functions.getSafeFieldName(VBA.CStr(varKey))
             orderDirection = VBA.IIf(pOrderFields.Item(varKey), "ASC ", "DESC ")
-            Call F.Arrays.addEntry(arr, fieldName & " " & orderDirection)
+            Call F.arrays.addEntry(arr, fieldName & " " & orderDirection)
         Next varKey
     End If
     
-    If F.Arrays.isDefined(arr) Then
+    If F.arrays.isDefined(arr) Then
         getOrderPart = " ORDER BY " & VBA.Join(arr, ", ")
     End If
     
@@ -235,6 +240,10 @@ End Function
 
 Private Function IQuery_FromFunction(functionName As String, Optional params As Variant) As IQuery
     Set IQuery_FromFunction = FromFunction(functionName, params)
+End Function
+
+Private Function IQuery_FromStoredProcedure(procName As String, Optional params As Scripting.IDictionary) As IQuery
+    'N/A
 End Function
 
 Private Function IQuery_sql(value As String) As IQuery

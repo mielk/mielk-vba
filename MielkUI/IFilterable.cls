@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
 Option Explicit
 
-'Interface for objects that can have filter applied (i.e. XListManager)
+'Interface for objects that can have filter applied (i.e. XGridManager)
 
 Private Const CLASS_NAME As String = "IFilterable"
 '----------------------------------------------------------------------------------------------------------
@@ -23,3 +23,5 @@ End Sub
 Public Function getAvailableValues(key As String) As Scripting.Dictionary
 End Function
 
+Public Function getFilterRegex(key As String) As String
+End Function

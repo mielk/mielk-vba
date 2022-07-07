@@ -20,6 +20,7 @@ Private Const JSON_TAG_IS_DEFAULT As String = "default"
 '-----------------------------------------------------
 Private pLanguages As Scripting.Dictionary
 Private pCurrentLanguage As Language
+Private pSourceFolderPath As String
 '[Events] -------------------------------------------------------------------------------------------------
 Event AfterLanguageChange()
     '----------------------------------------------------------------------------------------------------------
@@ -37,13 +38,17 @@ Public Sub setCurrentLanguage(Language As Language)
     End If
 End Sub
 
-Public Sub setCurrentLanguageByKey(key As String)
-    Call setCurrentLanguage(getLanguageByKey(key))
+Public Sub setCurrentLanguageByKey(Key As String)
+    Call setCurrentLanguage(getLanguageByKey(Key))
 End Sub
 
 
 
 '[GETTERS]
+Public Function getCurrentLanguage() As Language
+    Set getCurrentLanguage = pCurrentLanguage
+End Function
+
 Public Function getText(tag As String, Optional ByVal Language As String) As String
     Dim objLanguage As Language
     '------------------------------------------------------------------------------------------------------
@@ -67,25 +72,21 @@ Private Function findLanguage(Language As Variant) As Language
         If TypeOf Language Is Language Then
             Set findLanguage = Language
         End If
-    ElseIf F.Variables.isString(Language) Then
+    ElseIf f.Variables.isString(Language) Then
         Set findLanguage = getLanguageByKey(VBA.CStr(Language))
     End If
 End Function
 
-Private Function getLanguageByKey(key As String) As Language
-    With pLanguages
-        If .exists(key) Then
-            Set getLanguageByKey = .item(key)
-        End If
-    End With
+Private Function getLanguageByKey(Key As String) As Language
+    Set getLanguageByKey = f.dictionaries.getObject(pLanguages, Key)
 End Function
 
 Public Function getLanguagesCollection() As VBA.Collection
-    Set getLanguagesCollection = F.Dictionaries.toCollection(pLanguages, DictPart_ValueOnly)
+    Set getLanguagesCollection = f.dictionaries.toCollection(pLanguages, DictPart_ValueOnly)
 End Function
 
 Public Function getLanguagesDictionary() As Scripting.Dictionary
-    Set getLanguagesDictionary = F.Dictionaries.clone(pLanguages)
+    Set getLanguagesDictionary = f.dictionaries.clone(pLanguages)
 End Function
 
 
@@ -102,8 +103,11 @@ Public Sub loadJsonsFromFolder(folderPath As String)
     Dim file As Scripting.file
     '------------------------------------------------------------------------------------------------------
     
-    Set folder = F.files.createFolder(folderPath)
-    Set files = F.files.getFolderFiles(folderPath, True, FILE_NAME_PATTERN)
+    Set pLanguages = f.dictionaries.Create(False)
+    Set pCurrentLanguage = Nothing
+    pSourceFolderPath = folderPath
+    Set folder = f.files.createFolder(folderPath)
+    Set files = f.files.getFolderFiles(folderPath, True, FILE_NAME_PATTERN)
     
     For Each file In files
         Debug.Print "Loading messages from " & file.path
@@ -113,23 +117,23 @@ Public Sub loadJsonsFromFolder(folderPath As String)
 End Sub
 
 
-Private Sub loadFromJson(filePath As String)
+Private Sub loadFromJson(filepath As String)
     Dim json As String
     Dim obj As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
     
     If pLanguages Is Nothing Then
-        Set pLanguages = F.Dictionaries.Create(False)
+        Set pLanguages = f.dictionaries.Create(False)
     End If
     
     On Error Resume Next
-    json = F.TextFiles.readTextFile(filePath)
-    Set obj = F.json.ParseJson(json)
+    json = f.TextFiles.readTextFile(filepath)
+    Set obj = f.json.ParseJson(json)
     On Error GoTo 0
     
-    If F.Dictionaries.isNonEmptyDictionary(obj) Then
-        Call loadLanguages(F.Dictionaries.getObject(obj, JSON_TAG_LANGUAGES))
-        Call loadTexts(F.Dictionaries.getObject(obj, JSON_TAG_MESSAGES), vbNullString)
+    If f.dictionaries.isNonEmptyDictionary(obj) Then
+        Call loadLanguages(f.dictionaries.getObject(obj, JSON_TAG_LANGUAGES))
+        Call loadTexts(f.dictionaries.getObject(obj, JSON_TAG_MESSAGES), vbNullString)
     End If
     
 End Sub
@@ -139,16 +143,16 @@ Private Sub loadLanguages(dict As Scripting.Dictionary)
     Dim Language As Language
     '------------------------------------------------------------------------------------------------------
     
-    If F.Dictionaries.isNonEmptyDictionary(dict) Then
+    If f.dictionaries.isNonEmptyDictionary(dict) Then
         For Each varKey In dict.Keys
             If Not pLanguages.exists(varKey) Then
                 Set Language = createLanguage(VBA.CStr(varKey))
-                Call F.Dictionaries.addItem(pLanguages, varKey, Language)
+                Call f.dictionaries.addItem(pLanguages, varKey, Language)
             Else
-                Set Language = pLanguages.item(varKey)
+                Set Language = pLanguages.Item(varKey)
             End If
             
-            Call loadLanguageProperties(Language, dict.item(varKey))
+            Call loadLanguageProperties(Language, dict.Item(varKey))
 
         Next varKey
     End If
@@ -158,42 +162,43 @@ End Sub
 Private Sub loadTexts(dict As Scripting.Dictionary, prefix As String)
     Dim varKey As Variant
     Dim Language As Language
+    Dim subDict As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
     
-    If F.Dictionaries.isNonEmptyDictionary(dict) Then
+    If f.dictionaries.isNonEmptyDictionary(dict) Then
         For Each varKey In dict.Keys
-        
-            If F.Dictionaries.isNonEmptyDictionary(dict.item(varKey)) Then
-                Call loadTexts(dict.item(varKey), prefix & VBA.IIf(VBA.Len(prefix), ".", vbNullString) & varKey)
+            Set subDict = f.cast.toDictionary(dict.Item(varKey))
+            If Not subDict Is Nothing Then
+                If subDict.count Then
+                    Call loadTexts(dict.Item(varKey), prefix & VBA.IIf(VBA.Len(prefix), ".", vbNullString) & varKey)
+                End If
             Else
-                Set Language = F.Dictionaries.getObject(pLanguages, varKey)
+                Set Language = f.dictionaries.getObject(pLanguages, varKey)
                 If Language Is Nothing Then
                     Set Language = createLanguage(VBA.CStr(varKey))
-                    Call pLanguages.Add(varKey, Language)
+                    Call pLanguages.add(varKey, Language)
                 End If
-                
                 If Not Language Is Nothing Then
-                    Call Language.addText(prefix, dict.item(varKey))
+                    Call Language.addText(prefix, dict.Item(varKey))
                 End If
-                
             End If
         Next varKey
     End If
     
 End Sub
 
-Private Function createLanguage(key As String) As Language
+Private Function createLanguage(Key As String) As Language
     Set createLanguage = New Language
-    Call createLanguage.setKey(key)
+    Call createLanguage.setKey(Key)
 End Function
 
-Private Sub loadLanguageProperties(Language As Language, props As Scripting.Dictionary)
+Private Sub loadLanguageProperties(Language As Language, Props As Scripting.Dictionary)
     Dim name As Variant
     Dim isDefault As Variant
     '------------------------------------------------------------------------------------------------------
     
-    Call F.Dictionaries.assignValueFromDictToVariable(props, name, JSON_TAG_NAME)
-    Call F.Dictionaries.assignValueFromDictToVariable(props, isDefault, JSON_TAG_IS_DEFAULT)
+    Call f.dictionaries.assignValueFromDictToVariable(Props, name, JSON_TAG_NAME)
+    Call f.dictionaries.assignValueFromDictToVariable(Props, isDefault, JSON_TAG_IS_DEFAULT)
     
     With Language
         If Not VBA.IsEmpty(name) Then Call .setName(VBA.CStr(name))
@@ -204,6 +209,13 @@ Private Sub loadLanguageProperties(Language As Language, props As Scripting.Dict
         Set pCurrentLanguage = Language
     End If
 
+End Sub
+
+
+Public Sub reload()
+    If f.files.folderExists(pSourceFolderPath) Then
+        Call loadJsonsFromFolder(pSourceFolderPath)
+    End If
 End Sub
 
 

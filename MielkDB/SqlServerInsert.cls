@@ -58,6 +58,7 @@ Public Sub Execute(Optional ByRef id As Long)
     '------------------------------------------------------------------------------------------------------
     
     Set rs = New ADODB.recordset
+    Call pConnection.openConnection
     With rs
         .CursorLocation = adUseClient
         Call .Open(getSqlString, pConnection.getConnection, adCmdText)
@@ -118,11 +119,11 @@ Private Function getSelectScopePart() As String
 End Function
 
 Private Function getFieldsPart() As String
-    getFieldsPart = F.Arrays.toString(pValues.Keys, StringifyMode_Normal, ", ", "[", "]")
+    getFieldsPart = F.arrays.toString(pValues.Keys, StringifyMode_Normal, ", ", "[", "]")
 End Function
 
 Private Function getValuesPart() As String
-    getValuesPart = "SELECT " & F.Arrays.toString(pValues.Items, StringifyMode_Db)
+    getValuesPart = "SELECT " & F.arrays.toString(pValues.Items, StringifyMode_Db)
 End Function
 
 
@@ -154,12 +155,11 @@ Private Function IInsert_Values(properties As Scripting.IDictionary) As IInsert
 End Function
 
 Private Sub IInsert_Execute()
-    Stop
-    'Call Execute(id)
+    Call Execute
 End Sub
 
-Private Sub IInsert_ExecuteWithId(id As Long, ByVal idFieldName As String)
-    Stop
+Private Sub IInsert_ExecuteWithId(id As Long, Optional ByVal idFieldName As String)
+    Call Execute(id)
 End Sub
 
 Private Sub IInsert_fromExcelToTempTable(filepath As String, sheetName As String, tableName As String)

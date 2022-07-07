@@ -19,13 +19,13 @@ Public Function toObject(value As Variant) As Object
 End Function
 
 Public Function toDictionary(value As Variant) As Scripting.Dictionary
-    If F.Dictionaries.isDictionary(value) Then
+    If f.dictionaries.isDictionary(value) Then
         Set toDictionary = value
     End If
 End Function
 
 Public Function toCollection(value As Variant) As VBA.Collection
-    If F.Collections.isCollection(value) Then
+    If f.Collections.isCollection(value) Then
         Set toCollection = value
     End If
 End Function

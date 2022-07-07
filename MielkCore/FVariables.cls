@@ -60,9 +60,9 @@ Public Sub swapValues(ByRef variable1 As Variant, ByRef variable2 As Variant)
     Dim tempValue As Variant
     '------------------------------------------------------------------------------------------------------
 
-    Call F.Variables.assign(tempValue, variable1)
-    Call F.Variables.assign(variable1, variable2)
-    Call F.Variables.assign(variable2, tempValue)
+    Call f.Variables.assign(tempValue, variable1)
+    Call f.Variables.assign(variable1, variable2)
+    Call f.Variables.assign(variable2, tempValue)
 
 End Sub
 
@@ -94,16 +94,16 @@ End Function
 #Else
     Public Function getByPointer(pointer As Long) As Object
 #End If
-    Set getByPointer = F.Objects.getByPointer(pointer)
+    Set getByPointer = f.Objects.getByPointer(pointer)
 End Function
 
 Public Function getObjectProperty(obj As Object, ByVal value As String) As Variant
     Dim functionName As String
     '------------------------------------------------------------------------------------------------------
     
-    functionName = F.strings.substring(value, METHOD_START_TAG, METHOD_END_TAG)
+    functionName = f.strings.substring(value, METHOD_START_TAG, METHOD_END_TAG)
     If VBA.Len(functionName) Then
-        Call F.Variables.assign(getObjectProperty, VBA.CallByName(obj, functionName, VbMethod))
+        Call f.Variables.assign(getObjectProperty, VBA.CallByName(obj, functionName, VbMethod))
     Else
         getObjectProperty = value
     End If
@@ -124,7 +124,7 @@ End Function
 
 Public Function isContainer(ByRef value As Variant) As Boolean
     If VBA.IsArray(value) Then
-        isContainer = (F.arrays.countDimensions(value) = 1)
+        isContainer = (f.arrays.countDimensions(value) = 1)
     ElseIf VBA.IsObject(value) Then
         If Not value Is Nothing Then
             If TypeOf value Is VBA.Collection Then
@@ -155,7 +155,7 @@ Public Function isUndefined(value As Variant, Optional includeEmptyString As Boo
     ElseIf VBA.IsEmpty(value) Then
         isUndefined = True
     ElseIf VBA.IsArray(value) Then
-        If Not F.arrays.isDefined(value) And includeUndefinedArray Then
+        If Not f.arrays.isDefined(value) And includeUndefinedArray Then
             isUndefined = True
         End If
     ElseIf VBA.IsError(value) Then
@@ -171,10 +171,10 @@ Public Function isNothing(ByRef value As Variant) As Boolean
     End If
 End Function
 
-Public Function isAnyItemNothing(ParamArray items() As Variant) As Boolean
+Public Function isAnyItemNothing(ParamArray Items() As Variant) As Boolean
     Dim varItem As Variant
     '------------------------------------------------------------------------------------------------------
-    For Each varItem In items
+    For Each varItem In Items
         If isNothing(varItem) Then
             isAnyItemNothing = True
             Exit For
@@ -333,20 +333,20 @@ Public Function equals(ByVal a As Variant, ByVal b As Variant, _
                                 Optional orderSensitiveForContainers As Boolean = True) As Boolean
 
     If VBA.IsArray(a) And VBA.IsArray(b) Then
-        equals = F.arrays.compare(a, b, ignoreIndexingBase, strictDataType)
+        equals = f.arrays.compare(a, b, ignoreIndexingBase, strictDataType)
     ElseIf VBA.IsArray(a) Or VBA.IsArray(b) Then
         equals = False
-    ElseIf F.Variables.isUndefined(a) And isUndefined(b) Then
+    ElseIf f.Variables.isUndefined(a) And isUndefined(b) Then
         equals = equals_checkForBothUndefined(a, b, strictDataType)
-    ElseIf F.Variables.isUndefined(a) Then
+    ElseIf f.Variables.isUndefined(a) Then
         equals = equals_checkForOneUndefined(a, b, strictDataType)
-    ElseIf F.Variables.isUndefined(b) Then
+    ElseIf f.Variables.isUndefined(b) Then
         equals = equals_checkForOneUndefined(b, a, strictDataType)
     ElseIf VBA.IsObject(a) And VBA.IsObject(b) Then
         equals = equals_checkForObjects(a, b, strictDataType, isCaseSensitive, orderSensitiveForContainers)
     ElseIf VBA.IsObject(a) Or VBA.IsObject(b) Then
         equals = False
-    ElseIf F.Dates.isDateString(a) <> F.Dates.isDateString(b) Then
+    ElseIf f.Dates.isDateString(a) <> f.Dates.isDateString(b) Then
         equals = False
     Else
         equals = equals_checkForPrimitives(a, b, strictDataType, isCaseSensitive, trimWhenComparingStrings)
@@ -397,15 +397,22 @@ Private Function equals_checkForObjects(ByVal a As Variant, ByVal b As Variant, 
 
     If Not DEV_MODE Then On Error GoTo ErrHandler
 
-    If F.Collections.isCollection(a) And F.Collections.isCollection(b) Then
-        equals_checkForObjects = F.Collections.compare(F.cast.toCollection(a), F.cast.toCollection(b), _
+    If a Is b Then
+        equals_checkForObjects = True
+    ElseIf f.Collections.isCollection(a) And f.Collections.isCollection(b) Then
+        equals_checkForObjects = f.Collections.compare(f.cast.toCollection(a), f.cast.toCollection(b), _
                                                             strictDataType, orderSensitive, caseSensitive)
-    ElseIf F.Dictionaries.isDictionary(a) And F.Dictionaries.isDictionary(b) Then
-        equals_checkForObjects = F.Dictionaries.compare(F.cast.toDictionary(a), F.cast.toDictionary(b), _
+    ElseIf f.dictionaries.isDictionary(a) And f.dictionaries.isDictionary(b) Then
+        equals_checkForObjects = f.dictionaries.compare(f.cast.toDictionary(a), f.cast.toDictionary(b), _
                                             strictDataType:=strictDataType, isCaseSensitive:=caseSensitive)
     Else
-        On Error GoTo EqualsMethodNotFound
+        Call VBA.err.clear
+        On Error Resume Next
         equals_checkForObjects = a.equals(b)    'VBA.CallByName(a, EQUALS_METHOD_NAME, VbMethod, b)
+        If VBA.err.number = Exceptions.MethodNotSupported.getNumber Then
+            Call VBA.err.clear
+        End If
+        If Not DEV_MODE Then On Error GoTo ErrHandler
     End If
 
 '==========================================================================================================
@@ -414,21 +421,16 @@ ExitPoint:
     If errNumber Then Call VBA.err.raise(errNumber, CLASS_NAME & "." & METHOD_NAME, errDescription)
     Exit Function
 
- '----------------------------------------------------------------------------------------------------------
-EqualsMethodNotFound:
-    If Not DEV_MODE Then On Error GoTo ErrHandler
-    If VBA.err.number = Exceptions.MethodNotSupported.getNumber Then
-        equals_checkForObjects = (a Is b)
-    Else
-        Call VBA.err.raise(VBA.err.number)
-    End If
-
- '----------------------------------------------------------------------------------------------------------
+'----------------------------------------------------------------------------------------------------------
 ErrHandler:
     errNumber = VBA.err.number: errDescription = VBA.err.description
-    Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, _
+    If errNumber <> Exceptions.MethodNotSupported.getNumber Then
+        Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, _
                         "a; b; strictDataType; caseSensitive; orderSensitive", _
                          a, b, strictDataType, caseSensitive, orderSensitive)
+    Else
+        errNumber = 0
+    End If
     GoTo ExitPoint
 
 End Function
@@ -440,7 +442,7 @@ Private Function equals_checkForArrays(ByVal a As Variant, ByVal b As Variant, _
 
     If Not DEV_MODE Then On Error GoTo ErrHandler
 
-    equals_checkForArrays = F.arrays.compare(a, b, ignoreIndexingBase, strictDataType)
+    equals_checkForArrays = f.arrays.compare(a, b, ignoreIndexingBase, strictDataType)
 
 '==========================================================================================================
 ExitPoint:
@@ -466,8 +468,8 @@ Private Function equals_checkForPrimitives(ByVal baseValue As Variant, ByVal com
 
     If haveTheSameDataType(baseValue, comparedValue) Then
         If VBA.varType(baseValue) = vbString Then
-            equals_checkForPrimitives = F.strings.compareStrings(F.strings.stringify(baseValue), _
-                            F.strings.stringify(comparedValue), isCaseSensitive, trimStrings)
+            equals_checkForPrimitives = f.strings.compareStrings(f.strings.stringify(baseValue), _
+                            f.strings.stringify(comparedValue), isCaseSensitive, trimStrings)
         Else
             equals_checkForPrimitives = (baseValue = comparedValue)
         End If
@@ -478,8 +480,8 @@ Private Function equals_checkForPrimitives(ByVal baseValue As Variant, ByVal com
     ElseIf isBoolean(comparedValue) Then
         equals_checkForPrimitives = equals_checkForBoolean(comparedValue, baseValue, trimStrings)
     Else
-        equals_checkForPrimitives = F.strings.compareStrings(F.strings.stringify(baseValue), _
-                                        F.strings.stringify(comparedValue), isCaseSensitive, trimStrings)
+        equals_checkForPrimitives = f.strings.compareStrings(f.strings.stringify(baseValue), _
+                                        f.strings.stringify(comparedValue), isCaseSensitive, trimStrings)
     End If
 
 End Function
@@ -490,7 +492,7 @@ Private Function equals_checkForBoolean(booleanValue As Variant, nonBooleanValue
     '------------------------------------------------------------------------------------------------------
 
     If isString(nonBooleanValue) Then
-        equals_checkForBoolean = F.strings.compareStrings(VBA.IIf(booleanValue, TRUE_STRING, FALSE_STRING), _
+        equals_checkForBoolean = f.strings.compareStrings(VBA.IIf(booleanValue, TRUE_STRING, FALSE_STRING), _
                                                                             VBA.CStr(nonBooleanValue), False, trim)
     ElseIf isNumeric(nonBooleanValue) Then
         equals_checkForBoolean = (booleanValue = VBA.CBool(nonBooleanValue))
@@ -513,8 +515,8 @@ Public Function coalesce(ParamArray values() As Variant) As Variant
     Dim value As Variant
     '------------------------------------------------------------------------------------------------------
     For Each value In values
-        If Not F.Variables.isUndefined(value, True, True, True) Then
-            Call F.Variables.assign(coalesce, value)
+        If Not f.Variables.isUndefined(value, True, True, True) Then
+            Call f.Variables.assign(coalesce, value)
             Exit For
         End If
     Next value

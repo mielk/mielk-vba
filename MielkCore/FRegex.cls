@@ -33,7 +33,7 @@ Public Function checkIfMatch(text As String, regexPattern As String, _
                     Optional multiline As Boolean = True) As Boolean
     Static objRegex As Object
     '------------------------------------------------------------------------------------------------------
-    If objRegex Is Nothing Then Set objRegex = F.regex.Create
+    If objRegex Is Nothing Then Set objRegex = f.regex.Create
     With objRegex
         .Global = searchGlobal
         .multiline = multiline
@@ -54,11 +54,11 @@ Public Function checkIfAnyMatch(text As String, patterns As Variant, _
     Dim varPattern As Variant
     '------------------------------------------------------------------------------------------------------
     
-    If objRegex Is Nothing Then Set objRegex = F.regex.Create
+    If objRegex Is Nothing Then Set objRegex = f.regex.Create
     
-    If F.arrays.countDimensions(patterns) = 1 Then
-        Set colPatterns = F.arrays.toCollection(patterns)
-    ElseIf F.Collections.isNonEmptyCollection(patterns) Then
+    If f.arrays.countDimensions(patterns) = 1 Then
+        Set colPatterns = f.arrays.toCollection(patterns)
+    ElseIf f.Collections.isNonEmptyCollection(patterns) Then
         Set colPatterns = patterns
     End If
     
@@ -76,6 +76,19 @@ Public Function checkIfAnyMatch(text As String, patterns As Variant, _
     Next varPattern
     
 End Function
+
+Public Function replace(text As String, regexPattern As String, replacement As String, _
+                                            Optional ignoreCase As Boolean = True) As String
+    Static objRegex As Object
+    '------------------------------------------------------------------------------------------------------
+    If objRegex Is Nothing Then Set objRegex = f.regex.Create
+    With objRegex
+        .ignoreCase = ignoreCase
+        .pattern = regexPattern
+        replace = .replace(text, replacement)
+    End With
+End Function
+                                            
 
 Public Function getFirstGroupMatch(text As String, pattern As String, _
                                             Optional ignoreCase As Boolean = True, _
@@ -194,7 +207,7 @@ Public Function getMatchArraysCollection(text As String, pattern As String, _
                 For i = 0 To counter - 1
                     arr(i + 1) = match.SubMatches(i)
                 Next i
-                Call getMatchArraysCollection.Add(arr)
+                Call getMatchArraysCollection.add(arr)
             End If
         Next match
     End If

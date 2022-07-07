@@ -42,6 +42,7 @@ Private pFontSize As Single
 Private pFontBold As Boolean
 Private pFontColor As Long
 '[Borders & background]
+Private pBackColor As Long
 Private pBorderColor As Long
 Private pHoverBackColor As Long
 '[Events] -------------------------------------------------------------------------------------------------
@@ -53,8 +54,9 @@ Event KeyPressed(ByVal KeyCode As MSForms.ReturnInteger)
 
 
 Private Sub Class_Initialize()
-    pUuid = F.Crypto.createUuid
+    pUuid = F.Crypto.createUUID
     pVisible = True
+    pBackColor = vbWhite
 End Sub
 
 
@@ -140,17 +142,19 @@ End Function
 Public Function setFontColor(value As Long) As UITextBox
     Set setFontColor = Me
     pFontColor = value
-    If pIsRendered Then
-        Call updateValue
-    End If
+    If pIsRendered Then Call updateValue
 End Function
 
 Public Function setBorderColor(value As Long) As UITextBox
     Set setBorderColor = Me
     pBorderColor = value
-    If pIsRendered Then
-        Call updateBorderColor
-    End If
+    If pIsRendered Then Call updateBorderColor
+End Function
+
+Public Function setBackColor(value As Long) As UITextBox
+    Set setBackColor = Me
+    pBackColor = value
+    If pIsRendered Then Call updateBackColor
 End Function
 
 Public Function setHoverBackColor(value As Long) As UITextBox
@@ -242,8 +246,8 @@ Private Sub insertBackgroundLabel()
     With pBackgroundLabel
         .height = pHeight
         .width = pWidth
-        .BackStyle = fmBackStyleTransparent
-        .borderStyle = fmBorderStyleNone
+        .BackStyle = fmBackStyleOpaque
+        .borderStyle = fmBorderStyleSingle
         .visible = pVisible
         .ControlTipText = pTooltip
     End With
@@ -257,6 +261,10 @@ Private Sub insertTextBox()
         .borderStyle = fmBorderStyleNone
         .visible = pVisible
         .ControlTipText = pTooltip
+        .TextAlign = pTextAlignment
+        .font.size = pFontSize
+        .font.Bold = VBA.IIf(pFontBold, 1, 0)
+        .ForeColor = pFontColor
     End With
     
     '[Create eventsCatcher to be bound to this TextBox]
@@ -267,12 +275,12 @@ End Sub
 
 
 
-Public Function Move(Optional x As Variant, Optional y As Variant) As UITextBox
+Public Function move(Optional x As Variant, Optional y As Variant) As UITextBox
     Dim offsetX As Single
     Dim offsetY As Single
     '------------------------------------------------------------------------------------------------------
     
-    Set Move = Me
+    Set move = Me
     
     With pBackgroundLabel
         If VBA.IsNumeric(x) Then
@@ -287,7 +295,7 @@ Public Function Move(Optional x As Variant, Optional y As Variant) As UITextBox
     
 End Function
 
-Public Function offset(Optional x As Single, Optional y As Single)
+Public Function offset(Optional x As Single, Optional y As Single) As UITextBox
     Set offset = Me
     Call UI.Forms.offsetControls(x, y, pBackgroundLabel, pTextBox)
     With pBackgroundLabel
@@ -338,18 +346,18 @@ Private Sub updateSize()
         .width = pWidth - 2 * CAPTION_MARGIN
         .left = pBackgroundLabel.left + CAPTION_MARGIN
     End With
+    pEventsDisabled = False
 End Sub
 
 Private Sub updateValue()
     If Not pEventsDisabled Then
         pEventsDisabled = True
-        
         If UI.Forms.isControlValid(pTextBox) Then
             With pTextBox
                 .value = pValue
                 With .font
                     .name = pFontName
-                    .Bold = pFontBold
+                    .Bold = VBA.IIf(pFontBold, 1, False)
                     .size = pFontSize
                 End With
                 .TextAlign = pTextAlignment
@@ -357,6 +365,7 @@ Private Sub updateValue()
                 RaiseEvent AfterChange
             End With
         End If
+        pEventsDisabled = False
     End If
 End Sub
 
@@ -390,6 +399,13 @@ Private Sub updateBorderColor()
     End If
 End Sub
 
+Private Sub updateBackColor()
+    If pIsRendered Then
+        pBackgroundLabel.backColor = pBackColor
+        pTextBox.backColor = pBackColor
+    End If
+End Sub
+
 Private Sub updateTextAlignment()
     If pIsRendered Then
         pTextBox.TextAlign = pTextAlignment
@@ -419,7 +435,7 @@ Private Sub pTextBox_Change()
         pValue = pTextBox.value
         RaiseEvent AfterChange
         If Not pListener Is Nothing Then
-            Call pListener.catchEvent(Me, Events.Click.getName)
+            Call pListener.catchEvent(Me, Events.change.getName)
         End If
     End If
 End Sub
@@ -430,8 +446,10 @@ Private Sub pTextBox_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift
     If Not pEventsDisabled Then
         RaiseEvent KeyPressed(KeyCode)
         If Not pListener Is Nothing Then
-            Call pListener.catchEvent(Me, EVENT_KEY_PRESSED, _
-                                            F.Dictionaries.createWithItems(False, KeyValue(TAG_KEY, KeyCode)))
+            Call pListener.catchEvent(Me, UI.Events.KeyDown.getName, _
+                                            F.dictionaries.createWithItems(False, _
+                                                    KeyValue(TAG_KEY, KeyCode), _
+                                                    KeyValue(TAG_SHIFT, Shift)))
         End If
     End If
 End Sub
@@ -482,8 +500,8 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     Call alignVertically(baseCtrl)
 End Sub
 
-Private Function IControl_move(Optional x As Single, Optional y As Single) As IControl
-    Set IControl_move = Move(x, y)
+Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
+    Set IControl_move = move(x, y)
 End Function
 
 Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl

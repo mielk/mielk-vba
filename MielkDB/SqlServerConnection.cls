@@ -97,7 +97,7 @@ Private Function getConnectionString(provider As String, dataSource As String, d
     End If
 End Function
 
-Public Function getConnection() As ADODB.connection
+Public Function getConnection() As Object 'ADODB.connection
     Set getConnection = pConnection
 End Function
 
@@ -120,9 +120,8 @@ Private Function ensureConnectionIsOpen()
     '------------------------------------------------------------------------------------------------------
 
     For attempt = 1 To MAX_ATTEMPTS
-    
-        Call D.Functions.reopenConnection(pConnection)
         If pConnection.State >= 1 Then Exit For
+        Call D.Functions.reopenConnection(pConnection)
     Next attempt
 
     DoEvents
@@ -148,31 +147,67 @@ Public Function clone() As SqlServerConnection
     Call clone.setConnectionString(pConnectionString)
 End Function
 
-Private Sub closeConnection()
-    If Not pConnection Is Nothing Then
-        If pConnection.State = 1 Then
+Private Sub closeConnection(Optional rollbackTransactionIfOpen As Boolean = False, _
+                            Optional ignoreCloseWhileInTransactionError As Boolean = True)
+                            
+    If pConnection Is Nothing Then
+        '
+    ElseIf pConnection.State = 0 Then
+        '
+    Else
+        If isTransactionOpen Then
+            If rollbackTransactionIfOpen Then
+                Call rollbackTransaction(vbNullString)
+                Call pConnection.Close
+            End If
+        Else
             Call pConnection.Close
         End If
-        'Set pConnection = Nothing
     End If
-End Sub
+    
+ExitPoint:
+    Dim errNumber As Long, errDescription As String
+    Exit Sub
 
+ErrHandler:
+    errNumber = Err.Number: errDescription = Err.Description
+    If ignoreCloseWhileInTransactionError And errNumber = Exceptions.DbClosingWhileInTransaction.getNumber Then
+        If F.System.isDeveloper Then Stop
+        Call VBA.Err.Clear
+    Else
+        Stop
+        'Call ErrorManager.addError
+    End If
+    GoTo ExitPoint
+    
+End Sub
 
 
 
 '[TRANSACTIONS]
-Public Sub beginTransaction(uuid As String)
+Public Sub beginTransaction(uuid As String, Optional forceNewTransaction As Boolean = False)
     Set pErrors = New VBA.Collection
     
+    If forceNewTransaction Then
+        On Error Resume Next
+        Call pConnection.RollbackTrans
+        Call pConnection.Close
+        pIsTransactionOpen = False
+        If Not DEV_MODE Then On Error GoTo ErrHandler
+    End If
+    
     If Not pIsTransactionOpen Then
-        Call getConnection.BeginTrans
+        If pConnection.State = 0 Then Call pConnection.Open
+        Call pConnection.BeginTrans
         pTransactionUuid = uuid
         pIsTransactionOpen = True
     End If
+    
+ErrHandler:
 End Sub
 
-Public Sub rollbackTransaction(uuid As String)
-    If F.Strings.compareStrings(uuid, pTransactionUuid) Then
+Public Sub rollbackTransaction(Optional uuid As String)
+    If F.Strings.compareStrings(uuid, pTransactionUuid) Or VBA.Len(uuid) = 0 Then
         On Error Resume Next
         Call getConnection.RollbackTrans
         pIsTransactionOpen = False
@@ -231,11 +266,11 @@ End Function
 
 '[FETCHING DATA]
 '[Basic operations]
-Public Function Execute(sqlString As String, Optional lockType As Long = adLockOptimistic) As Object
+Public Function Execute(sqlString As String, Optional lockType As Long = adLockOptimistic, Optional handleErrors As Boolean = True) As Object
     Set Execute = VBA.CreateObject(ADODB_RECORDSET)
-    Call openConnection
+    If Not pIsTransactionOpen Then Call openConnection
     Call Execute.Open(sqlString, getConnection, lockType:=lockType)
-    Call closeConnection
+    If Not pIsTransactionOpen Then Call closeConnection
 End Function
 
 Public Function getRecordset(sqlString As String, Optional lockType As Long = adLockOptimistic) As Object
@@ -277,7 +312,7 @@ End Function
 Public Function getScalarFunctionValue(sqlString As String, Optional lockType As Long = adLockOptimistic) As Variant
     Dim rs As Object
     '----------------------------------------------------------------------------------------------------------
-    Set rs = getConnection.Execute(sqlString, lockType)
+    Set rs = getRecordset(sqlString, lockType)
     Do Until rs.EOF
         getScalarFunctionValue = rs.Fields(0).value
         Exit Do
@@ -296,30 +331,38 @@ Public Sub runStoredProcedure(procedureName As String, params As Scripting.IDict
     Const METHOD_NAME As String = "runStoredProcedure"
     Const SQL_PATTERN As String = "EXEC {0} {1}"
     '------------------------------------------------------------------------------------------------------
-    Dim SqlCommand As String
+    Dim sqlCommand As String
     Dim paramsText As String
     '------------------------------------------------------------------------------------------------------
     
     On Error GoTo ExceptionHandler
     
-    If F.Dictionaries.isNonEmptyDictionary(params) Then
-        paramsText = F.Dictionaries.toString(params, DictPart_KeyAndValue, StringifyMode_Db, ", ", " = ", "@ ")
+    If F.dictionaries.isNonEmptyDictionary(params) Then
+        paramsText = F.dictionaries.toString(params, DictPart_KeyAndValue, StringifyMode_Db, ", ", " = ", "@", vbNullString)
     End If
-    SqlCommand = F.Strings.Format(SQL_PATTERN, procedureName, paramsText)
-    getConnection.CommandTimeout = 0
+    sqlCommand = F.Strings.Format(SQL_PATTERN, procedureName, paramsText)
     
-    DoEvents
-    Debug.Print "PROC: " & SqlCommand
-    Call getConnection.Execute(SqlCommand, options:=VBA.IIf(asynchronous, adAsyncExecute, adOptionUnspecified))
-    DoEvents
+    With getConnection
+        If .State <> 1 Then Call ensureConnectionIsOpen
+        .CommandTimeout = 0
+        DoEvents
+        Debug.Print "PROC: " & sqlCommand
+        Call .Execute(sqlCommand) ',  options:=VBA.IIf(asynchronous, adAsyncExecute, adOptionUnspecified))
+        DoEvents
+    End With
     
 '==========================================================================================================
 ExitPoint:
+    Dim errNumber As Long, errDescription As String
+    If errNumber Then
+        Call Exceptions.DbStoredProcedureError.Raise(sqlCommand, errNumber, errDescription)
+    End If
     Exit Sub
     
 '----------------------------------------------------------------------------------------------------------
 ExceptionHandler:
-    Call Exceptions.SqlException.Raise(SqlCommand)
+    errNumber = VBA.Err.Number: errDescription = VBA.Err.Description
+    Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription)
     GoTo ExitPoint
     
 End Sub
@@ -327,7 +370,7 @@ End Sub
 Public Sub runStoredProcedureWithCommand(procedureName As String, params As Scripting.IDictionary, asynchronous As Boolean)
     Const METHOD_NAME As String = "runStoredProcedureWithCommand"
     '------------------------------------------------------------------------------------------------------
-    Dim command As ADODB.command
+    Dim command As Object ' ADODB.command
     Dim varKey As Variant
     Dim value As Variant
     Dim sql As String
@@ -335,13 +378,13 @@ Public Sub runStoredProcedureWithCommand(procedureName As String, params As Scri
     
     On Error GoTo ExceptionHandler
     
-    Set command = New ADODB.command
+    Set command = VBA.CreateObject("ADODB.command")
     With command
         .ActiveConnection = getConnection
         .CommandText = procedureName
         .CommandType = adCmdStoredProc
         .CommandTimeout = 0
-        If F.Dictionaries.isNonEmptyDictionary(params) Then
+        If F.dictionaries.isNonEmptyDictionary(params) Then
             For Each varKey In params.Keys
                 value = params.Item(varKey)
                 Call .Parameters.Append(.CreateParameter(VBA.CStr(varKey), D.Functions.getAdDataType(value), adParamInput, , value))
@@ -362,8 +405,43 @@ ExceptionHandler:
     
 End Sub
 
-
-
+Public Function getRecordsetFromStoredProcedure(procName As String, params As Scripting.Dictionary) As Object 'ADODB.Recordset
+    Const METHOD_NAME As String = "runStoredProcedure"
+    Const SQL_PATTERN As String = "EXEC {0} {1}"
+    '------------------------------------------------------------------------------------------------------
+    Dim sqlCommand As String
+    Dim paramsText As String
+    '------------------------------------------------------------------------------------------------------
+    
+    On Error GoTo ExceptionHandler
+    
+    If F.dictionaries.isNonEmptyDictionary(params) Then
+        paramsText = F.dictionaries.toString(params, DictPart_KeyAndValue, StringifyMode_Db, ", ", " = ", "@", vbNullString)
+    End If
+    sqlCommand = F.Strings.Format(SQL_PATTERN, procName, paramsText)
+    
+    With getConnection
+        If .State <> 1 Then Call ensureConnectionIsOpen
+        .CommandTimeout = 0
+        Debug.Print "PROC: " & sqlCommand
+        Set getRecordsetFromStoredProcedure = .Execute(sqlCommand)
+    End With
+    
+'==========================================================================================================
+ExitPoint:
+    Dim errNumber As Long, errDescription As String
+    If errNumber Then
+        Call Exceptions.DbStoredProcedureError.Raise(sqlCommand, errNumber, errDescription)
+    End If
+    Exit Function
+    
+'----------------------------------------------------------------------------------------------------------
+ExceptionHandler:
+    errNumber = VBA.Err.Number: errDescription = VBA.Err.Description
+    Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription)
+    GoTo ExitPoint
+    
+End Function
 
 
 
@@ -398,7 +476,7 @@ Private Sub IDbConnection_setConnectionString(conStr As String)
 End Sub
 
 Private Sub IDbConnection_openConnection()
-    Stop
+    Call ensureConnectionIsOpen
 End Sub
 
 Private Function IDbConnection_getConnection() As Object 'ADODB.connection
@@ -410,19 +488,19 @@ Private Function IDbConnection_clone() As IDbConnection
 End Function
 
 Private Sub IDbConnection_closeConnection(Optional rollbackTransactionIfOpen As Boolean = False)
-    Stop
-    'Call closeConnection(rollbackTransactionIfOpen)
+    Call closeConnection(rollbackTransactionIfOpen)
 End Sub
 
-Private Sub IDbConnection_beginTransaction(uuid As String)
-    Call beginTransaction(uuid)
+Private Sub IDbConnection_beginTransaction(uuid As String, Optional forceNewTransaction As Boolean = False)
+    Call beginTransaction(uuid, forceNewTransaction)
 End Sub
+
 
 Private Sub IDbConnection_commitTransaction(uuid As String)
     Call commitTransaction(uuid)
 End Sub
 
-Private Sub IDbConnection_rollbackTransaction(uuid As String)
+Private Sub IDbConnection_rollbackTransaction(Optional uuid As String)
     Call rollbackTransaction(uuid)
 End Sub
 
@@ -438,12 +516,16 @@ Private Function IDbConnection_hasErrors() As Boolean
     IDbConnection_hasErrors = hasErrors
 End Function
 
-Private Function IDbConnection_execute(sqlString As String, Optional lockType As Long = adLockPessimistic) As Object
-    Set IDbConnection_execute = Execute(sqlString, lockType)
+Private Function IDbConnection_execute(sqlString As String, Optional lockType As Long = adLockPessimistic, Optional handleErrors As Boolean = True) As Object
+    Set IDbConnection_execute = Execute(sqlString, lockType, handleErrors)
 End Function
 
 Private Function IDbConnection_getRecordset(sqlString As String, Optional lockType As Long = adLockPessimistic) As Object
     Set IDbConnection_getRecordset = getRecordset(sqlString, lockType)
+End Function
+
+Private Function IDbConnection_getRecordsetFromStoredProcedure(procName As String, params As Scripting.IDictionary) As Object
+    Set IDbConnection_getRecordsetFromStoredProcedure = getRecordsetFromStoredProcedure(procName, params)
 End Function
 
 Private Function IDbConnection_getDtos(sqlString As String, Optional lockType As Long = adLockPessimistic) As VBA.Collection
@@ -498,4 +580,12 @@ End Function
 
 Private Function IDbConnection_toString() As String
     Stop
+End Function
+
+Private Function IDbConnection_getState() As Long
+    If pConnection Is Nothing Then
+        IDbConnection_getState = -1
+    Else
+        IDbConnection_getState = pConnection.State
+    End If
 End Function

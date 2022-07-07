@@ -12,12 +12,12 @@ Option Explicit
 Private Enum ControlTypeEnum
     ControlType_BackgroundLabel = 1
     ControlType_StatusIcon = 2
-    ControlType_FilenameLabel = 3
+    ControlType_NameLabel = 3
     ControlType_RecordsCounterLabel = 4
     ControlType_ExpanderButton = 5
     ControlType_DetailsBackground = 6
     ControlType_DescriptionLabel = 7
-    ControlType_PreviewItemButton = 8
+    ControlType_PreviewButton = 8
     ControlType_ReprocessItemButton = 9
     ControlType_RemoveItemButton = 10
 End Enum
@@ -48,20 +48,20 @@ Private Const DESCRIPTION_BOTTOM_PADDING As Single = 1.5
 '[UI components] ------------------------------------------------------------------------------------------
 Private pParent As XProcessItemsList
 Private pFrame As MSForms.frame
-Private pBackgroundLabel As MSForms.Label
-Private pStatusIcon As MSForms.Label
-Private pNameLabel As MSForms.Label
-Private pRecordsCounterLabel As MSForms.Label
-Private WithEvents pReprocessButton As MSForms.Label
+Private pBackgroundLabel As MSForms.label
+Private pStatusIcon As MSForms.label
+Private pNameLabel As MSForms.label
+Private pRecordsCounterLabel As MSForms.label
+Private WithEvents pReprocessButton As MSForms.label
 Attribute pReprocessButton.VB_VarHelpID = -1
-Private WithEvents pPreviewItemButton As MSForms.Label
+Private WithEvents pPreviewItemButton As MSForms.label
 Attribute pPreviewItemButton.VB_VarHelpID = -1
-Private WithEvents pExpandCollapseButton As MSForms.Label
+Private WithEvents pExpandCollapseButton As MSForms.label
 Attribute pExpandCollapseButton.VB_VarHelpID = -1
-Private WithEvents pRemoveButton As MSForms.Label
+Private WithEvents pRemoveButton As MSForms.label
 Attribute pRemoveButton.VB_VarHelpID = -1
-Private pDetailsBackground As MSForms.Label
-Private pDescriptionLabel As MSForms.Label
+Private pDetailsBackground As MSForms.label
+Private pDescriptionLabel As MSForms.label
 '[UI variables] -------------------------------------------------------------------------------------------
 Private pTop As Single
 Private pLeft As Single
@@ -124,7 +124,7 @@ End Function
 
 Public Function setItem(value As IProcessItem) As xxProcessItemLine
     Set setItem = Me
-    pItem = value
+    Set pItem = value
 End Function
 
 Public Function setIsHidden(value As Boolean) As xxProcessItemLine
@@ -280,15 +280,17 @@ End Function
 
 '[API]
 Public Sub render()
-    Call insertBackgroundLabel
-    Call insertStatusIcon
-    Call insertNameLabel
-    Call insertReprocessItemButton
-    Call insertPreviewItemButton
-    Call insertExpandCollapseButton
-    Call insertRemoveButton
-    Call arrangeControls
-    pIsRendered = True
+    If Not pIsRendered Then
+        Call insertBackgroundLabel
+        Call insertStatusIcon
+        Call insertNameLabel
+        Call insertReprocessItemButton
+        Call insertPreviewItemButton
+        Call insertExpandCollapseButton
+        Call insertRemoveButton
+        Call arrangeControls
+        pIsRendered = True
+    End If
 End Sub
 
 Public Sub move(Optional left As Variant, Optional top As Variant)
@@ -312,10 +314,10 @@ End Sub
 
 '[RENDERING]
 Private Function getLabelName(controlType As ControlTypeEnum) As String
-    Dim tag As String
+    Dim TAG As String
     '----------------------------------------------------------------------------------------------------------
-    tag = CLASS_NAME & "|" & pName & "|" & controlType
-    getLabelName = "ctrl_" & VBA.left$(F.Crypto.SHA1HASH(tag), 25)
+    TAG = CLASS_NAME & "|" & pName & "|" & controlType
+    getLabelName = "ctrl_" & VBA.left$(F.Crypto.SHA1HASH(TAG), 25)
 End Function
 
 
@@ -331,7 +333,7 @@ Private Sub insertStatusIcon()
 End Sub
 
 Private Sub insertNameLabel()
-    Set pNameLabel = pFrame.Controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_FilenameLabel), True)
+    Set pNameLabel = pFrame.Controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_NameLabel), True)
     Call refreshNameLabel
 End Sub
 
@@ -341,7 +343,7 @@ Private Sub insertRemoveButton()
 End Sub
 
 Private Sub insertPreviewItemButton()
-    Set pPreviewItemButton = pFrame.Controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_PreviewItemButton), True)
+    Set pPreviewItemButton = pFrame.Controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_PreviewButton), True)
     Call refreshPreviewItemButton
 End Sub
 
@@ -356,12 +358,12 @@ Private Sub insertExpandCollapseButton()
 End Sub
 
 Private Sub insertDetailsBackground()
-    Set pDetailsBackground = pFrame.Controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_DetailsBackground), True)
+    Set pDetailsBackground = pFrame.Controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_DetailsBackground), False)
     Call refreshDetailsBackground
 End Sub
 
 Private Sub insertDescriptionLabel()
-    Set pDescriptionLabel = pFrame.Controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_DescriptionLabel), True)
+    Set pDescriptionLabel = pFrame.Controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_DescriptionLabel), False)
     Call refreshDescriptionLabel
 End Sub
 
@@ -388,7 +390,7 @@ Private Sub refreshNameLabel()
     With pNameLabel
         .BackStyle = fmBackStyleTransparent
         .Font.name = pFontFamily
-        .Font.size = UI.Normalize.size(pFontSize)
+        .Font.size = UI.Normalize.FontSize(pFontSize)
         .TextAlign = fmTextAlignLeft
         .caption = getCaptionForDisplay(pName)
     End With
@@ -470,18 +472,18 @@ End Sub
 Private Function getPropertyValueByStatus(propertyTag As String, status As ItemProcessStatusEnum) As Variant
     Dim dict As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
-    Set dict = F.Dictionaries.GetObject(pStatusesDictionary, status)
+    Set dict = F.dictionaries.GetObject(pStatusesDictionary, status)
     If Not dict Is Nothing Then
-        getPropertyValueByStatus = F.Dictionaries.getItem(dict, propertyTag)
+        getPropertyValueByStatus = F.dictionaries.getItem(dict, propertyTag)
     End If
 End Function
 
 Private Function getPropertyObjectByStatus(propertyTag As String, status As ItemProcessStatusEnum) As Object
     Dim dict As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
-    Set dict = F.Dictionaries.GetObject(pStatusesDictionary, status)
+    Set dict = F.dictionaries.GetObject(pStatusesDictionary, status)
     If Not dict Is Nothing Then
-        Set getPropertyObjectByStatus = F.Dictionaries.GetObject(dict, propertyTag)
+        Set getPropertyObjectByStatus = F.dictionaries.GetObject(dict, propertyTag)
     End If
 End Function
 
@@ -525,7 +527,7 @@ Private Sub arrangeControls()
     Dim left As Single
     Dim top As Single
     Dim buttons As VBA.Collection
-    Dim button As MSForms.Label
+    Dim button As MSForms.label
     '------------------------------------------------------------------------------------------------------
     
     On Error Resume Next
@@ -535,7 +537,7 @@ Private Sub arrangeControls()
     Call UI.Forms.locateControl(pNameLabel, pLeft + NAME_LABEL_TO_ICON_OFFSET + STATUS_ICON_WIDTH + STATUS_ICON_LEFT_OFFSET, _
                                         pTop + (pLineHeight - pNameLabel.height) / 2)
     
-    Set buttons = F.Collections.Create(pExpandCollapseButton, pPreviewItemButton, pReprocessButton, pRemoveButton)
+    Set buttons = F.Collections.Create(pExpandCollapseButton, pReprocessButton, pPreviewItemButton, pRemoveButton)
     left = pFrame.width - EXPAND_ICON_WIDTH - EXPAND_ICON_RIGHT
     top = EXPAND_ICON_TOP + pTop
     For Each button In buttons
@@ -552,7 +554,7 @@ Private Sub arrangeControls()
 
 End Sub
 
-Private Sub locateFunctionButton(button As MSForms.Label, ByRef left As Single, top As Single)
+Private Sub locateFunctionButton(button As MSForms.label, ByRef left As Single, top As Single)
     If UI.Forms.isControlValid(button) Then
         If button.Picture Is Nothing Then
             button.Visible = False
@@ -567,18 +569,28 @@ Private Sub locateFunctionButton(button As MSForms.Label, ByRef left As Single, 
 End Sub
 
 Private Sub adjustControlsTop()
-    Const Y_OFFSET As Single = 0.05
+    Const ICON_SIZE As Single = 10.5
+    '------------------------------------------------------------------------------------------------------
+    Dim top As Single
     '------------------------------------------------------------------------------------------------------
     
     On Error Resume Next
     
-    If (pBackgroundLabel.top + pLineHeight - pPreviewItemButton.top - pPreviewItemButton.height) < 2 * PIXEL_SIZE Then
-        pStatusIcon.top = pStatusIcon.top - Y_OFFSET
-        pPreviewItemButton.top = pPreviewItemButton.top - Y_OFFSET
-        pExpandCollapseButton.top = pExpandCollapseButton.top - Y_OFFSET
-        pRemoveButton.top = pRemoveButton.top - Y_OFFSET
-        pReprocessButton.top = pReprocessButton.top - Y_OFFSET
-    End If
+    top = pBackgroundLabel.top + (pLineHeight - ICON_SIZE) / 2
+    
+    pStatusIcon.top = top
+    pPreviewItemButton.top = top
+    pExpandCollapseButton.top = top
+    pRemoveButton.top = top
+    pReprocessButton.top = top
+    
+'    If (pBackgroundLabel.top + pLineHeight - pPreviewItemButton.top - pPreviewItemButton.height) < 2 * PIXEL_SIZE Then
+'        pStatusIcon.top = pStatusIcon.top - Y_OFFSET
+'        pPreviewItemButton.top = pPreviewItemButton.top - Y_OFFSET
+'        pExpandCollapseButton.top = pExpandCollapseButton.top - Y_OFFSET
+'        pRemoveButton.top = pRemoveButton.top - Y_OFFSET
+'        pReprocessButton.top = pReprocessButton.top - Y_OFFSET
+'    End If
     
 End Sub
 
@@ -634,12 +646,12 @@ Public Sub clear()
     With pFrame.Controls
         Call .Remove(getLabelName(ControlType_BackgroundLabel))
         Call .Remove(getLabelName(ControlType_StatusIcon))
-        Call .Remove(getLabelName(ControlType_FilenameLabel))
+        Call .Remove(getLabelName(ControlType_NameLabel))
         Call .Remove(getLabelName(ControlType_RecordsCounterLabel))
         Call .Remove(getLabelName(ControlType_ExpanderButton))
         Call .Remove(getLabelName(ControlType_RemoveItemButton))
         Call .Remove(getLabelName(ControlType_ReprocessItemButton))
-        Call .Remove(getLabelName(ControlType_PreviewItemButton))
+        Call .Remove(getLabelName(ControlType_PreviewButton))
         Call .Remove(getLabelName(ControlType_DescriptionLabel))
         Call .Remove(getLabelName(ControlType_DetailsBackground))
     End With
@@ -734,8 +746,8 @@ Private Sub insertDetailsPanel()
 End Sub
 
 Private Sub showHideDetailsPanel(value As Boolean)
-    pDetailsBackground.Visible = True
-    pDescriptionLabel.Visible = True
+    pDetailsBackground.Visible = value
+    pDescriptionLabel.Visible = value
 End Sub
 
 Private Sub updateVisibility()

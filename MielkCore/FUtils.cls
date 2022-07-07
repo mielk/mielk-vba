@@ -11,7 +11,7 @@ Option Explicit
 
 Private Const CLASS_NAME As String = "FUtils"
 '----------------------------------------------------------------------------------------------------------
-Private Const BACKUP_FOLDER_PATH As String = "F:\dane\VBA\backups"
+Private Const BACKUP_FOLDER_PATH As String = "E:\dane\VBA\backups"
 '----------------------------------------------------------------------------------------------------------
 
 Public Sub printFilePaths()
@@ -26,12 +26,12 @@ Public Sub printFilePaths()
     
 End Sub
 
-Public Sub saveAllAddIns(Optional saveBackups As Boolean = True)
+Public Sub saveAllAddIns(Optional ByVal saveBackups As Boolean = True, Optional ByVal saveFolder As String = BACKUP_FOLDER_PATH)
     Const REGEX_MACRO_ENABLED As String = "\.xlsm$"
     '------------------------------------------------------------------------------------------------------
     Dim addIn As Excel.addIn
     Dim wkb As Excel.Workbook
-    Dim timestamp As Date:                          timestamp = VBA.Now
+    Dim Timestamp As Date:                          Timestamp = VBA.Now
     '------------------------------------------------------------------------------------------------------
     
     'Save all add-ins
@@ -46,7 +46,7 @@ Public Sub saveAllAddIns(Optional saveBackups As Boolean = True)
                     Call wkb.save
                     Debug.Print wkb.fullName & " saved"
                     If saveBackups Then
-                        Call saveBackup(wkb, timestamp)
+                        Call saveBackup(wkb, Timestamp)
                     End If
                 End If
             End If
@@ -55,11 +55,11 @@ Public Sub saveAllAddIns(Optional saveBackups As Boolean = True)
     
     'Save all xlam files.
     For Each wkb In Application.Workbooks
-        If F.regex.checkIfMatch(wkb.name, REGEX_MACRO_ENABLED) Then
+        If f.regex.checkIfMatch(wkb.name, REGEX_MACRO_ENABLED) Then
             Call wkb.save
             Debug.Print wkb.fullName & " saved"
             If saveBackups Then
-                Call saveBackup(wkb, timestamp)
+                Call saveBackup(wkb, Timestamp)
             End If
         End If
     Next wkb
@@ -78,10 +78,8 @@ Private Function isAddInSkippedFromSaving(ByVal addinName As String) As Boolean
     End If
 End Function
 
-Private Sub saveBackup(wkb As Excel.Workbook, timestamp As Date)
+Private Sub saveBackup(wkb As Excel.Workbook, Timestamp As Date)
     Static fso As Scripting.FileSystemObject
-    '------------------------------------------------------------------------------------------------------
-    Const BACKUP_SAVE_PATH As String = "F:\dane\VBA\backups\"
     '------------------------------------------------------------------------------------------------------
     Dim folderName As String
     Dim folderPath As String
@@ -93,14 +91,14 @@ Private Sub saveBackup(wkb As Excel.Workbook, timestamp As Date)
         Set fso = New Scripting.FileSystemObject
     End If
     
-    folderName = VBA.format$(timestamp, "YYYY-MM-DD HHMMSS")
-    folderPath = F.files.concatenatePath(BACKUP_SAVE_PATH, folderName)
+    folderName = VBA.format$(Timestamp, "YYYY-MM-DD HHMMSS")
+    folderPath = f.files.concatenatePath(BACKUP_FOLDER_PATH, folderName)
     If fso.folderExists(folderPath) Then
         Set folder = fso.getFolder(folderPath)
     Else
         Set folder = fso.createFolder(folderPath)
     End If
-    path = folder.path & "\" & wkb.name
+    path = f.files.concatenatePath(folder.path, wkb.name)
     
     Call fso.CopyFile(wkb.fullName, path, True)
     

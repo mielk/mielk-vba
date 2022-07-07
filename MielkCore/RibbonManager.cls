@@ -36,9 +36,9 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub initializeContainers()
-    Set pSettings = F.Dictionaries.Create(False)
-    Set pControlsProps = F.Dictionaries.Create(False)
-    Set pInvalidationGroups = F.Dictionaries.Create(False)
+    Set pSettings = f.dictionaries.Create(False)
+    Set pControlsProps = f.dictionaries.Create(False)
+    Set pInvalidationGroups = f.dictionaries.Create(False)
 End Sub
 
 
@@ -71,11 +71,11 @@ End Function
 
 '[RIBBON OBJECT]
 Private Sub saveRibbonPointer()
-    If Not F.Books.isValid(pWorkbook) Then
+    If Not f.Books.isValid(pWorkbook) Then
     ElseIf pRibbon Is Nothing Then
     Else
         On Error Resume Next
-        Call F.ExcelNames.addValue(pWorkbook, RIBBON_POINTER_EXCEL_NAME, VBA.ObjPtr(pRibbon))
+        Call f.ExcelNames.addValue(pWorkbook, RIBBON_POINTER_EXCEL_NAME, VBA.ObjPtr(pRibbon))
     End If
 End Sub
 
@@ -86,7 +86,7 @@ Public Function readRibbonPointer() As Long
 #End If
     Dim varValue As Variant
     '------------------------------------------------------------------------------------------------------
-    varValue = F.ExcelNames.getValue(pWorkbook, RIBBON_POINTER_EXCEL_NAME)
+    varValue = f.ExcelNames.getValue(pWorkbook, RIBBON_POINTER_EXCEL_NAME)
     On Error Resume Next
     If VBA.isNumeric(varValue) Then
         #If VBA7 Then
@@ -121,22 +121,22 @@ End Function
 
 
 '[SETTINGS]
-Private Sub loadSettings(filePath As String)
+Private Sub loadSettings(filepath As String)
     Dim json As String
     '------------------------------------------------------------------------------------------------------
 
     On Error Resume Next
-    json = F.TextFiles.readTextFile(filePath)
-    If VBA.Len(json) Then Set pSettings = F.json.ParseJson(json)
+    json = f.TextFiles.readTextFile(filepath)
+    If VBA.Len(json) Then Set pSettings = f.json.ParseJson(json)
     On Error GoTo 0
 
     'Icons folder path.
-    pIconsFolderPath = F.Dictionaries.getItem(pSettings, ICONS_FOLDER_PATH_TAG)
+    pIconsFolderPath = getImageFolderPath(filepath)
 
     'Ribbon controls properties
-    If F.Dictionaries.isNonEmptyDictionary(pSettings) Then
+    If f.dictionaries.isNonEmptyDictionary(pSettings) Then
         With pSettings
-            If .exists(CONTROLS_TAG) Then Set pControlsProps = .item(CONTROLS_TAG)
+            If .exists(CONTROLS_TAG) Then Set pControlsProps = .Item(CONTROLS_TAG)
         End With
     End If
     
@@ -146,26 +146,59 @@ Private Sub loadSettings(filePath As String)
 End Sub
 
 
+Private Function getImageFolderPath(configFilePath As String)
+    Const INDIRECT_PATH_SYMBOL As String = "@\"
+    Const PARENT_FOLDER_SYMBOL As String = "."
+    '------------------------------------------------------------------------------------------------------
+    Dim rawPath As String
+    Dim parts As Variant
+    Dim i As Long
+    Dim folder As Scripting.folder
+    '------------------------------------------------------------------------------------------------------
+    
+    rawPath = f.dictionaries.getItem(pSettings, ICONS_FOLDER_PATH_TAG)
+    If f.strings.startsWith(rawPath, INDIRECT_PATH_SYMBOL) Then
+        parts = VBA.Split(VBA.replace(rawPath, INDIRECT_PATH_SYMBOL, vbNullString), "\")
+        Set folder = f.files.createFolder(f.files.getFileFolderPath(configFilePath))
+        For i = LBound(parts) To UBound(parts)
+            If parts(i) = PARENT_FOLDER_SYMBOL Then
+                Set folder = folder.ParentFolder
+            Else
+                Set folder = f.files.getSubfolder(folder, VBA.CStr(parts(i)))
+                If folder Is Nothing Then Exit For
+            End If
+        Next i
+    Else
+        getImageFolderPath = rawPath
+    End If
+    
+    If Not folder Is Nothing Then
+        getImageFolderPath = folder.path
+    End If
+    
+End Function
+
+
 Private Sub loadInvalidationGroups()
     Dim generalControls As VBA.Collection
     Dim generalDict As Scripting.Dictionary
-    Dim key As Variant
+    Dim Key As Variant
     '------------------------------------------------------------------------------------------------------
     
-    Set pInvalidationGroups = F.Objects.coalesce( _
-                                    F.Dictionaries.getObject(pSettings, INVALIDATION_CONTROLS_TAG), _
-                                    F.Dictionaries.Create(False))
+    Set pInvalidationGroups = f.Objects.coalesce( _
+                                    f.dictionaries.getObject(pSettings, INVALIDATION_CONTROLS_TAG), _
+                                    f.dictionaries.Create(False))
     
     'Update [general] group.
-    Set generalControls = F.Dictionaries.getObject(pInvalidationGroups, GENERAL_INVALIDATION_GROUP)
-    Set generalDict = F.Objects.coalesce( _
-                            F.Dictionaries.createFrom(generalControls), F.Dictionaries.Create(False))
-    For Each key In pControlsProps.Keys
-        Call F.Dictionaries.addItem(generalDict, key, key)
-    Next key
-    Set generalControls = F.Dictionaries.toCollection(generalDict, DictPart_KeyOnly)
+    Set generalControls = f.dictionaries.getObject(pInvalidationGroups, GENERAL_INVALIDATION_GROUP)
+    Set generalDict = f.Objects.coalesce( _
+                            f.dictionaries.createFrom(generalControls), f.dictionaries.Create(False))
+    For Each Key In pControlsProps.Keys
+        Call f.dictionaries.addItem(generalDict, Key, Key)
+    Next Key
+    Set generalControls = f.dictionaries.toCollection(generalDict, DictPart_KeyOnly)
     
-    Call F.Dictionaries.addItem(pInvalidationGroups, GENERAL_INVALIDATION_GROUP, generalControls, duplicateBehaviour_Override)
+    Call f.dictionaries.addItem(pInvalidationGroups, GENERAL_INVALIDATION_GROUP, generalControls, duplicateBehaviour_Override)
     
 End Sub
 
@@ -179,14 +212,14 @@ Public Sub assignProperty(controlId As String, propertyName As String, ByRef val
     'If pControlsProps Is Nothing Then Call loadSettings(pSettingsFilePath)
 
     On Error Resume Next
-    Set ctrlProps = pControlsProps.item(controlId)
+    Set ctrlProps = pControlsProps.Item(controlId)
     On Error GoTo 0
 
     If Not ctrlProps Is Nothing Then
         With ctrlProps
             If .exists(propertyName) Then
-                Set propDict = .item(propertyName)
-                value = getValueFromPropDict(propDict, functionGenerated)
+                Set propDict = .Item(propertyName)
+                value = getValueFromPropDict(controlId, propDict, functionGenerated)
             End If
         End With
 
@@ -202,7 +235,7 @@ Public Sub assignProperty(controlId As String, propertyName As String, ByRef val
 End Sub
 
 
-Private Function getValueFromPropDict(propDict As Scripting.Dictionary, Optional ByRef functionGenerated As Boolean) As Variant
+Private Function getValueFromPropDict(controlId As String, propDict As Scripting.Dictionary, Optional ByRef functionGenerated As Boolean) As Variant
     Dim value As Variant
     Dim Functions As VBA.Collection
     Dim functionsSet As VBA.Collection
@@ -210,35 +243,47 @@ Private Function getValueFromPropDict(propDict As Scripting.Dictionary, Optional
     Dim result As Variant
     '------------------------------------------------------------------------------------------------------
 
-    Call F.Dictionaries.assignValueFromDictToVariable(propDict, value, TAG_VALUE)
-    Call F.Dictionaries.assignValueFromDictToVariable(propDict, Functions, TAG_FUNCTIONS)
+    Call f.dictionaries.assignValueFromDictToVariable(propDict, value, TAG_VALUE)
+    Call f.dictionaries.assignValueFromDictToVariable(propDict, Functions, TAG_FUNCTIONS)
 
-    If F.Collections.isNonEmptyCollection(Functions) Then
+    If f.Collections.isNonEmptyCollection(Functions) Then
         functionGenerated = True
         For Each functionsSet In Functions
             For Each varFunction In functionsSet
-                On Error Resume Next
-                result = Application.Run(F.Reflection.getFunctionFullName(VBA.CStr(varFunction), pWorkbook))
-                
-                Stop
-                'Dodaæ wywo³ywanie z parametrem (potrzebne do checkUserPermission
+            
+                'Get value from function ------------------------------------------------------------|
+                On Error Resume Next                                                                '|
+                Call VBA.err.clear                                                                  '|
+                result = Application.Run(f.Reflection.getFunctionFullName( _
+                                                    VBA.CStr(varFunction), pWorkbook))              '|
+                If VBA.err.number = Exceptions.ArgumentNotOptional.getNumber Then                   '|
+                    result = Application.Run(f.Reflection.getFunctionFullName( _
+                                                    VBA.CStr(varFunction), pWorkbook), controlId)   '|
+                End If                                                                              '|
+                If Not DEV_MODE Then On Error GoTo ErrHandler Else On Error GoTo 0                  '|
+                '------------------------------------------------------------------------------------
                 
                 If result = False Then Exit For
             Next varFunction
-            If result Then Exit For
+            
+            If Not f.Variables.isUndefined(result, False, False) Then Exit For
+            
         Next functionsSet
         getValueFromPropDict = result
     Else
         getValueFromPropDict = value
     End If
-
+    
+    
+ErrHandler:
+    
 End Function
 
 Private Function isPropertyTranslatable(propName As String) As Boolean
     Static translatableProps As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
     If translatableProps Is Nothing Then
-        Set translatableProps = F.Dictionaries.createFrom(Array("label", "tooltip"))
+        Set translatableProps = f.dictionaries.createFrom(Array("label", "tooltip"))
     End If
     isPropertyTranslatable = translatableProps.exists(propName)
 End Function
@@ -254,7 +299,7 @@ Public Sub assignControlImage(controlId As String, ByRef image)
     '------------------------------------------------------------------------------------------------------
     Call assignProperty(controlId, "image", imageFileName)
     If VBA.Len(imageFileName) Then
-        imagePath = F.files.concatenatePath(pIconsFolderPath, imageFileName)
+        imagePath = f.files.concatenatePath(pIconsFolderPath, imageFileName)
         Set image = LoadPictureGDI(imagePath)
     End If
 End Sub
@@ -273,12 +318,12 @@ Public Sub update(Optional eventName As String = GENERAL_INVALIDATION_GROUP)
     If Not pUpdateDisabled Then
         Set ribbon = getRibbon
         If Not ribbon Is Nothing Then
-            Set invalidationControls = F.Dictionaries.getObject(pInvalidationGroups, eventName)
+            Set invalidationControls = f.dictionaries.getObject(pInvalidationGroups, eventName)
             If invalidationControls Is Nothing Then
-                Set invalidationControls = F.Dictionaries.getObject(pInvalidationGroups, GENERAL_INVALIDATION_GROUP)
+                Set invalidationControls = f.dictionaries.getObject(pInvalidationGroups, GENERAL_INVALIDATION_GROUP)
             End If
                 
-            If F.Collections.isNonEmptyCollection(invalidationControls) Then
+            If f.Collections.isNonEmptyCollection(invalidationControls) Then
                 With ribbon
                     For Each varControlId In invalidationControls
                         Call .InvalidateControl(varControlId)

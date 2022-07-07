@@ -19,7 +19,7 @@ Private pTags As Scripting.Dictionary
 
 
 Private Sub Class_Initialize()
-    Set pTags = F.Dictionaries.Create(False)
+    Set pTags = f.dictionaries.Create(False)
 End Sub
 
 
@@ -40,7 +40,7 @@ Friend Function setIsDefault(value As Boolean) As Language
 End Function
 
 Friend Sub addText(tag As String, text As String)
-    Call F.Dictionaries.addItem(pTags, tag, text)
+    Call f.dictionaries.addItem(pTags, tag, text)
 End Sub
 
 
@@ -48,23 +48,30 @@ End Sub
 
 
 '[GETTERS]
-Friend Function getKey() As String
+Public Function getKey() As String
     getKey = pKey
 End Function
 
-Friend Function getName() As String
+Public Function getName() As String
     getName = pName
 End Function
 
-Friend Function isDefault() As Boolean
+Public Function getNameForCurrentLanguage() As String
+    Const NAME_TAG As String = "languages."
+    '------------------------------------------------------------------------------------------------------
+    getNameForCurrentLanguage = MsgService.getText(NAME_TAG & pKey)
+End Function
+
+Public Function isDefault() As Boolean
     isDefault = pIsDefault
 End Function
 
-Friend Function getText(tag As String) As String
+Public Function getText(tag As String) As String
     With pTags
         If .exists(tag) Then
-            getText = .item(tag)
+            getText = .Item(tag)
         Else
+            Debug.Print "_________________ missing tag: " & tag
             getText = tag
         End If
     End With

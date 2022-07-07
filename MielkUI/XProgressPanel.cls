@@ -27,7 +27,7 @@ Private Const CLASS_NAME As String = "XProgressPanel"
 Private Const DEFAULT_MAIN_PROGRESS_BAR_HEADER_CAPTION As String = "Item {0} ({1} of {2})"
 Private Const DEFAULT_DETAIL_PROGRESS_BAR_HEADER_CAPTION As String = "Processing item {0}"
 Private Const DEFAULT_WIDTH As Single = 402
-Private Const HEADER_LABEL_FONT_FAMILY As String = "Segoe UI" ' "Century Gothic"
+Private Const HEADER_LABEL_FONT_FAMILY As String = APP_FONT_FAMILY ' APP_FONT_FAMILY
 Private Const HEADER_LABEL_FONT_SIZE As Long = 9
 Private Const HEADER_LABEL_HEIGHT As Single = 12
 Private Const HEADER_LABEL_WIDTH As Single = 100
@@ -40,12 +40,12 @@ Private Const DEFAULT_PROGRESS_FRONT_COLOR As Long = 12300693
 Private Const DEFAULT_PROGRESS_BORDER_COLOR As Long = &H80000006
 Private Const DEFAULT_TOP_PADDING As Single = 6
 Private Const DEFAULT_BOTTOM_PADDING As Single = 12
-Private Const DEFAULT_INSIDE_PADDING As Single = 6
+Private Const DEFAULT_INSIDE_PADDING As Single = 3
 Private Const DEFAULT_BACK_STYLE As Variant = MSForms.fmBackStyleTransparent
 Private Const DEFAULT_BACK_COLOR As Long = &H8000000F
 Private Const DEFAULT_BORDER_STYLE As Variant = MSForms.fmBorderStyleSingle
 Private Const DEFAULT_BORDER_COLOR As Long = &H80000006
-Private Const DEFAULT_PROGRESS_CAPTION_FONT_FAMILY As String = "Segoe UI" ' "Century Gothic"
+Private Const DEFAULT_PROGRESS_CAPTION_FONT_FAMILY As String = APP_FONT_FAMILY ' APP_FONT_FAMILY
 Private Const DEFAULT_PROGRESS_CAPTION_FONT_SIZE As Long = 8
 Private Const DEFAULT_PROGRESS_CAPTION_FONT_COLOR As Long = vbBlack
 Private Const DEFAULT_HAS_BOTTOM_BORDER_ONLY As Boolean = True
@@ -113,7 +113,7 @@ Private Sub initializeContainers()
 End Sub
 
 Private Sub initializeDefaultValues()
-    pUuid = F.Crypto.createUuid
+    pUuid = F.Crypto.createUUID
     pHasDetailsProgressBar = DEFAULT_HAS_DETAILS_PROGRESS_BAR
     pWidth = DEFAULT_WIDTH
     pProgressBarHeight = DEFAULT_PROGRESS_BAR_HEIGHT
@@ -441,7 +441,7 @@ Public Sub render()
     pIsRendered = True
 End Sub
 
-Public Sub Move(Optional left As Variant, Optional top As Variant)
+Public Sub move(Optional left As Variant, Optional top As Variant)
     If left <> pLeft Or top <> pTop Then
         If F.Variables.isOfNumericType(left) Then pLeft = left
         If F.Variables.isOfNumericType(top) Then pTop = top
@@ -462,6 +462,8 @@ Public Sub startNewMainItem(itemName As String)
     pCurrentItemDone = False
     pTotalItems = pController.getTotalItemsCounter
     pDetailProgress = 0
+    Call updateMainProgressBar
+    Call updateDetailProgressBar
 End Sub
 
 Public Sub endCurrentMainItem()
@@ -473,7 +475,7 @@ End Sub
 
 Public Function updateDetailProgress(action As String, progress As Single) As XProgressPanel
     If VBA.Len(action) Then pDetailAction = action
-    If F.Math.isinRange(progress, 0, 1) Then pDetailProgress = progress
+    If F.Math.isInRange(progress, 0, 1) Then pDetailProgress = progress
     Call updateDetailProgressBar
 End Function
 
@@ -548,7 +550,7 @@ End Sub
 '[Refreshing controls]
 Private Sub refreshBackgroundFrame()
     With pContainerFrame
-        .BackColor = pBackColor
+        .backColor = pBackColor
         .borderStyle = VBA.IIf(pHasBottomBorderOnly, MSForms.fmBorderStyleNone, pBorderStyle)
         .borderColor = pBorderColor
         .SpecialEffect = fmSpecialEffectFlat
@@ -577,7 +579,7 @@ Private Sub refreshProgressBarFrameLabel(ctrlType As ControlTypeEnum)
     Set ctrl = getControl(ctrlType)
     With ctrl
         .BackStyle = MSForms.fmBackStyleOpaque
-        .BackColor = pProgressBackColor
+        .backColor = pProgressBackColor
         .borderStyle = MSForms.fmBorderStyleSingle
         .borderColor = pProgressBorderColor
     End With
@@ -589,7 +591,7 @@ Private Sub refreshProgressBarProgressLabel(ctrlType As ControlTypeEnum)
     Set ctrl = getControl(ctrlType)
     With ctrl
         .BackStyle = MSForms.fmBackStyleOpaque
-        .BackColor = pProgressFrontColor
+        .backColor = pProgressFrontColor
         .borderStyle = MSForms.fmBorderStyleSingle
         .borderColor = pProgressBorderColor
     End With
@@ -613,7 +615,7 @@ End Sub
 Private Sub refreshBottomBorder()
     With pBottomBorder
         .BackStyle = MSForms.fmBackStyleOpaque
-        .BackColor = pBorderColor
+        .backColor = pBorderColor
         .borderStyle = MSForms.fmBorderStyleNone
         .visible = pHasBottomBorderOnly
     End With
@@ -679,6 +681,7 @@ Private Sub autoSizeBackgroundFrame()
 End Sub
 
 Private Sub hideShowDetailsProgressBar()
+    On Error Resume Next
     pDetailProgressBarHeaderLabel.visible = pHasDetailsProgressBar
     pDetailProgressBarFrameLabel.visible = pHasDetailsProgressBar
     pDetailProgressBarProgressLabel.visible = pHasDetailsProgressBar

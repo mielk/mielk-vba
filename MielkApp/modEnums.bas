@@ -4,6 +4,12 @@ Option Explicit
 Private Const CLASS_NAME As String = "modEnums"
 '----------------------------------------------------------------------------------------------------------
 
+Public Enum StandarizerContainerTypeEnum
+    StandarizerContainerType_Unassigned = -2
+    StandarizerContainerType_Junk = -1
+    StandarizerContainerType_AliasableObject = 1
+End Enum
+
 Public Enum ItemProcessStatusEnum
     ItemProcessStatus_Before = 0
     ItemProcessStatus_Right = 1

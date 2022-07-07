@@ -25,8 +25,10 @@ Private Const DEFAULT_FONT_NAME As String = APP_FONT_FAMILY
 Private Const DEFAULT_FONT_SIZE As Single = 10
 Private Const DEFAULT_FONT_BOLD As Boolean = True
 Private Const DEFAULT_FONT_COLOR As Long = vbBlack
+Private Const DEFAULT_DISABLED_FONT_COLOR As Long = 11842740
 Private Const DEFAULT_PICTURE_MARGIN As Single = 3
 Private Const DEFAULT_PICTURE_SIZE As Single = 18
+Private Const DEFAULT_PADDING As Single = 9
 '----------------------------------------------------------------------------------------------------------
 Private pFrame As MSForms.frame
 Private pListener As IListener
@@ -58,14 +60,15 @@ Private pBorderVisible As Boolean
 Private pFontName As String
 Private pFontSize As Single
 Private pFontBold As Boolean
-Private pFontColor As Single
+Private pFontColor As Long
+Private pDisabledFontColor As Long
 '[Picture]
 Private pPicture As Variant
 Private pPictureMargin As Single
 Private pPictureSize As Single
 
 '[Events] -------------------------------------------------------------------------------------------------
-Event AfterClick(props As Scripting.Dictionary, ByRef cancel As Boolean)
+Event AfterClick(props As Scripting.Dictionary, ByRef Cancel As Boolean)
 Event Click()
 Event AfterHover()
 '----------------------------------------------------------------------------------------------------------
@@ -74,7 +77,7 @@ Event AfterHover()
 
 
 Private Sub Class_Initialize()
-    pUuid = F.Crypto.createUuid
+    pUuid = F.Crypto.createUUID
     Call setDefaultProperties
 End Sub
 
@@ -89,6 +92,7 @@ Private Sub setDefaultProperties()
     pFontSize = DEFAULT_FONT_SIZE
     pFontBold = DEFAULT_FONT_BOLD
     pFontColor = DEFAULT_FONT_COLOR
+    pDisabledFontColor = DEFAULT_DISABLED_FONT_COLOR
     pPictureMargin = DEFAULT_PICTURE_MARGIN
     pPictureSize = DEFAULT_PICTURE_SIZE
 End Sub
@@ -133,6 +137,25 @@ Public Function setWidth(value As Single) As UIButton
     Call arrangeLayout
 End Function
 
+Public Function setLeft(value As Single) As UIButton
+    Set setLeft = Me
+    pLeft = value
+    Call locateMe
+End Function
+
+Public Function setRight(value As Single) As UIButton
+    Set setRight = Me
+    pLeft = pFrame.InsideWidth - value - getWidth
+    Call locateMe
+    Call arrangeLayout
+End Function
+
+Public Function setTop(value As Single) As UIButton
+    Set setTop = Me
+    pTop = value
+    Call locateMe
+End Function
+
 Public Function setTooltip(value As String) As UIButton
     Set setTooltip = Me
     pTooltip = value
@@ -169,6 +192,12 @@ Public Function setFontColor(value As Long) As UIButton
     Call updateCaptionView
 End Function
 
+Public Function setDisabledFontColor(value As Long) As UIButton
+    Set setDisabledFontColor = Me
+    pDisabledFontColor = value
+    Call updateCaptionView
+End Function
+
 Public Function setTextAlignment(value As fmTextAlign) As UIButton
     Set setTextAlignment = Me
     pTextAlignment = value
@@ -199,6 +228,12 @@ Public Function setBorderVisibility(value As Boolean) As UIButton
     Call updateBorder
 End Function
 
+Public Function setIsEnabled(value As Boolean) As UIButton
+    Set setIsEnabled = Me
+    pIsDisabled = Not value
+    Call updateCaptionView
+    Call updateMousePointer
+End Function
 
 
 
@@ -322,12 +357,12 @@ Private Sub insertEventsLayer()
     End With
 End Sub
 
-Public Function Move(Optional x As Variant, Optional y As Variant) As UIButton
+Public Function move(Optional x As Variant, Optional y As Variant) As UIButton
     Dim offsetX As Single
     Dim offsetY As Single
     '------------------------------------------------------------------------------------------------------
     
-    Set Move = Me
+    Set move = Me
     
     With pBackgroundLabel
         If VBA.IsNumeric(x) Then
@@ -342,7 +377,7 @@ Public Function Move(Optional x As Variant, Optional y As Variant) As UIButton
     
 End Function
 
-Public Function offset(Optional x As Single, Optional y As Single)
+Public Function offset(Optional x As Single, Optional y As Single) As UIButton
     Set offset = Me
     Call UI.Forms.offsetControls(x, y, pBackgroundLabel, pCaptionLabel, pPictureLabel, pEventsLayerLabel)
     With pBackgroundLabel
@@ -359,7 +394,7 @@ Public Function alignVertically(ctrl As MSForms.control) As UIButton
     
     If UI.Forms.isControlValid(ctrl) Then
         yOffset = (ctrl.top + (ctrl.height - pHeight) / 2) - pTop
-        If yOffset Then Call offset(y:=offset)
+        If yOffset Then Call offset(y:=yOffset)
     End If
     
 End Function
@@ -368,10 +403,10 @@ End Function
 Private Sub locateMe()
     If pIsRendered Then
         With pBackgroundLabel
-            .width = UI.Normalize.size(pWidth)
+            .width = UI.Normalize.size(F.Math.getMax(pWidth, pCaptionLabel.width + 2 * DEFAULT_PADDING))
             .height = UI.Normalize.size(pHeight)
-            .top = UI.Normalize.size(pTop)
-            .left = UI.Normalize.size(pLeft)
+            .top = UI.Normalize.position(pTop)
+            .left = UI.Normalize.position(pLeft)
         End With
     End If
 End Sub
@@ -403,7 +438,7 @@ Private Sub arrangeLayout()
             Else
                 captionLeft = UI.Normalize.position(.left + (.width - totalWidth) / 2)
             End If
-            captionTop = UI.Normalize.position(.top + (.height = pCaptionLabel.height) / 2)
+            captionTop = UI.Normalize.position(.top + (.height - pCaptionLabel.height) / 2)
         End With
         
         If pictureVisible Then
@@ -443,7 +478,7 @@ Private Sub updateBackground()
     If pIsRendered Then
         With pBackgroundLabel
             .BackStyle = fmBackStyleOpaque
-            .BackColor = pBackColor
+            .backColor = pBackColor
         End With
     End If
 End Sub
@@ -542,7 +577,7 @@ End Sub
 Private Sub updateCaptionView()
     If pIsRendered Then
         With pCaptionLabel
-            .ForeColor = pFontColor
+            .ForeColor = VBA.IIf(pIsDisabled, pDisabledFontColor, pFontColor)
         End With
     End If
 End Sub
@@ -551,7 +586,7 @@ Private Sub updateCaptionSizeAndContent(Optional updateLayout As Boolean = True)
     If pIsRendered Then
         With pCaptionLabel
             .font.name = pFontName
-            .font.Bold = pFontBold
+            .font.Bold = VBA.IIf(pFontBold, 1, False)
             .font.size = pFontSize
             .TextAlign = fmTextAlignCenter
             .caption = pCaption
@@ -664,7 +699,7 @@ Private Sub pEventsLayerLabel_Click()
     If Not pIsDisabled Then
         RaiseEvent Click
         If Not pListener Is Nothing Then
-            Call pListener.catchEvent(Me, EVENT_CLICK)
+            Call pListener.catchEvent(Me, UI.Events.Click.getName)
         End If
     End If
     
@@ -709,8 +744,8 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     Call alignVertically(baseCtrl)
 End Sub
 
-Private Function IControl_move(Optional x As Single, Optional y As Single) As IControl
-    Set IControl_move = Move(x, y)
+Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
+    Set IControl_move = move(x, y)
 End Function
 
 Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl

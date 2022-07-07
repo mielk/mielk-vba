@@ -1,9 +1,9 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufTemplate 
    Caption         =   "UserForm1"
-   ClientHeight    =   3015
+   ClientHeight    =   3012
    ClientLeft      =   120
-   ClientTop       =   465
+   ClientTop       =   468
    ClientWidth     =   4560
    OleObjectBlob   =   "ufTemplate.frx":0000
    StartUpPosition =   1  'CenterOwner
@@ -23,15 +23,19 @@ Private pMethodParams As Scripting.Dictionary
 Private pMethodErrorMessage As String
 Private pCloseWindowAfterward As Boolean
 '----------------------------------------------------------------------------------------------------------
-
+Event AfterDisplayed()
+'----------------------------------------------------------------------------------------------------------
 
 
 Private Sub UserForm_Initialize()
-    Me.BackColor = TRANSPARENCY_LAYER_COLOR
+    Me.backColor = TRANSPARENCY_LAYER_COLOR
     Me.StartUpPosition = 0
 End Sub
 
 Private Sub UserForm_Activate()
+    Dim errNumber As Long, errDescription As String
+    '------------------------------------------------------------------------------------------------------
+    
     Call ErrorManager.clear
     
     Call UI.Forms.hideTitleBarAndBorder(Me)
@@ -39,11 +43,28 @@ Private Sub UserForm_Activate()
     
     '[Run underlying method if it is specified]
     If VBA.Len(pMethodName) Then
+        Call VBA.Err.clear
+        
+        On Error Resume Next
         If Not pMethodInvoker Is Nothing Then
             Call VBA.CallByName(pMethodInvoker, pMethodName, VbMethod, pMethodParams)
         Else
             Call Excel.Application.run(pMethodName, pMethodParams)
         End If
+        
+        errNumber = VBA.Err.Number
+        
+        If Not DEV_MODE Then On Error GoTo ErrHandler
+        
+        If errNumber = Exceptions.WrongNumberOfArguments.getNumber Then
+            errNumber = 0
+            If Not pMethodInvoker Is Nothing Then
+                Call VBA.CallByName(pMethodInvoker, pMethodName, VbMethod)
+            Else
+                Call Excel.Application.run(pMethodName)
+            End If
+        End If
+        
     End If
     
     If pCloseWindowAfterward Then
@@ -51,11 +72,13 @@ Private Sub UserForm_Activate()
         Call Me.hide
     End If
     
+    RaiseEvent AfterDisplayed
     
 ExitPoint:
     'Call errorManager.save
     'Call me.Hide
-    
+ErrHandler:
+
 End Sub
 
 

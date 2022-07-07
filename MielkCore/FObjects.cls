@@ -28,7 +28,7 @@ Public Function coalesce(ParamArray Objects() As Variant) As Object
 End Function
 
 Public Function cast(value As Variant) As Object
-    If F.Variables.isUndefined(value, includeZero:=False, includeUndefinedArray:=False) Then
+    If f.Variables.isUndefined(value, includeZero:=False, includeUndefinedArray:=False) Then
         Set cast = Nothing
     ElseIf VBA.IsObject(value) Then
         Set cast = value

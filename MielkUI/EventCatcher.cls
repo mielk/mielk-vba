@@ -49,13 +49,15 @@ End Sub
 Public Sub handleEnter()
 Attribute handleEnter.VB_UserMemId = -2147384830
     If Not pParent Is Nothing Then
+        On Error Resume Next
         Call pParent.triggerEvent(UI.Events.Enter)
     End If
 End Sub
 
-Public Sub handleExit(ByVal cancel As MSForms.ReturnBoolean)
+Public Sub handleExit(ByVal Cancel As MSForms.ReturnBoolean)
 Attribute handleExit.VB_UserMemId = -2147384829
     If Not pParent Is Nothing Then
+        On Error Resume Next
         Call pParent.triggerEvent(UI.Events.Leave)
     End If
 End Sub
@@ -63,13 +65,15 @@ End Sub
 Public Sub handleAfterUpdate()
 Attribute handleAfterUpdate.VB_UserMemId = -2147384832
     If Not pParent Is Nothing Then
+        On Error Resume Next
         Call pParent.triggerEvent(UI.Events.AfterUpdate)
     End If
 End Sub
 
-Public Sub handleBeforeUpdate(ByVal cancel As MSForms.ReturnBoolean)
+Public Sub handleBeforeUpdate(ByVal Cancel As MSForms.ReturnBoolean)
 Attribute handleBeforeUpdate.VB_UserMemId = -2147384831
     If Not pParent Is Nothing Then
+        On Error Resume Next
         Call pParent.triggerEvent(UI.Events.BeforeUpdate)
     End If
 End Sub

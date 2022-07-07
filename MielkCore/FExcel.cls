@@ -25,7 +25,7 @@ Public Function getVbaVersion() As Long
 End Function
 
 Public Function getExcelVersion() As Long
-    getExcelVersion = F.Numerics.toNumeric(Excel.Application.Version)
+    getExcelVersion = f.Numerics.toNumeric(Excel.Application.Version)
 End Function
 
 
@@ -83,10 +83,10 @@ Public Function getLastAction() As String
     Dim ctrl As CommandBarControl
     '------------------------------------------------------------------------------------------------------
     Set cb = Application.CommandBars("Standard")
-    Set ctrl = cb.FindControl(id:=UNDO_CTRL_ID)
+    Set ctrl = cb.FindControl(Id:=UNDO_CTRL_ID)
     If Not ctrl Is Nothing Then
         On Error Resume Next
-        getLastAction = ctrl.list(1)
+        getLastAction = ctrl.List(1)
     End If
 End Function
 
@@ -102,13 +102,13 @@ Public Function isLastActionPaste(Optional includeFilling As Boolean = True, Opt
     
     lastAction = getLastAction
     
-    If objPasteRegex Is Nothing Then Set objPasteRegex = F.regex.Create(PASTE_REGEX_PATTERN)
+    If objPasteRegex Is Nothing Then Set objPasteRegex = f.regex.Create(PASTE_REGEX_PATTERN)
     
     If includePasting Then isLastActionPaste = objPasteRegex.test(lastAction)
     
     If Not isLastActionPaste Then
         If includeFilling Then
-            If objAutofillRegex Is Nothing Then Set objAutofillRegex = F.regex.Create(AUTOFILL_REGEX_PATTERN)
+            If objAutofillRegex Is Nothing Then Set objAutofillRegex = f.regex.Create(AUTOFILL_REGEX_PATTERN)
             isLastActionPaste = objAutofillRegex.test(lastAction)
         End If
     End If
@@ -149,9 +149,9 @@ Public Sub freeze(ByRef state As ExcelState)
             app.EnableCancelKey = xlDisabled
             app.cursor = xlWait
         End If
-        If Not .sheet Is Nothing Then
+        If Not .Sheet Is Nothing Then
             If .SheetProtection Then
-                Call .sheet.Unprotect(.protectionPassword)
+                Call .Sheet.Unprotect(.protectionPassword)
             End If
         End If
     End With
@@ -164,9 +164,9 @@ Public Sub unfreeze(ByRef state As ExcelState)
     '------------------------------------------------------------------------------------------------------
     
     With state
-        If Not .sheet Is Nothing Then
+        If Not .Sheet Is Nothing Then
             If .SheetProtection Then
-                Call .sheet.Protect(.protectionPassword, _
+                Call .Sheet.Protect(.protectionPassword, _
                                     .ProtectDrawingObjects, _
                                     .ProtectContents, _
                                     .ProtectScenarios, _
@@ -199,7 +199,7 @@ Public Sub unfreeze(ByRef state As ExcelState)
 End Sub
 
 
-Public Function getDefaultExcelState(Optional sheet As Excel.Worksheet, Optional protectionPassword As String) As ExcelState
+Public Function getDefaultExcelState(Optional Sheet As Excel.Worksheet, Optional protectionPassword As String) As ExcelState
     Dim app As Excel.Application:               Set app = Excel.Application
     '------------------------------------------------------------------------------------------------------
     
@@ -207,14 +207,14 @@ Public Function getDefaultExcelState(Optional sheet As Excel.Worksheet, Optional
         .ScreenUpdating = app.ScreenUpdating
         .EnableEvents = app.EnableEvents
         .Interactive = app.Interactive
-        If Not VBA.IsMissing(sheet) Then
-            If F.Sheets.isValid(sheet) Then
-                Set .sheet = sheet
-                .SheetProtection = sheet.ProtectContents
-                Set .ProtectionLevels = sheet.Protection
-                .ProtectDrawingObjects = sheet.ProtectDrawingObjects
-                .ProtectContents = sheet.ProtectContents
-                .ProtectScenarios = sheet.ProtectScenarios
+        If Not VBA.IsMissing(Sheet) Then
+            If f.Sheets.isValid(Sheet) Then
+                Set .Sheet = Sheet
+                .SheetProtection = Sheet.ProtectContents
+                Set .ProtectionLevels = Sheet.Protection
+                .ProtectDrawingObjects = Sheet.ProtectDrawingObjects
+                .ProtectContents = Sheet.ProtectContents
+                .ProtectScenarios = Sheet.ProtectScenarios
             End If
         End If
         
@@ -263,7 +263,7 @@ End Function
 
 
 Public Function getBackgroundInstance() As Excel.Application
-    If Not F.Excel.isValidAppReference(pBackgroundExcel) Then
+    If Not f.Excel.isValidAppReference(pBackgroundExcel) Then
         Set pBackgroundExcel = New Excel.Application
         pBackgroundExcel.visible = False
     End If
@@ -272,7 +272,7 @@ End Function
 
 
 Public Function closeBackgroundInstance() As Excel.Application
-    If F.Excel.isValidAppReference(pBackgroundExcel) Then
+    If f.Excel.isValidAppReference(pBackgroundExcel) Then
         Call pBackgroundExcel.Quit
         Set pBackgroundExcel = Nothing
     End If

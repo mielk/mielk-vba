@@ -14,7 +14,6 @@ Private Const CLASS_NAME As String = "FSystem"
 
 '[Windows API] --------------------------------------------------------------------------------------------
 #If VBA7 Then
-    Private Declare PtrSafe Function GetSystemMetrics Lib "user32.dll" (ByVal index As LongPtr) As LongPtr
     Private Declare PtrSafe Function EnumPrinters Lib "winspool.drv" Alias "EnumPrintersA" _
                         (ByVal flags As Long, ByVal name As String, ByVal Level As Long, _
                         pPrinterEnum As Long, ByVal cdBuf As Long, pcbNeeded As Long, _
@@ -22,7 +21,6 @@ Private Const CLASS_NAME As String = "FSystem"
     Private Declare PtrSafe Function PtrToStr Lib "kernel32" Alias "lstrcpyA" (ByVal RetVal As String, ByVal Ptr As LongPtr) As Long
     Private Declare PtrSafe Function StrLen Lib "kernel32" Alias "lstrlenA" (ByVal Ptr As Long) As Long
 #Else
-    Private Declare Function GetSystemMetrics Lib "user32.dll" (ByVal index As Long) As Long
     Private Declare Function EnumPrinters Lib "winspool.drv" Alias "EnumPrintersA" _
                         (ByVal flags As Long, ByVal name As String, ByVal Level As Long, _
                         pPrinterEnum As Long, ByVal cdBuf As Long, pcbNeeded As Long, _
@@ -100,14 +98,14 @@ Public Sub setErrorHandling(errorHandlingState As ErrorHandlingStatusEnum)
 
     Select Case errorHandlingState
         Case errorHandling_AllErrors:
-            Call F.Registry.updateValue(HKEY_CURRENT_USER, MS_COMMON_REG_KEY, CLASS_ERRORS_TAG, 0)
-            Call F.Registry.updateValue(HKEY_CURRENT_USER, MS_COMMON_REG_KEY, ALL_ERRORS_TAG, 1)
+            Call f.Registry.updateValue(HKEY_CURRENT_USER, MS_COMMON_REG_KEY, CLASS_ERRORS_TAG, 0)
+            Call f.Registry.updateValue(HKEY_CURRENT_USER, MS_COMMON_REG_KEY, ALL_ERRORS_TAG, 1)
         Case errorHandling_ClassErrors:
-            Call F.Registry.updateValue(HKEY_CURRENT_USER, MS_COMMON_REG_KEY, CLASS_ERRORS_TAG, 1)
-            Call F.Registry.updateValue(HKEY_CURRENT_USER, MS_COMMON_REG_KEY, ALL_ERRORS_TAG, 0)
+            Call f.Registry.updateValue(HKEY_CURRENT_USER, MS_COMMON_REG_KEY, CLASS_ERRORS_TAG, 1)
+            Call f.Registry.updateValue(HKEY_CURRENT_USER, MS_COMMON_REG_KEY, ALL_ERRORS_TAG, 0)
         Case errorHandling_UnhandledErrors:
-            Call F.Registry.updateValue(HKEY_CURRENT_USER, MS_COMMON_REG_KEY, CLASS_ERRORS_TAG, 0)
-            Call F.Registry.updateValue(HKEY_CURRENT_USER, MS_COMMON_REG_KEY, ALL_ERRORS_TAG, 0)
+            Call f.Registry.updateValue(HKEY_CURRENT_USER, MS_COMMON_REG_KEY, CLASS_ERRORS_TAG, 0)
+            Call f.Registry.updateValue(HKEY_CURRENT_USER, MS_COMMON_REG_KEY, ALL_ERRORS_TAG, 0)
     End Select
 
 End Sub
@@ -130,7 +128,7 @@ Public Function isDeveloper() As Boolean
     Dim compName As String
     '------------------------------------------------------------------------------------------------------
     
-    compName = F.System.GetComputerName
+    compName = f.System.GetComputerName
     If VBA.InStr(1, DEVELOPERS_COMPUTER_NAMES, ";" & compName & ";", vbTextCompare) > 0 Then
         isDeveloper = True
     End If
@@ -281,10 +279,10 @@ Public Function getClipboardContentAsArray() As Variant
     '------------------------------------------------------------------------------------------------------
     
     clipboardContent = getClipboardContentAsString
-    If F.strings.endsWith(clipboardContent, VBA.vbCrLf) Then clipboardContent = VBA.left$(clipboardContent, VBA.Len(clipboardContent) - 2)
+    If f.strings.endsWith(clipboardContent, VBA.vbCrLf) Then clipboardContent = VBA.left$(clipboardContent, VBA.Len(clipboardContent) - 2)
     arr = VBA.Split(clipboardContent, vbCrLf)
     
-    If F.arrays.isDefined(arr) Then
+    If f.arrays.isDefined(arr) Then
         ReDim values(LBound(arr) To UBound(arr))
         For i = LBound(arr) To UBound(arr)
             values(i) = VBA.Split(arr(i), vbTab)
@@ -303,5 +301,30 @@ Public Function getClipboardContentAsArray() As Variant
         
         getClipboardContentAsArray = result
     End If
+    
+End Function
+
+
+
+Public Function getWindowsUpdates() As Scripting.Dictionary
+    Const REGEX_PATTERN As String = "(?:\()(KB\d{7})(?:\))"
+    '------------------------------------------------------------------------------------------------------
+    Dim session As Object
+    Dim searcher As Object
+    Dim updates As Variant
+    Dim update As Object
+    Dim updateName As String
+    '------------------------------------------------------------------------------------------------------
+    
+    Set getWindowsUpdates = f.dictionaries.Create(False)
+    Set session = VBA.CreateObject("Microsoft.Update.Session")
+    Set searcher = session.createUpdateSearcher
+    With searcher
+        Set updates = .QueryHistory(0, .getTotalHistoryCount)
+        For Each update In updates
+            updateName = f.regex.getFirstGroupMatch(update.title, REGEX_PATTERN)
+            Call f.dictionaries.addItem(getWindowsUpdates, updateName, vbNullString)
+        Next update
+    End With
     
 End Function

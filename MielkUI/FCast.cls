@@ -76,6 +76,16 @@ Public Function toUiButton(value As Variant) As UIButton
     End If
 End Function
 
+Public Function toUiTextBox(value As Variant) As UITextBox
+    If VBA.IsObject(value) Then
+        If Not value Is Nothing Then
+            If TypeOf value Is UITextBox Then
+                Set toUiTextBox = value
+            End If
+        End If
+    End If
+End Function
+
 Public Function toIControl(value As Variant) As IControl
     If VBA.IsObject(value) Then
         If Not value Is Nothing Then

@@ -99,6 +99,7 @@ Public Enum tvMouse
     tvDown = 3
     tvMove = 4
     tvUp = 5
+    tvRightClick = 6
 End Enum
 
 Public Enum tvTreeRelationship
@@ -110,13 +111,20 @@ Public Enum tvTreeRelationship
 End Enum
 
 Event Click(cNode As clsNode)       'Node click event
+Event RightClick(cNode As clsNode)
 ' MouseAction generic example for all mouse events. See notes in NodeEventRouter
 ' Event MouseAction(cNode As clsNode, Action As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
 Event NodeCheck(cNode As clsNode)   'Checkbox change event
-Event AfterLabelEdit(ByRef cancel As Boolean, NewString As String, cNode As clsNode)
+Event AfterLabelEdit(ByRef Cancel As Boolean, NewString As String, cNode As clsNode)
 Event KeyDown(cNode As clsNode, ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
-Event AfterCollapseExpand(cNode As clsNode)
-Event AfterSelectionChange(cNode As clsNode)
+Event MouseDown(cNode As clsNode, ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+Event CustomEvent(cNode As clsNode, eventName As String)
+Event BeforeDragDrop(draggedNode As clsNode)
+Event AfterDragDrop(draggedNode As clsNode, dropNode As clsNode)
+Event DragDropCanceled()
+Event AfterExpandCollapse()
+'Event AfterCollapseExpand(cNode As clsNode)
+'Event AfterSelectionChange(cNode As clsNode)
                     
 Private Type POINTAPI
     x As Long
@@ -137,7 +145,7 @@ End Type
                                           ByRef lpPoint As POINTAPI) As Long
     Private Declare Function SetCursorPos Lib "user32.dll" ( _
                                           ByVal x As Long, _
-                                          ByVal y As Long) As Long
+                                          ByVal Y As Long) As Long
     Private Declare Function getTickCount Lib "kernel32.dll" Alias "GetTickCount" () As Long
 #End If
 
@@ -178,6 +186,15 @@ End Type
 
 Private Const mcSource As String = "clsTreeView"
 
+
+'----------------------------------------------------------------------------------------------------------
+Private pHoveredNode As clsNode
+Private pDragDropMode As Boolean
+Private pDraggedNode As clsNode
+Private pDroppableNodes As Scripting.Dictionary
+'----------------------------------------------------------------------------------------------------------
+
+
 '***************************
 '*    Public Properties    *
 '***************************
@@ -209,10 +226,10 @@ Public Property Set ActiveNode(oActiveNode As clsNode)
     ResetActiveNodeColor ActiveNode
 
     If oActiveNode.control Is Nothing Then
-        Set cTmp = oActiveNode.ParentNode
+        Set cTmp = oActiveNode.parentNode
         While Not cTmp.caption = "RootHolder"
             cTmp.Expanded = True
-            Set cTmp = cTmp.ParentNode
+            Set cTmp = cTmp.parentNode
         Wend
 
         If mlNodesCreated Then
@@ -229,7 +246,7 @@ End Property
 Public Sub ExpandNode(cNode As clsNode)
     Dim cTmp As clsNode
 
-    Set cTmp = cNode.ParentNode
+    Set cTmp = cNode.parentNode
     While Not cTmp.caption = "RootHolder"
         cTmp.Expanded = True
     Wend
@@ -244,12 +261,12 @@ Public Property Let AppName(ByVal sAppName As String)
     msAppName = sAppName
 End Property
 
-Public Property Get Changed() As Boolean
+Public Property Get changed() As Boolean
 'PT user has edited node(s) and/or changed Checked value(s)
-    Changed = mbChanged
+    changed = mbChanged
 End Property
 
-Public Property Let Changed(ByVal bChanged As Boolean)
+Public Property Let changed(ByVal bChanged As Boolean)
 ' called after manual node edit and Checked change
     mbChanged = bChanged
 End Property
@@ -314,7 +331,7 @@ Public Sub ImageAdd(pic As StdPicture, sName As String) ' PT
     mcolIcons.Add pic, sName ' error if sName is not a unique key
     Exit Sub
 errH:
-    Err.Raise Err.Number, "ImageAdd", "Error in ImageAdd" & vbNewLine & Err.Description
+    Err.Raise Err.Number, "ImageAdd", "Error in ImageAdd" & vbNewLine & Err.description
 End Sub
 
 Public Property Set Images(objImages As Object)
@@ -354,7 +371,7 @@ errH:
     ElseIf Erl = 200 Then
         sDesc = "A control in objImages does not contain a valid Picture object"
     End If
-    sDesc = sDesc & vbNewLine & Err.Description
+    sDesc = sDesc & vbNewLine & Err.description
         
     Err.Raise Err.Number, "Images", sDesc
 
@@ -469,19 +486,19 @@ Public Property Set MoveCopyNode(Optional bMove As Boolean, Optional lColor As L
     End If
 
     If Not moMoveNode Is Nothing Then
-        moMoveNode.BackColor = lOrigBackcolor
-        moMoveNode.control.BackColor = lOrigBackcolor
+        moMoveNode.backColor = lOrigBackcolor
+        moMoveNode.control.backColor = lOrigBackcolor
         Set moMoveNode = Nothing
     Else
 
     End If
 
     If Not cNode Is Nothing Then
-        lOrigBackcolor = cNode.BackColor
+        lOrigBackcolor = cNode.backColor
         If lOrigBackcolor = 0 Then lOrigBackcolor = mlBackColor
-        cNode.BackColor = lColor
+        cNode.backColor = lColor
 
-        cNode.control.BackColor = cNode.BackColor
+        cNode.control.backColor = cNode.backColor
         cNode.control.ForeColor = cNode.ForeColor
         Set moMoveNode = cNode
     Else
@@ -638,7 +655,7 @@ errH:
         Stop
         Resume
     #End If
-    Err.Raise Err.Number, "AddRoot", Err.Description
+    Err.Raise Err.Number, "AddRoot", Err.description
 
 End Function
 
@@ -679,9 +696,9 @@ Public Sub ExpandToLevel(lExpansionLevel As Long, Optional bReActivate As Boolea
 
     If bReActivate Then
         If ActiveNode.Level > lExpansionLevel Then
-            Set cTmp = ActiveNode.ParentNode
+            Set cTmp = ActiveNode.parentNode
             While cTmp.Level > lExpansionLevel
-                Set cTmp = cTmp.ParentNode
+                Set cTmp = cTmp.parentNode
             Wend
             Set ActiveNode = cTmp
         End If
@@ -704,7 +721,7 @@ Public Sub Copy(cSource As clsNode, cDest As clsNode, _
     
 End Sub
 
-Public Sub Move(cSource As clsNode, cDest As clsNode, _
+Public Sub move(cSource As clsNode, cDest As clsNode, _
                 Optional vBefore, Optional ByVal vAfter, _
                 Optional ByVal bShowError As Boolean)
 ' PT Move source node + children to destination node
@@ -729,7 +746,7 @@ Dim cSourceParent As clsNode
     Set cNode = cDest
     bIsParent = False
     Do
-        Set cNode = cNode.ParentNode
+        Set cNode = cNode.parentNode
         bIsParent = cNode Is cSource
     Loop Until cNode Is Nothing Or bIsParent
 
@@ -743,7 +760,7 @@ Dim cSourceParent As clsNode
         ' expander & VLine will get created automatically if necessary
     End If
 
-    If cDest Is cSource.ParentNode Then
+    If cDest Is cSource.parentNode Then
         ' changing order in the original parent
         For Each cNode In cDest.childNodes
             idx = idx + 1
@@ -762,7 +779,7 @@ Dim cSourceParent As clsNode
 
     AddNodeToCol cDest.childNodes, cSource, False, vBefore, vAfter
 
-    Set cSourceParent = cSource.ParentNode
+    Set cSourceParent = cSource.parentNode
     
     With cSourceParent
         .RemoveChild cSource, bRemoveReverseOrder
@@ -790,7 +807,7 @@ Dim cSourceParent As clsNode
         End If
     End With
 
-    Set cSource.ParentNode = cDest
+    Set cSource.parentNode = cDest
     cDest.Expanded = True
 
     If mbTriState Then
@@ -813,7 +830,7 @@ errH:
     Case vbObjectError + 110
         sErrDesc = "Cannot cut and move a Node to a descendant node"
     Case Else
-        sErrDesc = "Move: " & Err.Description
+        sErrDesc = "Move: " & Err.description
     End Select
 
     If bShowError Then
@@ -867,7 +884,7 @@ Public Function NodeAdd(Optional vRelative, _
     If vRelationship = tvChild Or cRelative Is cRelative.root Then
         Set cParent = cRelative
     Else
-        Set cParent = cRelative.ParentNode
+        Set cParent = cRelative.parentNode
     End If
 
     Set cNode = New clsNode
@@ -900,7 +917,7 @@ Public Function NodeAdd(Optional vRelative, _
             Case tvFirst: .Add cNode, , 1
             Case tvLast: .Add cNode, After:=.Count
             Case tvNext: .Add cNode, After:=i
-            Case tvPrevious: .Add cNode, before:=i
+            Case tvPrevious: .Add cNode, Before:=i
             Case tvChild: .Add cNode
             End Select
         End If
@@ -913,7 +930,7 @@ Public Function NodeAdd(Optional vRelative, _
         .ImageExpanded = vImageExpanded
         .index = mcolNodes.Count
         
-        Set .ParentNode = cParent
+        Set .parentNode = cParent
         Set .tree = Me
     End With
 
@@ -933,7 +950,7 @@ errH:
             Stop
             Resume
         #End If
-        Err.Raise Err.Number, "clsNode.AddChild", Err.Description
+        Err.Raise Err.Number, "clsNode.AddChild", Err.description
     End If
 End Function
 
@@ -950,7 +967,7 @@ Public Sub NodeRemove(cNode As clsNode)
     On Error GoTo errH
 
     Set cNodeAbove = NextVisibleNodeInTree(cNode, bUp:=True)
-    Set cParent = cNode.ParentNode
+    Set cParent = cNode.parentNode
 
     cNode.TerminateNode True
 
@@ -999,7 +1016,7 @@ Public Sub NodeRemove(cNode As clsNode)
     Exit Sub
 errH:
     #If DebugMode = 1 Then
-        Debug.Print Err.Description, Err.Number
+        Debug.Print Err.description, Err.Number
         Stop
         Resume
     #End If
@@ -1077,11 +1094,13 @@ Public Sub Refresh()
 
     BuildRoot bInit
 
+    Call runCustomRefreshActions
+
     Exit Sub
 
 errExit:
     Application.Cursor = xlDefault
-    Err.Raise Err.Number, mcSource, "Error in BuildRoot: " & Err.Description
+    Err.Raise Err.Number, mcSource, "Error in BuildRoot: " & Err.description
 End Sub
 
 Public Sub ScrollToView(Optional cNode As clsNode, _
@@ -1109,13 +1128,13 @@ Public Sub ScrollToView(Optional cNode As clsNode, _
         SetTreeExpansionLevel 0
     End If
     
-    Set cTmp = cNode.ParentNode
+    Set cTmp = cNode.parentNode
     While Not cTmp.caption = "RootHolder"
         If Not cTmp.Expanded Then
             bWasCollapsed = True
             cTmp.Expanded = True
         End If
-        Set cTmp = cTmp.ParentNode
+        Set cTmp = cTmp.parentNode
     Wend
     
     If bWasCollapsed Then
@@ -1287,9 +1306,9 @@ End Function
 Friend Function RaiseAfterLabelEdit(cNode As clsNode, sNewText As String) As Boolean
 ' PT called from moEditBox_KeyDown after vbKeyEnter
 '
-    Dim cancel As Boolean
-    RaiseEvent AfterLabelEdit(cancel, sNewText, cNode)
-    RaiseAfterLabelEdit = cancel
+    Dim Cancel As Boolean
+    RaiseEvent AfterLabelEdit(Cancel, sNewText, cNode)
+    RaiseAfterLabelEdit = Cancel
 End Function
 
 Friend Sub NodeEventRouter(cNode As clsNode, sControl As String, lAction As tvMouse, _
@@ -1308,7 +1327,8 @@ Dim cLastChild As clsNode
 
         If lAction = 1 Then  ' tvClick
             RaiseEvent Click(cNode)
-            
+        ElseIf lAction = tvRightClick Then
+            RaiseEvent RightClick(cNode)
         Else ' tvDblClick, tvDown, tvMove, tvUp
         
             ' To enable DblClick, MouseDown and MouseUp events:
@@ -1330,6 +1350,7 @@ Dim cLastChild As clsNode
         End If
 
         BuildRoot False
+        Call locateSpecialButtons
 
         If cNode.Expanded Then
             If Not cNode.childNodes Is Nothing Then
@@ -1344,8 +1365,6 @@ Dim cLastChild As clsNode
             End If
         End If
 
-        RaiseEvent AfterCollapseExpand(cNode)
-
         If bFlag Then
             ' Skip unnecesary click event if user clicks the already active node,
             ' only raise the click event if a new Node has just been made active.
@@ -1353,10 +1372,14 @@ Dim cLastChild As clsNode
             RaiseEvent Click(cNode)
         End If
 
+        RaiseEvent AfterExpandCollapse
+
     ElseIf sControl = "Checkbox" Then
 
         RaiseEvent NodeCheck(cNode)
-
+    
+    Else
+        RaiseEvent CustomEvent(cNode, sControl)
     End If
 
 End Sub
@@ -1379,6 +1402,8 @@ End Function
 Private Sub TreeControl_Click()
 ' PT exit editmode if an empty part of the treeview is clicked
     EditMode(ActiveNode) = False
+    Call quitDragDropMode
+    RaiseEvent DragDropCanceled
 End Sub
 
 '************************************
@@ -1482,6 +1507,7 @@ Dim sngHeightAllNodes As Single
 Dim sngIconPad As Single
 Dim cRoot As clsNode
 Dim objCtrl As MSForms.control
+Dim pt As POINTAPI
 Dim vIconKey
 
 Dim sCap As String
@@ -1519,7 +1545,8 @@ Dim sngTickCnt As Single
 
     If mcolNodes.Count - mlNodesCreated > 400 Then
         ' creating many controls might take a while
-        HourGlassCursor bApply:=True
+        'HourGlassCursor bApply:=True
+        Application.Cursor = xlWait
         bCursorWait = True
     End If
     
@@ -1559,7 +1586,7 @@ Dim sngTickCnt As Single
 
 
     With TreeControl
-        mlBackColor = .BackColor    ' default colours for node labels
+        mlBackColor = .backColor    ' default colours for node labels
         mlForeColor = .ForeColor
 
         If bInit Then
@@ -1595,8 +1622,8 @@ Dim sngTickCnt As Single
                     .top = mcTLpad + mlVisCount * msngNodeHeight
                     .left = mcTLpad + msngRootLine + sngIconPad + msngChkBoxPad
 
-                    If cRoot.BackColor Then
-                        .BackColor = cRoot.BackColor
+                    If cRoot.backColor Then
+                        .backColor = cRoot.backColor
                     End If
                     If cRoot.ForeColor Then
                         .ForeColor = cRoot.ForeColor
@@ -1722,7 +1749,7 @@ Dim sngTickCnt As Single
                             #End If
                             .fontSize = mcCheckboxFont     '9
                             .borderStyle = fmBorderStyleSingle
-                            .BackColor = vbWindowBackground
+                            .backColor = vbWindowBackground
                             .ForeColor = vbWindowText
                             If cRoot.Checked Then
                                 .caption = "a"
@@ -1865,7 +1892,8 @@ Dim sngTickCnt As Single
 done:
 
     If bCursorWait Then
-        HourGlassCursor False
+        Application.Cursor = xlDefault
+        'HourGlassCursor False
     End If
 
     'TODO: implement API equivalent for cancel key in Access & Word
@@ -1878,7 +1906,7 @@ done:
     Exit Sub
 
 locErr:
-    If bCursorWait Then HourGlassCursor False
+    'If bCursorWait Then HourGlassCursor False
     mbRedesign = False
     mbTriState = bTriStateOrig
 
@@ -1896,12 +1924,12 @@ locErr:
     End If
 
     #If DebugMode = 1 Then
-        Debug.Print Err.Number, Err.Description
+        Debug.Print Err.Number, Err.description
         Stop
         Resume
     #End If
 
-    Err.Raise Err.Number, "BuildRoot", Err.Description
+    Err.Raise Err.Number, "BuildRoot", Err.description
 End Sub
 
 Sub HourGlassCursor(bApply As Boolean)
@@ -2219,8 +2247,8 @@ Private Sub BuildNodeControls(cNode As clsNode, ByVal lLevel As Long)
                 .AutoSize = False
                 If .width <= mcFullWidth Then .width = mcFullWidth
             End If
-            If cNode.BackColor Then
-                .BackColor = cNode.BackColor
+            If cNode.backColor Then
+                .backColor = cNode.backColor
             End If
             If cNode.ForeColor Then
                 .ForeColor = cNode.ForeColor
@@ -2245,6 +2273,7 @@ Private Sub BuildNodeControls(cNode As clsNode, ByVal lLevel As Long)
 
             .top = mlVisCount * NodeHeight + mcTLpad + msngTopLabel
             .visible = True
+            Call cNode.showEventsLayer(True)
         End With
 
     End If
@@ -2272,7 +2301,7 @@ locErr:
             Stop
             Resume
         #End If
-        Err.Raise Err.Number, "BuildNodeControls", Err.Description
+        Err.Raise Err.Number, "BuildNodeControls", Err.description
     End If
 
 End Sub
@@ -2295,8 +2324,8 @@ Private Sub Clone(cParent As clsNode, cNode As clsNode, Optional vBefore, Option
     Set cClone = New clsNode
 
     With cNode
-        If .BackColor = 0 Then .BackColor = mlBackColor
-        cClone.BackColor = .BackColor
+        If .backColor = 0 Then .backColor = mlBackColor
+        cClone.backColor = .backColor
         cClone.caption = .caption
         cClone.Checked = .Checked
         cClone.Expanded = .Expanded
@@ -2311,7 +2340,7 @@ Private Sub Clone(cParent As clsNode, cNode As clsNode, Optional vBefore, Option
         Set cParent.childNodes = New Collection
     End If
 
-    Set cClone.ParentNode = cParent
+    Set cClone.parentNode = cParent
 
     If Not cNode.childNodes Is Nothing Then
         For Each cChild In cNode.childNodes
@@ -2329,14 +2358,14 @@ Private Sub Clone(cParent As clsNode, cNode As clsNode, Optional vBefore, Option
     
     mbTriState = bTriStateOrig
     If mbTriState Then
-        cClone.ParentNode.CheckTriStateParent
+        cClone.parentNode.CheckTriStateParent
     End If
     
     Exit Sub
 
 errH:
     #If DebugMode = 1 Then
-        Debug.Print Err.Description
+        Debug.Print Err.description
         Stop
         Resume
     #End If
@@ -2397,7 +2426,7 @@ Private Function NextVisibleNodeInTree(ByRef cStartNode As clsNode, Optional bUp
 errH:
     #If DebugMode = 1 Then
         Stop
-        Debug.Print Err.Description
+        Debug.Print Err.description
         Resume
     #End If
 End Function
@@ -2465,11 +2494,12 @@ Private Sub ResetActiveNodeColor(cNode As clsNode)
     Dim lBColor As Long
     Dim lFColor As Long
     If Not cNode Is Nothing Then
-        lBColor = cNode.BackColor
+        lBColor = cNode.backColor
         lFColor = cNode.ForeColor
         With cNode.control
             .borderStyle = fmBorderStyleNone
-            .BackColor = IIf(lBColor, lBColor, mlBackColor)
+            .BackStyle = fmBackStyleTransparent
+            .backColor = IIf(lBColor, lBColor, mlBackColor)
             .ForeColor = IIf(lFColor, lFColor, mlForeColor)
         End With
     End If
@@ -2530,7 +2560,8 @@ Private Sub SetActiveNodeColor(Optional bInactive)
             Else
                 ' in focus
                 .borderStyle = fmBorderStyleNone
-                .BackColor = vbHighlight
+                .BackStyle = fmBackStyleOpaque
+                .backColor = vbHighlight
                 .ForeColor = vbHighlightText
             End If
         End With
@@ -2606,11 +2637,11 @@ Private Sub TreeControl_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Sh
                     ActiveNode.Expanded = False
                      NodeEventRouter ActiveNode, "Expander", 1
                 Else
-                    If Not ActiveNode.ParentNode Is Nothing Then
-                        If ActiveNode.ParentNode.Expanded Then
+                    If Not ActiveNode.parentNode Is Nothing Then
+                        If ActiveNode.parentNode.Expanded Then
                             'If Not ActiveNode.ParentNode.Level = 0 And mbRootButton Then
-                            If ActiveNode.ParentNode.Level >= 0 Then
-                                Set ActiveNode = ActiveNode.ParentNode
+                            If ActiveNode.parentNode.Level >= 0 Then
+                                Set ActiveNode = ActiveNode.parentNode
                                 ScrollToView , -1
                                 NodeEventRouter ActiveNode, "Caption", 1
                             End If
@@ -2618,13 +2649,13 @@ Private Sub TreeControl_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Sh
                     End If
                 End If
             Else
-                If Not ActiveNode.ParentNode Is Nothing Then
-                    If ActiveNode.ParentNode.Level = 0 And Not mbRootButton Then
+                If Not ActiveNode.parentNode Is Nothing Then
+                    If ActiveNode.parentNode.Level = 0 And Not mbRootButton Then
                         ' don't attempt to collapse the Root if it doesn't have a button
                         ' redundant ?
-                    ElseIf ActiveNode.ParentNode.Expanded Then
-                        If ActiveNode.ParentNode.caption <> "RootHolder" Then
-                            Set ActiveNode = ActiveNode.ParentNode
+                    ElseIf ActiveNode.parentNode.Expanded Then
+                        If ActiveNode.parentNode.caption <> "RootHolder" Then
+                            Set ActiveNode = ActiveNode.parentNode
                             ScrollToView ActiveNode, -1
                             NodeEventRouter ActiveNode, "Caption", 1
                         End If
@@ -2786,51 +2817,157 @@ End Sub
 
 
 
-Public Function getLastVisibleNode() As clsNode
-    Dim node As clsNode
-    Dim bottom As Single
-    Dim maxBottom As Single
-    '------------------------------------------------------------------------------------------------------
-    For Each node In mcolNodes
-        If node.isVisible Then
-            bottom = node.getBottomY
-            If bottom > maxBottom Then
-                maxBottom = bottom
-                Set getLastVisibleNode = node
-            End If
-        End If
-    Next node
+Public Function getWidth() As Single
+    getWidth = TreeControl.InsideWidth
 End Function
 
-Public Function countSelectedNodes() As Long
-    Stop
+Public Function getHeight() As Single
+    getHeight = TreeControl.InsideHeight
 End Function
 
-Public Function hasAnySelectedNode() As Boolean
-    Dim node As clsNode
-    '------------------------------------------------------------------------------------------------------
-    For Each node In mcolNodes
-        If node.Checked Then
-            hasAnySelectedNode = True
-            Exit For
-        End If
-    Next node
+Public Function getScrollTop() As Single
+    getScrollTop = TreeControl.scrollTop
 End Function
 
-Public Function getSelectedLeafs() As VBA.Collection
-    Dim node As clsNode
-    '------------------------------------------------------------------------------------------------------
-    Set getSelectedLeafs = New VBA.Collection
-    For Each node In mcolNodes
-        If node.isLeaf Then
-            If node.Checked Then
-                Call getSelectedLeafs.Add(node.key)
-            End If
-        End If
-    Next node
-End Function
-
-Public Sub triggerSelectionChangeEvent(node As clsNode)
-    RaiseEvent AfterSelectionChange(node)
+Private Sub TreeControl_MouseDown(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+    Call setHoveredNode(Nothing)
+    RaiseEvent MouseDown(Nothing, button, Shift, x, y)
 End Sub
 
+Public Sub setHoveredNode(node As clsNode)
+    If Not pHoveredNode Is Nothing Then
+        Call pHoveredNode.setHoveredStatus(False)
+    End If
+    Set pHoveredNode = node
+    If Not node Is Nothing Then
+        Call node.setHoveredStatus(True)
+    End If
+End Sub
+
+
+'[Drag & Drop]
+Public Sub deactivateDragDropMode(node As clsNode)
+    Set pDraggedNode = Nothing
+    Call setDragDropMode(False, Nothing)
+End Sub
+
+Public Sub setDragDropMode(value As Boolean, node As clsNode)
+    pDragDropMode = value
+    Set pDraggedNode = node
+End Sub
+
+Public Function isInDragDropMode() As Boolean
+    isInDragDropMode = pDragDropMode
+End Function
+
+Public Sub setDroppableNodes(value As Scripting.Dictionary)
+    Set pDroppableNodes = value
+End Sub
+
+Private Sub resetDropView()
+    Dim node As clsNode
+    '------------------------------------------------------------------------------------------------------
+    For Each node In mcolNodes
+        Call node.setDropView(False)
+    Next node
+End Sub
+
+Public Sub quitDragDropMode()
+    If pDragDropMode Then
+        If Not pDraggedNode Is Nothing Then
+            Call pDraggedNode.quitDragMode
+            Set pDraggedNode = Nothing
+        End If
+        Set pDroppableNodes = Nothing
+        pDragDropMode = False
+        Call resetDropView
+    End If
+    
+End Sub
+
+
+Public Sub setAsSelectedDropNode(node As clsNode)
+    RaiseEvent AfterDragDrop(pDraggedNode, node)
+    Call quitDragDropMode
+End Sub
+
+Private Sub runCustomRefreshActions()
+    Set pHoveredNode = Nothing
+    pDragDropMode = False
+    Set pDraggedNode = Nothing
+    Call pixelizeControlsSize
+End Sub
+
+
+Private Sub TreeControl_MouseMove(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+    Call setHoveredNode(Nothing)
+End Sub
+
+Public Sub locateSpecialButtons()
+    Dim node As clsNode
+    '------------------------------------------------------------------------------------------------------
+    For Each node In mcolNodes
+        Call node.locateSpecialButtons
+    Next node
+End Sub
+
+
+Public Sub pixelizeControlsSize()
+    Dim node As clsNode
+    Dim ctrl As MSForms.control
+    '------------------------------------------------------------------------------------------------------
+    For Each node In mcolNodes
+        Set ctrl = node.control
+        ctrl.height = F.Numerics.roundTo(ctrl.height, PIXEL_SIZE) + PIXEL_SIZE / 3
+        ctrl.font.size = F.Numerics.roundTo(ctrl.font.size, PIXEL_SIZE) + PIXEL_SIZE / 3
+    Next node
+End Sub
+
+
+'Public Function getLastVisibleNode() As clsNode
+'    Dim node As clsNode
+'    Dim bottom As Single
+'    Dim maxBottom As Single
+'    '------------------------------------------------------------------------------------------------------
+'    For Each node In mcolNodes
+'        If node.isVisible Then
+'            bottom = node.getBottomY
+'            If bottom > maxBottom Then
+'                maxBottom = bottom
+'                Set getLastVisibleNode = node
+'            End If
+'        End If
+'    Next node
+'End Function
+'
+'Public Function countSelectedNodes() As Long
+'    Stop
+'End Function
+'
+'Public Function hasAnySelectedNode() As Boolean
+'    Dim node As clsNode
+'    '------------------------------------------------------------------------------------------------------
+'    For Each node In mcolNodes
+'        If node.Checked Then
+'            hasAnySelectedNode = True
+'            Exit For
+'        End If
+'    Next node
+'End Function
+'
+'Public Function getSelectedLeafs() As VBA.Collection
+'    Dim node As clsNode
+'    '------------------------------------------------------------------------------------------------------
+'    Set getSelectedLeafs = New VBA.Collection
+'    For Each node In mcolNodes
+'        If node.isLeaf Then
+'            If node.Checked Then
+'                Call getSelectedLeafs.Add(node.key)
+'            End If
+'        End If
+'    Next node
+'End Function
+'
+'Public Sub triggerSelectionChangeEvent(node As clsNode)
+'    RaiseEvent AfterSelectionChange(node)
+'End Sub

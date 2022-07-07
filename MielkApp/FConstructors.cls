@@ -6,7 +6,7 @@ Attribute VB_Name = "FConstructors"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
-Attribute VB_Exposed = False
+Attribute VB_Exposed = True
 Option Explicit
 
 Private Const CLASS_NAME As String = "FConstructors"
@@ -24,11 +24,11 @@ Public Function DefaultItemsProcessorViewer() As WDefaultItemsProcessorViewer
     Set DefaultItemsProcessorViewer = New WDefaultItemsProcessorViewer
 End Function
 
-Public Function processItemsList() As XProcessItemsList
+Friend Function processItemsList() As XProcessItemsList
     Set processItemsList = New XProcessItemsList
 End Function
 
-Public Function processItemLine(processItemsList As XProcessItemsList, item As IProcessItem, index As Long) As xxProcessItemLine
+Friend Function processItemLine(processItemsList As XProcessItemsList, item As IProcessItem, index As Long) As xxProcessItemLine
     Set processItemLine = New xxProcessItemLine
     With processItemLine
         Call .setParent(processItemsList)
@@ -38,11 +38,11 @@ Public Function processItemLine(processItemsList As XProcessItemsList, item As I
     End With
 End Function
 
-Public Function processSummaryPanel() As XProcessSummaryPanel
+Friend Function processSummaryPanel() As XProcessSummaryPanel
     Set processSummaryPanel = New XProcessSummaryPanel
 End Function
 
-Public Function processSummaryControl(parent As XProcessSummaryPanel) As xxProcessSummaryControl
+Friend Function processSummaryControl(parent As XProcessSummaryPanel) As xxProcessSummaryControl
     Set processSummaryControl = New xxProcessSummaryControl
     With processSummaryControl
         Call .setParent(parent)
@@ -51,4 +51,35 @@ End Function
 
 Public Function Repository2() As Repository2
     Set Repository2 = New Repository2
+End Function
+
+
+Public Function AliasesPanel() As XAliasesPanel
+    Set AliasesPanel = New XAliasesPanel
+End Function
+
+Public Function EditEntityWindow() As WEditEntity
+    Set EditEntityWindow = New WEditEntity
+End Function
+
+Public Function DatesRange(Optional byMonths As Boolean = False, Optional maxRange As Long = 0) As EDatesRange
+    Set DatesRange = New EDatesRange
+    With DatesRange
+        Call .setByMonths(byMonths)
+        Call .setMaxRange(maxRange)
+    End With
+End Function
+
+
+Public Function Standarizer() As Standarizer
+    Set Standarizer = New Standarizer
+End Function
+
+Friend Function StandarizingAction(alias As String, from As Variant, into As Variant) As StandarizingAction
+    Set StandarizingAction = New StandarizingAction
+    With StandarizingAction
+        Call .setAlias(alias)
+        Call .setBefore(from)
+        Call .setAfter(into)
+    End With
 End Function

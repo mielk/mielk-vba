@@ -16,6 +16,7 @@ Private pName As String
 Private pIsSizeProperty As Boolean
 Private pIsPositionProperty As Boolean
 Private pIsLayoutProperty As Boolean
+Private pIsLookProperty As Boolean
 Private pInheritable As Boolean
 Private pAliases As Scripting.Dictionary
 '#If VBA7 Then
@@ -30,7 +31,7 @@ Private pConvertionFunction As String
 
 Private Sub Class_Initialize()
     pInheritable = True
-    Set pAliases = F.Dictionaries.Create(False)
+    Set pAliases = f.dictionaries.Create(False)
 End Sub
 
 
@@ -65,6 +66,11 @@ Friend Function setIsLayoutProperty(value As Boolean) As UIProp
     pIsLayoutProperty = value
 End Function
 
+Friend Function setIsLookProperty(value As Boolean) As UIProp
+    Set setIsLookProperty = Me
+    pIsLookProperty = value
+End Function
+
 Friend Function setConvertionFunction(functionName As String) As UIProp
     Set setConvertionFunction = Me
     pConvertionFunction = functionName
@@ -74,7 +80,7 @@ Friend Function addAlias(value As String) As UIProp
     Set addAlias = Me
     With pAliases
         If Not .exists(value) Then
-            Call .Add(value, value)
+            Call .add(value, value)
         End If
     End With
 End Function
@@ -89,6 +95,10 @@ End Function
 
 Public Function getName() As String
     getName = pName
+End Function
+
+Public Function getLowerCaseName() As String
+    getLowerCaseName = VBA.LCase$(pName)
 End Function
 
 Public Function isInheritable() As Boolean
@@ -107,6 +117,10 @@ Public Function isLayoutProperty() As Boolean
     isLayoutProperty = pIsLayoutProperty
 End Function
 
+Public Function isLookProperty() As Boolean
+    isLookProperty = pIsLookProperty
+End Function
+
 Public Function hasConvertionFunction() As Boolean
     hasConvertionFunction = VBA.Len(pConvertionFunction) > 0
 End Function
@@ -117,30 +131,32 @@ End Function
 
 Public Function convertValue(value As Variant) As Variant
     If VBA.Len(pConvertionFunction) Then
-        Call F.Variables.assign(convertValue, Excel.Application.Run(pConvertionFunction, value))
+        Call f.Variables.assign(convertValue, Excel.Application.Run(pConvertionFunction, value))
     Else
-        Call F.Variables.assign(convertValue, value)
+        Call f.Variables.assign(convertValue, value)
     End If
 End Function
 
 Public Function getValueFromPropertiesDictionary(dict As Scripting.Dictionary) As Variant
     Dim keyAlias As Variant
     '----------------------------------------------------------------------------------------------------------
-    If F.Dictionaries.isNonEmptyDictionary(dict) Then
+    
+    If f.dictionaries.isNonEmptyDictionary(dict) Then
         For Each keyAlias In pAliases.Keys
-            Call F.Dictionaries.assignValueFromDictToVariable(dict, getValueFromPropertiesDictionary, _
-                                    VBA.CStr(keyAlias), F.Reflection.getFunctionFullName(pConvertionFunction))
-            If Not F.Variables.isUndefined(getValueFromPropertiesDictionary) Then Exit For
+            Call f.dictionaries.assignValueFromDictToVariable(dict, getValueFromPropertiesDictionary, _
+                                    VBA.CStr(keyAlias), f.Reflection.getFunctionFullName(pConvertionFunction))
+            If Not f.Variables.isUndefined(getValueFromPropertiesDictionary) Then Exit For
         Next keyAlias
     End If
+    
 End Function
 
 Public Function getConvertedValue(value As Variant) As Variant
     If VBA.Len(pConvertionFunction) Then
         On Error GoTo ConversionException
-        Call F.Variables.assign(getConvertedValue, Application.Run(F.Reflection.getFunctionFullName(pConvertionFunction), value))
+        Call f.Variables.assign(getConvertedValue, Application.Run(f.Reflection.getFunctionFullName(pConvertionFunction), value))
     Else
-        Call F.Variables.assign(getConvertedValue, value)
+        Call f.Variables.assign(getConvertedValue, value)
     End If
     
 '@@@
@@ -149,9 +165,9 @@ ConversionException:
     
 End Function
 
-Public Function getAliasesString(Optional separator As String = ";") As String
+Public Function getAliasesString(Optional Separator As String = ";") As String
     If Not pAliases Is Nothing Then
-        getAliasesString = F.Dictionaries.toString(pAliases, DictPart_KeyOnly, StringifyMode_Normal, _
-                                                                separator, vbNullString, vbNullString)
+        getAliasesString = f.dictionaries.toString(pAliases, DictPart_KeyOnly, StringifyMode_Normal, _
+                                                                Separator, vbNullString, vbNullString)
     End If
 End Function

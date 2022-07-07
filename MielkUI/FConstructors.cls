@@ -50,32 +50,32 @@ Public Function UIButton(frame As MSForms.frame) As UIButton
     End With
 End Function
 
-Public Function xxListHeader(frame As MSForms.frame) As xxListHeader
-    Set xxListHeader = New xxListHeader
-    With xxListHeader
+Public Function xxGridHeader(frame As MSForms.frame) As xxGridHeader
+    Set xxGridHeader = New xxGridHeader
+    With xxGridHeader
         Call .setFrame(frame)
     End With
 End Function
 
-Public Function ListManager(frame As MSForms.frame) As XListManager
-    Set ListManager = New XListManager
-    With ListManager
+Public Function GridManager(frame As MSForms.frame) As XGridManager
+    Set GridManager = New XGridManager
+    With GridManager
         Call .setFrame(frame)
     End With
 End Function
 
-Public Function ListLine(manager As XListManager, frame As MSForms.frame, item As IListItem) As xxListLine
-    Set ListLine = New xxListLine
-    With ListLine
+Public Function GridLine(manager As XGridManager, frame As MSForms.frame, item As IGridItem) As xxGridLine
+    Set GridLine = New xxGridLine
+    With GridLine
         Call .setManager(manager)
         Call .setFrame(frame)
         Call .setItem(item)
     End With
 End Function
 
-Public Function ListHeaderLine(manager As XListManager, frame As MSForms.frame) As xxListHeaderLine
-    Set ListHeaderLine = New xxListHeaderLine
-    With ListHeaderLine
+Public Function GridHeaderLine(manager As XGridManager, frame As MSForms.frame) As xxGridHeaderLine
+    Set GridHeaderLine = New xxGridHeaderLine
+    With GridHeaderLine
         Call .setManager(manager)
         Call .setFrame(frame)
     End With
@@ -121,7 +121,7 @@ Public Function SelectItemWindow(items As Scripting.Dictionary, Optional ByVal w
     Const DEFAULT_WINDOW_TITLE_TAG As String = "SelectItem.WindowTitle"
     '------------------------------------------------------------------------------------------------------
     
-    If VBA.Len(windowTitle) = 0 Then windowTitle = MsgService.getText(DEFAULT_WINDOW_TITLE_TAG)
+    If VBA.Len(windowTitle) = 0 Then windowTitle = MsgService.GetText(DEFAULT_WINDOW_TITLE_TAG)
     
     Set SelectItemWindow = New WSelectItem
     With SelectItemWindow
@@ -142,6 +142,10 @@ Public Function DatePicker(Optional defaultDate As Variant, Optional ByVal windo
     End With
 End Function
 
+Public Function CustomPanel() As UICustomPanel
+    Set CustomPanel = New UICustomPanel
+End Function
+
 Public Function OptionsPanel() As XOptionsPanel
     Set OptionsPanel = New XOptionsPanel
 End Function
@@ -156,9 +160,9 @@ Public Function OptionLine(parent As XOptionsPanel, key As Variant, value As Var
 End Function
 
 
-Public Function ValidationLabel(frame As MSForms.frame) As UIValidationLabel
-    Set ValidationLabel = New UIValidationLabel
-    With ValidationLabel
+Public Function validationLabel(frame As MSForms.frame) As UIValidationLabel
+    Set validationLabel = New UIValidationLabel
+    With validationLabel
         Call .setFrame(frame)
     End With
 End Function
@@ -196,9 +200,69 @@ Public Function LocationPropsForScreenCenter() As DLocation
     screenArea = F.Screen.getActiveMonitorWorkingArea
     dpiScaling = F.Screen.getDpiScaling
     
+    With screenArea
+        x = .left + .width / 2
+        y = .top + .height / 2
+    End With
+    
     Set LocationPropsForScreenCenter = UI.Create.locationProps. _
                                 setAnchorLeft(x / dpiScaling.x). _
                                 setAnchorTop(y / dpiScaling.y). _
                                 setAnchorPoint(AnchorPoint_Middle)
     
 End Function
+
+Public Function TreeView() As clsTreeView
+    Set TreeView = New clsTreeView
+End Function
+
+Public Function TreeNode() As clsNode
+    TreeNode = New clsNode
+End Function
+
+Public Function SelectFromTreeWindow(items As Scripting.Dictionary, _
+                                            Optional initialSelection As Scripting.Dictionary, _
+                                            Optional ByVal windowTitle As String) As WSelectFromTree
+    Const DEFAULT_WINDOW_TITLE As String = "SelectItem.WindowTitle"
+    '------------------------------------------------------------------------------------------------------
+    
+    If VBA.Len(windowTitle) = 0 Then windowTitle = MsgService.GetText(DEFAULT_WINDOW_TITLE)
+    Set SelectFromTreeWindow = New WSelectFromTree
+    With SelectFromTreeWindow
+        Call .setTitle(windowTitle)
+        Call .setDataStructure(items)
+        Call .setInitialSelection(initialSelection)
+    End With
+    
+End Function
+
+
+
+'[UIList]
+Public Function list(value As MSForms.UserForm) As UIList
+    Set list = New UIList
+    With list
+        Call .setParent(value)
+    End With
+End Function
+
+Friend Function ListHeader(list As UIList, definition As DListHeader) As UIListHeader
+    Set ListHeader = New UIListHeader
+    With ListHeader
+        Call .setParent(list)
+        Call .setDefinition(definition)
+    End With
+End Function
+
+Public Function ListHeaderDefinition(caption As String, prop As Variant) As DListHeader
+    Set ListHeaderDefinition = New DListHeader
+    With ListHeaderDefinition
+        Call .setCaption(caption)
+        Call .setProperty(prop)
+    End With
+End Function
+
+Friend Function ListLine() As UIListLine
+    Stop
+End Function
+

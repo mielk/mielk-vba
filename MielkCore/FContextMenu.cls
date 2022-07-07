@@ -13,29 +13,28 @@ Private Const CLASS_NAME As String = "FContextMenu"
 '----------------------------------------------------------------------------------------------------------
 Private Const MENU_ITEM_PREFIX As String = "custom_"
 Private Const CONTEXT_MENU_COMMAND_BAR_NAME As String = "Cell"
-'[Tags]
-Private Const TAG_METHOD_NAME As String = "methodName"
-Private Const TAG_CAPTION As String = "caption"
-Private Const TAG_TAG As String = "tag"
-Private Const TAG_FACE_ID As String = "faceId"
-Private Const TAG_SEPARATOR As String = "separator"
-Private Const TAG_COLUMNS As String = "columns"
 '----------------------------------------------------------------------------------------------------------
 
 
 Public Sub addContextMenuItemFromDto(ByRef dto As Scripting.Dictionary)
+    Dim methodBook As Excel.Workbook
     Dim methodName As String
+    Dim param As String
     Dim buttonCaption As String
     Dim buttonTag As String
     Dim faceId As Long
     Dim separateFromNext As Boolean
     '------------------------------------------------------------------------------------------------------
     
-    methodName = F.Dictionaries.getItem(dto, TAG_METHOD_NAME)
-    buttonCaption = MsgService.getText(F.Dictionaries.getItem(dto, TAG_CAPTION))
-    buttonTag = F.Dictionaries.getItem(dto, TAG_TAG)
-    faceId = F.Dictionaries.getItem(dto, TAG_FACE_ID)
-    separateFromNext = F.Dictionaries.getItem(dto, TAG_SEPARATOR)
+    Set methodBook = f.dictionaries.getObject(dto, CONTEXT_MENU_TAG_METHOD_BOOK)
+    methodName = f.Reflection.getFunctionFullName(f.dictionaries.getItem(dto, CONTEXT_MENU_TAG_METHOD_NAME), methodBook)
+    param = f.dictionaries.getItem(dto, CONTEXT_MENU_TAG_PARAM)
+    If VBA.Len(param) Then methodName = methodName & "(""" & param & """)"
+    
+    buttonCaption = MsgService.getText(f.dictionaries.getItem(dto, CONTEXT_MENU_TAG_CAPTION))
+    buttonTag = f.dictionaries.getItem(dto, CONTEXT_MENU_TAG_TAG)
+    faceId = f.dictionaries.getItem(dto, CONTEXT_MENU_TAG_FACE_ID)
+    separateFromNext = f.dictionaries.getItem(dto, CONTEXT_MENU_TAG_SEPARATOR)
     
     Call addContextMenuItem(methodName, buttonCaption, buttonTag, faceId, 1, separateFromNext)
 
@@ -45,7 +44,7 @@ End Sub
 Public Sub addContextMenuItem(methodName As String, buttonCaption As String, buttonTag As String, _
                             Optional faceId As Long, Optional before As Long = 1, _
                             Optional separateFromNext As Boolean = False)
-    Dim contextMenu As Object:                      Set contextMenu = getContextMenu
+    Dim ContextMenu As Object:                      Set ContextMenu = getContextMenu
     Dim contextMenuItem As Object
     '------------------------------------------------------------------------------------------------------
     
@@ -53,7 +52,7 @@ Public Sub addContextMenuItem(methodName As String, buttonCaption As String, but
     If Not contextMenuItem Is Nothing Then
         contextMenuItem.OnAction = methodName
     Else
-        With contextMenu.Controls.Add(Type:=msoControlButton, before:=before)
+        With ContextMenu.Controls.add(Type:=msoControlButton, before:=before)
             .OnAction = methodName
             .faceId = faceId
             .Caption = buttonCaption
@@ -62,7 +61,7 @@ Public Sub addContextMenuItem(methodName As String, buttonCaption As String, but
         
         If separateFromNext Then
             On Error Resume Next
-            contextMenu.Controls(before + 1).BeginGroup = True
+            ContextMenu.Controls(before + 1).BeginGroup = True
         End If
     End If
     
@@ -73,10 +72,10 @@ Private Function getContextMenu() As Object
 End Function
 
 Private Function getContextMenuItem(tag As String) As Object
-    Dim contextMenu As Object:                      Set contextMenu = getContextMenu
+    Dim ContextMenu As Object:                      Set ContextMenu = getContextMenu
     Dim ctrl As Object
     '------------------------------------------------------------------------------------------------------
-    For Each ctrl In contextMenu.Controls
+    For Each ctrl In ContextMenu.Controls
         If ctrl.tag = tag Then
             Set getContextMenuItem = ctrl
             Exit For
@@ -85,14 +84,14 @@ Private Function getContextMenuItem(tag As String) As Object
 End Function
 
 Public Sub clearContextMenu()
-    Dim contextMenu As Object:                      Set contextMenu = getContextMenu
-    Dim item As Object
+    Dim ContextMenu As Object:                      Set ContextMenu = getContextMenu
+    Dim Item As Object
     '------------------------------------------------------------------------------------------------------
 
-    If Not contextMenu Is Nothing Then
-        For Each item In contextMenu.Controls
-            Call item.delete
-        Next item
+    If Not ContextMenu Is Nothing Then
+        For Each Item In ContextMenu.Controls
+            Call Item.delete
+        Next Item
     End If
     
     Application.ShowMenuFloaties = True
@@ -100,11 +99,11 @@ Public Sub clearContextMenu()
 End Sub
 
 Public Sub resetContextMenu()
-    Dim contextMenu As Object:                      Set contextMenu = getContextMenu
+    Dim ContextMenu As Object:                      Set ContextMenu = getContextMenu
     '------------------------------------------------------------------------------------------------------
     
-    If Not contextMenu Is Nothing Then
-        Call contextMenu.Reset
+    If Not ContextMenu Is Nothing Then
+        Call ContextMenu.Reset
     End If
     
     Application.ShowMenuFloaties = False
@@ -112,29 +111,29 @@ Public Sub resetContextMenu()
 End Sub
 
 Public Sub clearContextMenuFromCustomItems(Optional projectPrefix As String)
-    Call deleteContextMenuByRegex("^" & MENU_ITEM_PREFIX, "^" & projectPrefix)
+    Call deleteContextMenuItemsByRegex("^" & MENU_ITEM_PREFIX, "^" & projectPrefix)
 End Sub
 
-Private Sub deleteContextMenuByRegex(ParamArray items() As Variant)
-    Dim contextMenu As Object:                      Set contextMenu = getContextMenu
+Private Sub deleteContextMenuItemsByRegex(ParamArray Items() As Variant)
+    Dim ContextMenu As Object:                      Set ContextMenu = getContextMenu
     Dim objRegex As Object
     Dim ctrl As Object
     Dim varItem As Variant
     '------------------------------------------------------------------------------------------------------
 
-    Set objRegex = F.regex.Create
+    Set objRegex = f.regex.Create
     
-    For Each varItem In items
+    For Each varItem In Items
         objRegex.pattern = VBA.CStr(varItem)
-        For Each ctrl In contextMenu.Controls
+        For Each ctrl In ContextMenu.Controls
             If objRegex.test(ctrl.tag) Then
                 Call ctrl.delete
             End If
         Next ctrl
     Next varItem
 
-    If contextMenu.Controls.count Then
-        contextMenu.Controls(1).BeginGroup = False
+    If ContextMenu.Controls.count Then
+        ContextMenu.Controls(1).BeginGroup = False
     End If
 
 End Sub

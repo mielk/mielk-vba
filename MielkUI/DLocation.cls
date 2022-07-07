@@ -109,12 +109,12 @@ Private Function adjustToPreventOverflow(ByVal left As Single, ByVal top As Sing
                                          ByVal width As Single, ByVal height As Single) As Coordinate
     Dim dpiScaling As Coordinate
     Dim screenWorkingArea As area
-    Dim cursorPotision As Coordinate
+    Dim cursorPosition As Coordinate
     '------------------------------------------------------------------------------------------------------
     
     dpiScaling = F.Screen.getDpiScaling
     screenWorkingArea = F.Screen.getActiveMonitorWorkingArea
-    cursorPotision = F.Screen.getCursorPosition
+    cursorPosition = F.Screen.getCursorPosition
     
     With screenWorkingArea
         

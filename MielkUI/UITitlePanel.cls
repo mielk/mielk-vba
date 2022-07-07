@@ -24,7 +24,7 @@ Private Const DEFAULT_PADDING As Single = 12
 Private Const DEFAULT_MOVE_ENABLED As Boolean = True
 Private Const DEFAULT_CLOSE_ENABLED As Boolean = True
 Private Const DEFAULT_BACKGROUND_COLOR As Long = 11630657
-Private Const DEFAULT_TITLE_BAR_FONT_FAMILY As String = "Segoe UI"
+Private Const DEFAULT_TITLE_BAR_FONT_FAMILY As String = APP_FONT_FAMILY
 Private Const DEFAULT_TITLE_BAR_FONT_SIZE As Single = 11
 Private Const DEFAULT_TITLE_BAR_FONT_COLOR As Long = vbWhite
 Private Const DEFAULT_TITLE_BAR_FONT_BOLD As Boolean = True
@@ -71,7 +71,7 @@ Private pCaption As String
 '[Events] -------------------------------------------------------------------------------------------------
 Event AfterClose()
 Event MoveModeOn(ByVal x As Single, ByVal y As Single)
-Event Move(ByVal x As Single, ByVal y As Single)
+Event move(ByVal x As Single, ByVal y As Single)
 Event MoveModeOff(ByVal x As Single, ByVal y As Single)
 Event HelpFileButtonClicked()
 '----------------------------------------------------------------------------------------------------------
@@ -183,7 +183,7 @@ Private Sub insertContainer()
     End If
     With pContainer
         .SpecialEffect = fmSpecialEffectFlat
-        .BackColor = pBackgroundColor
+        .backColor = pBackgroundColor
         .borderStyle = fmBorderStyleNone
         .left = 0
         .top = 0
@@ -225,7 +225,7 @@ End Sub
 
 Private Function getTranslatedContent() As String
     If F.Strings.startsWith(pCaption, "#") Then
-        getTranslatedContent = MsgService.getText(VBA.Mid$(pCaption, 2))
+        getTranslatedContent = MsgService.GetText(VBA.Mid$(pCaption, 2))
     Else
         getTranslatedContent = pCaption
     End If
@@ -327,7 +327,7 @@ Private Function calculateCaptionLabelWidth() As Single
     
     If UI.Forms.isControlValid(pHelpFileButton) Then
         calculateCaptionLabelWidth = pHelpFileButton.left - pCaptionLabel.left - pPadding
-    ElseIf UI.Forms.isControlValid(pHelpFileButton) Then
+    ElseIf UI.Forms.isControlValid(pCloseButton) Then
         calculateCaptionLabelWidth = pCloseButton.left - pCaptionLabel.left - pPadding
     Else
         calculateCaptionLabelWidth = pContainer.InsideWidth - 2 * pPadding
@@ -342,7 +342,7 @@ Private Sub updatePosition()
     If UI.Forms.isControlValid(pContainer) Then
         With pContainer
             .left = pLeft
-            .top = F.Numerics.roundTo(VBA.CDbl(pTop), PIXEL_SIZE)
+            .top = pTop
         End With
     End If
 End Sub
@@ -366,7 +366,7 @@ End Sub
 
 Private Sub updateBackColor()
     If UI.Forms.isControlValid(pContainer) Then
-        pContainer.BackColor = pBackgroundColor
+        pContainer.backColor = pBackgroundColor
     End If
 End Sub
 
@@ -388,8 +388,10 @@ Private Sub pCloseButton_Click()
 End Sub
 
 Private Function confirmSkippingNotSavedData() As Boolean
-    If Not pWindow.hasUnsavedChanges Then
-        confirmSkippingNotSavedData = F.Dialogs.getUserConfirmation(MsgService.getText(UNSAVED_DATA_QUESTION))
+    If Not pWindow.displayWarningWhenClosingWithUnsavedData Then
+        confirmSkippingNotSavedData = True
+    ElseIf Not pWindow.hasUnsavedChanges Then
+        confirmSkippingNotSavedData = F.Dialogs.getUserConfirmation(MsgService.GetText(UNSAVED_DATA_QUESTION))
     Else
         confirmSkippingNotSavedData = True
     End If
@@ -407,7 +409,7 @@ End Sub
 
 Private Sub pMoveLayer_MouseMove(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
     Call ErrorManager.clear
-    If button = 1 Then RaiseEvent Move(x, y)
+    If button = 1 Then RaiseEvent move(x, y)
 End Sub
 
 Private Sub pMoveLayer_MouseUp(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)

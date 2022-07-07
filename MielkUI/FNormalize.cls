@@ -31,3 +31,7 @@ End Function
 Public Function size(ByVal value As Single) As Single
     size = F.Numerics.roundTo(VBA.CDbl(value), PIXEL_SIZE / pScaling.y)
 End Function
+
+Public Function fontSize(ByVal value As Single) As Single
+    fontSize = F.Numerics.roundTo(VBA.CDbl(value), PIXEL_SIZE)
+End Function

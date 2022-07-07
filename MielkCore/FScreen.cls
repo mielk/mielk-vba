@@ -11,6 +11,47 @@ Option Explicit
 
 Private Const CLASS_NAME As String = "FScreen"
 '----------------------------------------------------------------------------------------------------------
+Private pMonitors As VBA.Collection
+'----------------------------------------------------------------------------------------------------------
+
+
+
+
+Public Sub reloadMonitorsInfo()
+    Call f.files.deleteFile(getScreenHelperTextFilePath)
+    Call enumerateMonitors
+    Call readMonitorsInfoFromScreenHelperTextFile
+End Sub
+
+Private Sub enumerateMonitors()
+    EnumDisplayMonitors 0, 0, AddressOf monitorEnumProc, 0
+End Sub
+
+Private Sub readMonitorsInfoFromScreenHelperTextFile()
+    Dim filepath As String
+    Dim info As Variant
+    Dim i As Long
+    Dim Monitor As Monitor
+    '------------------------------------------------------------------------------------------------------
+    
+    Set pMonitors = New VBA.Collection
+    
+    filepath = getScreenHelperTextFilePath
+    If f.files.fileExists(filepath) Then
+        info = f.TextFiles.getCsvContentAsArray(filepath, ",")
+        If f.arrays.isDefined(info) Then
+            For i = LBound(info, 1) To UBound(info, 1)
+                Set Monitor = New Monitor
+                With Monitor
+                    Call .setHandle(VBA.CLngPtr(info(i, 1)))
+                    Call .setBounds(VBA.CLng(info(i, 2)), VBA.CLng(info(i, 3)), VBA.CLng(info(i, 4)), VBA.CLng(info(i, 5)))
+                End With
+                Call pMonitors.add(Monitor)
+            Next i
+        End If
+    End If
+    
+End Sub
 
 Public Function getSize() As area
     With getSize
@@ -33,7 +74,8 @@ End Function
 
 
 Public Function getActiveMonitorWorkingArea() As area
-#If Win64 Then
+
+#If VBA7 And Win64 Then
     Dim monitorHandle As LongPtr
 #Else
     Dim monitorHandle As Long
@@ -43,9 +85,27 @@ Public Function getActiveMonitorWorkingArea() As area
     '------------------------------------------------------------------------------------------------------
     
     Call GetCursorPos(cursorPosition)
-    monitorHandle = MonitorFromPoint(cursorPosition.x, cursorPosition.y, MONITOR_DEFAULTTONEAREST)
+    
+#If VBA7 And Win64 Then
+'    Dim Monitor As Monitor
+'
+'    Call reloadMonitorsInfo
+'
+'    If f.Collections.isNonEmptyCollection(pMonitors) Then
+'        For Each Monitor In pMonitors
+'            If Monitor.isPointInMonitor(cursorPosition) Then
+'                monitorHandle = Monitor.getHandle
+'                'getActiveMonitorWorkingArea = monitor.getWorkingArea
+'            End If
+'        Next Monitor
+'    End If
+    monitorHandle = MonitorFromPoint(cursorPosition, MONITOR_DEFAULTTONEAREST)
+#Else
+    monitorHandle = MonitorFromPoint(cursorPosition, MONITOR_DEFAULTTONEAREST)
+#End If
+
     info.cbSize = Len(info)
-    If GetMonitorInfo(monitorHandle, info) = False Then
+    If getMonitorInfo(monitorHandle, info) = False Then
         Call VBA.err.raise(1, description:="Error when trying to read monitor info")
     End If
     
@@ -55,7 +115,7 @@ Public Function getActiveMonitorWorkingArea() As area
         getActiveMonitorWorkingArea.width = (.right - .left) * PIXEL_SIZE
         getActiveMonitorWorkingArea.height = (.bottom - .top) * PIXEL_SIZE
     End With
-    
+
 End Function
 
 Public Function getDpiScaling() As Coordinate
@@ -87,3 +147,7 @@ Public Function getCursorPosition() As Coordinate
     End With
     
 End Function
+
+Public Sub test()
+    EnumDisplayMonitors 0, 0, AddressOf monitorEnumProc, 0
+End Sub

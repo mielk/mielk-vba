@@ -51,7 +51,7 @@ End Function
 
 Public Function setSelection(value As Variant) As WFilterList
     Set setSelection = Me
-    If F.Dictionaries.isDictionary(value) Then
+    If F.dictionaries.isDictionary(value) Then
         Set pSelectedItems = value
     End If
 End Function
@@ -61,8 +61,8 @@ Public Function setColumnName(value As String) As WFilterList
     pColumnName = value
 End Function
 
-Public Function setHasSearchFieldName(value As Boolean) As WFilterList
-    Set setHasSearchFieldName = Me
+Public Function setHasSearchField(value As Boolean) As WFilterList
+    Set setHasSearchField = Me
     pHasSearchField = value
 End Function
 
@@ -77,7 +77,7 @@ End Function
 
 Public Function getSelectionString() As String
     If pIsActive Then
-        getSelectionString = VBA.Join(pSelectedItems.Keys, " | ")
+        getSelectionString = VBA.Join(pSelectedItems.keys, " | ")
     End If
 End Function
 
@@ -94,6 +94,26 @@ End Function
 
 
 Public Function match(value As Variant) As Boolean
+    Dim key As Variant
+    Dim regex As String
+    Dim col As VBA.Collection
+    Dim item As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    'Apply regex if it is set for this column ------------------------------------------------------------|
+    regex = pParent.getFilterRegex(pKey)
+    If VBA.Len(regex) = 0 Then
+    ElseIf F.Variables.isContainer(value) Then
+        Set col = F.Collections.createFrom(value)
+        For Each item In value
+            Call col.Add(F.regex.getFirstGroupMatch(VBA.CStr(item), regex))
+        Next item
+        Set value = col
+    Else
+        value = F.regex.getFirstGroupMatch(VBA.CStr(value), regex)
+    End If
+    '-----------------------------------------------------------------------------------------------------|
+    
     If F.Variables.isContainer(value) Then
         If F.Collections.isNonEmptyCollection(value) Then
             match = F.Collections.hasAnyCommonItemWithDictionary(F.Cast.toCollection(value), pSelectedItems)
@@ -106,7 +126,7 @@ End Function
 Public Sub edit()
     Set pForm = UI.Create.SelectItemWindow(getItems). _
                     setInitialSelection(pSelectedItems). _
-                    setTitle(F.Strings.format(MsgService.getText(WINDOW_TITLE_TAG), pColumnName)). _
+                    setTitle(F.Strings.format(MsgService.GetText(WINDOW_TITLE_TAG), pColumnName)). _
                     setMultiSelectAllowed(True). _
                     setHasSearchPanel(True). _
                     setHasTitlePanel(False)
@@ -114,7 +134,7 @@ Public Sub edit()
         Call .display(UI.Create.LocationPropsForCurrentCursor)
         If Not .isCancelledByUser Then
             Set pSelectedItems = .getSelectionDictionary
-            If F.Dictionaries.isNonEmptyDictionary(pSelectedItems) Then
+            If F.dictionaries.isNonEmptyDictionary(pSelectedItems) Then
                 Call update
             Else
                 Call clear
@@ -128,7 +148,7 @@ Public Function getItems() As Scripting.Dictionary
     Dim dict As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
     Set dict = pParent.getAvailableValues(pKey)
-    Set getItems = F.Dictionaries.sortByKey(dict, True)
+    Set getItems = F.dictionaries.sortByKey(dict, True)
 End Function
 
 Public Sub clear()
@@ -137,7 +157,7 @@ Public Sub clear()
 End Sub
 
 Public Sub update()
-    pIsActive = F.Dictionaries.isNonEmptyDictionary(pSelectedItems)
+    pIsActive = F.dictionaries.isNonEmptyDictionary(pSelectedItems)
     Call pParent.applyFilter(Me)
 End Sub
 

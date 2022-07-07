@@ -88,7 +88,7 @@ Public Function reset() As WProgressBar
     Set pLevels = New VBA.Collection
     pCaptionLocked = False
     Call setProgress(0)
-    Call setCaption(MsgService.getText(TAG_INITIALIZATION_PROCESS))
+    Call setCaption(MsgService.GetText(TAG_INITIALIZATION_PROCESS))
     
 End Function
 
@@ -110,6 +110,12 @@ Public Function setProgress(value As Double) As WProgressBar
     Call updateProgress
     
     DoEvents
+End Function
+
+Public Function setProgressAndMessage(progress As Double, caption As String) As WProgressBar
+    Set setProgressAndMessage = Me
+    Call setCaption(caption)
+    Call setProgress(progress)
 End Function
 
 Public Function setCaption(value As String) As WProgressBar
@@ -148,6 +154,12 @@ Public Function getProgress() As Double
     getProgress = pProgress
 End Function
 
+Public Function isVisible() As Boolean
+    If Not pForm Is Nothing Then
+        isVisible = pForm.isVisible
+    End If
+End Function
+
 
 
 
@@ -164,7 +176,9 @@ End Sub
 
 Public Sub hide()
     If Not pForm Is Nothing Then
-        Call pForm.hide
+        If pForm.isVisible Then
+            Call pForm.hide
+        End If
     End If
 End Sub
 
@@ -221,7 +235,7 @@ Private Sub insertProgressBarControls()
     End If
     With pProgressBorderLabel
         .BackStyle = fmBackStyleOpaque
-        .BackColor = pBarBackColor
+        .backColor = pBarBackColor
         .borderStyle = fmBorderStyleSingle
         .borderColor = pBarBorderColor
         .height = pBarHeight
@@ -234,7 +248,7 @@ Private Sub insertProgressBarControls()
     End If
     With pProgressBarFillLabel
         .BackStyle = fmBackStyleOpaque
-        .BackColor = pBarInsideColor
+        .backColor = pBarInsideColor
         .borderStyle = fmBorderStyleNone
         .height = pBarHeight - 2 * PIXEL_SIZE
     End With
@@ -270,6 +284,7 @@ Private Sub arrangeLayout()
     End With
     
     With pProgressBorderLabel
+        .width = pBarWidth
         .top = UI.Forms.getBottom(pCaptionLabel) + pPadding
         .left = pPadding
     End With
@@ -277,11 +292,12 @@ Private Sub arrangeLayout()
     With pProgressBarFillLabel
         .width = pProgress * pProgressBorderLabel.width
         .left = pProgressBorderLabel.left + PIXEL_SIZE
-        .top = pProgressBorderLabel.TextAlign
+        .top = pProgressBorderLabel.top
         .height = pProgressBorderLabel.height
     End With
     
     With pProgressValueLabel
+        .width = pBarWidth
         .top = pProgressBorderLabel.top + (pProgressBorderLabel.height - .height) / 2
         .left = pPadding
     End With
@@ -304,7 +320,7 @@ Private Sub updateProgress()
     End If
 End Sub
 
-Private Function getProgressValueText()
+Private Function getProgressValueText() As String
     getProgressValueText = VBA.format(pProgress, pBarCaptionFormat)
 End Function
 
@@ -339,18 +355,32 @@ Public Sub openSubProcess(ByVal initialProgress As Double, ByVal finalProgress A
 End Sub
 
 
-Public Sub closeCurrentSubProcess()
+Public Sub closeCurrentSubProcess(Optional ByRef progress As Single)
     Dim currentProcess As Limit
     '------------------------------------------------------------------------------------------------------
     
     If F.Collections.isNonEmptyCollection(pLevels) Then
         Set currentProcess = pLevels.item(pLevels.Count)
         pProgress = currentProcess.getHigh
+        progress = calculateCurrentProcessProgress
         Call updateProgress
         Call pLevels.remove(pLevels.Count)
     End If
 
 End Sub
+
+Private Function calculateCurrentProcessProgress() As Double
+    Dim parentalProcess As Limit
+    Dim currentProcess As Limit
+    '------------------------------------------------------------------------------------------------------
+    Set currentProcess = pLevels.item(pLevels.Count)
+    If pLevels.Count > 1 Then
+        Set parentalProcess = pLevels.item(pLevels.Count - 1)
+        calculateCurrentProcessProgress = (currentProcess.getHigh - parentalProcess.getLow) / parentalProcess.getRange
+    Else
+        calculateCurrentProcessProgress = currentProcess.getHigh
+    End If
+End Function
 
 Public Sub moveToSiblingProcess(ByVal offset As Double)
     Dim currentProcess As Limit

@@ -17,6 +17,9 @@ Private Const CLASS_NAME As String = "IPanel"
 Public Function setParentFrame(value As MSForms.frame) As IPanel
 End Function
 
+Public Function setWindow(value As WTemplate) As IPanel
+End Function
+
 Public Function setListener(value As IListener) As IPanel
 End Function
 
@@ -45,6 +48,8 @@ End Function
 Public Function setUiProperty(prop As UIProp, value As Variant) As IPanel
 End Function
 
+Public Function isVisible() As Boolean
+End Function
 
 
 

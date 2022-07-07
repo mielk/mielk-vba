@@ -89,8 +89,8 @@ End Enum
 
 
 
-Public Function convertErrorHandlingStatusToString(status As ErrorHandlingStatusEnum) As String
-    Select Case status
+Public Function convertErrorHandlingStatusToString(Status As ErrorHandlingStatusEnum) As String
+    Select Case Status
         Case errorHandling_AllErrors:           convertErrorHandlingStatusToString = "Break on All Errors"
         Case errorHandling_ClassErrors:         convertErrorHandlingStatusToString = "Break in Class Module"
         Case errorHandling_UnhandledErrors:     convertErrorHandlingStatusToString = "Break on Unhandled Errors"

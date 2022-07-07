@@ -21,7 +21,7 @@ Public Type ExcelState
     EnableEvents As Boolean
     Interactive As Boolean
     '[Sheet protection]
-    sheet As Excel.Worksheet
+    Sheet As Excel.Worksheet
     SheetProtection As Boolean
     ProtectionLevels As Excel.Protection
     protectionPassword As String
@@ -29,13 +29,6 @@ Public Type ExcelState
     ProtectContents As Boolean
     ProtectScenarios As Boolean
 End Type
-
-'Public Type NumericRange
-'    low As Double
-'    excludeLow As Boolean
-'    high As Double
-'    excludeHigh As Boolean
-'End Type
 
 Public Type RgbArray
     red As Byte
@@ -50,7 +43,7 @@ Public Function stateToString(state As ExcelState) As String
         stateToString = "ScreenUpdating: " & .ScreenUpdating & "; " & _
                         "EnableEvents: " & .EnableEvents & "; " & _
                         "Interactive: " & .Interactive & "; " & _
-                        "Sheet: " & (Not .sheet Is Nothing) & "; " & _
+                        "Sheet: " & (Not .Sheet Is Nothing) & "; " & _
                         "SheetProtection: " & .SheetProtection & "; " & _
                         "ProtectionPassword: " & .protectionPassword
     End With

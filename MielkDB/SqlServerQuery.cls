@@ -19,8 +19,12 @@ Private pWheres As VBA.Collection
 Private pFields As VBA.Collection
 Private pFrom As String
 Private pOrderFields As Scripting.Dictionary
+'----------------------------------------------------------------------------------------------------------
 Private pFunction As String
 Private pFunctionParams As Variant
+'----------------------------------------------------------------------------------------------------------
+Private pStoredProcedure As String
+Private pStoredProcedureParams As Scripting.Dictionary
 '----------------------------------------------------------------------------------------------------------
 
 
@@ -33,7 +37,7 @@ End Sub
 Private Sub initializeContainers()
     Set pWheres = New VBA.Collection
     Set pFields = New VBA.Collection
-    Set pOrderFields = F.Dictionaries.Create
+    Set pOrderFields = F.dictionaries.Create
 End Sub
 
 
@@ -50,7 +54,7 @@ End Sub
 
 '[DEFINING QUERY]
 Public Function Fields(ParamArray fieldNames() As Variant) As IQuery
-    Dim arr As Variant:             arr = F.Arrays.fromParamArray(fieldNames)
+    Dim arr As Variant:             arr = F.arrays.fromParamArray(fieldNames)
     Dim varItem As Variant
     Dim fieldName As String
     '------------------------------------------------------------------------------------------------------
@@ -80,6 +84,12 @@ Public Function FromFunction(functionName As String, Optional params As Variant)
     Call F.Variables.assign(pFunctionParams, params)
 End Function
 
+Public Function FromStoredProcedure(procName As String, Optional params As Variant) As IQuery
+    Set FromStoredProcedure = Me
+    pStoredProcedure = procName
+    Call F.Variables.assign(pStoredProcedureParams, params)
+End Function
+
 Public Function EWhere(fieldName As String, comparisonMode As ComparisonModeEnum, comparedValue As Variant) As IQuery
     Set EWhere = Me
     Call pWheres.Add(D.Create.Where(fieldName, comparisonMode, comparedValue))
@@ -104,7 +114,11 @@ End Function
 
 '[RETURNING DATA]
 Public Function toRecordset() As ADODB.recordset
-    Set toRecordset = pConnection.getRecordset(getSqlString)
+    If VBA.Len(pStoredProcedure) Then
+        Set toRecordset = pConnection.getRecordsetFromStoredProcedure(pStoredProcedure, pStoredProcedureParams)
+    Else
+        Set toRecordset = pConnection.getRecordset(getSqlString)
+    End If
 End Function
 
 Public Function toDto() As Scripting.Dictionary
@@ -152,7 +166,7 @@ Private Function getScalarFunctionSqlString() As String
     Const SQL_PATTERN As String = "SELECT {0}({1})"
     Dim params As String
     '------------------------------------------------------------------------------------------------------
-    params = F.Dictionaries.toString(F.Cast.toDictionary(pFunctionParams), DictPart_ValueOnly)
+    params = F.dictionaries.toString(F.Cast.toDictionary(pFunctionParams), DictPart_ValueOnly)
     getScalarFunctionSqlString = F.Strings.Format(SQL_PATTERN, pFunction, params)
 End Function
 
@@ -186,15 +200,15 @@ Private Function getFromPart() As String
 End Function
 
 Private Function getFunctionParamsAsString() As String
-    If F.Arrays.is1D(pFunctionParams) Then
+    If F.arrays.is1D(pFunctionParams) Then
         getFunctionParamsAsString = VBA.Join(pFunctionParams, ", ")
     ElseIf VBA.IsObject(pFunctionParams) Then
         If pFunctionParams Is Nothing Then
             getFunctionParamsAsString = vbNullString
         ElseIf F.Collections.isNonEmptyCollection(pFunctionParams) Then
             getFunctionParamsAsString = F.Collections.toString(F.Cast.toCollection(pFunctionParams), StringifyMode_Normal, ", ")
-        ElseIf F.Dictionaries.isNonEmptyDictionary(pFunctionParams) Then
-            getFunctionParamsAsString = F.Dictionaries.toString(F.Cast.toDictionary(pFunctionParams), DictPart_ValueOnly, StringifyMode_Normal, ", ", entryWrapper:=vbNullString)
+        ElseIf F.dictionaries.isNonEmptyDictionary(pFunctionParams) Then
+            getFunctionParamsAsString = F.dictionaries.toString(F.Cast.toDictionary(pFunctionParams), DictPart_ValueOnly, StringifyMode_Normal, ", ")
         End If
     End If
 End Function
@@ -210,19 +224,20 @@ Private Function getOrderPart() As String
     Dim orderDirection As String
     '------------------------------------------------------------------------------------------------------
     
-    If F.Dictionaries.isNonEmptyDictionary(pOrderFields) Then
+    If F.dictionaries.isNonEmptyDictionary(pOrderFields) Then
         For Each varKey In pOrderFields.Keys
             fieldName = D.Functions.getSafeFieldName(VBA.CStr(varKey))
             orderDirection = VBA.IIf(pOrderFields.Item(varKey), "ASC ", "DESC ")
-            Call F.Arrays.addEntry(arr, fieldName & " " & orderDirection)
+            Call F.arrays.addEntry(arr, fieldName & " " & orderDirection)
         Next varKey
     End If
     
-    If F.Arrays.isDefined(arr) Then
+    If F.arrays.isDefined(arr) Then
         getOrderPart = " ORDER BY " & VBA.Join(arr, ", ")
     End If
     
 End Function
+
 
 
 
@@ -243,6 +258,10 @@ End Function
 
 Private Function IQuery_FromFunction(functionName As String, Optional params As Variant) As IQuery
     Set IQuery_FromFunction = FromFunction(functionName, params)
+End Function
+
+Private Function IQuery_FromStoredProcedure(procName As String, Optional params As Scripting.IDictionary) As IQuery
+    Set IQuery_FromStoredProcedure = FromStoredProcedure(procName, params)
 End Function
 
 Private Function IQuery_sql(value As String) As IQuery

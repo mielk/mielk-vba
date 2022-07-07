@@ -11,7 +11,9 @@ Public Const METHOD_START_TAG As String = "{"
 Public Const METHOD_END_TAG As String = "}"
 Public Const GET_NAME As String = "getName"
 Public Const NEW_LINE_SYMBOL As String = "\n"
-Public Const VALUE_____ As String = "*%Value%*"
+'[Validation constants]
+Public Const VALUE_____ As String = "*%Value%*_;M}(H;C'M+?.>'#bx{pzk}2@.y%4Pr$z"
+Public Const WARNING_CODE As Long = 123456789
 '[Reflection] ---------------------------------------------------------------------------------------------
 Public Const LOCAL_METHOD As String = "$."
 '[Extensions] ---------------------------------------------------------------------------------------------
@@ -50,12 +52,14 @@ Public Const XML_COLLECTION As String = "<collection>{0}</collection>"
 Public Const XML_DICTIONARY As String = "<dictionary>{0}</dictionary>"
 '[Db tags] ------------------------------------------------------------------------------------------------
 Public Const DB_NULL As String = "NULL"
-''[Files] --------------------------------------------------------------------------------------------------
-'Public Const SELECTING_FILES_EXCEL_FILES As String = "Excel files, *.xls; *.xlsm; *.xlsx"
-'Public Const SELECTING_FILES_TEXT_FILES As String = "Text files, *.txt; *.csv"
-''[Symbols] ------------------------------------------------------------------------------------------------
-'Public Const TRANSLATION_NOT_REQUIRED As String = "#"
-''[Validating] ---------------------------------------------------------------------------------------------
-'Public Const TAG_MAIN_VALUE As String = ";M}(H;C'M+?.>'#bx{pzk}2@.y%4Pr$z"
-'Public Const TAG_UNDERLYING_VALUE As String = "underlying-value"
-'    '----------------------------------------------------------------------------------------------------------
+'[Context menu] -------------------------------------------------------------------------------------------
+Public Const CONTEXT_MENU_TAG_METHOD_NAME As String = "methodName"
+Public Const CONTEXT_MENU_TAG_METHOD_BOOK As String = "methodBook"
+Public Const CONTEXT_MENU_TAG_CAPTION As String = "caption"
+Public Const CONTEXT_MENU_TAG_TAG As String = "tag"
+Public Const CONTEXT_MENU_TAG_FACE_ID As String = "faceId"
+Public Const CONTEXT_MENU_TAG_SEPARATOR As String = "separator"
+Public Const CONTEXT_MENU_TAG_IS_GROUP As String = "isGroup"
+Public Const CONTEXT_MENU_TAG_ITEMS As String = "items"
+Public Const CONTEXT_MENU_TAG_PARAM As String = "param"
+'----------------------------------------------------------------------------------------------------------

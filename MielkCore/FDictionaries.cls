@@ -18,14 +18,14 @@ Private Const DICTIONARY_TYPENAME As String = "Dictionary"
 
 
 '[CREATING]
-Public Function Create(Optional isCaseSensisitve As Boolean = False) As Object
+Public Function Create(Optional isCaseSensitive As Boolean = False) As Object
     Set Create = New Scripting.Dictionary
-    Create.CompareMode = VBA.IIf(isCaseSensisitve, DictCompareMode_Binary, DictCompareMode_Text)
+    Create.CompareMode = VBA.IIf(isCaseSensitive, DictCompareMode_Binary, DictCompareMode_Text)
 End Function
 
 Public Function createWithItems(isCaseSensitive As Boolean, ParamArray keyValuePairs() As Variant) As Scripting.Dictionary
     Dim varItem As Variant
-    Dim key As Variant
+    Dim Key As Variant
     Dim value As Variant
     '------------------------------------------------------------------------------------------------------
     
@@ -34,13 +34,18 @@ Public Function createWithItems(isCaseSensitive As Boolean, ParamArray keyValueP
     For Each varItem In keyValuePairs
         With createWithItems
             If Not .exists(varItem(1)) Then
-                Call .Add(varItem(1), varItem(2))
+                Call .add(varItem(1), varItem(2))
             Else
-                Call Exceptions.DuplicateKey.raise(F.strings.stringify(varItem(1)))
+                Call Exceptions.DuplicateKey.raise(f.strings.stringify(varItem(1)))
             End If
         End With
     Next varItem
     
+End Function
+
+Public Function createSingleEntryDict(Key As Variant, value As Variant) As Scripting.Dictionary
+    Set createSingleEntryDict = f.dictionaries.Create(False)
+    Call createSingleEntryDict.add(Key, value)
 End Function
 
 Public Function createFrom(container As Variant, _
@@ -48,19 +53,18 @@ Public Function createFrom(container As Variant, _
                             Optional keyFunction As String = vbNullString, Optional keyFunctionInvoker As Object) _
                             As Scripting.Dictionary
 
-    If F.Variables.isString(container) Then
+    If f.Variables.isString(container) Then
         Set createFrom = fromString(VBA.CStr(container))
     ElseIf VBA.IsArray(container) Then
-        Set createFrom = F.arrays.toDictionary(container, duplicateBehaviour:=duplicateBehaviour, _
+        Set createFrom = f.arrays.toDictionary(container, duplicateBehaviour:=duplicateBehaviour, _
                                                 keyFunction:=keyFunction, keyFunctionInvoker:=keyFunctionInvoker)
-    ElseIf Not F.Variables.isContainer(container) Then
-        ' skip
-    ElseIf F.Dictionaries.isDictionary(container) Then
+    ElseIf Not f.Variables.isContainer(container) Then
+        Set createFrom = f.dictionaries.createSingleEntryDict(container, container)
+    ElseIf f.dictionaries.isDictionary(container) Then
         Set createFrom = container
-    ElseIf F.Collections.isCollection(container) Then
-        Set createFrom = F.Collections.toDictionary(F.cast.toCollection(container), duplicateBehaviour, keyFunction, keyFunctionInvoker)
+    ElseIf f.Collections.isCollection(container) Then
+        Set createFrom = f.Collections.toDictionary(f.cast.toCollection(container), duplicateBehaviour, keyFunction, keyFunctionInvoker)
     End If
-    
 
 End Function
 
@@ -73,19 +77,19 @@ Public Function fromString(ByVal text As String, _
     Dim regexPattern As String
     Dim entries As VBA.Collection
     Dim arr As Variant
-    Dim key As Variant
+    Dim Key As Variant
     Dim value As Variant
     '------------------------------------------------------------------------------------------------------
     
-    Set fromString = F.Dictionaries.Create(False)
+    Set fromString = f.dictionaries.Create(False)
     
-    regexPattern = F.strings.format(REGEX_PATTERN, keyItemSeparator, entriesSeparator)
-    Set entries = F.regex.getMatchArraysCollection(text, regexPattern)
+    regexPattern = f.strings.format(REGEX_PATTERN, keyItemSeparator, entriesSeparator)
+    Set entries = f.regex.getMatchArraysCollection(text, regexPattern)
     For Each arr In entries
-        key = arr(LBound(arr))
+        Key = arr(LBound(arr))
         value = arr(UBound(arr))
         If VBA.isNumeric(value) Then value = value * 1
-        Call F.Dictionaries.addItem(fromString, key, value, behaviourOnDuplicate)
+        Call f.dictionaries.addItem(fromString, Key, value, behaviourOnDuplicate)
     Next arr
     
 End Function
@@ -117,26 +121,26 @@ End Function
 
 
 '[ACCESS TO ITEMS]
-Public Function getItem(dict As Scripting.Dictionary, key As Variant) As Variant
+Public Function getItem(dict As Scripting.Dictionary, Key As Variant) As Variant
     If Not dict Is Nothing Then
         With dict
-            If .exists(key) Then
-                If VBA.IsObject(.item(key)) Then
-                    Set getItem = .item(key)
+            If .exists(Key) Then
+                If VBA.IsObject(.Item(Key)) Then
+                    Set getItem = .Item(Key)
                 Else
-                    getItem = .item(key)
+                    getItem = .Item(Key)
                 End If
             End If
         End With
     End If
 End Function
 
-Public Function getObject(dict As Object, key As Variant) As Object
+Public Function getObject(dict As Scripting.Dictionary, Key As Variant) As Object
     If Not dict Is Nothing Then
         With dict
-            If .exists(key) Then
-                If VBA.IsObject(.item(key)) Then
-                    Set getObject = .item(key)
+            If .exists(Key) Then
+                If VBA.IsObject(.Item(Key)) Then
+                    Set getObject = .Item(Key)
                 End If
             End If
         End With
@@ -145,25 +149,25 @@ End Function
 
 Public Function getFirstEntry(dict As Scripting.Dictionary, _
                                         Optional partType As DictPartEnum = DictPart_ValueOnly) As Variant
-    Dim key As Variant
+    Dim Key As Variant
     Dim arr As Variant
     '------------------------------------------------------------------------------------------------------
     
-    For Each key In dict.Keys
+    For Each Key In dict.Keys
         If partType = DictPart_KeyOnly Then
-            Call F.Variables.assign(getFirstEntry, key)
+            Call f.Variables.assign(getFirstEntry, Key)
         ElseIf partType = DictPart_ValueOnly Then
-            Call F.Variables.assign(getFirstEntry, dict.item(key))
+            Call f.Variables.assign(getFirstEntry, dict.Item(Key))
         Else
-            getFirstEntry = KeyValue(key, dict.item(key))
+            getFirstEntry = KeyValue(Key, dict.Item(Key))
         End If
         Exit For
-    Next key
+    Next Key
     
 End Function
 
 
-Public Sub assignValueFromDictToVariable(dict As Scripting.Dictionary, variable As Variant, tags As String, _
+Public Sub assignValueFromDictToVariable(ByVal dict As Scripting.Dictionary, ByRef variable As Variant, tags As String, _
                                             Optional conversionFunction As String)
     Const TAGS_SEPARATOR As String = ";"
     '------------------------------------------------------------------------------------------------------
@@ -171,22 +175,22 @@ Public Sub assignValueFromDictToVariable(dict As Scripting.Dictionary, variable 
     Dim value As Variant
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
-    
+
     arrTags = VBA.Split(tags, TAGS_SEPARATOR)
-    If F.arrays.isDefined(arrTags) Then
+
+    If f.arrays.isDefined(arrTags) Then
         For i = LBound(arrTags) To UBound(arrTags)
-            Call F.Variables.assign(value, getPropValue(dict, VBA.trim$(arrTags(i)), conversionFunction))
+            Call f.Variables.assign(value, getPropValue(dict, VBA.trim$(arrTags(i)), conversionFunction))
             If Not VBA.IsEmpty(value) Then
-                Call F.Variables.assign(variable, value)
+                Call f.Variables.assign(variable, value)
                 Exit For
             End If
         Next i
     End If
-    
 
 End Sub
 
-Public Function getPropValue(dict As Scripting.Dictionary, tag As String, Optional conversionFunction As String) As Variant
+Public Function getPropValue(ByVal dict As Scripting.Dictionary, tag As String, Optional conversionFunction As String) As Variant
     Dim arrTags As Variant
     Dim i As Long
     Dim value As Variant
@@ -194,22 +198,24 @@ Public Function getPropValue(dict As Scripting.Dictionary, tag As String, Option
     
     arrTags = VBA.Split(tag, ".")
     
-    If F.Dictionaries.isNonEmptyDictionary(dict) Then
-        If F.arrays.isDefined(arrTags) Then
+    If f.dictionaries.isNonEmptyDictionary(dict) Then
+        If f.arrays.isDefined(arrTags) Then
             For i = LBound(arrTags) To UBound(arrTags)
                 With dict
                     If .exists(arrTags(i)) Then
                         If i = UBound(arrTags) Then
                             If VBA.Len(conversionFunction) Then
                                 On Error GoTo ConversionException
-                                Call F.Variables.assign(getPropValue, Application.Run(conversionFunction, .item(arrTags(i))))
-                                
+                                Call f.Variables.assign(getPropValue, Application.Run(conversionFunction, .Item(arrTags(i))))
+                                If Not DEV_MODE Then On Error GoTo ErrHandler
                             Else
-                                Call F.Variables.assign(getPropValue, .item(arrTags(i)))
+                                Call f.Variables.assign(getPropValue, .Item(arrTags(i)))
                             End If
                         Else
-                            Exit For
+                            Set dict = .Item(arrTags(i))
                         End If
+                    Else
+                        Exit For
                     End If
                 End With
             Next i
@@ -223,7 +229,9 @@ ExitPoint:
 '----------------------------------------------------------------------------------------------------------
 ConversionException:
     Call VBA.err.raise(1, description:="Error when converting with function " & conversionFunction)
-
+    
+ErrHandler:
+    
 End Function
 
 
@@ -233,7 +241,7 @@ End Function
 
 '[CLONING]
 Public Function clone(dictSource As Scripting.Dictionary, Optional deepClone As Boolean = False) As Scripting.Dictionary
-    Dim key As Variant
+    Dim Key As Variant
     '------------------------------------------------------------------------------------------------------
 
     If dictSource Is Nothing Then
@@ -241,40 +249,40 @@ Public Function clone(dictSource As Scripting.Dictionary, Optional deepClone As 
     Else
         Set clone = New Scripting.Dictionary
         clone.CompareMode = dictSource.CompareMode
-        For Each key In dictSource.Keys
-            Call clone_assignValue(clone, key, dictSource.item(key), deepClone)
-        Next key
+        For Each Key In dictSource.Keys
+            Call clone_assignValue(clone, Key, dictSource.Item(Key), deepClone)
+        Next Key
     End If
 
 End Function
 
-Private Sub clone_assignValue(dict As Scripting.Dictionary, key As Variant, value As Variant, Optional deepClone As Boolean = False)
+Private Sub clone_assignValue(dict As Scripting.Dictionary, Key As Variant, value As Variant, Optional deepClone As Boolean = False)
     If Not deepClone Then
-        Call dict.Add(key, value)
-    ElseIf F.Dictionaries.isDictionary(value) Then
-        Call clone_deepCloning(value, dict, key)
-    ElseIf F.Collections.isCollection(value) Then
-        Call clone_deepCloning(value, dict, key)
+        Call dict.add(Key, value)
+    ElseIf f.dictionaries.isDictionary(value) Then
+        Call clone_deepCloning(value, dict, Key)
+    ElseIf f.Collections.isCollection(value) Then
+        Call clone_deepCloning(value, dict, Key)
     Else
-        Call dict.Add(key, value)
+        Call dict.add(Key, value)
     End If
 End Sub
 
-Private Function clone_deepCloning(sourceContainer As Variant, destination As Variant, key As Variant) As Scripting.Dictionary
+Private Function clone_deepCloning(sourceContainer As Variant, destination As Variant, Key As Variant) As Scripting.Dictionary
     Dim dict As Scripting.Dictionary
     Dim col As VBA.Collection
     Dim varKey As Variant
     Dim varItem As Variant
     '------------------------------------------------------------------------------------------------------
-    If F.Dictionaries.isNonEmptyDictionary(sourceContainer) Then
-        Set dict = F.Dictionaries.Create(False)
-        Call destination.Add(key, dict)
+    If f.dictionaries.isNonEmptyDictionary(sourceContainer) Then
+        Set dict = f.dictionaries.Create(False)
+        Call destination.add(Key, dict)
         For Each varKey In sourceContainer.Keys
-            Call clone_assignValue(dict, varKey, sourceContainer.item(varKey), True)
+            Call clone_assignValue(dict, varKey, sourceContainer.Item(varKey), True)
         Next varKey
-    ElseIf F.Collections.isNonEmptyCollection(sourceContainer) Then
+    ElseIf f.Collections.isNonEmptyCollection(sourceContainer) Then
         Set col = New VBA.Collection
-        Call destination.Add(key, col)
+        Call destination.add(Key, col)
         For Each varItem In sourceContainer
             Call clone_assignValue(col, vbNullString, varItem, True)
         Next varItem
@@ -290,24 +298,24 @@ End Function
 '[SORTING]
 Public Function sortByKey(dict As Scripting.Dictionary, Optional ascendingOrder As Boolean = True) As Scripting.Dictionary
     Dim arr As Variant
-    Dim key As Variant
+    Dim Key As Variant
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
     
     If Not dict Is Nothing Then
-        Set sortByKey = F.Dictionaries.Create(dict.CompareMode = TextCompare)
+        Set sortByKey = f.dictionaries.Create(dict.CompareMode = TextCompare)
         If dict.count Then
             ReDim arr(1 To 2, 1 To dict.count)
-            For Each key In dict.Keys
+            For Each Key In dict.Keys
                 i = i + 1
-                Call F.Variables.assign(arr(1, i), key)
-                Call F.Variables.assign(arr(2, i), dict.item(key))
-            Next key
+                Call f.Variables.assign(arr(1, i), Key)
+                Call f.Variables.assign(arr(2, i), dict.Item(Key))
+            Next Key
             
-            Call F.arrays.sort(arr, ascendingOrder, 1, False)
+            arr = f.arrays.sort(arr, ascendingOrder, 1, False)
             
             For i = LBound(arr, 2) To UBound(arr, 2)
-                Call sortByKey.Add(arr(1, i), arr(2, i))
+                Call sortByKey.add(arr(1, i), arr(2, i))
             Next i
             
         End If
@@ -326,18 +334,19 @@ Public Function toString(dict As Object, _
                                         Optional stringifyMode As StringifyModeEnum = StringifyMode_Normal, _
                                         Optional itemsDelimiter As String = ", ", _
                                         Optional keyItemDelimiter As String = ":", _
-                                        Optional entryWrapper As String = "{}") As String
+                                        Optional openWrapper As String = "", _
+                                        Optional closeWrapper As String = "") As String
     Dim entries() As String
     '------------------------------------------------------------------------------------------------------
 
     If dict Is Nothing Then
-        toString = F.strings.stringify(Nothing, stringifyMode)
+        toString = f.strings.stringify(Nothing, stringifyMode)
     ElseIf Not isDictionary(dict) Then
         Call Exceptions.IllegalDataType.raise
     Else
-        entries = toString_getEntriesArray(dict, part, stringifyMode, keyItemDelimiter, entryWrapper)
+        entries = toString_getEntriesArray(dict, part, stringifyMode, keyItemDelimiter, openWrapper, closeWrapper)
         If stringifyMode = StringifyMode_Xml Then
-            toString = F.strings.format(XML_DICTIONARY, VBA.join(entries, vbNullString))
+            toString = f.strings.format(XML_DICTIONARY, VBA.join(entries, vbNullString))
         Else
             toString = VBA.join(entries, itemsDelimiter)
         End If
@@ -348,20 +357,18 @@ End Function
 Private Function toString_getEntriesArray(dict As Object, part As DictPartEnum, _
                                         stringifyMode As StringifyModeEnum, _
                                         ByVal keyItemDelimiter As String, _
-                                        ByVal entryWrapper As String) As String()
+                                        ByVal openWrapper As String, _
+                                        ByVal closeWrapper As String) As String()
     Dim varKey As Variant
     Dim values() As String
     Dim counter As Long
     '------------------------------------------------------------------------------------------------------
-    Dim openWrapper As String
-    Dim closeWrapper As String
-    '------------------------------------------------------------------------------------------------------
 
     If dict.count > 0 Then
     
-        If stringifyMode <> StringifyMode_Xml And part = DictPart_KeyAndValue Then
-            openWrapper = VBA.left$(entryWrapper, 1)
-            closeWrapper = VBA.right$(entryWrapper, 1)
+        If stringifyMode = StringifyMode_Xml Then
+            openWrapper = vbNullString
+            closeWrapper = vbNullString
         End If
 
         ReDim values(1 To dict.count)
@@ -402,32 +409,32 @@ Private Function getItemText(dict As Object, varKey As Variant, part As DictPart
     End If
 
     If part = DictPart_KeyOnly Then
-        getItemText = openTag & F.strings.stringify(varKey, stringifyMode) & closeTag
+        getItemText = openTag & f.strings.stringify(varKey, stringifyMode) & closeTag
     ElseIf part = DictPart_ValueOnly Then
-        Call F.Variables.assign(value, dict.item(varKey))
-        getItemText = openTag & F.strings.stringify(value, stringifyMode) & closeTag
+        Call f.Variables.assign(value, dict.Item(varKey))
+        getItemText = openTag & f.strings.stringify(value, stringifyMode) & closeTag
     ElseIf part = DictPart_KeyAndValue Then
-        Call F.Variables.assign(value, dict.item(varKey))
+        Call f.Variables.assign(value, dict.Item(varKey))
         getItemText = getItemText_KeyValue(varKey, value, stringifyMode, keyItemDelimiter)
     End If
 
 End Function
 
-Private Function getItemText_KeyValue(key As Variant, value As Variant, _
+Private Function getItemText_KeyValue(Key As Variant, value As Variant, _
                                                 stringifyMode As StringifyModeEnum, _
                                                 ByVal keyItemDelimiter As String) As String
     Dim keyText As String
     '------------------------------------------------------------------------------------------------------
 
     If stringifyMode = StringifyMode_Xml Then
-        keyText = F.strings.stringify(key, StringifyMode_Normal)
+        keyText = f.strings.stringify(Key, StringifyMode_Normal)
         getItemText_KeyValue = "<" & keyText & ">" & _
-                                F.strings.stringify(value, stringifyMode) & _
+                                f.strings.stringify(value, stringifyMode) & _
                                 "</" & keyText & ">"
     Else
-        getItemText_KeyValue = F.strings.stringify(key, StringifyMode_Normal) & _
+        getItemText_KeyValue = f.strings.stringify(Key, StringifyMode_Normal) & _
                                 keyItemDelimiter & _
-                                F.strings.stringify(value, stringifyMode)
+                                f.strings.stringify(value, stringifyMode)
     End If
 
 End Function
@@ -437,40 +444,39 @@ End Function
 Public Function toArray(dict As Scripting.Dictionary, Optional dictPart As DictPartEnum = DictPart_KeyAndValue) As Variant
     Dim arr() As Variant
     Dim i As Long
-    Dim key As Variant
+    Dim Key As Variant
     '------------------------------------------------------------------------------------------------------
 
     If dict Is Nothing Then
         ' return Empty
-    ElseIf dict.count Then
+    ElseIf dict.count = 0 Then
         toArray = arr
     Else
         If dictPart = DictPart_KeyAndValue Then
-            toArray = F.arrays.to2D(dict)
+            toArray = f.arrays.to2D(dict)
         ElseIf dictPart = DictPart_KeyOnly Then
             toArray = dict.Keys
         ElseIf dictPart = DictPart_ValueOnly Then
-            toArray = dict.items
+            toArray = dict.Items
         End If
-        toArray = arr
     End If
     
 End Function
 
 Public Function toCollection(dict As Scripting.Dictionary, _
                                 Optional partType As DictPartEnum = DictPart_ValueOnly) As VBA.Collection
-    Dim key As Variant
+    Dim Key As Variant
     '------------------------------------------------------------------------------------------------------
 
     Set toCollection = New VBA.Collection
     If isNonEmptyDictionary(dict) Then
-        For Each key In dict.Keys
+        For Each Key In dict.Keys
             If partType = DictPart_ValueOnly Then
-                Call toCollection.Add(dict.item(key))
+                Call toCollection.add(dict.Item(Key))
             ElseIf partType = DictPart_KeyOnly Then
-                Call toCollection.Add(key)
+                Call toCollection.add(Key)
             End If
-        Next key
+        Next Key
     End If
 
 End Function
@@ -486,48 +492,50 @@ End Function
 
 
 '[ADDING & REMOVING ITEMS]
-Public Sub addItem(dict As Scripting.Dictionary, key As Variant, item As Variant, _
+Public Sub addItem(dict As Scripting.Dictionary, Key As Variant, Item As Variant, _
                     Optional behaviourIfDuplicate As DuplicateBehaviourEnum = duplicateBehaviour_Override)
                     
-    If dict Is Nothing Then
-        Call Exceptions.NullNotAllowed.raiseWithCustomMessage("Dictionary cannot be Nothing")
-    End If
+'    If dict Is Nothing Then
+'        Call Exceptions.NullNotAllowed.raiseWithCustomMessage("Dictionary cannot be Nothing")
+'    End If
     
-    With dict
-        If .exists(key) Then
-            Select Case behaviourIfDuplicate
-                Case duplicateBehaviour_Skip
-                Case duplicateBehaviour_Override
-                    If VBA.IsObject(item) Then
-                        Set .item(key) = item
-                    Else
-                        .item(key) = item
-                    End If
-                Case duplicateBehaviour_ThrowError
-                    Call Exceptions.DuplicateKey.raise(key)
-                Case duplicateBehaviour_WarningInImmediateWindow
-                    Debug.Print "Duplicate key " & key
-            End Select
-        Else
-            Call .Add(key, item)
-        End If
-    End With
+    If Not dict Is Nothing Then
+        With dict
+            If .exists(Key) Then
+                Select Case behaviourIfDuplicate
+                    Case duplicateBehaviour_Skip
+                    Case duplicateBehaviour_Override
+                        If VBA.IsObject(Item) Then
+                            Set .Item(Key) = Item
+                        Else
+                            .Item(Key) = Item
+                        End If
+                    Case duplicateBehaviour_ThrowError
+                        Call Exceptions.DuplicateKey.raise(Key)
+                    Case duplicateBehaviour_WarningInImmediateWindow
+                        Debug.Print "Duplicate key " & Key
+                End Select
+            Else
+                Call .add(Key, Item)
+            End If
+        End With
+    End If
     
 End Sub
 
 Public Sub appendItemsFromContainer(dict As Scripting.Dictionary, container As Variant, _
                     Optional behaviourIfDuplicate As DuplicateBehaviourEnum = duplicateBehaviour_Override)
     
-    If Not F.Variables.isContainer(container) Then
+    If Not f.Variables.isContainer(container) Then
         Call Exceptions.IllegalDataType.raiseWithCustomMessage("Given parameters [container] is not container")
     End If
     
     If Not dict Is Nothing Then
-        If F.Dictionaries.isDictionary(container) Then
-            Call appendDictionary(dict, F.cast.toDictionary(container), behaviourIfDuplicate)
-        ElseIf F.Collections.isNonEmptyCollection(container) Then
-            Call appendCollection(dict, F.cast.toCollection(container), behaviourIfDuplicate)
-        ElseIf F.arrays.isDefined(container) Then
+        If f.dictionaries.isDictionary(container) Then
+            Call appendDictionary(dict, f.cast.toDictionary(container), behaviourIfDuplicate)
+        ElseIf f.Collections.isNonEmptyCollection(container) Then
+            Call appendCollection(dict, f.cast.toCollection(container), behaviourIfDuplicate)
+        ElseIf f.arrays.isDefined(container) Then
             Stop
         End If
     End If
@@ -536,7 +544,7 @@ End Sub
 
 Public Sub appendDictionary(baseDict As Scripting.Dictionary, mergedDict As Scripting.Dictionary, _
                     Optional behaviourIfDuplicate As DuplicateBehaviourEnum = duplicateBehaviour_Override)
-    Dim key As Variant
+    Dim Key As Variant
     '------------------------------------------------------------------------------------------------------
     
     If baseDict Is Nothing Then
@@ -544,26 +552,26 @@ Public Sub appendDictionary(baseDict As Scripting.Dictionary, mergedDict As Scri
     End If
     
     If isNonEmptyDictionary(mergedDict) Then
-        For Each key In mergedDict.Keys
-            Call addItem(baseDict, key, mergedDict.item(key), behaviourIfDuplicate)
-        Next key
+        For Each Key In mergedDict.Keys
+            Call addItem(baseDict, Key, mergedDict.Item(Key), behaviourIfDuplicate)
+        Next Key
     End If
     
 End Sub
 
 Public Sub appendCollection(baseDict As Scripting.Dictionary, col As VBA.Collection, _
                     Optional behaviourIfDuplicate As DuplicateBehaviourEnum = duplicateBehaviour_Override)
-    Dim item As Variant
+    Dim Item As Variant
     '------------------------------------------------------------------------------------------------------
     
     If baseDict Is Nothing Then
         Call Exceptions.NullNotAllowed.raiseWithCustomMessage("Dictionary cannot be Nothing")
     End If
     
-    If F.Collections.isNonEmptyCollection(col) Then
-        For Each item In col
-            Call addItem(baseDict, item, item, behaviourIfDuplicate)
-        Next item
+    If f.Collections.isNonEmptyCollection(col) Then
+        For Each Item In col
+            Call addItem(baseDict, Item, Item, behaviourIfDuplicate)
+        Next Item
     End If
     
 End Sub
@@ -578,7 +586,7 @@ Public Sub appendArray(baseDict As Scripting.Dictionary, arr As Variant, _
         Call Exceptions.NullNotAllowed.raiseWithCustomMessage("Dictionary cannot be Nothing")
     End If
     
-    dimensions = F.arrays.countDimensions(arr)
+    dimensions = f.arrays.countDimensions(arr)
     If dimensions = 1 Then
         For i = LBound(arr) To UBound(arr)
             Call addItem(baseDict, arr(i), arr(i), behaviourIfDuplicate)
@@ -593,27 +601,27 @@ End Sub
 Public Function merge(masterDict As Scripting.Dictionary, appendedDict As Scripting.Dictionary, _
                         Optional deepMerge As Boolean = True, _
                         Optional duplicateBehaviour As DuplicateBehaviourEnum = duplicateBehaviour_Override) As Scripting.Dictionary
-    Dim key As Variant
+    Dim Key As Variant
     Dim subDict As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
     
     If Not masterDict Is Nothing Then
-        Set merge = F.Dictionaries.clone(masterDict)
+        Set merge = f.dictionaries.clone(masterDict)
     Else
-        Set merge = F.Dictionaries.Create(False)
+        Set merge = f.dictionaries.Create(False)
     End If
     
     If Not appendedDict Is Nothing Then
-        For Each key In appendedDict
-            If Not merge.exists(key) Then
-                Call merge.Add(key, appendedDict.item(key))
-            ElseIf F.Dictionaries.isDictionary(merge.item(key)) And F.Dictionaries.isDictionary(appendedDict.item(key)) Then
-                Set subDict = merge(merge.item(key), appendedDict.item(key), deepMerge, duplicateBehaviour)
-                Set merge.item(key) = subDict
+        For Each Key In appendedDict
+            If Not merge.exists(Key) Then
+                Call merge.add(Key, appendedDict.Item(Key))
+            ElseIf f.dictionaries.isDictionary(merge.Item(Key)) And f.dictionaries.isDictionary(appendedDict.Item(Key)) Then
+                Set subDict = merge(merge.Item(Key), appendedDict.Item(Key), deepMerge, duplicateBehaviour)
+                Set merge.Item(Key) = subDict
             Else
-                Call F.Dictionaries.addItem(merge, key, appendedDict.item(key), duplicateBehaviour)
+                Call f.dictionaries.addItem(merge, Key, appendedDict.Item(Key), duplicateBehaviour)
             End If
-        Next key
+        Next Key
     End If
     
 End Function
@@ -623,24 +631,24 @@ End Function
 
 
 
-Public Sub removeItem(dict As Scripting.Dictionary, key As Variant)
+Public Sub removeItem(dict As Scripting.Dictionary, Key As Variant)
     With dict
-        If .exists(key) Then Call .Remove(key)
+        If .exists(Key) Then Call .Remove(Key)
     End With
 End Sub
 
 Public Sub removeNullValues(dict As Scripting.Dictionary)
-    Dim key As Variant
+    Dim Key As Variant
     Dim value As Variant
     '------------------------------------------------------------------------------------------------------
     
     If dict Is Nothing Then
     Else
-        For Each key In dict.Keys
-            If VBA.IsNull(dict.item(key)) Then
-                Call dict.Remove(key)
+        For Each Key In dict.Keys
+            If VBA.IsNull(dict.Item(Key)) Then
+                Call dict.Remove(Key)
             End If
-        Next key
+        Next Key
     End If
     
 End Sub
@@ -654,16 +662,16 @@ End Sub
 
 '[MODIFYING CONTENT]
 
-Public Function swapKeyWithValue(dict As Scripting.Dictionary, _
+Public Function flip(dict As Scripting.Dictionary, _
                                     Optional duplicateBehaviour As DuplicateBehaviourEnum = duplicateBehaviour_Override) As Scripting.Dictionary
-    Dim key As Variant
+    Dim Key As Variant
     '------------------------------------------------------------------------------------------------------
     
     If Not dict Is Nothing Then
-        Set swapKeyWithValue = F.Dictionaries.Create(dict.CompareMode = BinaryCompare)
-        For Each key In dict.Keys
-            Call F.Dictionaries.addItem(swapKeyWithValue, dict.item(key), key, duplicateBehaviour)
-        Next key
+        Set flip = f.dictionaries.Create(dict.CompareMode = BinaryCompare)
+        For Each Key In dict.Keys
+            Call f.dictionaries.addItem(flip, dict.Item(Key), Key, duplicateBehaviour)
+        Next Key
     End If
     
 End Function
@@ -671,18 +679,18 @@ End Function
 Public Function changeKeys(dict As Scripting.Dictionary, functionName As String, _
                             Optional functionInvoker As Object, Optional functionParams As Scripting.Dictionary, _
                             Optional duplicateBehaviour As DuplicateBehaviourEnum = duplicateBehaviour_Skip) As Scripting.Dictionary
-    Dim key As Variant
+    Dim Key As Variant
     Dim newKey As Variant
     '------------------------------------------------------------------------------------------------------
     
-    Set changeKeys = F.Dictionaries.Create(dict.CompareMode = BinaryCompare)
-    For Each key In dict.Keys
-        If Not VBA.IsEmpty(key) Then
-            Call F.Variables.assign(newKey, _
-                    F.Reflection.modifyValue(dict.item(key), functionName, functionInvoker, functionParams))
-            Call F.Dictionaries.addItem(changeKeys, newKey, dict.item(key), duplicateBehaviour)
+    Set changeKeys = f.dictionaries.Create(dict.CompareMode = BinaryCompare)
+    For Each Key In dict.Keys
+        If Not VBA.IsEmpty(Key) Then
+            Call f.Variables.assign(newKey, _
+                    f.Reflection.modifyValue(dict.Item(Key), functionName, functionInvoker, functionParams))
+            Call f.dictionaries.addItem(changeKeys, newKey, dict.Item(Key), duplicateBehaviour)
         End If
-    Next key
+    Next Key
     
 End Function
 
@@ -721,53 +729,53 @@ Public Function compare(baseValue As Object, _
 End Function
 
 Private Function checkIfAllItemsAreDictionaryOrNothing(ParamArray values() As Variant) As Boolean
-    Dim item As Variant
+    Dim Item As Variant
     '------------------------------------------------------------------------------------------------------
     checkIfAllItemsAreDictionaryOrNothing = True
-    For Each item In values
-        If isDictionary(item) Or F.Variables.isNothing(item) Then
+    For Each Item In values
+        If isDictionary(Item) Or f.Variables.isNothing(Item) Then
         Else
             checkIfAllItemsAreDictionaryOrNothing = False
             Exit For
         End If
-    Next item
+    Next Item
 End Function
 
 Private Function compareDictionariesWithEqualNumberOfItems(baseDict As Scripting.Dictionary, _
                                     comparedDict As Scripting.Dictionary, _
                                     Optional strictDataType As Boolean = False, _
                                     Optional isCaseSensitive As Boolean = False) As Boolean
-    Dim key As Variant
+    Dim Key As Variant
     '------------------------------------------------------------------------------------------------------
 
     compareDictionariesWithEqualNumberOfItems = True
-    For Each key In baseDict.Keys
-        If Not hasTheSameItem(comparedDict, key, baseDict.item(key), strictDataType, isCaseSensitive) Then
+    For Each Key In baseDict.Keys
+        If Not hasTheSameItem(comparedDict, Key, baseDict.Item(Key), strictDataType, isCaseSensitive) Then
             compareDictionariesWithEqualNumberOfItems = False
             Exit For
         End If
-    Next key
+    Next Key
 
     'Counter-check if dictionaries have different comparing mode
     If compareDictionariesWithEqualNumberOfItems Then
         If baseDict.CompareMode <> comparedDict.CompareMode Then
-            For Each key In comparedDict.Keys
-                If Not hasTheSameItem(baseDict, key, comparedDict.item(key), strictDataType, isCaseSensitive) Then
+            For Each Key In comparedDict.Keys
+                If Not hasTheSameItem(baseDict, Key, comparedDict.Item(Key), strictDataType, isCaseSensitive) Then
                     compareDictionariesWithEqualNumberOfItems = False
                     Exit For
                 End If
-            Next key
+            Next Key
         End If
     End If
 
 End Function
 
-Private Function hasTheSameItem(dict As Object, key As Variant, comparedItem As Variant, _
+Private Function hasTheSameItem(dict As Object, Key As Variant, comparedItem As Variant, _
                                     Optional strictDataType As Boolean = False, _
                                     Optional isCaseSensitive As Boolean = False) As Boolean
     With dict
-        If .exists(key) Then
-            hasTheSameItem = F.Variables.equals(comparedItem, .item(key), strictDataType, isCaseSensitive)
+        If .exists(Key) Then
+            hasTheSameItem = f.Variables.equals(comparedItem, .Item(Key), strictDataType, isCaseSensitive)
         End If
     End With
 End Function
@@ -779,8 +787,14 @@ End Function
 
 
 '[CHECKING DICTIONARY CONTENT]
+Public Function hasKey(dict As Scripting.Dictionary, Key As Variant) As Boolean
+    If Not dict Is Nothing Then
+        hasKey = dict.exists(Key)
+    End If
+End Function
+
 Public Function hasAllKeys(checkedDict As Scripting.Dictionary, comparedDict As Scripting.Dictionary) As Boolean
-    Dim key As Variant
+    Dim Key As Variant
     '------------------------------------------------------------------------------------------------------
     
     If checkedDict Is Nothing Then
@@ -789,12 +803,12 @@ Public Function hasAllKeys(checkedDict As Scripting.Dictionary, comparedDict As 
         hasAllKeys = True
     Else
         hasAllKeys = True
-        For Each key In comparedDict.Keys
-            If Not checkedDict.exists(key) Then
+        For Each Key In comparedDict.Keys
+            If Not checkedDict.exists(Key) Then
                 hasAllKeys = False
                 Exit For
             End If
-        Next key
+        Next Key
     End If
     
 End Function
@@ -812,42 +826,42 @@ End Function
 Public Function countByValue(dict As Scripting.Dictionary, searchValue As Variant, _
                              Optional functionName As String, _
                              Optional functionInvoker As Object) As Long
-    Dim key As Variant
+    Dim Key As Variant
     Dim value As Variant
     '------------------------------------------------------------------------------------------------------
     
     If isNonEmptyDictionary(dict) Then
-        For Each key In dict.Keys
-            Call F.Variables.assign(value, F.Reflection.modifyValue(dict.item(key), functionName, functionInvoker))
-            If F.Variables.equals(searchValue, value) Then
+        For Each Key In dict.Keys
+            Call f.Variables.assign(value, f.Reflection.modifyValue(dict.Item(Key), functionName, functionInvoker))
+            If f.Variables.equals(searchValue, value) Then
                 countByValue = countByValue + 1
             End If
-        Next key
+        Next Key
     End If
     
 End Function
 
 
 Public Function flatDictionary(dict As Scripting.Dictionary, Optional keyPrefix As String, Optional delimiter As String = ".") As Scripting.Dictionary
-    Dim key As Variant
-    Dim item As Variant
+    Dim Key As Variant
+    Dim Item As Variant
     '------------------------------------------------------------------------------------------------------
     Dim resultDict As Scripting.Dictionary
     Dim subDict As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
     
-    Set resultDict = F.Dictionaries.Create(False)
+    Set resultDict = f.dictionaries.Create(False)
     
-    If F.Dictionaries.isNonEmptyDictionary(dict) Then
-        For Each key In dict.Keys
-            Call F.Variables.assign(item, dict.item(key))
-            If F.Dictionaries.isDictionary(item) Then
-                Set subDict = F.cast.toDictionary(item)
-                Call appendDictionary(resultDict, flatDictionary(subDict, keyPrefix & key & delimiter, delimiter))
+    If f.dictionaries.isNonEmptyDictionary(dict) Then
+        For Each Key In dict.Keys
+            Call f.Variables.assign(Item, dict.Item(Key))
+            If f.dictionaries.isDictionary(Item) Then
+                Set subDict = f.cast.toDictionary(Item)
+                Call appendDictionary(resultDict, flatDictionary(subDict, keyPrefix & Key & delimiter, delimiter))
             Else
-                Call resultDict.Add(keyPrefix & key, item)
+                Call resultDict.add(keyPrefix & Key, Item)
             End If
-        Next key
+        Next Key
     End If
     
     Set flatDictionary = resultDict
@@ -889,26 +903,26 @@ Public Function filter(dict As Scripting.Dictionary, _
                             Optional filterMethodInvoker As Object, _
                             Optional filterMethodParams As Scripting.Dictionary, _
                             Optional value As Variant) As Scripting.Dictionary
-    Dim key As Variant
+    Dim Key As Variant
     Dim filterValue As Variant
     Dim include As Variant
     '------------------------------------------------------------------------------------------------------
     
     If Not dict Is Nothing Then
-        Set filter = F.Dictionaries.Create(dict.CompareMode = BinaryCompare)
-        For Each key In dict.Keys
+        Set filter = f.dictionaries.Create(dict.CompareMode = BinaryCompare)
+        For Each Key In dict.Keys
             If VBA.Len(filterMethod) Then
-                include = F.Reflection.modifyValue(dict.item(key), filterMethod, filterMethodInvoker, filterMethodParams)
+                include = f.Reflection.modifyValue(dict.Item(Key), filterMethod, filterMethodInvoker, filterMethodParams)
             Else
-                include = F.Variables.equals(dict.item(key), value)
+                include = f.Variables.equals(dict.Item(Key), value)
             End If
             
             If include Then
-                Call filter.Add(key, dict.item(key))
+                Call filter.add(Key, dict.Item(Key))
             End If
-        Next key
+        Next Key
     Else
-        Set filter = F.Dictionaries.Create(False)
+        Set filter = f.dictionaries.Create(False)
     End If
     
 End Function
@@ -917,20 +931,101 @@ End Function
 
 
 
+Public Function getDictionaryDifference(baseDict As Scripting.Dictionary, comparedDict As Scripting.Dictionary) As Scripting.Dictionary
+    Dim Key As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set getDictionaryDifference = f.dictionaries.Create(False)
+    
+    If comparedDict Is Nothing Then
+        Set getDictionaryDifference = f.dictionaries.clone(baseDict)
+    Else
+        For Each Key In baseDict.Keys
+            If Not comparedDict.exists(Key) Then
+                Call getDictionaryDifference.add(Key, baseDict.Item(Key))
+            ElseIf Not f.Variables.equals(baseDict.Item(Key), comparedDict.Item(Key), True) Then
+                Call getDictionaryDifference.add(Key, baseDict.Item(Key))
+            End If
+        Next Key
+    End If
+    
+End Function
 
 
+Public Function getKeyByItem(dict As Scripting.Dictionary, Item As Variant) As Variant
+    Dim Key As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    If f.dictionaries.isNonEmptyDictionary(dict) Then
+        For Each Key In dict.Keys
+            If f.Variables.equals(dict.Item(Key), Item) Then
+                Call f.Variables.assign(getKeyByItem, Key)
+                Exit For
+            End If
+        Next Key
+    End If
+    
+End Function
 
 
+Public Function join(ParamArray dictionaries() As Variant) As Scripting.Dictionary
+    Dim Item As Variant
+    Dim dict As Scripting.Dictionary
+    Dim Key As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set join = f.dictionaries.Create(False)
+    For Each Item In dictionaries
+        If f.dictionaries.isNonEmptyDictionary(Item) Then
+            Set dict = f.cast.toDictionary(Item)
+            For Each Key In dict.Keys
+                Call f.dictionaries.addItem(join, Key, dict.Item(Key))
+            Next Key
+        End If
+    Next Item
+    
+End Function
 
 
+Public Function replaceKey(dict As Scripting.Dictionary, oldKey As Variant, newKey As Variant) As Scripting.Dictionary
+    Dim Key As Variant
+    Dim found As Boolean
+    '------------------------------------------------------------------------------------------------------
+    
+    Set replaceKey = f.dictionaries.Create
+    
+    If isNonEmptyDictionary(dict) Then
+        replaceKey.CompareMode = dict.CompareMode
+        For Each Key In dict.Keys
+            If found Then
+                Call f.dictionaries.addItem(replaceKey, Key, dict.Item(Key))
+            ElseIf f.Variables.equals(Key, oldKey, True) Then
+                Call f.dictionaries.addItem(replaceKey, newKey, dict.Item(oldKey))
+                found = True
+            Else
+                Call replaceKey.add(Key, dict.Item(Key))
+            End If
+        Next Key
+    End If
+    
+End Function
 
 
+Public Function map(dict As Scripting.Dictionary, modifyMethod As String, _
+                        Optional modifyMethodInvoker As Object, _
+                        Optional modifyMethodParams As Scripting.Dictionary) As Scripting.Dictionary
+    Dim Key As Variant
+    '------------------------------------------------------------------------------------------------------
+    If Not dict Is Nothing Then
+        Set map = f.dictionaries.Create(dict.CompareMode = BinaryCompare)
+        For Each Key In dict.Keys
+            Call map.add(Key, f.Reflection.modifyValue(dict.Item(Key), _
+                                            modifyMethod, modifyMethodInvoker, modifyMethodParams))
+        Next Key
+    End If
+End Function
 
 
-
-
-'
-'
 'Public Function join(baseDict As Scripting.Dictionary, _
 '                appendedDict As Scripting.Dictionary, _
 '                Optional ignoreDuplicates As Boolean = True, _

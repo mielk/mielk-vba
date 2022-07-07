@@ -24,7 +24,7 @@ Option Explicit
 
 '# Event Triggered By Main Object
 Public Event AfterUpdate()
-Public Event BeforeUpdate(ByRef cancel As Integer)
+Public Event BeforeUpdate(ByRef Cancel As Integer)
 Public Event Click()
 Public Event DblClick()
 Public Event KeyDown( _
@@ -191,7 +191,7 @@ Public Property Let ShowTitle(ByVal bShowTitle As Boolean)
     bPShowTitle = bShowTitle
     If bInit Then
         CLb.visible = bPShowTitle
-        Call Move
+        Call move
     End If
 End Property
 
@@ -206,7 +206,7 @@ Public Property Let ShowDays(ByVal bShowDays As Boolean)
         For i = 0 To 6
             mLabelButtons(i).Obj_CmBl.visible = bShowDays
         Next
-        Call Move
+        Call move
     End If
 End Property
 
@@ -219,7 +219,7 @@ Public Property Let ShowDateSelectors(ByVal bShowDateSelectors As Boolean)
     If bInit Then
         CBxY.visible = bShowDateSelectors
         CBxM.visible = bShowDateSelectors
-        Call Move
+        Call move
     End If
 End Property
 
@@ -331,7 +331,7 @@ Public Property Let height(ByVal sHeight As Single)
     sPHeight = sHeight
     If bInit Then
         CBxY.parent.height = sHeight
-        Call Move
+        Call move
     End If
 End Property
 
@@ -345,18 +345,18 @@ Public Property Let width(ByVal sWidth As Single)
     sPWidth = sWidth
     If bInit Then
         CBxY.parent.width = sWidth
-        Call Move
+        Call move
     End If
 End Property
 
-Public Property Get BackColor() As OLE_COLOR
-    BackColor = lPBackColor
+Public Property Get backColor() As OLE_COLOR
+    backColor = lPBackColor
 End Property
 
-Public Property Let BackColor(ByVal lBackColor As OLE_COLOR)
+Public Property Let backColor(ByVal lBackColor As OLE_COLOR)
     lPBackColor = lBackColor
     If bInit Then
-        CBxY.parent.BackColor = lBackColor
+        CBxY.parent.backColor = lBackColor
     End If
 End Property
 
@@ -546,13 +546,13 @@ Public Property Get value() As Variant
 End Property
 
 Public Property Let value(ByVal newDate As Variant)
-    Dim cancel As Integer '*** Integer for backward compatibility
+    Dim Cancel As Integer '*** Integer for backward compatibility
     
     If CheckValue(newDate) = False Then newDate = Empty
 
-    RaiseEvent BeforeUpdate(cancel) '(Even if unselectable - for navigation.)
+    RaiseEvent BeforeUpdate(Cancel) '(Even if unselectable - for navigation.)
     
-    If cancel = 0 Then 'Not canceled.
+    If Cancel = 0 Then 'Not canceled.
 
         If bInit And Not IsEmpty(newDate) Then
             CBxY.ListIndex = VBA.Year(newDate) - 1904
@@ -729,7 +729,7 @@ Public Sub Add_Calendar_into_Frame(ByVal cFrame As MSForms.frame)
     Next
     
     With cFrame
-        .BackColor = BackColor
+        .backColor = backColor
         .caption = ""
         .SpecialEffect = 0
         '.Top = IIf(sPTop = -1, .Top, sPTop)
@@ -765,10 +765,10 @@ Public Sub Add_Calendar_into_Frame(ByVal cFrame As MSForms.frame)
             .borderColor = &H80000010 'Button shadow  &H80000015 'Button dark shadow
             '.SpecialEffect = fmSpecialEffectEtched
             If HeaderBackColor = -1 Then
-                .BackColor = cDayFontColorSelected 'Dark gray
+                .backColor = cDayFontColorSelected 'Dark gray
                 .BackStyle = fmBackStyleTransparent
             Else
-                .BackColor = HeaderBackColor
+                .backColor = HeaderBackColor
                 .BackStyle = fmBackStyleOpaque
             End If
         End With
@@ -829,7 +829,7 @@ Public Sub Add_Calendar_into_Frame(ByVal cFrame As MSForms.frame)
     
     Call Refresh_Properities
     
-    Call Move
+    Call move
     
 End Sub
 
@@ -895,7 +895,7 @@ Private Sub ApplyFont(fTo As MSForms.NewFont, fFrom As MSForms.NewFont)
 
 End Sub
 
-Public Sub Move( _
+Public Sub move( _
         Optional vLeft, _
         Optional vTop, _
         Optional vWidth, _
@@ -1075,7 +1075,7 @@ Private Sub CmB_Click()
     End If
 End Sub
 
-Private Sub CmB_DblClick(ByVal cancel As MSForms.ReturnBoolean)
+Private Sub CmB_DblClick(ByVal Cancel As MSForms.ReturnBoolean)
     Call Main.Event_DblClick
 End Sub
 
@@ -1383,7 +1383,7 @@ End Sub
 
 Private Sub Refresh_Properities()
     With Me
-        .BackColor = .BackColor
+        .backColor = .backColor
         .ControlTipText = .ControlTipText
         .DayFontColor = .DayFontColor
         .DayLength = .DayLength
@@ -1422,13 +1422,13 @@ Private Sub Refresh_Selected_Day(ByVal dValue As Date, ByVal i As Long)
         If Not bPMACFix Then
             With mDayButtons(i).Obj_CmBl
                 .BackStyle = fmBackStyleOpaque
-                .BackColor = selColor
+                .backColor = selColor
                 .ForeColor = cDayFontColorSelected
             End With
         Else
             With mDayButtons(i).Obj_Cmb
                 .BackStyle = fmBackStyleOpaque
-                .BackColor = selColor
+                .backColor = selColor
                 .ForeColor = cDayFontColorSelected
             End With
         End If
@@ -1516,8 +1516,8 @@ Private Sub Refresh_Panel(ByVal lMonth As Long, ByVal lYear As Long)
                         End If
                     End If
                 End If
-                If .BackColor <> lBackColor Then
-                    .BackColor = lBackColor
+                If .backColor <> lBackColor Then
+                    .backColor = lBackColor
                 End If
             End With
             ' Button not altered
@@ -1572,8 +1572,8 @@ Private Sub Refresh_Panel(ByVal lMonth As Long, ByVal lYear As Long)
                         End If
                     End If
                 End If
-                If .BackColor <> lBackColor Then
-                    .BackColor = lBackColor
+                If .backColor <> lBackColor Then
+                    .backColor = lBackColor
                 End If
             End With
         End If
@@ -1608,8 +1608,8 @@ Private Sub Refresh_Panel(ByVal lMonth As Long, ByVal lYear As Long)
             If mLabelButtons(l).Obj_CmBl.BackStyle = fmBackStyleTransparent Then
                 mLabelButtons(l).Obj_CmBl.BackStyle = fmBackStyleOpaque
             End If
-            If mLabelButtons(l).Obj_CmBl.BackColor <> lPHeaderBackColor Then
-                mLabelButtons(l).Obj_CmBl.BackColor = lPHeaderBackColor
+            If mLabelButtons(l).Obj_CmBl.backColor <> lPHeaderBackColor Then
+                mLabelButtons(l).Obj_CmBl.backColor = lPHeaderBackColor
             End If
         Next
     Else
@@ -1699,7 +1699,7 @@ Public Function AddColoredDateArray(color As OLE_COLOR, dates As Variant, Option
         lUBnd = UBound(dateList, 1)
         dat = dateList(lUBnd, 1)
         If Err.Number > 0 Then
-            Err.Raise 20001, "Invalid date array input: " & Err.Description
+            Err.Raise 20001, "Invalid date array input: " & Err.description
         End If
         
         format = 2

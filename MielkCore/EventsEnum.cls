@@ -42,9 +42,9 @@ End Sub
 
 Private Sub initializeEvents()
     '[Initialize containers]
-    Set pEventsById = F.Dictionaries.Create(False)
-    Set pEventsByName = F.Dictionaries.Create(False)
-    Set pEventsByAliases = F.Dictionaries.Create(False)
+    Set pEventsById = f.dictionaries.Create(False)
+    Set pEventsByName = f.dictionaries.Create(False)
+    Set pEventsByAliases = f.dictionaries.Create(False)
     
     '[Add event objects]
     Call addEvent(1, EVENT_CLICK, "click")
@@ -66,22 +66,22 @@ Private Sub initializeEvents()
 End Sub
 
 
-Private Sub addEvent(id As Long, eventName As String, ParamArray aliases() As Variant)
-    Dim item As Event_
+Private Sub addEvent(Id As Long, eventName As String, ParamArray Aliases() As Variant)
+    Dim Item As Event_
     Dim varAlias As Variant
     '----------------------------------------------------------------------------------------------------------
     
-    Set item = New Event_
-    With item
-        Call .setId(id)
+    Set Item = New Event_
+    With Item
+        Call .setId(Id)
         Call .setName(eventName)
         '[Add to repositories]
-        Call pEventsById.Add(id, item)
-        Call pEventsByName.Add(eventName, item)
+        Call pEventsById.add(Id, Item)
+        Call pEventsByName.add(eventName, Item)
         '[Add aliases]
-        For Each varAlias In aliases
-            Call item.addAlias(VBA.CSng(varAlias))
-            Call pEventsByAliases.Add(varAlias, item)
+        For Each varAlias In Aliases
+            Call Item.addAlias(VBA.CStr(varAlias))
+            Call pEventsByAliases.add(varAlias, Item)
         Next varAlias
     End With
     
@@ -90,32 +90,32 @@ End Sub
 
 
 
-Public Function ById(id As Long) As Event_
-    Set ById = F.Dictionaries.getObject(pEventsById, id)
+Public Function ById(Id As Long) As Event_
+    Set ById = f.dictionaries.getObject(pEventsById, Id)
 End Function
 
 Public Function ByName(eventName As String) As Event_
-    Set ByName = F.Dictionaries.getObject(pEventsByName, eventName)
+    Set ByName = f.dictionaries.getObject(pEventsByName, eventName)
 End Function
 
-Public Function ByAlias(alias As String) As Event_
-    Set ByAlias = F.Dictionaries.getObject(pEventsByAliases, alias)
+Public Function ByAlias(Alias As String) As Event_
+    Set ByAlias = f.dictionaries.getObject(pEventsByAliases, Alias)
 End Function
 
 
 '[Quick access]
-Public Function AfterUpdate() As Event_: Set AfterUpdate = F.Dictionaries.getObject(pEventsByName, EVENT_AFTER_UPDATE): End Function
-Public Function BeforeUpdate() As Event_: Set BeforeUpdate = F.Dictionaries.getObject(pEventsByName, EVENT_BEFORE_UPDATE): End Function
-Public Function Change() As Event_: Set Change = F.Dictionaries.getObject(pEventsByName, EVENT_CHANGE): End Function
-Public Function Click() As Event_: Set Click = F.Dictionaries.getObject(pEventsByName, EVENT_CLICK): End Function
-Public Function DoubleClick() As Event_: Set DoubleClick = F.Dictionaries.getObject(pEventsByName, EVENT_DOUBLE_CLICK): End Function
-Public Function Enter() As Event_: Set Enter = F.Dictionaries.getObject(pEventsByName, EVENT_ENTER): End Function
-Public Function Leave() As Event_: Set Leave = F.Dictionaries.getObject(pEventsByName, EVENT_LEAVE): End Function
-Public Function KeyDown() As Event_: Set KeyDown = F.Dictionaries.getObject(pEventsByName, EVENT_KEY_DOWN): End Function
-Public Function KeyUp() As Event_: Set KeyUp = F.Dictionaries.getObject(pEventsByName, EVENT_KEY_UP): End Function
-Public Function MouseDown() As Event_: Set MouseDown = F.Dictionaries.getObject(pEventsByName, EVENT_MOUSE_DOWN): End Function
-Public Function MouseUp() As Event_: Set MouseUp = F.Dictionaries.getObject(pEventsByName, EVENT_MOUSE_UP): End Function
-Public Function Move() As Event_: Set Move = F.Dictionaries.getObject(pEventsByName, EVENT_MOVE): End Function
-Public Function Resize() As Event_: Set Resize = F.Dictionaries.getObject(pEventsByName, EVENT_RESIZE): End Function
-Public Function ValidationChange() As Event_: Set ValidationChange = F.Dictionaries.getObject(pEventsByName, EVENT_VALIDATION_CHANGE): End Function
+Public Function AfterUpdate() As Event_: Set AfterUpdate = f.dictionaries.getObject(pEventsByName, EVENT_AFTER_UPDATE): End Function
+Public Function BeforeUpdate() As Event_: Set BeforeUpdate = f.dictionaries.getObject(pEventsByName, EVENT_BEFORE_UPDATE): End Function
+Public Function Change() As Event_: Set Change = f.dictionaries.getObject(pEventsByName, EVENT_CHANGE): End Function
+Public Function Click() As Event_: Set Click = f.dictionaries.getObject(pEventsByName, EVENT_CLICK): End Function
+Public Function DoubleClick() As Event_: Set DoubleClick = f.dictionaries.getObject(pEventsByName, EVENT_DOUBLE_CLICK): End Function
+Public Function Enter() As Event_: Set Enter = f.dictionaries.getObject(pEventsByName, EVENT_ENTER): End Function
+Public Function Leave() As Event_: Set Leave = f.dictionaries.getObject(pEventsByName, EVENT_LEAVE): End Function
+Public Function KeyDown() As Event_: Set KeyDown = f.dictionaries.getObject(pEventsByName, EVENT_KEY_DOWN): End Function
+Public Function KeyUp() As Event_: Set KeyUp = f.dictionaries.getObject(pEventsByName, EVENT_KEY_UP): End Function
+Public Function MouseDown() As Event_: Set MouseDown = f.dictionaries.getObject(pEventsByName, EVENT_MOUSE_DOWN): End Function
+Public Function MouseUp() As Event_: Set MouseUp = f.dictionaries.getObject(pEventsByName, EVENT_MOUSE_UP): End Function
+Public Function Move() As Event_: Set Move = f.dictionaries.getObject(pEventsByName, EVENT_MOVE): End Function
+Public Function Resize() As Event_: Set Resize = f.dictionaries.getObject(pEventsByName, EVENT_RESIZE): End Function
+Public Function ValidationChange() As Event_: Set ValidationChange = f.dictionaries.getObject(pEventsByName, EVENT_VALIDATION_CHANGE): End Function
 

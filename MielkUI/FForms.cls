@@ -16,7 +16,7 @@ Private Const CLASS_NAME As String = "FForms"
 
 'Method to convert all pixels with the given [color] on the given form [frm] to transparent pixels.
 'Source:    https://wellssr.com/vba/2017/excel/transaprent-userform-background-with-vba/
-Public Sub makeUserFormTransparent(frm As Object, Optional color As Variant)
+Public Sub makeUserFormTransparent(frm As Object, Optional color As Variant = TRANSPARENCY_LAYER_COLOR)
 
 
 #If Win64 Then
@@ -40,10 +40,11 @@ End Sub
 Public Sub hideTitleBarAndBorder(frm As Object)
 #If Win64 Then
     Dim frmHandle As LongPtr
+    Dim lngWindow As LongPtr
 #Else
     Dim frmHandle As Long
-#End If
     Dim lngWindow As Long
+#End If
     '------------------------------------------------------------------------------------------------------
     
     frmHandle = getWindowHandle(frm)
@@ -51,7 +52,7 @@ Public Sub hideTitleBarAndBorder(frm As Object)
     lngWindow = lngWindow And (Not WS_CAPTION)
     SetWindowLong frmHandle, GWL_STYLE, lngWindow
     lngWindow = GetWindowLong(frmHandle, GWL_EXSTYLE)
-    lngWindow = lngWindow And Not WS_EX_DLGMODELFRAME
+    lngWindow = lngWindow And Not WS_EX_DLGMODALFRAME
     SetWindowLong frmHandle, GWL_EXSTYLE, lngWindow
     DrawMenuBar frmHandle
  
@@ -78,11 +79,11 @@ End Function
 Public Sub setValidationLook(ctrl As MSForms.control, isValid As Boolean)
     With ctrl
         If isValid Then
-            .BackColor = VALID_BACK_COLOR
+            .backColor = VALID_BACK_COLOR
             .borderColor = VALID_BORDER_COLOR
             .ForeColor = VALID_FONT_COLOR
         Else
-            .BackColor = INVALID_BACK_COLOR
+            .backColor = INVALID_BACK_COLOR
             .borderColor = INVALID_BORDER_COLOR
             .ForeColor = INVALID_FONT_COLOR
         End If
@@ -96,7 +97,7 @@ Public Function getTotalValidationStatus(validations As Scripting.Dictionary) As
     '------------------------------------------------------------------------------------------------------
     
     getTotalValidationStatus = True
-    For Each key In validations.Keys
+    For Each key In validations.keys
         Set validation = validations.item(key)
         If Not validation.getStatus Then
             getTotalValidationStatus = False
@@ -115,19 +116,19 @@ Public Function isControlValid(ctrl As Variant) As Boolean
     '------------------------------------------------------------------------------------------------------
     
     On Error Resume Next
-    If Not VBA.IsObject(ctrl) Then
-        isControlValid = False
-    ElseIf ctrl Is Nothing Then
-        isControlValid = False
-    ElseIf TypeOf ctrl Is MSForms.control Then
-        name = ctrl.name
-        isControlValid = (name <> BASE_NAME)
-    ElseIf TypeOf ctrl Is MSForms.frame Then
-        captionLength = VBA.Len(ctrl.caption)
-        isControlValid = (captionLength >= 0)
-    ElseIf TypeOf ctrl Is MSForms.UserForm Then
-        captionLength = VBA.Len(ctrl.caption)
-        isControlValid = (captionLength >= 0)
+    If VBA.IsObject(ctrl) Then
+        If Not ctrl Is Nothing Then
+            If TypeOf ctrl Is MSForms.control Then
+                name = ctrl.name
+                isControlValid = (name <> BASE_NAME)
+            ElseIf TypeOf ctrl Is MSForms.frame Then
+                captionLength = VBA.Len(ctrl.caption)
+                isControlValid = (captionLength >= 0)
+            ElseIf TypeOf ctrl Is MSForms.UserForm Then
+                captionLength = VBA.Len(ctrl.caption)
+                isControlValid = (captionLength >= 0)
+            End If
+        End If
     End If
     
 End Function
@@ -143,7 +144,7 @@ Public Sub clearMsFrame(frm As MSForms.frame)
             Set ctrl = frm.controls.item(0)
             Call frm.controls.remove(ctrl.name)
             If frm.controls.Count = controlsCounter Then
-                Call VBA.Err.Raise(1, Description:="Error when trying to remove control " & ctrl.name)
+                Call VBA.Err.Raise(1, description:="Error when trying to remove control " & ctrl.name)
             Else
                 controlsCounter = frm.controls.Count
             End If
@@ -171,7 +172,7 @@ End Sub
 
 Public Function getRight(ctrl As MSForms.control) As Single
     With ctrl
-        getRight = .left = .width
+        getRight = .left + .width
     End With
 End Function
 
@@ -244,7 +245,7 @@ Public Sub fillListBox(listBox As MSForms.control, dict As Scripting.Dictionary)
     If Not listBox Is Nothing Then
         If TypeOf listBox Is MSForms.listBox Or TypeOf listBox Is MSForms.comboBox Then
             Call listBox.clear
-            For Each key In dict.Keys
+            For Each key In dict.keys
                 Call listBox.addItem(key)
             Next key
         End If
@@ -302,7 +303,7 @@ End Function
 
 
 Public Sub setFormOpacity(uf As MSForms.UserForm, opacity As Byte)
-#If Win64 Then
+#If VBA7 Then
     Dim frmHandle As LongPtr
     Dim winLng As LongPtr
 #Else
@@ -374,5 +375,23 @@ Public Sub setControlProperty(ctrl As MSForms.control, propType As UIProp, propV
             Case UI.props.borderStyle.getName:              ctrl.borderStyle = propValue
             Case UI.props.ScrollBars.getName:               ctrl.ScrollBars = propValue
         End Select
+    End If
+End Sub
+
+
+
+Public Sub printFrameControls(frame As MSForms.UserForm)
+    Dim ctrl As MSForms.control
+    Dim description As String
+    '------------------------------------------------------------------------------------------------------
+    If Not frame Is Nothing Then
+        For Each ctrl In frame.controls
+            description = ctrl.name & " | " & VBA.TypeName(ctrl) & " | Size: " & ctrl.width & "x" & ctrl.height & _
+                        " | Position: (" & ctrl.left & ", " & ctrl.top & ")"
+            On Error Resume Next
+            description = description & " | Text: " & ctrl.caption
+            description = description & " | Value: " & ctrl.value
+            Debug.Print description
+        Next ctrl
     End If
 End Sub

@@ -21,8 +21,8 @@ Private pIsSortable As Boolean
 Private pIsScalable As Boolean
 Private pIsExportable As Boolean
 Private pControlType As ControlTypeEnum
-Private pValueFunction As String
-Private pSortValueFunction As String
+Private pValuePropertyName As String
+Private pSortValuePropertyName As String
 Private pEnableFunction As String
 Private pTextAlignment As fmTextAlign
 Private pTooltip As String
@@ -30,6 +30,10 @@ Private pForeColor As Long
 Private pIsUnderlined As Boolean
 Private pMousePointer As Object
 Private pHasRightBorder As Boolean
+Private pNumberFormat As String
+Private pLeft As Single
+Private pIndent As Single
+Private pFilterRegex As String
 '----------------------------------------------------------------------------------------------------------
 Private pFilter As IFilter
 Private pActions As Scripting.Dictionary
@@ -46,9 +50,10 @@ Private Sub Class_Initialize()
     pIsExportable = True
     pTextAlignment = fmTextAlignLeft
     pHasRightBorder = True
+    pNumberFormat = "@"
     
     '[Initialize containers]
-    Set pActions = F.Dictionaries.Create(False)
+    Set pActions = F.dictionaries.Create(False)
     
 End Sub
 
@@ -115,12 +120,12 @@ End Function
 
 Public Function setValueFunction(value As String) As DColumn
     Set setValueFunction = Me
-    pValueFunction = value
+    pValuePropertyName = value
 End Function
 
 Public Function setSortValueFunction(value As String) As DColumn
     Set setSortValueFunction = Me
-    pSortValueFunction = value
+    pSortValuePropertyName = value
 End Function
 
 Public Function setEnableFunction(value As String) As DColumn
@@ -157,6 +162,27 @@ Public Function setTooltip(value As String) As DColumn
     Set setTooltip = Me
     pTooltip = value
 End Function
+
+Public Function setNumberFormat(value As String) As DColumn
+    Set setNumberFormat = Me
+    pNumberFormat = value
+End Function
+
+Public Function setLeft(value As Single) As DColumn
+    Set setLeft = Me
+    pLeft = value
+End Function
+
+Public Function setIndent(value As Single) As DColumn
+    Set setIndent = Me
+    pIndent = value
+End Function
+
+Public Function setFilterRegex(value As String) As DColumn
+    Set setFilterRegex = Me
+    pFilterRegex = value
+End Function
+
 '</simple setters>
 
 
@@ -181,7 +207,7 @@ Public Function getControlType() As ControlTypeEnum
     getControlType = pControlType
 End Function
 
-Public Function getPicture() As picture
+Public Function getPicture() As Variant
     Set getPicture = pPicture
 End Function
 
@@ -209,15 +235,15 @@ Public Function isSortable() As Boolean
     isSortable = pIsSortable
 End Function
 
-Public Function getValueFunction() As String
-    getValueFunction = pValueFunction
+Public Function getValuePropertyName() As String
+    getValuePropertyName = pValuePropertyName
 End Function
 
-Public Function getSortValueFunction() As String
-    If VBA.Len(pSortValueFunction) Then
-        getSortValueFunction = pSortValueFunction
+Public Function getSortValuePropertyName() As String
+    If VBA.Len(pSortValuePropertyName) Then
+        getSortValuePropertyName = pSortValuePropertyName
     Else
-        getSortValueFunction = pValueFunction
+        getSortValuePropertyName = pValuePropertyName
     End If
 End Function
 
@@ -258,8 +284,25 @@ Public Function getTooltip() As String
 End Function
 
 Public Function getActionName(eventName As String) As String
-    getActionName = F.Dictionaries.getItem(pActions, eventName)
+    getActionName = F.dictionaries.getItem(pActions, eventName)
 End Function
+
+Public Function getNumberFormat() As String
+    getNumberFormat = pNumberFormat
+End Function
+
+Public Function getLeft() As Single
+    getLeft = pLeft
+End Function
+
+Public Function getIndent() As Single
+    getIndent = pIndent
+End Function
+
+Public Function getFilterRegex() As String
+    getFilterRegex = pFilterRegex
+End Function
+
 
 '</simple getters>
 
@@ -269,5 +312,6 @@ End Function
 
 Public Function addAction(eventName As String, actionName As String) As DColumn
     Set addAction = Me
-    Call F.Dictionaries.addItem(pActions, eventName, actionName)
+    Call F.dictionaries.addItem(pActions, eventName, actionName)
 End Function
+

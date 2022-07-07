@@ -3,7 +3,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufBackground
    Caption         =   "UserForm1"
    ClientHeight    =   3015
    ClientLeft      =   120
-   ClientTop       =   465
+   ClientTop       =   468
    ClientWidth     =   4560
    OleObjectBlob   =   "ufBackground.frx":0000
    StartUpPosition =   1  'CenterOwner
@@ -25,9 +25,9 @@ Private pIsActivated As Boolean
 
 
 Private Sub UserForm_Initialize()
-    pUuid = F.Crypto.createUuid
+    pUuid = F.Crypto.createUUID
     Me.caption = pUuid
-    Me.BackColor = TRANSPARENCY_LAYER_COLOR
+    Me.backColor = TRANSPARENCY_LAYER_COLOR
     Me.StartUpPosition = 0
 End Sub
 
@@ -77,9 +77,9 @@ Public Sub setLeft(value As Single)
 End Sub
 
 Friend Sub makeOpaque()
-    Me.BackColor = vbBlack
+    Me.backColor = vbBlack
 End Sub
 
 Friend Sub makeTransparent()
-    Me.BackColor = TRANSPARENCY_LAYER_COLOR
+    Me.backColor = TRANSPARENCY_LAYER_COLOR
 End Sub

@@ -34,7 +34,7 @@ Public Sub closeConnection(ByVal connection As Object, Optional rollbackTransact
 ErrHandler:
     Dim errNumber As Long
     
-    If rollbackTransaction And errNumber = Exceptions.dbClosingWhileInTransaction.getNumber Then
+    If rollbackTransaction And errNumber = Exceptions.DbClosingWhileInTransaction.getNumber Then
         Call VBA.Err.Clear
     Else
         'call ErrorManager ...
@@ -87,7 +87,7 @@ Private Function isAdodbConnection(value As Variant) As Boolean
         'this kind of provider), therefore [value] is not a valid ADODB.Connection.
         On Error Resume Next
         provider = conn.provider
-        If Not dev_mode Then On Error GoTo ErrHandler
+        If Not DEV_MODE Then On Error GoTo ErrHandler
         
         isAdodbConnection = (provider <> PROVIDER_TEST_INITIAL_VALUE)
         
