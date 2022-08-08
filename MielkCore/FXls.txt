@@ -1,0 +1,58 @@
+
+Public Function getLastAction() As String
+    Const UNDO_CTRL_ID As Long = 128
+    '------------------------------------------------------------------------------------------------------
+    Dim cb As CommandBar
+    Dim ctrl As CommandBarControl
+    '------------------------------------------------------------------------------------------------------
+    Set cb = Application.CommandBars("Standard")
+    Set ctrl = cb.FindControl(id:=UNDO_CTRL_ID)
+    If Not ctrl Is Nothing Then
+        On Error Resume Next
+        getLastAction = ctrl.list(1)
+    End If
+End Function
+
+Public Function isLastActionPaste(Optional includeFilling As Boolean = True, Optional includePasting As Boolean = True) As Boolean
+    Const PASTE_REGEX_PATTERN As String = "^(Paste|Wklej)$"
+    Const AUTOFILL_REGEX_PATTERN As String = "^(Auto|)(Wype.ni(e|a)nie|Filling)$"
+    '------------------------------------------------------------------------------------------------------
+    Static objPasteRegex As Object
+    Static objAutofillRegex As Object
+    '------------------------------------------------------------------------------------------------------
+    Dim lastAction As String
+    '------------------------------------------------------------------------------------------------------
+    
+    lastAction = getLastAction
+    
+    If objPasteRegex Is Nothing Then Set objPasteRegex = M.regex.create(PASTE_REGEX_PATTERN)
+    
+    If includePasting Then isLastActionPaste = objPasteRegex.test(lastAction)
+    
+    If Not isLastActionPaste Then
+        If includeFilling Then
+            If objAutofillRegex Is Nothing Then Set objAutofillRegex = M.regex.create(AUTOFILL_REGEX_PATTERN)
+            isLastActionPaste = objAutofillRegex.test(lastAction)
+        End If
+    End If
+End Function
+
+Public Sub showHideBook(wkb As Excel.Workbook, show As Boolean)
+    Dim screenUpdating As Boolean
+    Dim wnd As Excel.window
+    '----------------------------------------------------------------------------------------------------------
+    
+    With Application
+        screenUpdating = .screenUpdating: .screenUpdating = False
+    End With
+    
+    For Each wnd In Application.Windows
+        If wnd.caption = wkb.name Then
+            wnd.visible = show
+            Exit For
+        End If
+    Next wnd
+    
+    Application.screenUpdating = screenUpdating
+    
+End Sub
