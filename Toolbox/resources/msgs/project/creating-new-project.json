@@ -1,0 +1,262 @@
+{
+    "messages": {
+        "CreatingNewProject": {
+            "Window": {
+                "Title": {
+                    "en": "Creating new project [{0}]",
+                    "pl": "Tworzenie nowego projektu [{0}]"
+                },
+                "Captions": {}
+            },
+            "Errors": {
+                "Convet": {
+                    "en": "[{0}].{1} | [Error]: {2}",
+                    "pl": "[{0}].{1} | [Błąd]: {2}"
+                },
+                "CreatingParentFolder": {
+                    "en": "Error while trying to create folder {0} [{1} ({2})]",
+                    "pl": "Błąd podczas tworzenia folderu {0} [{1} ({2})]"
+                },
+                "NameAlreadyUsed": {
+                    "en": "There is already a project called [{0}] in this destination.\nRemove it or choose another name before continuing.",
+                    "pl": "We wskazanej lokalizacji istnieje już projekt o nazwie [{0}].\nUsuń go lub zastosuj inną nazwę, zanim przejdziesz dalej."
+                },
+                "CopyingTemplateFiles": {
+                    "en": "Error while copying template files to the destination folder.",
+                    "pl": "Błąd podczas kopiowania template'ów plików do folderu docelowego."
+                },
+                "DeletingPreviousVersion": {
+                    "en": "Error while trying to delete the previous version of project [{0}].\nError description: {1} ({2})",
+                    "pl": "Błąd podczas próby usunięcia poprzedniej wersji projektu [{0}].\nOpis błędu: {1} ({2})"
+                },
+                "ApplyingChangesToCode": {
+                    "en": "Unexpected error while adjusting code: [{0} ({1})]",
+                    "pl": "Nieoczekiwany błąd podczas dostosowywania kodu do potrzeb projektu: [{0} ({1})]"
+                },
+                "OpeningVbaProject": {
+                    "en": "Error while opening VBA project in file {0}.",
+                    "pl": "Błąd podczas otwierania projektu VBA dla pliku {0}."
+                },
+                "ConvertingVbProject": {
+                    "en": "Error while adjusting code in file {0} | Error description: {1} ({2}).",
+                    "pl": "Błąd podczas dostosowywania kodu w pliku {0} | Opis błędu: {1} ({2})."
+                },
+                "ConvertingVbComponent": {
+                    "en": "Error while adjusting module [{0}] in file {1} | Error description: {2}.",
+                    "pl": "Błąd podczas dostosowywania modułu [{0}] w pliku {1} | Opis błędu: {2}."
+                },
+                "ReadingModuleContent": {
+                    "en": "Error while reading module content: {0}.",
+                    "pl": "Błąd podczas odczytywania kodu modułu: {0}."
+                },
+                "ApplyingChangesToTextFiles": {
+                    "en": "Unexpected error while adjusting text file: [{0} ({1})]",
+                    "pl": "Nieoczekiwany błąd podczas dostosowywania plików tekstowych do potrzeb projektu: [{0} ({1})]"
+                },
+                "ReadingFromTextFile": {
+                    "en": "Error while reading from text file {0} [{1} ({2})]",
+                    "pl": "Błąd podczas odczytywania zawartości pliku {0} [{1} ({2})]"
+                },
+                "WritingToTextFile": {
+                    "en": "Error while writing new content to text file {0} [{1} ({2})]",
+                    "pl": "Błąd podczas zapisywania nowej zawartości pliku {0} [{1} ({2})]"
+                },
+                "RenamingMacroFiles": {
+                    "en": "Error while renaming files [{0} ({1})]",
+                    "pl": "Błąd podczas zmiany nazw plików [{0} ({1})]"
+                },
+                "RenamingMacroFile": {
+                    "en": "Error while renaming file {0} to {1} [{2} ({3})]",
+                    "pl": "Błąd podczas zmiany nazwy pliku {0} na {1} [{2} ({3})]"
+                },
+                "RenamingProject": {
+                    "en": "Error while renaming VB project {0} to {1} [{2} ({3})]",
+                    "pl": "Błąd podczas zmiany nazwy projektu z {0} na {1} [{2} ({3})]"
+                },
+                "FixingFilesReferences": {
+                    "en": "Unexpected error while fixing references between files: [{0} ({1})]",
+                    "pl": "Nieoczekiwany błąd podczas naprawiania referencji pomiędzy plikami: [{0} ({1})]"
+                },
+                "FixingFileReferences": {
+                    "en": "Error when fixing references in file {0} [{1} ({2})]",
+                    "pl": "Błąd podczas naprawiania referencji w pliku {0} [{1} ({2})]"
+                },
+                "FixingReference": {
+                    "en": "[{0}] Error when trying to fix reference to library {1} [{2} ({3})]",
+                    "pl": "[{0}] Błąd podczas naprawiania referencji do biblioteki {1} [{2} ({3})]"
+                },
+                "ReferenceFileNotFound": {
+                    "en": "File {0} assigned to library [{1}] does not exist.",
+                    "pl": "Plik {0} przypisany do biblioteki [{1}] nie istnieje."
+                },
+                "CreatingBackgroundExcelInstance": {
+                    "en": "Error while creating background Excel instance [Error: {0} ({1})].",
+                    "pl": "Błąd podczas otwierania nowej instancji Excela [Błąd: {0} ({1})]."
+                },
+                "OpeningProjectFile": {
+                    "en": "Error when opening project file {0}} [Error: {1} ({2})].",
+                    "pl": "Błąd podczas otwierania pliku projektowego {0} [Błąd: {1} ({2})]."
+                },
+                "FailedBecauseOfPredecessors": {
+                    "en": "This step was cancelled because of some earlier steps failure.",
+                    "pl": "Ten krok został anulowany z powodu niepowodzenia jednego z wymaganych kroków poprzedzających."
+                },
+                "RibbonInvalidInput": {
+                    "en": "There are errors in [ribbon] worksheet.",
+                    "pl": "W zakładce [ribbon] znajdują się nieprawidłowe dane."
+                },
+                "CreatingXmlFile": {
+                    "en": "Error while generating XML file [{0}] [Error: {1} ({2})]",
+                    "pl": "Błąd podczas generowania pliku XML [{0}] [Błąd: {1} ({2})]"
+                },
+                "CreatingJsonFile": {
+                    "en": "Error while generating JSON file [{0}] [Error: {1} ({2})]",
+                    "pl": "Błąd podczas generowania pliku JSON [{0}] [Błąd: {1} ({2})]"
+                },
+                "CreatingMsgFile": {
+                    "en": "Error while generating message file [{0}] [Error: {1} ({2})]",
+                    "pl": "Błąd podczas generowania pliku z tekstami [{0}] [Błąd: {1} ({2})]"
+                }
+            },
+            "Warnings": {},
+            "Messages": {
+                "CreatingProjectFolderSuccess": {
+                    "en": "Folder for project [{0}] has been successfully created.\n\nLocation: {1}",
+                    "pl": "Folder dla projektu [{0}] został pomyślnie utworzony.\n\nLokalizacja: {1}."
+                },
+                "ApplyingChangesToTextFilesSuccess": {
+                    "en": "The following files have been adjusted:\n{0}",
+                    "pl": "Następujące pliki zostały dostosowane do potrzeb projektu:\n{0}"
+                },
+                "ApplyingChangesToTextFilesSemiSuccess": {
+                    "en": "The following files have been adjusted:\n{0}",
+                    "pl": "Następujące pliki zostały dostosowane do potrzeb projektu:\n{0}"
+                },
+                "ApplyingChangesToTextFilesFailure": {
+                    "en": "None of the required files have been successfully adjusted.\n\nThe following list contains all the files that macro tried to adjust and error description:\n{0}",
+                    "pl": "Żadnego pliku tekstowego nie udało się dostosować do potrzeb projektu.\n\nPoniżej znajduje się lista plików, które makro próbowało dostosować wraz z opisem błędu:\n{0}"
+                },
+                "ApplyingChangesToCodeSuccess": {
+                    "en": "Code in the following modules have been adjusted to the project's purposes:\n{0}",
+                    "pl": "Następujące moduły zostały dostosowane do potrzeb projektu:\n{0}"
+                },
+                "ApplyingChangesToCodeSemiSuccess": {
+                    "en": "The following files have been adjusted:\n{0}",
+                    "pl": "Następujące pliki zostały dostosowane do potrzeb projektu:\n{0}"
+                },
+                "ApplyingChangesToCodeFailure": {
+                    "en": "None of the required modules have been successfully adjusted.\n\nThe following list contains all the modules that macro tried to adjust and error description:\n{0}",
+                    "pl": "Żadnego wymaganego modułu nie udało się dostosować do potrzeb projektu.\n\nPoniżej znajduje się lista modułów, które makro próbowało dostosować wraz z opisem błędu:\n{0}"
+                },
+                "GeneratingRibbonSuccess": {
+                    "en": "Ribbon files have been successfully generated:\n{0}",
+                    "pl": "Pliki potrzebne do wyświetlenia ribbona zostały poprawnie wygenerowane:\n{0}"
+                },
+                "GeneratingRibbonSemiSuccess": {
+                    "en": "The following files have been successfully generated:\n{0}\n\nWhen generating the following files, macro encountered some errors:\n{1}",
+                    "pl": "Następujące pliki zostały poprawnie wygenerowane:\n{0}\n\nPodczas generowania poniższych plików napotkano problemy:\n{1}"
+                },
+                "GeneratingRibbonFailure": {
+                    "en": "Attempt to generate ribbon files failed\nBelow is the list of files that application attempted to generate:\n{0}",
+                    "pl": "Nie udało się wygenerować plików potrzebnych do wyświetlenia ribbona\nPoniżej znajduje się lista plików, które aplikacja próbowała wygenerować:\n{0}"
+                },
+                "FixingReferencesSuccess": {
+                    "en": "References in the following files have been fixed:\n{0}",
+                    "pl": "Referencje w następujących plikach zostały naprawione:\n{0}"
+                },
+                "FixingReferencesSemiSuccess": {
+                    "en": "References in the following files have been fixed:\n{0}\n\nWhen fixing references in the following files, macro encountered some errors:\n{1}",
+                    "pl": "Referencje w następujących plikach zostały naprawione:\n{0}\n\nPodczas naprawy referencji w poniższych plikach, makro napotkało na błędy:\n{1}"
+                },
+                "FixingReferencesFailure": {
+                    "en": "In none of the files references have been successfully fixed.\n\nThe following list contains all the files where macro tried to fix referneces but failed:\n{0}",
+                    "pl": "W żadnym z plików nie udało się naprawić referencji.\n\nPoniżej znajduje się lista plików, w których makro próbowało naprawić referencje wraz z opisem napotkanego błędu:\n{0}"
+                },
+                "FinalSuccessMessage": {
+                    "en": "Project [{0}] has been successfully created.\n\nLocation: {1}",
+                    "pl": "Projekt [{0}] został pomyślnie utworzony.\n\nLokalizacja: {1}."
+                },
+                "FixingSingleReference": {
+                    "en": "Error when fixing reference [{0}] in file  {1} [{2} ({3})]",
+                    "pl": "Błąd podczas naprawiania referencji [{0}] w pliku {1} [{2} ({3})]"
+                },
+                "RemovingSingleReference": {
+                    "en": "Error when trying to remove reference [{0}: {1}] from the file {2} ({3} ({4}))",
+                    "pl": "Błąd przy próbie usunięcia referencji [{0}: {1}] z pliku {2} ({3} ({4}))"
+                },
+                "AddingSingleReference": {
+                    "en": "Error when trying to add reference [{0}: {1}] to the file {2} ({3} ({4}))",
+                    "pl": "Błąd przy próbie dodania referencji [{0}: {1}] do pliku {2} ({3} ({4}))"
+                }
+            },
+            "Steps": {
+                "CreatingProjectFolder": {
+                    "en": "Creating project folder",
+                    "pl": "Tworzenie folderu projektowego"
+                },
+                "ApplyingChangesToTextFiles": {
+                    "en": "Applying changes to text files",
+                    "pl": "Dostosowywanie plików tekstowych do potrzeb projektu"
+                },
+                "ApplyingChangesToCode": {
+                    "en": "Applying changes to code",
+                    "pl": "Dostosowywanie kodu do potrzeb projektu"
+                },
+                "CreatingRibbonComponents": {
+                    "en": "Creating ribbon components",
+                    "pl": "Tworzenie elementów wstążki"
+                },
+                "FixingReferences": {
+                    "en": "Fixing references between Excel files",
+                    "pl": "Naprawianie referencji pomiędzy plikami"
+                }
+            },
+            "Actions": {
+                "CheckingPreviousVersion": {
+                    "en": "Checking if there is currently such a folder",
+                    "pl": "Weryfikacja czy folder o takiej nazwie już istnieje"
+                },
+                "ApplyingChangesToTextFile": {
+                    "en": "Modifying file {0}",
+                    "pl": "Modyfikowanie pliku {0}"
+                },
+                "ApplyingChangesToCode": {
+                    "en": "Modifying file {0}",
+                    "pl": "Modyfikowanie pliku {0}"
+                },
+                "DeletingPreviousVersion": {
+                    "en": "Deleting previous version of folder [{0}]",
+                    "pl": "Usuwanie poprzedniej wersji folderu [{0}]"
+                },
+                "CreatingDestinationFolder": {
+                    "en": "Creating destination folder [{0}]",
+                    "pl": "Tworzenie docelowy folder [{0}]"
+                },
+                "CopyingTemplateFiles": {
+                    "en": "Copying template files to folder [{0}]",
+                    "pl": "Kopiowanie niezbędnych plików do folderu [{0}]"
+                },
+                "RenamingMacroFiles": {
+                    "en": "Renaming project files.",
+                    "pl": "Dostosowanie nazw plików."
+                },
+                "FixingSingleFileReferences": {
+                    "en": "Fixing references in file {0}",
+                    "pl": "Naprawianie referencji w pliku {0}"
+                },
+                "CreatingBackgroundExcelInstance": {
+                    "en": "Creating background Excel instance.",
+                    "pl": "Tworzenie tymczasowej instancji Excela w tle."
+                },
+                "OpeningProjectFilesInHiddenExcel": {
+                    "en": "Opening project file {0}.",
+                    "pl": "Otwieranie pliku {0}."
+                },
+                "SavingFileWithNewReferences": {
+                    "en": "Saving new references in file [{0}]",
+                    "pl": "Zapisywanie nowych referencji w pliku [{0}]"
+                }
+            }
+        }
+    }
+}

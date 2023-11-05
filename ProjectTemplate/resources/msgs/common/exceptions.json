@@ -1,0 +1,110 @@
+{
+    "messages": {
+        "Exception": {
+            "IllegalDataType": {
+                "en": "Illegal data type",
+                "pl": "Illegal data type"
+            },
+            "IllegalValue": {
+                "en": "Illegal value",
+                "pl": "Illegal value"
+            },
+            "ObjectExpected": {
+                "en": "Object expected",
+                "pl": "Object expected"
+            },
+            "NullNotAllowed": {
+                "en": "Null not allowed",
+                "pl": "Null not allowed"
+            },
+            "NotArray": {
+                "en": "Not array",
+                "pl": "Not array"
+            },
+            "DimensionNotHandled": {
+                "en": "Given dimension is not supported by this function",
+                "pl": "Given dimension is not supported by this function"
+            },
+            "DimensionOutOfBound": {
+                "en": "Dimension out of bound",
+                "pl": "Dimension out of bound"
+            },
+            "IndexOutOfBound": {
+                "en": "Index out of bound",
+                "pl": "Index out of bound"
+            },
+            "DynamicArrayExpected": {
+                "en": "Dynamic array expected",
+                "pl": "Dynamic array expected"
+            },
+            "UndefinedArray": {
+                "en": "Undefined array not allowed",
+                "pl": "Undefined array not allowed"
+            },
+            "DbConnectionException": {
+                "en": "Connection to the database has been lost",
+                "pl": "Connection to the database has been lost"
+            },
+            "SqlException": {
+                "en": "Invalid SQL command",
+                "pl": "Invalid SQL command"
+            },
+            "TransactionCommitException": {
+                "en": "Error while committing SQL transaction",
+                "pl": "Error while committing SQL transaction"
+            },
+            "DbStoredProcedureError": {
+                "en": "Error while running stored procedure | Procedure: {0} | Error number: {1} | Error description: {2}",
+                "pl": "Error while running stored procedure | Procedure: {0} | Error number: {1} | Error description: {2}"
+            },
+            "DuplicateKey": {
+                "en": "Duplicated key ({0})",
+                "pl": "Duplicated key ({0})"
+            },
+            "IllegalDirectory": {
+                "en": "Illegal directory",
+                "pl": "Illegal directory"
+            },
+            "FileNotFound": {
+                "en": "File {0} doesn't exist",
+                "pl": "File {0} doesn't exist"
+            },
+            "NoWritePermission": {
+                "en": "Error when trying to write in the folder {0}.\nCheck if the folder exists and if you have write permission",
+                "pl": "Error when trying to write in the folder {0}.\nCheck if the folder exists and if you have write permission"
+            },
+            "MethodNotSupported": {
+                "en": "Method {0} not supported",
+                "pl": "Method {0} not supported"
+            },
+            "ArgumentNotOptional": {
+                "en": "Argument not optional",
+                "pl": "Argument not optional"
+            },
+            "WrongNumberOfArguments": {
+                "en": "Wrong number of arguments",
+                "pl": "Wrong number of arguments"
+            },
+            "InvalidRange": {
+                "en": "Invalid range",
+                "pl": "Invalid range"
+            },
+            "InvalidSheet": {
+                "en": "Invalid sheet",
+                "pl": "Invalid sheet"
+            },
+            "InvalidBook": {
+                "en": "Invalid book",
+                "pl": "Invalid book"
+            },
+            "IllegalSheet": {
+                "en": "Illegal sheet",
+                "pl": "Illegal sheet"
+            },
+            "CancelledByUser": {
+                "en": "Cancelled by user",
+                "pl": "Cancelled by user"
+            }
+        }
+    }
+}

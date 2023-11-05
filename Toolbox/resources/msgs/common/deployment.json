@@ -1,0 +1,44 @@
+{
+    "messages": {
+        "Deployment": {
+            "Processing": {
+                "WindowTitle": {
+                    "en": "Deploying project for UAT/PROD"
+                }
+            },
+            "SavingFiles": {
+                "en": "Saving files"
+            },
+            "SavingFile": {
+                "en": "Saving file {0}"
+            },
+            "RemovingTempSheets": {
+                "en": "Removing temporary sheets and Excel names"
+            },
+            "CompactingCodeFiles": {
+                "en": "Compacting code files"
+            },
+            "CancelledDuePreviousFailure": {
+                "en": "Action skipped because of previous action's failure"
+            },
+            "ClearingTempFolder": {
+                "en": "Clearing [temp] folder"
+            },
+            "CopyingResourcesAndTemplates": {
+                "en": "Copying [resources] and [templates] folder"
+            },
+            "LinkingDatabase": {
+                "en": "Linking database tables"
+            },
+            "CopyingDb": {
+                "en": "Copying database for {0}"
+            },
+            "RelinkingTable": {
+                "en": "Relinking table {0} for {1}"
+            },
+            "CompactingDb": {
+                "en": "Compacting database for {0}"
+            }
+        }
+    }
+}

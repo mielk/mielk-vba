@@ -1,0 +1,16 @@
+{
+    "messages": {
+        "OptionsContainer": {
+            "Warnings": {
+                "TooLessItemsSelected": {
+                    "en": "At least {0} item(s) must be selected",
+                    "pl": "Co najmniej {1} element(y) muszą być wybrane"
+                },
+                "TooManyItemsSelected": {
+                    "en": "Maximum {0} item(s) can be selected",
+                    "pl": "Maksymalnie {0} element(y) mogą być wybrane"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,42 @@
+{
+    "messages": {
+        "NamesStandarizer": {
+            "DefaultWindowTitle": {
+                "en": "Standarizing names",
+                "pl": "Słownikowanie nazw"
+            },
+            "Labels": {
+                "AliasesListTitle": {
+                    "en": "Aliases",
+                    "pl": "Aliasy"
+                },
+                "StandardNamesListTitle": {
+                    "en": "Standard names",
+                    "pl": "Ustandaryzowane nazwy"
+                },
+                "AssignAlias": {
+                    "en": "Assign to selected",
+                    "pl": "Przypisz do wybranej nazwy"
+                },
+                "CreateNewItem": {
+                    "en": "Create new item",
+                    "pl": "Stwórz nowy element"
+                },
+                "UnassignedAliases": {
+                    "en": "UNASSIGNED ALIASES",
+                    "pl": "NIEPRZYPISANE"
+                },
+                "JunkAliases": {
+                    "en": "JUNK ALIASES",
+                    "pl": "IGNOROWANE"
+                }
+            },
+            "Warnings": {
+                "UnassignedItems": {
+                    "en": "Some aliases ({0}) are unassigned. It may cause some report showing incorrect data.",
+                    "pl": "Niektóre aliasy ({0}) pozostały nieprzypisane. Może to spowodować ich pominięcie w raportach."
+                }
+            }
+        }
+    }
+}

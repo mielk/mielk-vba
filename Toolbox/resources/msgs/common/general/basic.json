@@ -1,0 +1,86 @@
+{
+    "messages": {
+        "Ok": {
+            "en": "OK",
+            "pl": "OK"
+        },
+        "Cancel": {
+            "en": "Cancel",
+            "pl": "Anuluj"
+        },
+        "Yes": {
+            "en": "Yes",
+            "pl": "Tak"
+        },
+        "No": {
+            "en": "No",
+            "pl": "Nie"
+        },
+        "Add": {
+            "en": "Add",
+            "pl": "Dodaj"
+        },
+        "Save": {
+            "en": "Save",
+            "pl": "Zapisz"
+        },
+        "Total": {
+            "en": "Total",
+            "pl": "Razem"
+        },
+        "SelectDate": {
+            "en": "Select date",
+            "pl": "Wybierz datę"
+        },
+        "FileName": {
+            "en": "File name",
+            "pl": "Nazwa pliku"
+        },
+        "StartDate": {
+            "en": "Start",
+            "pl": "Początek"
+        },
+        "EndDate": {
+            "en": "End",
+            "pl": "Koniec"
+        },
+        "UnsavedData": {
+            "en": "Unsaved data",
+            "pl": "Niezapisane dane"
+        },
+        "All": {
+            "en": "all",
+            "pl": "wszystkie"
+        },
+        "Status": {
+            "Unknown": {
+                "en": "unknown",
+                "pl": "nieznane"
+            },
+            "Success": {
+                "en": "success",
+                "pl": "ok"
+            },
+            "Error": {
+                "en": "error",
+                "pl": "błąd"
+            },
+            "Warning": {
+                "en": "warning",
+                "pl": "ostrzeżenie"
+            },
+            "Rejected": {
+                "en": "rejected",
+                "pl": "odrzucone"
+            },
+            "Skipped": {
+                "en": "skipped",
+                "pl": "pominięte"
+            }
+        },
+        "VersionInfo": {
+            "en": "Version {0}",
+            "pl": "Wersja {0}"
+        }
+    }
+}

@@ -1,0 +1,8 @@
+* 	VBScript do uruchamiania
+	[VBScript] możliwość określenia czy ma przenosić pliki do jakiegoś innego folderu czy uruchamiać z oryginalnej lokalizacji
+	
+
+
+_Main
+* modStart
+	* setupServices - w zależności od tego czy jest logowanie błędów do bazy czy tylko do txt ustawić odpowiednią wartość stałej

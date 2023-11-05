@@ -1,0 +1,10 @@
+{
+    "messages": {
+        "Warnings": {
+            "FileNotFound": {
+                "en": "File not found",
+                "pl": "Nie znaleziono pliku"
+            }
+        }
+    }
+}

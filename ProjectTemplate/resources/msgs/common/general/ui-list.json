@@ -1,0 +1,22 @@
+{
+    "messages": {
+        "UiList": {
+            "Buttons": {
+                "SelectAllTooltip": {
+                    "en": "Select all",
+                    "pl": "Zaznacz wszystkie"
+                },
+                "UnselectAllTooltip": {
+                    "en": "Unselect all",
+                    "pl": "Odznacz wszystkie"
+                }
+            },
+            "Pagination": {
+                "Status": {
+                    "en": "{0} of {1}",
+                    "pl": "{0} z {1}"
+                }
+            }
+        }
+    }
+}

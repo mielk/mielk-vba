@@ -1,0 +1,77 @@
+{
+    "iconsFolder": "@\\.\\ribbon\\pics",
+    "invalidationControls": {
+        "placeholder": []
+    },
+    "controls": {
+        "tab.YourProjectCodeName": {
+            "label": {
+                "value": "Ribbon.Tab.caption"
+            }
+        },
+        "group.session": {
+            "label": {
+                "value": "Ribbon.Group.Session.caption"
+            },
+            "visible": {
+                "value": true
+            }
+        },
+        "menu.settings": {
+            "label": {
+                "value": "Ribbon.Menu.Settings.caption"
+            },
+            "visible": {
+                "value": true
+            },
+            "image": {
+                "value": "48//settings-48.png"
+            }
+        },
+        "label.username": {
+            "label": {
+                "functions": [
+                    [
+                        "getUserNameRibbonLabel"
+                    ]
+                ]
+            },
+            "visible": {
+                "value": true
+            }
+        },
+        "label.environment": {
+            "label": {
+                "functions": [
+                    [
+                        "getEnvironmentName"
+                    ]
+                ]
+            },
+            "visible": {
+                "value": true
+            }
+        },
+        "button.settings.changeLanguage": {
+            "label": {
+                "value": "Ribbon.Button.Settings.ChangeLanguage.Caption"
+            },
+            "tooltip": {
+                "value": "Ribbon.Button.Settings.ChangeLanguage.Tooltip"
+            },
+            "visible": {
+                "functions": [
+                    [
+                        "checkUserPermission"
+                    ]
+                ]
+            },
+            "enabled": {
+                "value": true
+            },
+            "image": {
+                "value": "24//languages-24.png"
+            }
+        }
+    }
+}

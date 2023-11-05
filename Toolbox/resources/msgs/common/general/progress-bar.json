@@ -1,0 +1,10 @@
+{
+    "messages": {
+        "ProgressBar": {
+            "Initializing": {
+                "en": "Initializing ...",
+                "pl": "Rozpoczynanie ..."
+            }
+        }
+    }
+}

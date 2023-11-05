@@ -1,0 +1,12 @@
+{
+    "languages": {
+        "en": {
+            "name": "english",
+            "default": false
+        },
+        "pl": {
+            "name": "polski",
+            "default": true
+        }
+    }
+}

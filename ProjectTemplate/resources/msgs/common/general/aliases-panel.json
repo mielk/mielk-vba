@@ -1,0 +1,50 @@
+{
+    "messages": {
+        "AliasesPanel": {
+            "Title": {
+                "en": "Aliases",
+                "pl": "Aliasy"
+            },
+            "AddAliasButton": {
+                "en": "Add",
+                "pl": "Dodaj"
+            },
+            "AddAlias": {
+                "WindowTitle": {
+                    "en": "Add new alias",
+                    "pl": "Dodaj nowy alias"
+                }
+            },
+            "EditAlias": {
+                "WindowTitle": {
+                    "en": "Edit alias ({0})",
+                    "pl": "Edytuj alias ({0})"
+                },
+                "Labels": {
+                    "Alias": {
+                        "en": "Alias",
+                        "pl": "Alias"
+                    }
+                },
+                "ValidationErrors": {
+                    "EmptyAlias": {
+                        "en": "Alias cannot be empty",
+                        "pl": "Alias nie może być pusty"
+                    },
+                    "AlreadyAssigned": {
+                        "en": "Already assigned to [{0}]",
+                        "pl": "Ta nazwa jest już przypisana do [{0}]"
+                    }
+                },
+                "OverrideQuestion": {
+                    "en": "Are you sure you want to re-assign alias [{0}] from [{1}] to [{2}]?",
+                    "pl": "Czy na pewno chcesz zmienić przypisanie aliasu [{0}] z [{1}] na [{2}]"
+                },
+                "OverrideQuestionTitle": {
+                    "en": "Re-assigning alias",
+                    "pl": "Zmiana przypisania aliasu"
+                }
+            }
+        }
+    }
+}

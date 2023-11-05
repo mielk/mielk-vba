@@ -1,0 +1,24 @@
+{
+    "messages": {
+        "languages": {
+            "en": {
+                "en": "English",
+                "pl": "angielski (English)"
+            },
+            "pl": {
+                "en": "Polish (polski)",
+                "pl": "polski"
+            },
+            "ChangeLanguage": {
+                "WindowTitle": {
+                    "en": "Change language",
+                    "pl": "Zmień język"
+                },
+                "SuccessInfo": {
+                    "en": "Language has been successfully changed to {0}.\n\nThe changes will be visible after restarting the application.",
+                    "pl": "Język został zmieniony na {0}.\n\nZmiany będą widoczne po zrestartowaniu aplikacji."
+                }
+            }
+        }
+    }
+}
