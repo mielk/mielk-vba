@@ -372,7 +372,7 @@ End Sub
 '[Refreshing controls]
 Private Sub refreshBackgroundLabel()
     With pBackgroundLabel
-        .BackStyle = VBA.IIf(pStatus = ItemProcessStatus_Before, fmBackStyleTransparent, fmBackStyleOpaque)
+        .BackStyle = VBA.IIf(pStatus = ItemProcessStatus_Unknown, fmBackStyleTransparent, fmBackStyleOpaque)
         .BackColor = getBackColorByStatus(pStatus)
         .BorderStyle = fmBorderStyleNone
     End With
@@ -665,7 +665,7 @@ End Sub
 Private Sub updateStatus(status As ItemProcessStatusEnum)
     pStatus = status
     pStatusIcon.Picture = getPictureByStatus(pStatus)
-    pBackgroundLabel.BackStyle = VBA.IIf(pStatus = ItemProcessStatus_Before, fmBackStyleTransparent, fmBackStyleOpaque)
+    pBackgroundLabel.BackStyle = VBA.IIf(pStatus = ItemProcessStatus_Unknown, fmBackStyleTransparent, fmBackStyleOpaque)
     pBackgroundLabel.BackColor = getBackColorByStatus(pStatus)
     With pExpandCollapseButton
         .Visible = True

@@ -159,7 +159,7 @@ Private Sub insertTreeView()
     With pTreeView
         Set .TreeControl = pFrame
         Call .NodesClear
-        .AppName = ParentApp.getName
+        .AppName = App.getName
         .CheckBoxes(True) = True
         .RootButton = True
         .LabelEdit(True) = False

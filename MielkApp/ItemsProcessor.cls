@@ -283,3 +283,81 @@ End Function
 Public Sub hide()
     Call pStatusViewer.hide
 End Sub
+
+
+
+
+
+
+'[STATIC METHODS]
+
+Public Function getDefaultCategory(status As ItemProcessStatusEnum) As Scripting.Dictionary
+    Set getDefaultCategory = F.dictionaries.Create(False)
+    With getDefaultCategory
+    
+        '[Common properties]
+        Call .Add(TAG_NAME, getItemProcessStatusName(status))
+    
+        '[Status-specific properties]
+        Select Case status
+            Case ItemProcessStatus_Unknown
+                Call .Add(TAG_MAIN_BACKGROUND, 14079702)
+                Call .Add(TAG_ICON_STATUS, UI.Icons.getQuestionMarkIcon)
+                
+            Case ItemProcessStatus_Correct
+                Call .Add(TAG_MAIN_BACKGROUND, 12648384)
+                Call .Add(TAG_DETAILS_BACKGROUND, 14221272)
+                Call .Add(TAG_ICON_STATUS, UI.Icons.getSuccessIcon)
+                Call .Add(TAG_ICON_EXPAND, UI.Icons.getExpandSuccessIcon)
+                Call .Add(TAG_ICON_COLLAPSE, UI.Icons.getCollapseSuccessIcon)
+                Call .Add(TAG_ICON_PREVIEW, UI.Icons.getPreviewFileNormalImage)
+                Call .Add(TAG_ICON_REPROCESS, UI.Icons.getRefreshNormalImage)
+                Call .Add(TAG_ICON_REMOVE, UI.Icons.getRemoveItemNormalImage)
+
+            Case ItemProcessStatus_Warning
+                Call .Add(TAG_MAIN_BACKGROUND, 12641023)
+                Call .Add(TAG_DETAILS_BACKGROUND, 14280943)
+                Call .Add(TAG_ICON_STATUS, UI.Icons.getWarningIcon)
+                Call .Add(TAG_ICON_EXPAND, UI.Icons.getExpandWarningIcon)
+                Call .Add(TAG_ICON_COLLAPSE, UI.Icons.getCollapseWarningIcon)
+                Call .Add(TAG_ICON_PREVIEW, UI.Icons.getPreviewFileWarningImage)
+                Call .Add(TAG_ICON_REPROCESS, UI.Icons.getRefreshWarningImage)
+                Call .Add(TAG_ICON_REMOVE, UI.Icons.getRemoveItemWarningImage)
+                
+            Case ItemProcessStatus_Error
+                Call .Add(TAG_MAIN_BACKGROUND, 12632319)
+                Call .Add(TAG_DETAILS_BACKGROUND, 14277103)
+                Call .Add(TAG_ICON_STATUS, UI.Icons.getErrorIcon)
+                Call .Add(TAG_ICON_EXPAND, UI.Icons.getExpandErrorIcon)
+                Call .Add(TAG_ICON_COLLAPSE, UI.Icons.getCollapseErrorIcon)
+                Call .Add(TAG_ICON_PREVIEW, UI.Icons.getPreviewFileErrorImage)
+                Call .Add(TAG_ICON_REPROCESS, UI.Icons.getRefreshErrorImage)
+                Call .Add(TAG_ICON_REMOVE, UI.Icons.getRemoveItemErrorImage)
+
+        End Select
+        
+    End With
+    
+End Function
+
+Public Function getDefaultCategories(ByVal categories As Variant) As Scripting.Dictionary
+    Dim varCategory As Variant
+    '------------------------------------------------------------------------------------------------------
+
+    Set getDefaultCategories = F.dictionaries.Create(False)
+    
+    If F.Variables.isContainer(categories) Then
+        Set categories = F.Collections.createFrom(categories)
+        For Each varCategory In categories
+            Call getDefaultCategories.add( _
+                                varCategory, _
+                                getDefaultCategory(VBA.CInt(varCategory)))
+        Next varCategory
+    End If
+
+End Function
+
+
+                        
+
+

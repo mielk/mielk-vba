@@ -98,6 +98,7 @@ Private pHeaderDefinitions As VBA.Collection
 '[Items] --------------------------------------------------------------------------------------------------
 Private pUuid As String
 Private pItems As Scripting.Dictionary
+Private pFiltered As Scripting.Dictionary
 Private pSortedKeys As VBA.Collection
 Private pCaptions As Scripting.Dictionary
 Private pSpecialFormats As Scripting.Dictionary
@@ -106,6 +107,7 @@ Private pCurrentPage As Long
 Private pSelection As Scripting.Dictionary
 Private pActiveLine As UIListLine
 Private pPreviewItemKey As Variant
+Private pFilter As String
 'Private pSelectedLine As UIListLine
 'Private pSelectedLines As Scripting.Dictionary
 '[State] --------------------------------------------------------------------------------------------------
@@ -123,6 +125,7 @@ Event AfterDoubleClick()
 Event AfterEditItemClick(item As Variant, ByRef newCaption As String)
 Event AfterRemoveItemClick(item As Variant, ByRef confirmed As Boolean)
 Event AfterPreviewChanged(key As Variant, item As Variant, index As Long)
+Event GiveFocusToTopControl()
 '----------------------------------------------------------------------------------------------------------
 
 
@@ -137,6 +140,7 @@ End Sub
 Private Sub initializeContainers()
     Erase pLines
     Set pItems = F.dictionaries.Create(False)
+    Set pFiltered = F.dictionaries.Create(False)
     Set pCaptions = F.dictionaries.Create(False)
     Set pSpecialFormats = F.dictionaries.Create(False)
     Set pLinesByKey = F.dictionaries.Create(False)
@@ -146,6 +150,7 @@ Private Sub initializeContainers()
     Set pSelection = F.dictionaries.Create(False)
     Set pConstKeysDict = F.dictionaries.Create(False)
     pCurrentPage = 1
+    pFilter = vbNullString
 End Sub
 
 Private Sub initializeDefaultValues()
@@ -213,6 +218,7 @@ Public Function setValues(value As Variant, _
     
     Set setValues = Me
     Set pItems = F.dictionaries.createFrom(value, duplicateBehaviour_Skip)
+    Set pFiltered = F.dictionaries.Clone(pItems)
     Call loadSelectionFromValue(selection)
     Set pCaptions = VBA.IIf(Not captions Is Nothing, captions, F.dictionaries.Create(False))
     Set pConstKeysDict = VBA.IIf(Not constKeys Is Nothing, constKeys, F.dictionaries.Create(False))
@@ -716,8 +722,10 @@ Private Sub arrangeLines()
     For i = LBound(pLines) To UBound(pLines)
         Set line = pLines(i)
         With line
-            Call .move(top:=y)
-            y = .getBottom
+            If line.isVisible Then
+                Call .move(top:=y)
+                y = .getBottom
+            End If
         End With
     Next i
 
@@ -742,10 +750,10 @@ Private Sub sortItems(Optional ascending As Boolean = True)
     Set sortableItems = F.dictionaries.Create(False)
     
     '[Divide items into two groups - const and sortable]
-    For Each key In pItems.keys
+    For Each key In pFiltered.keys
         If Not VBA.IsEmpty(key) Then
             If isConstKey(key) Then
-                Call constItems.Add(key)
+                Call constItems.add(key)
             Else
                 Call F.dictionaries.addItem(sortableItems, getItemCaption(key), key)
             End If
@@ -786,11 +794,11 @@ Private Sub updateLinesItems(Optional pageIndex As Long = 1)
     For i = 1 To lastIndex
         Set line = pLines(i)
         index = i + pagesOffset
-        If index <= pItems.Count Then
+        If index <= pFiltered.Count Then
             key = pSortedKeys(index)
             With line
                 Call .setVisibility(True)
-                Call .setItem(pItems.item(key))
+                Call .setItem(pFiltered.item(key))
                 Call .setKey(key)
                 Call .setCaption(getItemCaption(key))
                 Call .setSelection(pSelection.Exists(key))
@@ -837,7 +845,7 @@ Private Function getItemCaption(key As Variant) As String
 End Function
 
 Private Function countPages() As Long
-    countPages = VBA.Int(pItems.Count / pMaxItemsPerPage) + VBA.IIf(pItems.Count Mod pMaxItemsPerPage > 0, 1, 0)
+    countPages = VBA.Int(pFiltered.Count / pMaxItemsPerPage) + VBA.IIf(pFiltered.Count Mod pMaxItemsPerPage > 0, 1, 0)
 End Function
 
 Private Sub showHideScrollBar(lastIndex As Long)
@@ -869,6 +877,7 @@ Public Sub addItem(key As Variant, item As Variant, Optional caption As Variant)
     '------------------------------------------------------------------------------------------------------
     If Not VBA.IsMissing(caption) Then Call F.dictionaries.addItem(pCaptions, key, caption)
     Call F.dictionaries.addItem(pItems, key, item)
+    Call filterItems(pFilter, False)
     Call sortItems
     Call updateLinesItems(pCurrentPage)
 End Sub
@@ -899,7 +908,7 @@ Public Sub renderHeaders()
                 Call .setTotalPages(countPages)
                 Call .render
             End With
-            Call pHeaderDefinitions.Add(pHeaderLine)
+            Call pHeaderDefinitions.add(pHeaderLine)
         Next headerDefinition
     End If
     
@@ -1012,6 +1021,11 @@ Private Sub changeActiveRow(change As Integer)
         If getItemVisibility(line) < 1 Then
             Call scrollToIndex(line, VBA.IIf(change < 0, VerticalAlignment_Top, VerticalAlignment_Bottom))
         End If
+        
+        If currentActiveIndex + change = 0 Then
+            RaiseEvent GiveFocusToTopControl
+        End If
+        
     End If
     
 End Sub
@@ -1053,7 +1067,7 @@ Private Sub changeSelectionInMultiMode(line As UIListLine, selected As Boolean)
 End Sub
 
 Private Sub selectAll()
-    Set pSelection = F.dictionaries.Clone(pItems)
+    Set pSelection = F.dictionaries.Clone(pFiltered)
     Call updateLinesSelectionStatus
     RaiseEvent AfterChange
 End Sub
@@ -1136,15 +1150,27 @@ End Function
 
 
 '[FILTERING]
-Public Sub filterItems(filter As String)
+Public Sub filterItems(filter As String, Optional rerender As Boolean = True)
     Dim key As Variant
     Dim line As UIListLine
+    Dim caption As String
     '--------------------------------------------------------------------------------------------------
-    For Each key In pLinesByKey.keys
-        Set line = pLinesByKey.item(key)
-        Call line.setVisibility(VBA.InStr(1, line.getCaption, filter, vbTextCompare) > 0)
-    Next key
-    Call arrangeLines
+    pFilter = filter
+    If VBA.Len(pFilter) Then
+        Set pFiltered = F.dictionaries.Create(False)
+        For Each key In pItems.keys
+            caption = getItemCaption(key)
+            If VBA.InStr(1, caption, filter, vbTextCompare) > 0 Then
+                Call F.dictionaries.addItem(pFiltered, key, pItems.item(key))
+            End If
+        Next key
+    Else
+        Set pFiltered = F.dictionaries.Clone(pItems)
+    End If
+    If rerender Then
+        Call sortItems
+        Call updateLinesItems
+    End If
 End Sub
 
 
@@ -1159,13 +1185,28 @@ Public Sub setFocus(Optional selectFirstItem As Boolean = False, _
         Call pFocusTextbox.setFocus
     End If
     pFrame.borderColor = pFocusBorderColor
-    If pItems.Count > 0 Then
-        Set line = getLineByIndex(1)
+    If pFiltered.Count > 0 Then
+        Set line = getFirstVisibleLine
         If selectFirstItem Then Call changeSelection(line)
         If activateFirstItem Then Call updateActiveLine(line)
         If previewFirstItem Then Call setPreviewLine(line)
     End If
 End Sub
+
+Private Function getFirstVisibleLine() As UIListLine
+    Dim i As Long
+    Dim line As UIListLine
+    '--------------------------------------------------------------------------------------------------
+    If F.arrays.isDefined(pLines) Then
+        For i = LBound(pLines) To UBound(pLines)
+            Set line = pLines(i)
+            If line.isVisible Then
+                Set getFirstVisibleLine = line
+                Exit For
+            End If
+        Next i
+    End If
+End Function
 
 Public Sub loseFocus()
     pFrame.borderColor = pBorderColor
@@ -1215,6 +1256,7 @@ End Sub
 Public Sub removeAllItems()
     'Call UI.Forms.clearMsFrame(pFrame)
     Set pItems = F.dictionaries.Create(False)
+    Set pFiltered = F.dictionaries.Create(False)
     Set pLinesByKey = F.dictionaries.Create(False)
     Set pKeysByLine = F.dictionaries.Create(False)
     Set pConstKeysDict = F.dictionaries.Create(False)
@@ -1271,7 +1313,7 @@ Public Function getSelectedIndex() As Variant
     For Each key In pSelection.keys
         Set line = F.dictionaries.getObject(pLinesByKey, key)
         If Not line Is Nothing Then
-            Call col.Add(line.getIndex)
+            Call col.add(line.getIndex)
         End If
     Next key
     
@@ -1350,10 +1392,10 @@ Private Sub pFocusTextbox_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal 
             Call changeActiveRow(getVisibleRowsCounter - 1)
             KeyCode = 0
         Case vbKeyHome                  'Home
-            Call changeActiveRow(-pItems.Count)
+            Call changeActiveRow(-pFiltered.Count)
             KeyCode = 0
         Case vbKeyEnd                   'End
-            Call changeActiveRow(pItems.Count)
+            Call changeActiveRow(pFiltered.Count)
             KeyCode = 0
         Case vbKeySpace
             Call changeSelection(pActiveLine)

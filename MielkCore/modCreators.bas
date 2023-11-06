@@ -30,18 +30,18 @@ Public Function ErrorManager() As ErrorManager
     Set ErrorManager = instance
 End Function
 
-Public Function ParentApp() As ParentApp
+Public Function App() As ParentApp
     Static instance As ParentApp
     If instance Is Nothing Then
         Set instance = New ParentApp
     End If
-    Set ParentApp = instance
+    Set App = instance
 End Function
 
-Public Function KeyValue(Key As Variant, value As Variant) As Variant
+Public Function KeyValue(key As Variant, value As Variant) As Variant
     Dim arr(1 To 2) As Variant
     '------------------------------------------------------------------------------------------------------
-    Call f.Variables.assign(arr(1), Key)
+    Call f.Variables.assign(arr(1), key)
     Call f.Variables.assign(arr(2), value)
     KeyValue = arr
 End Function

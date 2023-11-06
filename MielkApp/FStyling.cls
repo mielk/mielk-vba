@@ -34,12 +34,16 @@ Public Sub formatArray(rng As Excel.Range, dictConfig As Scripting.Dictionary, O
         Call F.Ranges.applyFormatFromDictionary(rng, getConditionalStyles(styles, arrayTag))
         
         '[Apply header styling]
-        headerLast = F.dictionaries.getItem(dictConfig, Props.headerLast.getName)
+        Stop
+        Debug.Print "TM refactoring 2023-10-27"
+        'headerLast = F.dictionaries.getItem(dictConfig, Props.headerLast.getName)
         'If Not headerLast Then Call applyHeaderConfig(rng, dictConfig)
         Call applyHeaderConfig(rng, dictConfig)
         
         '[Apply rows & columns styling]
-        rowsFirst = F.dictionaries.getItem(dictConfig, Props.rowsFirst.getName)
+        Stop 'TM - refactoring
+        Debug.Print "TM refactoring 2023-10-27"
+        'rowsFirst = F.dictionaries.getItem(dictConfig, Props.rowsFirst.getName)
         Set rows = F.dictionaries.GetObject(dictConfig, Props.rows.getName)
         Set columns = F.dictionaries.GetObject(dictConfig, Props.columns.getName)
         
@@ -118,8 +122,9 @@ Private Sub applySingleColumnStyle(rng As Excel.Range, columnDto As Scripting.Di
     '------------------------------------------------------------------------------------------------------
 
     index = F.dictionaries.getItem(columnDto, Props.index.getDbField)
-    fromIndex = F.dictionaries.getItem(columnDto, Props.IndexFrom.getDbField)
-    toIndex = F.dictionaries.getItem(columnDto, Props.IndexTo.getDbField)
+    Debug.Print "TM refactoring 2023-10-27"
+    'fromIndex = F.dictionaries.getItem(columnDto, Props.IndexFrom.getDbField)
+    'toIndex = F.dictionaries.getItem(columnDto, Props.IndexTo.getDbField)
     
     Set styles = F.dictionaries.GetObject(columnDto, Props.styles.getName)
 
@@ -141,7 +146,8 @@ Private Sub applySingleColumnStyle(rng As Excel.Range, columnDto As Scripting.Di
     End If
     
     '[Subranges]
-    Set subranges = F.dictionaries.GetObject(columnDto, Props.subranges.getDbField)
+    Debug.Print "TM refactoring 2023-10-27"
+    'Set subranges = F.dictionaries.GetObject(columnDto, Props.subranges.getDbField)
     If Not subranges Is Nothing Then
         For Each dtoSubrange In subranges
             Call applySingleRowStyle(rngColumn, dtoSubrange)
@@ -164,8 +170,9 @@ Private Sub applySingleRowStyle(rng As Excel.Range, rowDto As Scripting.Dictiona
     '------------------------------------------------------------------------------------------------------
 
     index = F.dictionaries.getItem(rowDto, Props.index.getDbField)
-    fromIndex = F.dictionaries.getItem(rowDto, Props.IndexFrom.getDbField)
-    toIndex = F.dictionaries.getItem(rowDto, Props.IndexTo.getDbField)
+    Debug.Print "TM refactoring 2023-10-27"
+    'fromIndex = F.dictionaries.getItem(rowDto, Props.IndexFrom.getDbField)
+    'toIndex = F.dictionaries.getItem(rowDto, Props.IndexTo.getDbField)
     
     Set styles = F.dictionaries.GetObject(rowDto, Props.styles.getName)
     
@@ -188,7 +195,8 @@ Private Sub applySingleRowStyle(rng As Excel.Range, rowDto As Scripting.Dictiona
     End If
     
     '[Subranges]
-    Set subranges = F.dictionaries.GetObject(rowDto, Props.subranges.getDbField)
+    Debug.Print "TM refactoring 2023-10-27"
+    'Set subranges = F.dictionaries.GetObject(rowDto, Props.subranges.getDbField)
     If Not subranges Is Nothing Then
         For Each dtoSubrange In subranges
             Call applySingleColumnStyle(rngRow, dtoSubrange)

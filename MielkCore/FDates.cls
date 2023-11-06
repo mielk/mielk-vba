@@ -11,6 +11,11 @@ Option Explicit
 
 Private Const CLASS_NAME As String = "FDates"
 '----------------------------------------------------------------------------------------------------------
+Private Const DEFAULT_DATE_TIME_FORMAT As String = "YYYY-MM-DD HH:MM:SS"
+Private Const DEFAULT_DATE_ONLY_FORMAT As String = "YYYY-MM-DD"
+Private Const DEFAULT_TIME_ONLY_FORMAT As String = "HH:MM:SS"
+'----------------------------------------------------------------------------------------------------------
+
 
 
 
@@ -522,4 +527,24 @@ Public Function getDateFromMonthYearString(value As Variant) As Date
     
 End Function
 
+
+
+
+Public Function toString(Optional ByVal value As Date, Optional ByVal dateVisibility As DateVisibilityEnum, _
+                                                       Optional ByVal format As String) As String
+    Dim DEFAULT_FORMATS As Variant:             DEFAULT_FORMATS = VBA.Array(DEFAULT_DATE_ONLY_FORMAT, _
+                                                                            DEFAULT_DATE_TIME_FORMAT, _
+                                                                            DEFAULT_TIME_ONLY_FORMAT)
+    '------------------------------------------------------------------------------------------------------
+    
+    '[Validate input parameters]
+    If Not f.Math.isInRange(dateVisibility, LBound(DEFAULT_FORMATS), UBound(DEFAULT_FORMATS)) Then
+        dateVisibility = DateVisibility_DateOnly
+    End If
+    If value = 0 Then value = VBA.Now
+
+    If VBA.Len(format) = 0 Then format = DEFAULT_FORMATS(dateVisibility)
+    toString = VBA.format(value, format)
+    
+End Function
 

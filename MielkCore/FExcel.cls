@@ -33,13 +33,13 @@ End Function
 '***** WITHOUT UNIT TESTS *****
 
 
-Public Function isApplicationValid(app As Excel.Application) As Boolean
+Public Function isApplicationValid(App As Excel.Application) As Boolean
     Dim name As String
     '------------------------------------------------------------------------------------------------------
     
-    If Not app Is Nothing Then
+    If Not App Is Nothing Then
         On Error Resume Next
-        name = app.name
+        name = App.name
         On Error GoTo 0
         isApplicationValid = (VBA.Len(name) > 0)
     End If
@@ -138,16 +138,16 @@ End Sub
 
 
 Public Sub freeze(ByRef state As ExcelState)
-    Dim app As Excel.Application:                       Set app = Excel.Application
+    Dim App As Excel.Application:                       Set App = Excel.Application
     '------------------------------------------------------------------------------------------------------
     
     With state
-        If .ScreenUpdating Then app.ScreenUpdating = False
-        If .EnableEvents Then app.EnableEvents = False
+        If .ScreenUpdating Then App.ScreenUpdating = False
+        If .EnableEvents Then App.EnableEvents = False
         If .Interactive Then
-            app.Interactive = False
-            app.EnableCancelKey = xlDisabled
-            app.cursor = xlWait
+            App.Interactive = False
+            App.EnableCancelKey = xlDisabled
+            App.cursor = xlWait
         End If
         If Not .Sheet Is Nothing Then
             If .SheetProtection Then
@@ -160,7 +160,7 @@ End Sub
 
 
 Public Sub unfreeze(ByRef state As ExcelState)
-    Dim app As Excel.Application:                       Set app = Excel.Application
+    Dim App As Excel.Application:                       Set App = Excel.Application
     '------------------------------------------------------------------------------------------------------
     
     With state
@@ -185,14 +185,14 @@ Public Sub unfreeze(ByRef state As ExcelState)
             End If
         End If
         
-        If .EnableEvents Then app.EnableEvents = True
+        If .EnableEvents Then App.EnableEvents = True
         If .Interactive Then
-            app.Interactive = True
-            app.EnableCancelKey = xlInterrupt
-            app.cursor = xlDefault
+            App.Interactive = True
+            App.EnableCancelKey = xlInterrupt
+            App.cursor = xlDefault
         End If
         
-        If .ScreenUpdating Then app.ScreenUpdating = True
+        If .ScreenUpdating Then App.ScreenUpdating = True
         
     End With
     
@@ -200,13 +200,13 @@ End Sub
 
 
 Public Function getDefaultExcelState(Optional Sheet As Excel.Worksheet, Optional protectionPassword As String) As ExcelState
-    Dim app As Excel.Application:               Set app = Excel.Application
+    Dim App As Excel.Application:               Set App = Excel.Application
     '------------------------------------------------------------------------------------------------------
     
     With getDefaultExcelState
-        .ScreenUpdating = app.ScreenUpdating
-        .EnableEvents = app.EnableEvents
-        .Interactive = app.Interactive
+        .ScreenUpdating = App.ScreenUpdating
+        .EnableEvents = App.EnableEvents
+        .Interactive = App.Interactive
         If Not VBA.IsMissing(Sheet) Then
             If f.Sheets.isValid(Sheet) Then
                 Set .Sheet = Sheet
@@ -265,7 +265,10 @@ End Function
 Public Function getBackgroundInstance() As Excel.Application
     If Not f.Excel.isValidAppReference(pBackgroundExcel) Then
         Set pBackgroundExcel = New Excel.Application
-        pBackgroundExcel.visible = False
+        With pBackgroundExcel
+            .visible = False
+            .displayAlerts = False
+        End With
     End If
     Set getBackgroundInstance = pBackgroundExcel
 End Function
@@ -277,3 +280,27 @@ Public Function closeBackgroundInstance() As Excel.Application
         Set pBackgroundExcel = Nothing
     End If
 End Function
+
+
+
+
+Public Sub adjustExcelSettings(Optional ByVal xls As Excel.Application)
+    If xls Is Nothing Then Set xls = Excel.Application
+    With xls.ErrorCheckingOptions
+        .UnlockedFormulaCells = False
+        .OmittedCells = False
+        .InconsistentTableFormula = False
+        .InconsistentFormula = False
+        .EmptyCellReferences = False
+        .NumberAsText = False
+    End With
+    
+    '[Application settings]
+    With xls
+        .displayAlerts = False
+        .WindowState = xlMaximized
+    End With
+    
+    Excel.ActiveWindow.WindowState = xlMaximized
+    
+End Sub

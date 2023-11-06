@@ -882,7 +882,7 @@ Private Sub deleteItem(item As IGridItem)
         Call F.Collections.removeItem(pItems, item)
         Call F.dictionaries.removeItem(pFiltered, item.getKey)
         Call arrangeGrid
-        Call VBA.MsgBox(F.Strings.format(pDeleteSuccessInfo, item.getDeleteInfoString), vbInformation, ParentApp.getName)
+        Call VBA.MsgBox(F.Strings.format(pDeleteSuccessInfo, item.getDeleteInfoString), vbInformation, App.getName)
     Else
         Call F.dictionaries.addItem(logParams, TAG_STEP, TAG_CANCEL)
         RaiseEvent action(actionName, logParams)

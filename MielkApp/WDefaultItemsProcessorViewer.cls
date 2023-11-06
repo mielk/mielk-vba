@@ -163,43 +163,17 @@ End Function
 
 '[DEFINING STATUSES]
 Private Function createDefaultStatusDictionary() As Scripting.Dictionary
-    Set createDefaultStatusDictionary = F.dictionaries.Create(False)
-    With createDefaultStatusDictionary
-        Call .Add(ItemProcessStatus_Before, F.dictionaries.createWithItems(False, _
-                        KeyValue(TAG_MAIN_BACKGROUND, 14079702), _
-                        KeyValue(TAG_ICON_STATUS, UI.Icons.getQuestionMarkIcon) _
-        ))
-        Call .Add(ItemProcessStatus_Right, F.dictionaries.createWithItems(False, _
-                        KeyValue(TAG_MAIN_BACKGROUND, 12648384), _
-                        KeyValue(TAG_DETAILS_BACKGROUND, 14221272), _
-                        KeyValue(TAG_ICON_STATUS, UI.Icons.getSuccessIcon), _
-                        KeyValue(TAG_ICON_EXPAND, UI.Icons.getExpandSuccessIcon), _
-                        KeyValue(TAG_ICON_COLLAPSE, UI.Icons.getCollapseSuccessIcon), _
-                        KeyValue(TAG_ICON_PREVIEW, UI.Icons.getPreviewFileNormalImage), _
-                        KeyValue(TAG_ICON_REPROCESS, UI.Icons.getRefreshNormalImage), _
-                        KeyValue(TAG_ICON_REMOVE, UI.Icons.getRemoveItemNormalImage) _
-        ))
-        Call .Add(ItemProcessStatus_Warning, F.dictionaries.createWithItems(False, _
-                        KeyValue(TAG_MAIN_BACKGROUND, 12641023), _
-                        KeyValue(TAG_DETAILS_BACKGROUND, 14280943), _
-                        KeyValue(TAG_ICON_STATUS, UI.Icons.getWarningIcon), _
-                        KeyValue(TAG_ICON_EXPAND, UI.Icons.getExpandWarningIcon), _
-                        KeyValue(TAG_ICON_COLLAPSE, UI.Icons.getCollapseWarningIcon), _
-                        KeyValue(TAG_ICON_PREVIEW, UI.Icons.getPreviewFileWarningImage), _
-                        KeyValue(TAG_ICON_REPROCESS, UI.Icons.getRefreshWarningImage), _
-                        KeyValue(TAG_ICON_REMOVE, UI.Icons.getRemoveItemWarningImage) _
-        ))
-        Call .Add(ItemProcessStatus_Error, F.dictionaries.createWithItems(False, _
-                        KeyValue(TAG_MAIN_BACKGROUND, 12632319), _
-                        KeyValue(TAG_DETAILS_BACKGROUND, 14277103), _
-                        KeyValue(TAG_ICON_STATUS, UI.Icons.getErrorIcon), _
-                        KeyValue(TAG_ICON_EXPAND, UI.Icons.getExpandErrorIcon), _
-                        KeyValue(TAG_ICON_COLLAPSE, UI.Icons.getCollapseErrorIcon), _
-                        KeyValue(TAG_ICON_PREVIEW, UI.Icons.getPreviewFileErrorImage), _
-                        KeyValue(TAG_ICON_REPROCESS, UI.Icons.getRefreshErrorImage), _
-                        KeyValue(TAG_ICON_REMOVE, UI.Icons.getRemoveItemErrorImage) _
-        ))
-    End With
+    Dim categories As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    categories = VBA.Array( _
+                        ItemProcessStatus_Unknown, _
+                        ItemProcessStatus_Correct, _
+                        ItemProcessStatus_Warning, _
+                        ItemProcessStatus_Error)
+                        
+    Set createDefaultStatusDictionary = ItemsProcessor.getDefaultCategories(categories)
+    
 End Function
 
 Public Function setStatusDictionary(value As Scripting.Dictionary) As WDefaultItemsProcessorViewer
@@ -254,7 +228,7 @@ Private Sub insertProgressPanel()
     Dim frame As MSForms.frame
     '------------------------------------------------------------------------------------------------------
     
-    Set frame = pWindow.getContentFrame.Controls.Add(CREATE_FRAME_ID, PROGRESS_FRAME_ID)
+    Set frame = pWindow.getContentFrame.controls.Add(CREATE_FRAME_ID, PROGRESS_FRAME_ID)
     Set pProgressPanel = UI.Create.ProgressPanel(pWindow, frame)
     With pProgressPanel
         Call .setController(Me)
@@ -272,7 +246,7 @@ Private Sub insertSummaryPanel()
     Dim frame As MSForms.frame
     '------------------------------------------------------------------------------------------------------
     If pHasSummaryPanel Then
-        Set frame = pWindow.getContentFrame.Controls.Add(CREATE_FRAME_ID, PROGRESS_FRAME_ID)
+        Set frame = pWindow.getContentFrame.controls.Add(CREATE_FRAME_ID, PROGRESS_FRAME_ID)
         Set pSummaryPanel = MApp.Create.processSummaryPanel
         With pSummaryPanel
             Call .setController(Me)
@@ -288,7 +262,7 @@ End Sub
 Private Sub insertItemsListControl()
     Dim frame As MSForms.frame
     '------------------------------------------------------------------------------------------------------
-    Set frame = pWindow.getContentFrame.Controls.Add(CREATE_FRAME_ID, ITEMS_LIST_FRAME_ID)
+    Set frame = pWindow.getContentFrame.controls.Add(CREATE_FRAME_ID, ITEMS_LIST_FRAME_ID)
     Set pItemsListControl = MApp.Create.processItemsList
     With pItemsListControl
         Call .setProcessor(pProcessor)

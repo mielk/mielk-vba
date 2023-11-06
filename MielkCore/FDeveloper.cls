@@ -79,6 +79,9 @@ Public Function getVbProjectByName(name As String, Optional ByVal instance As Ex
     
     On Error Resume Next
     Set wkb = instance.Workbooks(name)
+    If wkb Is Nothing Then
+        Set wkb = f.Books.open_(name, False, instance)
+    End If
     
     If Not wkb Is Nothing Then
         Set getVbProjectByName = getVbProject(wkb)
@@ -105,7 +108,7 @@ Public Function getVbComponentsDictionary(project As Variant) As Scripting.Dicti
     Set projectObject = getVbProject(project)
     If Not projectObject Is Nothing Then
         For Each component In projectObject.VBComponents
-            Call getVbComponentsDictionary.add(component.name, component)
+            Call getVbComponentsDictionary.Add(component.name, component)
         Next component
     End If
         
@@ -149,7 +152,7 @@ End Function
 
 Public Function getCodeModuleContent(codeModule As Object) As String
     With codeModule
-        getCodeModuleContent = .lines(1, .CountOfDeclarationLines)
+        getCodeModuleContent = .lines(1, .CountOfLines)
     End With
 End Function
 
@@ -200,15 +203,15 @@ End Function
 
 Public Function getProjectMethods(book As Excel.Workbook) As Scripting.Dictionary
     Dim project As Object
-    Dim Key As Variant
+    Dim key As Variant
     '------------------------------------------------------------------------------------------------------
     
     Set project = getVbProject(book)
     If Not project Is Nothing Then
         Set getProjectMethods = getVbComponentsDictionary(project)
-        For Each Key In getProjectMethods.Keys
-            Set getProjectMethods.Item(Key) = getCodeModuleMethods(getProjectMethods.Item(Key))
-        Next Key
+        For Each key In getProjectMethods.Keys
+            Set getProjectMethods.Item(key) = getCodeModuleMethods(getProjectMethods.Item(key))
+        Next key
     End If
     
 End Function
@@ -233,3 +236,26 @@ Public Sub exportModules(book As Excel.Workbook, folderPath As String)
     End If
 
 End Sub
+
+
+Public Function getReferenceType(ref As VBIDE.Reference, projectTag As String) As ReferenceTypeEnum
+    Const FILE_NAME_PATTERN As String = "\\\\{0}-[^\\\\]*\.xl[as]m$"
+    '------------------------------------------------------------------------------------------------------
+    Dim RefName As String
+    Dim libraryRegexPattern As String
+    Dim projectRegexPattern As String
+    '------------------------------------------------------------------------------------------------------
+    
+    RefName = ref.FullPath
+    libraryRegexPattern = f.strings.format(FILE_NAME_PATTERN, LIBRARY_NAME)
+    projectRegexPattern = f.strings.format(FILE_NAME_PATTERN, projectTag)
+    
+    If f.regex.checkIfMatch(RefName, libraryRegexPattern) Then
+        getReferenceType = ReferenceType_InternalLibrary
+    ElseIf f.regex.checkIfMatch(RefName, projectRegexPattern) Then
+        getReferenceType = ReferenceType_Project
+    Else
+        getReferenceType = ReferenceType_ExternalLibrary
+    End If
+    
+End Function

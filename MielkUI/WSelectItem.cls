@@ -198,7 +198,9 @@ Public Function getSelectedItems() As VBA.Collection
     Dim selection As Variant
     '----------------------------------------------------------------------------------------------------------
     Call F.Variables.assign(selection, pList.getSelectedValue)
-    If F.Collections.isNonEmptyCollection(selection) Then
+    If pCancelledByUser Then
+        Set getSelectedItems = Nothing
+    ElseIf F.Collections.isNonEmptyCollection(selection) Then
         Set getSelectedItems = selection
     ElseIf Not F.Variables.isUndefined(selection) Then
         Set getSelectedItems = F.Collections.Create(selection)
@@ -520,10 +522,23 @@ Private Sub pList_AfterChange()
     Call validate
 End Sub
 
+Private Sub pList_GiveFocusToTopControl()
+    Call pList.updateActiveLine(Nothing)
+    Call pSearchTextBox.setFocus
+End Sub
+
 '[SEARCH EVENTS]
 Private Sub pSearchTextBox_Change()
     Call ErrorManager.clear
     Call updateSearching(pSearchTextBox.value)
+End Sub
+
+Private Sub pSearchTextBox_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
+    If KeyCode = vbKeyDown Then
+        Call pList.setFocus(False, True, False)
+    ElseIf KeyCode = vbKeyTab Then
+        Call pList.setFocus(False, True, False)
+    End If
 End Sub
 
 Private Sub pSearchCancelButton_Click()

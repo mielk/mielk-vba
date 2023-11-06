@@ -234,7 +234,7 @@ ErrHandler:
                         VBA.vbCrLf & VBA.vbCrLf & _
                     errDescription
     
-    Call VBA.MsgBox(errMessage, vbCritical, ParentApp.getName)
+    Call VBA.MsgBox(errMessage, vbCritical, App.getName)
     Set paramsDict = Nothing
 
 End Sub
@@ -281,9 +281,9 @@ End Function
 
 
 '[ACTIONS]
-Public Sub save(Optional connection As Object, Optional ByVal customErrorMessage As String, Optional errorsFilePath As String)
+Public Sub save(Optional connection As Object, Optional ByVal customErrorMessage As String, Optional errorsfilepath As String)
     If pLogToDbMode Then Call logToDatabase(connection)
-    If pLogToTextFileMode Then Call logToTextFile(errorsFilePath)
+    If pLogToTextFileMode Then Call logToTextFile(errorsfilepath)
     Call display(customErrorMessage)
     Call toImmediate
 End Sub
@@ -315,7 +315,7 @@ Public Sub display(Optional ByVal message As String)
         Next i
     End If
 
-    Call VBA.MsgBox(message, vbCritical, ParentApp.getNameVersion)
+    Call VBA.MsgBox(message, vbCritical, App.getNameVersion)
     
     '[Clear pFixedMessage to avoid case that this is displayed again later for completely different error]
     pFixedMessage = vbNullString
@@ -332,14 +332,14 @@ ErrHandler:
     errMessage = getDisplayErrorMessage & VBA.vbCrLf & VBA.vbCrLf & _
                 "----------- [Stack] -------------------------------------" & VBA.vbCrLf & _
                 " * ErrorManager.display" & VBA.vbCrLf & errDescription
-    Call VBA.MsgBox(errMessage, vbCritical, ParentApp.getName)
+    Call VBA.MsgBox(errMessage, vbCritical, App.getName)
     GoTo ExitPoint
 
 End Sub
 
 
 
-Public Sub logToTextFile(Optional errorsFilePath As String)
+Public Sub logToTextFile(Optional errorsfilepath As String)
     Const METHOD_NAME As String = "logToTextFile"
     '------------------------------------------------------------------------------------------------------
     Dim FileName As String
@@ -348,8 +348,8 @@ Public Sub logToTextFile(Optional errorsFilePath As String)
     
     If Not DEV_MODE Then On Error GoTo ErrHandler
     
-    If VBA.Len(errorsFilePath) Then
-        filepath = errorsFilePath
+    If VBA.Len(errorsfilepath) Then
+        filepath = errorsfilepath
     ElseIf fso.folderExists(pLogFolder) Then
         FileName = VBA.format(VBA.Date, "YYYY-MM-DD") & ".txt"
         filepath = f.files.concatenatePath(pLogFolder, FileName)
@@ -359,7 +359,7 @@ Public Sub logToTextFile(Optional errorsFilePath As String)
         Call f.TextFiles.printToTextFile(getStack, filepath, False)
     Else
         Call VBA.MsgBox(getLogToTextfileErrorMessage & VBA.vbCrLf & "Empty [filepath]", _
-                    vbCritical, ParentApp.getName)
+                    vbCritical, App.getName)
     End If
 
 '==========================================================================================================
@@ -374,10 +374,10 @@ ErrHandler:
     errMessage = getLogToTextfileErrorMessage & VBA.vbCrLf & VBA.vbCrLf & _
                 "----------- [Stack] -------------------------------------" & VBA.vbCrLf & _
                 " * ErrorManager.logToTextFile" & VBA.vbCrLf & _
-                        VBA.vbTab & "errorsFilePath: " & errorsFilePath & VBA.vbCrLf & _
+                        VBA.vbTab & "errorsfilepath: " & errorsfilepath & VBA.vbCrLf & _
                         VBA.vbTab & "pLogFolder: " & pLogFolder & VBA.vbCrLf & _
                 errDescription
-    Call VBA.MsgBox(errMessage, vbCritical, ParentApp.getName)
+    Call VBA.MsgBox(errMessage, vbCritical, App.getName)
     GoTo ExitPoint
 
 End Sub
@@ -394,8 +394,8 @@ Private Function getStack() As String
     
     If Not DEV_MODE Then On Error GoTo ErrHandler
     
-    getStack = f.strings.format(STACK_INFO_PATTERN, ParentApp.getName, ParentApp.getVersion, f.System.getWindowsUserName, _
-                                ParentApp.getUncPath, f.System.getDecimalSeparator, f.System.getDateFormat, _
+    getStack = f.strings.format(STACK_INFO_PATTERN, App.getName, App.getVersion, f.System.getWindowsUserName, _
+                                App.getUncPath, f.System.getDecimalSeparator, f.System.getDateFormat, _
                                 f.System.getSystemBits, f.System.getErrorHandlingSetting)
     
     For Each error In pErrors
@@ -461,7 +461,7 @@ ErrHandler:
     errMessage = getLogToDatabaseErrorMessage & VBA.vbCrLf & VBA.vbCrLf & _
                 "----------- [Stack] -------------------------------------" & VBA.vbCrLf & _
                 " * ErrorManager.logToDatabase" & VBA.vbCrLf & errDescription
-    Call VBA.MsgBox(errMessage, vbCritical, ParentApp.getName)
+    Call VBA.MsgBox(errMessage, vbCritical, App.getName)
     GoTo ExitPoint
     
 End Sub
@@ -485,7 +485,7 @@ Private Sub logErrorStack(connection As Object, ByRef callStackId As Long)
     Set rs = VBA.CreateObject(ADODB_RECORDSET)
     With rs
         Call .Open(sql, connection, adOpenKeyset, adLockPessimistic)
-        Call .addNew(dictProps.Keys, dictProps.Items)
+        Call .AddNew(dictProps.Keys, dictProps.Items)
         callStackId = .fields(FIELD_CALL_STACK_ID).value
     End With
     
@@ -520,16 +520,16 @@ Private Function createGeneralPropertiesDictionary() As Scripting.Dictionary
     
     Set createGeneralPropertiesDictionary = f.dictionaries.Create(False)
     With createGeneralPropertiesDictionary
-        Call .add(FIELD_APP_NAME, ParentApp.getName)
-        Call .add(FIELD_APP_VERSION, ParentApp.getVersion)
-        Call .add(FIELD_APP_PATH, ParentApp.getUncPath)
-        Call .add(FIELD_USER_NAME, f.System.getWindowsUserName)
-        Call .add(FIELD_DECIMAL_SEPARATOR, f.System.getDecimalSeparator)
-        Call .add(FIELD_DATE_FORMAT, f.System.getDateFormat)
-        Call .add(FIELD_VBA_ERROR_BREAK_MODE, f.System.getErrorHandlingSetting)
-        Call .add(FIELD_PARENT_APP, Application.name)
-        Call .add(FIELD_PARENT_APP_VERSION, Application.Version)
-        Call .add(FIELD_WINDOWS_BITS, f.System.getSystemBits)
+        Call .Add(FIELD_APP_NAME, App.getName)
+        Call .Add(FIELD_APP_VERSION, App.getVersion)
+        Call .Add(FIELD_APP_PATH, App.getUncPath)
+        Call .Add(FIELD_USER_NAME, f.System.getWindowsUserName)
+        Call .Add(FIELD_DECIMAL_SEPARATOR, f.System.getDecimalSeparator)
+        Call .Add(FIELD_DATE_FORMAT, f.System.getDateFormat)
+        Call .Add(FIELD_VBA_ERROR_BREAK_MODE, f.System.getErrorHandlingSetting)
+        Call .Add(FIELD_PARENT_APP, Application.name)
+        Call .Add(FIELD_PARENT_APP_VERSION, Application.Version)
+        Call .Add(FIELD_WINDOWS_BITS, f.System.getSystemBits)
     End With
     
 '==========================================================================================================
@@ -624,13 +624,13 @@ Private Function createErrorPropertiesDictionary(err As ErrorObject, callStackId
     
     Set createErrorPropertiesDictionary = f.dictionaries.Create(False)
     With createErrorPropertiesDictionary
-        Call .add(FIELD_CALL_STACK_ID, callStackId)
-        Call .add(FIELD_CLASS_NAME, err.getClassName)
-        Call .add(FIELD_METHOD_NAME, err.getMethodName)
-        Call .add(FIELD_ERROR_NUMBER, err.getErrorNumber)
-        Call .add(FIELD_ERROR_DESCRIPTION, err.getErrorDescription)
-        Call .add(FIELD_TIMESTAMP, err.getTimestamp)
-        Call .add(FIELD_PARAMS, err.getParamsAsString)
+        Call .Add(FIELD_CALL_STACK_ID, callStackId)
+        Call .Add(FIELD_CLASS_NAME, err.getClassName)
+        Call .Add(FIELD_METHOD_NAME, err.getMethodName)
+        Call .Add(FIELD_ERROR_NUMBER, err.getErrorNumber)
+        Call .Add(FIELD_ERROR_DESCRIPTION, err.getErrorDescription)
+        Call .Add(FIELD_TIMESTAMP, err.getTimestamp)
+        Call .Add(FIELD_PARAMS, err.getParamsAsString)
     End With
     
 '==========================================================================================================
@@ -686,3 +686,11 @@ ErrHandler:
     Debug.Print errMessage
     
 End Sub
+
+
+
+Public Function getErrorString(errNumber As Long, errDescription As String) As String
+    Const ERR_DESCRIPTION_PATTERN As String = "({0}) {1}"
+    '------------------------------------------------------------------------------------------------------
+    getErrorString = f.strings.format(ERR_DESCRIPTION_PATTERN, errNumber, errDescription)
+End Function

@@ -14,11 +14,11 @@ Private Const CLASS_NAME As String = "FUtils"
 Private Const BACKUP_FOLDER_PATH As String = "E:\dane\VBA\backups"
 '----------------------------------------------------------------------------------------------------------
 
-Public Sub printFilePaths()
+Public Sub printfilepaths()
     Dim addIn As Excel.addIn
     '------------------------------------------------------------------------------------------------------
     
-    For Each addIn In Application.AddIns2
+    For Each addIn In Application.addIns2
         If addIn.isOpen Then
             Debug.Print addIn.fullName
         End If
@@ -26,7 +26,7 @@ Public Sub printFilePaths()
     
 End Sub
 
-Public Sub saveAllAddIns(Optional ByVal saveBackups As Boolean = True, Optional ByVal saveFolder As String = BACKUP_FOLDER_PATH)
+Public Sub saveAllAddIns(Optional ByVal saveBackups As Boolean = False, Optional ByVal saveFolder As String = BACKUP_FOLDER_PATH)
     Const REGEX_MACRO_ENABLED As String = "\.xlsm$"
     '------------------------------------------------------------------------------------------------------
     Dim addIn As Excel.addIn
@@ -35,7 +35,7 @@ Public Sub saveAllAddIns(Optional ByVal saveBackups As Boolean = True, Optional 
     '------------------------------------------------------------------------------------------------------
     
     'Save all add-ins
-    For Each addIn In Application.AddIns2
+    For Each addIn In Application.addIns2
         If Not isAddInSkippedFromSaving(addIn.name) Then
             If addIn.isOpen Then
                 On Error Resume Next
@@ -113,3 +113,34 @@ Public Sub unfreezeExcel()
         .cursor = xlDefault
     End With
 End Sub
+
+
+
+
+Public Function convertToAddIn(originalfilepath As String, _
+                                Optional ByVal destinationPath As String, _
+                                Optional overwriteIfExists As Boolean = False, _
+                                Optional ByVal xls As Excel.Application) As String
+    Dim wkb As Excel.Workbook
+    '------------------------------------------------------------------------------------------------------
+    
+    If VBA.Len(destinationPath) = 0 Then
+        destinationPath = VBA.replace(originalfilepath, ".xlsm", ".xlam")
+    End If
+    
+    If Not overwriteIfExists Then
+        destinationPath = f.files.uniquefilepath(f.files.getUncPath(destinationPath))
+    End If
+    
+    If xls Is Nothing Then Set xls = f.Excel.getBackgroundInstance
+    
+    Set wkb = f.Books.open_(originalfilepath, False, xls)
+    With wkb
+        .IsAddin = True
+        .CheckCompatibility = False
+        Call f.files.deleteFile(destinationPath)
+        Call .SaveAs(destinationPath, xlAddIn)
+        Call .Close(False)
+    End With
+    
+End Function

@@ -85,6 +85,21 @@ Public Enum ReadWriteModeEnum
     ReadWriteMode_ReadWrite = 1
 End Enum
 
+'[Dates]
+Public Enum DateVisibilityEnum
+    DateVisibility_DateOnly = 0
+    DateVisibility_DateTime = 1
+    DateVisibility_TimeOnly = 2
+End Enum
+
+
+'[Developers]
+Public Enum ReferenceTypeEnum
+    ReferenceType_Unknown = 0
+    ReferenceType_Project = 1
+    ReferenceType_InternalLibrary = 2
+    ReferenceType_ExternalLibrary = 3
+End Enum
 
 
 

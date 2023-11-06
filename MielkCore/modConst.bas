@@ -2,6 +2,10 @@ Attribute VB_Name = "modConst"
 Option Explicit
 
 Private Const CLASS_NAME As String = "modConst"
+'----------------------------------------------------------------------------------------------------------
+Public Const LIBRARY_NAME As String = "mielk"
+'----------------------------------------------------------------------------------------------------------
+Public Const EXCEL_APPLICATION As String = "Excel.Application"
 '[Registry] -----------------------------------------------------------------------------------------------
 Public Const HKEY_CURRENT_USER As Long = &H80000001
 Public Const HKEY_LOCAL_MACHINE As Long = &H80000002
@@ -18,7 +22,8 @@ Public Const WARNING_CODE As Long = 123456789
 Public Const LOCAL_METHOD As String = "$."
 '[Extensions] ---------------------------------------------------------------------------------------------
 Public Const EXTENSION_TXT As String = ".txt"
-
+Public Const EXTENSION_EXCEL_ADDIN As String = ".xlam"
+Public Const EXTENSION_EXCEL_MACRO_FILE As String = ".xlsm"
 '[Constants from other libraries - used with late binding] ------------------------------------------------
 '[Outlook]
 Public Const olMailItem As Long = 0
@@ -62,4 +67,7 @@ Public Const CONTEXT_MENU_TAG_SEPARATOR As String = "separator"
 Public Const CONTEXT_MENU_TAG_IS_GROUP As String = "isGroup"
 Public Const CONTEXT_MENU_TAG_ITEMS As String = "items"
 Public Const CONTEXT_MENU_TAG_PARAM As String = "param"
+'[Action logs] --------------------------------------------------------------------------------------------
+Public Const ACTION_LOG_START As String = "Start app"
+Public Const ACTION_LOG_CLOSE As String = "Close app"
 '----------------------------------------------------------------------------------------------------------

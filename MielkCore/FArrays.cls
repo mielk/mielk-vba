@@ -7,8 +7,8 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
-'sprawdziæ czym siê ró¿ni getColumnIndexByHeader od getColumnIndex (to samo dla Row)
-'ogarn¹æ funkcje slice (wystêpuj¹ dwa razy)
+'sprawdziï¿½ czym siï¿½ rï¿½ni getColumnIndexByHeader od getColumnIndex (to samo dla Row)
+'ogarnï¿½ï¿½ funkcje slice (wystï¿½pujï¿½ dwa razy)
 
 Option Explicit
 
@@ -3113,4 +3113,36 @@ Public Function find2DArrayFieldByRegex(arr As Variant, regexPattern As String, 
         End If
         
     End If
+End Function
+
+
+Public Function toDtos(arr As Variant, Optional hasHeader As Boolean = True) As VBA.Collection
+    Dim headers As Variant
+    Dim i As Long
+    Dim j As Long
+    '------------------------------------------------------------------------------------------------------
+    Dim dto As Scripting.Dictionary
+    Dim Key As Variant
+    Dim value As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set toDtos = New VBA.Collection
+    
+    If Not f.arrays.isDefined(arr) Then
+        Call Exceptions.NotArray.raise
+    ElseIf f.arrays.countDimensions(arr) <> 2 Then
+        Call Exceptions.InvalidDimension.raiseWithCustomMessage("Function supports only 2D arrays")
+    Else
+        headers = f.arrays.getRow(arr, 1, False)
+        For i = LBound(arr, 1) + 1 To UBound(arr, 1)
+            Set dto = f.dictionaries.Create(False)
+            For j = LBound(arr, 2) To UBound(arr, 2)
+                Key = headers(j)
+                value = arr(i, j)
+                Call f.dictionaries.addItem(dto, Key, value, duplicateBehaviour_Override)
+            Next j
+            Call toDtos.add(dto)
+        Next i
+    End If
+    
 End Function

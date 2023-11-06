@@ -22,3 +22,7 @@ Public Function getUserConfirmation(question As String, Optional ByVal title As 
     
 End Function
 
+
+Public Sub showWarning(message As String)
+    Call VBA.MsgBox(message, VBA.vbExclamation, App.getNameVersion)
+End Sub

@@ -51,6 +51,16 @@ Private Const ERR_CANCELLED_BY_USER As Long = 100001
 Private pExceptionsByNumber As Scripting.Dictionary
 '----------------------------------------------------------------------------------------------------------
 
+
+'[Static constants]
+Public Function DESCRIPTION_PATTERN() As String
+    DESCRIPTION_PATTERN = "{0} ({1})"
+End Function
+
+
+
+
+
 Private Sub Class_Initialize()
     Call initializeExceptions
 End Sub

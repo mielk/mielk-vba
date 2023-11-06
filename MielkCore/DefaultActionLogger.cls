@@ -15,7 +15,7 @@ Private Const CLASS_NAME As String = "DefaultActionLogger"
 '----------------------------------------------------------------------------------------------------------
 
 
-Public Sub addLog(action As String, Optional params As Variant, Optional forceLog As Boolean = False)
+Public Function addLog(action As String, Optional params As Variant, Optional forceLog As Boolean = False) As ValidationObject
     Dim entry As String
     '------------------------------------------------------------------------------------------------------
 
@@ -32,12 +32,14 @@ Public Sub addLog(action As String, Optional params As Variant, Optional forceLo
         End If
         Debug.Print entry
     End If
+    
+    Set addLog = f.Create.ValidationObject(True)
 
-End Sub
+End Function
 
 
 
 '[Implementation of IActionLogger interface]
-Private Sub IActionLogger_addLog(action As String, Optional params As Variant, Optional forceLog As Boolean = False)
-    Call addLog(action, params, forceLog)
-End Sub
+Private Function IActionLogger_addLog(action As String, Optional params As Variant, Optional forceLog As Boolean = False) As ValidationObject
+    Set IActionLogger_addLog = addLog(action, params, forceLog)
+End Function

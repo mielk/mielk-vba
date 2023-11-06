@@ -12,5 +12,5 @@ Option Explicit
 Private Const CLASS_NAME As String = "IActionLogger"
 '----------------------------------------------------------------------------------------------------------
 
-Public Sub addLog(action As String, Optional params As Variant, Optional forceLog As Boolean = False)
-End Sub
+Public Function addLog(action As String, Optional params As Variant, Optional forceLog As Boolean = False) As ValidationObject
+End Function

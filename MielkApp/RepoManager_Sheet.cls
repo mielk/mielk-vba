@@ -15,6 +15,8 @@ Private Const CLASS_NAME As String = "RepoManager_Sheet"
 '----------------------------------------------------------------------------------------------------------
 Private Const ADD_BUTTON As String = "btnAdd"
 Private Const CLOSE_BUTTON As String = "btnClose"
+Private Const DELETE_ICON As String = "icoDelete"
+Private Const EDIT_ICON As String = "icoEdit"
 Private Const IS_EDIT_SHEET_NAME As String = "IS_EDIT_SHEET"
 Private Const REPO_TAG_NAME As String = "REPO_TAG"
 Private Const PROTECTION_PASSWORD As String = "a" 'RepoManager_ProtectionPassword"
@@ -304,6 +306,8 @@ End Sub
 Private Sub copyActionIcons(Optional onlyLastRow As Boolean = False)
     Dim rng As Excel.Range
     Dim lastRow As Long
+    Dim sh As Excel.shape
+    Dim i As Long
     '------------------------------------------------------------------------------------------------------
     
     With pSheet
@@ -319,6 +323,17 @@ Private Sub copyActionIcons(Optional onlyLastRow As Boolean = False)
         End If
     End With
     Call rng.FillDown
+    
+    
+    '[Rename delete and edit icons]
+    For Each sh In pSheet.Shapes
+        If F.Strings.startsWith(sh.name, EDIT_ICON) Then
+            sh.name = EDIT_ICON & "_" & F.Math.increment(i)
+        ElseIf F.Strings.startsWith(sh.name, DELETE_ICON) Then
+            sh.name = DELETE_ICON & "_" & F.Math.increment(i)
+        End If
+    Next sh
+    
 End Sub
 
 Private Sub applySorting()

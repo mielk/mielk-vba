@@ -6,11 +6,11 @@ Private Const CLASS_NAME As String = "modConstructors"
 
 
 
-Public Function MApp() As MApp
-    Static instance As MApp
+Public Function MApp() As Main
+    Static instance As Main
     '------------------------------------------------------------------------------------------------------
     If instance Is Nothing Then
-        Set instance = New MApp
+        Set instance = New Main
     End If
     Set MApp = instance
 End Function
@@ -23,6 +23,16 @@ Public Function ActionListener() As ActionListener
         Set instance = New ActionListener
     End If
     Set ActionListener = instance
+End Function
+
+
+Public Function ItemsProcessor() As ItemsProcessor
+    Static instance As ItemsProcessor
+    '------------------------------------------------------------------------------------------------------
+    If instance Is Nothing Then
+        Set instance = New ItemsProcessor
+    End If
+    Set ItemsProcessor = instance
 End Function
 
 

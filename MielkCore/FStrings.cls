@@ -735,7 +735,7 @@ End Function
 
 
 
-'#todo - zamieniÊ na regex
+'#todo - zamieniÔøΩ na regex
 Public Function onlyDigits(ByVal text As Variant, _
               Optional ByVal leaveSpecialChars As Boolean = True) As String
     Const METHOD_NAME As String = "onlyDigits"
@@ -1067,24 +1067,24 @@ End Function
 Public Function latinize(ByVal text As String) As String
     Dim str As String:              str = text
     '------------------------------------------------------------------------------------------------------
-    str = VBA.replace(str, "π", "a")
-    str = VBA.replace(str, "•", "A")
-    str = VBA.replace(str, "Ê", "c")
-    str = VBA.replace(str, "∆", "C")
-    str = VBA.replace(str, "Í", "e")
-    str = VBA.replace(str, " ", "E")
-    str = VBA.replace(str, "≥", "l")
-    str = VBA.replace(str, "£", "L")
-    str = VBA.replace(str, "Ò", "n")
-    str = VBA.replace(str, "—", "N")
-    str = VBA.replace(str, "Û", "o")
-    str = VBA.replace(str, "”", "O")
-    str = VBA.replace(str, "ú", "s")
-    str = VBA.replace(str, "å", "S")
-    str = VBA.replace(str, "ü", "z")
-    str = VBA.replace(str, "è", "Z")
-    str = VBA.replace(str, "ø", "z")
-    str = VBA.replace(str, "Ø", "Z")
+    str = VBA.replace(str, "ÔøΩ", "a")
+    str = VBA.replace(str, "ÔøΩ", "A")
+    str = VBA.replace(str, "ÔøΩ", "c")
+    str = VBA.replace(str, "ÔøΩ", "C")
+    str = VBA.replace(str, "ÔøΩ", "e")
+    str = VBA.replace(str, "ÔøΩ", "E")
+    str = VBA.replace(str, "ÔøΩ", "l")
+    str = VBA.replace(str, "ÔøΩ", "L")
+    str = VBA.replace(str, "ÔøΩ", "n")
+    str = VBA.replace(str, "ÔøΩ", "N")
+    str = VBA.replace(str, "ÔøΩ", "o")
+    str = VBA.replace(str, "ÔøΩ", "O")
+    str = VBA.replace(str, "ÔøΩ", "s")
+    str = VBA.replace(str, "ÔøΩ", "S")
+    str = VBA.replace(str, "ÔøΩ", "z")
+    str = VBA.replace(str, "ÔøΩ", "Z")
+    str = VBA.replace(str, "ÔøΩ", "z")
+    str = VBA.replace(str, "ÔøΩ", "Z")
     latinize = str
 End Function
 
@@ -1111,6 +1111,27 @@ Public Function toCharactersArray(text As String) As Variant
         toCharactersArray = f.arrays.createEmpty1DArray
     End If
 End Function
+
+
+
+
+
+Public Function replaceByDictionary(baseString As String, replacements As Scripting.Dictionary) As String
+    Dim key As Variant
+    Dim value As String
+    '------------------------------------------------------------------------------------------------------
+    replaceByDictionary = baseString
+    If f.dictionaries.isNonEmptyDictionary(replacements) Then
+        For Each key In replacements.Keys
+            value = replacements.Item(key)
+            replaceByDictionary = VBA.replace(replaceByDictionary, VBA.CStr(key), value)
+        Next key
+    End If
+End Function
+
+
+
+
 
 
 '
@@ -1309,7 +1330,7 @@ End Function
 'End Function
 '
 'Public Function onlyLetters(text As String) As String
-'    Const REGEX_PATTERN As String = "[^a-zA-ZπÊÍ≥ÒÛúüø•∆ £—”åèØ]"
+'    Const REGEX_PATTERN As String = "[^a-zA-ZÔøΩÔøΩÔøΩÔøΩÛúüøÔøΩÔøΩ £ÔøΩ”åÔøΩÔøΩ]"
 '    '------------------------------------------------------------------------------------------------------
 '    Static objRegex As Object
 '    '------------------------------------------------------------------------------------------------------
@@ -1390,5 +1411,6 @@ End Function
 '        clearJsonString = VBA.mid(value, pos)
 '    End If
 'End Function
+
 
 
