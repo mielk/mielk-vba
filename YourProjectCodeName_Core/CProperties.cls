@@ -1,0 +1,75 @@
+VERSION 1.0 CLASS
+BEGIN
+  MultiUse = -1  'True
+END
+Attribute VB_Name = "CProperties"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = False
+Option Explicit
+
+Private Const CLASS_NAME As String = "CProperties"
+'----------------------------------------------------------------------------------------------------------
+Private pByNames As Scripting.Dictionary
+'----------------------------------------------------------------------------------------------------------
+
+
+
+'[INITIALIZING]
+Private Sub Class_Initialize()
+    Call initializeDictionaries
+    Call insertEnumOptions
+End Sub
+
+Private Sub initializeDictionaries()
+    Set pByNames = F.dictionaries.Create(False)
+End Sub
+
+Private Sub insertEnumOptions()
+
+    '[PROJECT-SPECIFIC PROPERTIES]
+    Call addEnumOption("Example", "example")
+    '<...>
+
+End Sub
+
+Private Sub addEnumOption(name As String, Optional ByVal dbField As String)
+    Dim enumProperty As enumProperty
+    '------------------------------------------------------------------------------------------------------
+    
+    If VBA.Len(dbField) = 0 Then dbField = name
+    Set enumProperty = F.Create.prop(name, dbField)
+    
+    Call F.dictionaries.AddItem(pByNames, enumProperty.getName, enumProperty, duplicateBehaviour_WarningInImmediateWindow)
+    
+End Sub
+
+
+
+'[ACCESS]
+Public Function ByName(name As String) As enumProperty
+    Set ByName = F.dictionaries.GetObject(pByNames, name)
+End Function
+
+Public Function getProperty(ByVal prop As Variant) As enumProperty
+    If VBA.IsArray(prop) Then
+        'not possible to get property
+    ElseIf Not VBA.IsObject(prop) Then
+        Set getProperty = F.dictionaries.GetObject(pByNames, prop)
+    ElseIf prop Is Nothing Then
+        'Nothing should be returned
+    ElseIf TypeOf prop Is enumProperty Then
+        Set getProperty = prop
+    End If
+    
+    If getProperty Is Nothing Then
+        Set getProperty = Props.getProperty(prop)
+    End If
+    
+End Function
+
+
+'[INTELLISENSE]
+'[Employees]
+Public Function Example() As enumProperty: Set Example = ByName("Example"): End Function

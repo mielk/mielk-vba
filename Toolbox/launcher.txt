@@ -1,0 +1,112 @@
+Option Explicit
+
+'[Paths]
+Const LIB_FOLDER = "YourProjectLibFolderPath"
+Const TOOL_FOLDER = "YourProjectToolFolderPath"
+
+'[Registry]
+Const HKEY_CLASSES_ROOT = &H80000000
+Const HKEY_CURRENT_USER = &H80000001
+Const REGISTRY_PATH = "Software\Microsoft\VBA\7.1\Common"
+Const BREAK_ON_ALL_ERRORS = "BreakOnAllErrors"
+Const BREAK_ON_SERVER_ERRORS = "BreakOnServerErrors"
+
+
+
+Call runApp
+
+
+
+Sub runApp()
+    Call updateVbaErrorHandlingRegistry
+    Call addTrustedLocation(LIB_FOLDER)
+    If TOOL_FOLDER <> LIB_FOLDER Then Call addTrustedLocation(TOOL_FOLDER)
+    Call openFiles
+End Sub
+
+Sub updateVbaErrorHandlingRegistry()
+    Dim strComputer
+    Dim objRegistry
+    
+    strComputer = "."
+    Set objRegistry = GetObject("winmgmts:\\" & strComputer & "\root\default:StdRegProv")
+    
+    objRegistry.setDWORDValue HKEY_CURRENT_USER, REGISTRY_PATH, BREAK_ON_ALL_ERRORS, 0
+    objRegistry.setDWORDValue HKEY_CURRENT_USER, REGISTRY_PATH, BREAK_ON_SERVER_ERRORS, 0
+    
+End Sub
+
+
+Sub openFiles()
+    Dim excelApp
+    
+    Set excelApp = CreateObject("Excel.Application")
+    With excelApp
+        .Visible = True
+        .WindowState = -4137
+    End With
+    
+    Call excelApp.Workbooks.Open(LIB_FOLDER & "mielk-core.xlam", , False)
+    Call excelApp.Workbooks.Open(LIB_FOLDER & "mielk-ui.xlam", , False)
+    Call excelApp.Workbooks.Open(LIB_FOLDER & "mielk-db.xlam", , False)
+	Call excelApp.Workbooks.Open(LIB_FOLDER & "mielk-app.xlam", , False)
+    Call excelApp.Workbooks.Open(TOOL_FOLDER & "YourProjectCodeName-core.xlam", , False)
+    Call excelApp.Workbooks.Open(TOOL_FOLDER & "YourProjectCodeName-view.xlsm", , False)
+    
+End Sub
+
+
+Public Sub addTrustedLocation(folderPath)
+    Const REGISTRY_KEY = "Software\Microsoft\Office\16.0\Excel\Security\Trusted Locations"
+    Const ENTRY_DESCRIPTION = "YourProjectCodeName"
+    '------------------------------------------------------------------------------------------------------
+    Dim objRegistry
+    Dim iLocCounter
+    Dim arrChildKeys
+    Dim sChildKey
+    Dim sNewKey
+    Dim sPath
+    Dim sDescription
+    Dim bAlreadyExists
+    Dim bAllowNetworkLocations
+    Dim bAllowSubFolders
+	Dim value
+    '------------------------------------------------------------------------------------------------------
+    
+    Set objRegistry = GetObject("winmgmts:\\.\root\default:StdRegProv")
+    bAllowSubFolders = True
+    bAlreadyExists = False
+    
+    iLocCounter = 0
+    Call objRegistry.enumKey(HKEY_CURRENT_USER, REGISTRY_KEY, arrChildKeys)
+    For Each sChildKey In arrChildKeys
+        Call objRegistry.getstringvalue(HKEY_CURRENT_USER, REGISTRY_KEY & "\" & sChildKey, "Description", sDescription)
+        Call objRegistry.getstringvalue(HKEY_CURRENT_USER, REGISTRY_KEY & "\" & sChildKey, "Path", sPath)
+        
+        If sPath = folderPath Then bAlreadyExists = True
+		value = Mid(sChildKey, 9)
+		If IsNumeric(value) Then
+			If CInt(value) > iLocCounter Then
+				iLocCounter = CInt(Mid(sChildKey, 9))
+			End If
+		End If
+    Next
+    
+    'Uncomment the following 4 lines if you wish to enable network locations as Trusted locations
+    bAllowNetworkLocations = True
+    If bAllowNetworkLocations Then
+        objRegistry.setDWORDValue HKEY_CURRENT_USER, REGISTRY_KEY, "AllowNetworkLocations", 1
+    End If
+    
+    If Not bAlreadyExists Then
+        sNewKey = REGISTRY_KEY & "\Location" & CStr(iLocCounter + 1)
+        objRegistry.createKey HKEY_CURRENT_USER, sNewKey
+        objRegistry.setStringValue HKEY_CURRENT_USER, sNewKey, "Path", folderPath
+        objRegistry.setStringValue HKEY_CURRENT_USER, sNewKey, "Description", ENTRY_DESCRIPTION
+        
+        If bAllowSubFolders Then
+            objRegistry.setDWORDValue HKEY_CURRENT_USER, sNewKey, "AllowSubFolders", 1
+        End If
+    End If
+    
+End Sub
