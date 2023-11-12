@@ -45,9 +45,9 @@ End Sub
 
 
 '[SETTERS]
-Public Function setRibbon(ribbon As IRibbonUI) As RibbonManager
+Public Function setRibbon(Ribbon As IRibbonUI) As RibbonManager
     Set setRibbon = Me
-    Set pRibbon = ribbon
+    Set pRibbon = Ribbon
     Call saveRibbonPointer
 End Function
 
@@ -121,17 +121,17 @@ End Function
 
 
 '[SETTINGS]
-Private Sub loadSettings(filepath As String)
+Private Sub loadSettings(filePath As String)
     Dim json As String
     '------------------------------------------------------------------------------------------------------
 
     On Error Resume Next
-    json = f.TextFiles.readTextFile(filepath)
+    json = f.TextFiles.readTextFile(filePath)
     If VBA.Len(json) Then Set pSettings = f.json.ParseJson(json)
     On Error GoTo 0
 
     'Icons folder path.
-    pIconsFolderPath = getImageFolderPath(filepath)
+    pIconsFolderPath = getImageFolderPath(filePath)
 
     'Ribbon controls properties
     If f.dictionaries.isNonEmptyDictionary(pSettings) Then
@@ -162,7 +162,7 @@ Private Function getImageFolderPath(configFilePath As String)
         Set folder = f.files.createFolder(f.files.getFileFolderPath(configFilePath))
         For i = LBound(parts) To UBound(parts)
             If parts(i) = PARENT_FOLDER_SYMBOL Then
-                Set folder = folder.ParentFolder
+                Set folder = folder.parentFolder
             Else
                 Set folder = f.files.getSubfolder(folder, VBA.CStr(parts(i)))
                 If folder Is Nothing Then Exit For
@@ -182,7 +182,7 @@ End Function
 Private Sub loadInvalidationGroups()
     Dim generalControls As VBA.Collection
     Dim generalDict As Scripting.Dictionary
-    Dim Key As Variant
+    Dim key As Variant
     '------------------------------------------------------------------------------------------------------
     
     Set pInvalidationGroups = f.Objects.coalesce( _
@@ -193,9 +193,9 @@ Private Sub loadInvalidationGroups()
     Set generalControls = f.dictionaries.getObject(pInvalidationGroups, GENERAL_INVALIDATION_GROUP)
     Set generalDict = f.Objects.coalesce( _
                             f.dictionaries.createFrom(generalControls), f.dictionaries.Create(False))
-    For Each Key In pControlsProps.Keys
-        Call f.dictionaries.addItem(generalDict, Key, Key)
-    Next Key
+    For Each key In pControlsProps.Keys
+        Call f.dictionaries.addItem(generalDict, key, key)
+    Next key
     Set generalControls = f.dictionaries.toCollection(generalDict, DictPart_KeyOnly)
     
     Call f.dictionaries.addItem(pInvalidationGroups, GENERAL_INVALIDATION_GROUP, generalControls, duplicateBehaviour_Override)
@@ -260,7 +260,7 @@ Private Function getValueFromPropDict(controlId As String, propDict As Scripting
                     result = Application.Run(f.Reflection.getFunctionFullName( _
                                                     VBA.CStr(varFunction), pWorkbook), controlId)   '|
                 End If                                                                              '|
-                If Not DEV_MODE Then On Error GoTo ErrHandler Else On Error GoTo 0                  '|
+                If Not DEV_MODE Then On Error GoTo errHandler Else On Error GoTo 0                  '|
                 '------------------------------------------------------------------------------------
                 
                 If result = False Then Exit For
@@ -275,7 +275,7 @@ Private Function getValueFromPropDict(controlId As String, propDict As Scripting
     End If
     
     
-ErrHandler:
+errHandler:
     
 End Function
 
@@ -297,8 +297,15 @@ Public Sub assignControlImage(controlId As String, ByRef image)
     Dim imageFileName As String
     Dim imagePath As String
     '------------------------------------------------------------------------------------------------------
+    
     Call assignProperty(controlId, "image", imageFileName)
-    If VBA.Len(imageFileName) Then
+    If VBA.Len(imageFileName) = 0 Then
+        ' Image not defined
+    ElseIf Not f.regex.checkIfMatch(imageFileName, IMAGE_FILE_REGEX_PATTERN) Then
+        ' msoImage
+        image = imageFileName
+    Else
+        ' File image
         imagePath = f.files.concatenatePath(pIconsFolderPath, imageFileName)
         Set image = LoadPictureGDI(imagePath)
     End If
@@ -308,23 +315,25 @@ End Sub
 
 
 
+
+
 '[UPDATING]
 Public Sub update(Optional eventName As String = GENERAL_INVALIDATION_GROUP)
-    Dim ribbon As Variant
+    Dim Ribbon As Variant
     Dim invalidationControls As VBA.Collection
     Dim varControlId As Variant
     '------------------------------------------------------------------------------------------------------
 
     If Not pUpdateDisabled Then
-        Set ribbon = getRibbon
-        If Not ribbon Is Nothing Then
+        Set Ribbon = getRibbon
+        If Not Ribbon Is Nothing Then
             Set invalidationControls = f.dictionaries.getObject(pInvalidationGroups, eventName)
             If invalidationControls Is Nothing Then
                 Set invalidationControls = f.dictionaries.getObject(pInvalidationGroups, GENERAL_INVALIDATION_GROUP)
             End If
                 
             If f.Collections.isNonEmptyCollection(invalidationControls) Then
-                With ribbon
+                With Ribbon
                     For Each varControlId In invalidationControls
                         Call .InvalidateControl(varControlId)
                     Next varControlId
