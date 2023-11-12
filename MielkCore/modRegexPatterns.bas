@@ -6,4 +6,6 @@ Private Const CLASS_NAME As String = "modRegexPatterns"
 Public Const MONTH_YEAR_REGEX_PATTERN As String = "^\s*(\d{1,2})\/(\d{4})\s*$"
 '[Excel] --------------------------------------------------------------------------------------------------
 Public Const MACRO_FILE_REGEX_PATTERN As String = "^[^~].*\.xl(s|a)m$"
+Public Const JSON_FILE_REGEX_PATTERN As String = "^[^~].*\.json$"
+Public Const IMAGE_FILE_REGEX_PATTERN  As String = "^[^~].*\.(bmp|jp[e]?g|png|gif)$"
 '----------------------------------------------------------------------------------------------------------

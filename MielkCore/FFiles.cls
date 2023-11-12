@@ -14,22 +14,22 @@ Private Const CLASS_NAME As String = "FFiles"
 
 
 
-Public Function fileExists(filepath As String) As Boolean
-    fileExists = fso.fileExists(filepath)
+Public Function fileExists(filePath As String) As Boolean
+    fileExists = fso.fileExists(filePath)
 End Function
 
 Public Function folderExists(path As String) As Boolean
     folderExists = fso.folderExists(path)
 End Function
 
-Public Function getFileName(filepath As String, Optional includeExtension As Boolean = True) As String
+Public Function getFileName(filePath As String, Optional includeExtension As Boolean = True) As String
     Const REGEX_WITH_EXTENSION As String = "([^\\]+)$"
     Const REGEX_NO_EXTENSION As String = "([^\\]+)\..*$"
     '------------------------------------------------------------------------------------------------------
     If includeExtension Then
-        getFileName = f.regex.getFirstGroupMatch(filepath, REGEX_WITH_EXTENSION)
+        getFileName = f.regex.getFirstGroupMatch(filePath, REGEX_WITH_EXTENSION)
     Else
-        getFileName = f.regex.getFirstGroupMatch(filepath, REGEX_NO_EXTENSION)
+        getFileName = f.regex.getFirstGroupMatch(filePath, REGEX_NO_EXTENSION)
     End If
 End Function
 
@@ -70,10 +70,10 @@ Public Function createFolder(folderPath As String) As Object
 
 End Function
 
-Public Sub deleteFile(filepath As String)
+Public Sub deleteFile(filePath As String)
     With fso
-        If .fileExists(filepath) Then
-            Call .deleteFile(filepath)
+        If .fileExists(filePath) Then
+            Call .deleteFile(filePath)
         End If
     End With
 End Sub
@@ -87,17 +87,17 @@ Public Sub deleteFolder(ByVal folderPath As String)
     End With
 End Sub
 
-Public Function getFileFolderPath(filepath As String, Optional removeEndSlash As Boolean = False) As String
+Public Function getFileFolderPath(filePath As String, Optional removeEndSlash As Boolean = False) As String
     Const REGEX_PATTERN As String = "(.*)(?:\\[^\\]+)(?:\\*)$"
     '------------------------------------------------------------------------------------------------------
     Dim slashPosition As Long
     '------------------------------------------------------------------------------------------------------
     If removeEndSlash Then
-        getFileFolderPath = f.regex.getFirstGroupMatch(filepath, REGEX_PATTERN)
+        getFileFolderPath = f.regex.getFirstGroupMatch(filePath, REGEX_PATTERN)
     Else
-        slashPosition = VBA.InStr(1, VBA.StrReverse(filepath), "\")
+        slashPosition = VBA.InStr(1, VBA.StrReverse(filePath), "\")
         If slashPosition Then
-            getFileFolderPath = VBA.left$(filepath, VBA.Len(filepath) - slashPosition + 1)
+            getFileFolderPath = VBA.left$(filePath, VBA.Len(filePath) - slashPosition + 1)
         End If
     End If
 End Function
@@ -106,13 +106,13 @@ Public Function hasWritePermission(folderPath As String) As Boolean
     Dim textFileUrl As String
     '------------------------------------------------------------------------------------------------------
     
-    textFileUrl = f.files.uniquefilepath(folderPath & VBA.IIf(VBA.right$(folderPath, 1) = "\", vbNullString, "\") & _
+    textFileUrl = f.files.uniqueFilePath(folderPath & VBA.IIf(VBA.right$(folderPath, 1) = "\", vbNullString, "\") & _
                         f.System.getWindowsUserName & "_test_____fY7JqjsOg7.text")
     With fso
         On Error Resume Next
         Call .deleteFile(textFileUrl)
         Call .CreateTextFile(textFileUrl, True)
-        On Error GoTo ErrHandler
+        On Error GoTo errHandler
         
         If .fileExists(textFileUrl) Then
             hasWritePermission = True
@@ -121,12 +121,12 @@ Public Function hasWritePermission(folderPath As String) As Boolean
         
     End With
     
-ErrHandler:
+errHandler:
     
 End Function
 
 
-Public Function isFileLocked(filepath As String) As Boolean
+Public Function isFileLocked(filePath As String) As Boolean
     Dim fileIndex As Integer
     '------------------------------------------------------------------------------------------------------
     
@@ -135,7 +135,7 @@ Public Function isFileLocked(filepath As String) As Boolean
     Call VBA.err.clear
     On Error Resume Next
     
-    Open filepath For Binary Access Read Write Lock Read Write As #fileIndex
+    Open filePath For Binary Access Read Write Lock Read Write As #fileIndex
     Close #fileIndex
     
     If VBA.err.number <> 0 Then
@@ -149,32 +149,32 @@ End Function
 
 
 
-Public Function uniquefilepath(filepath As String) As String
+Public Function uniqueFilePath(filePath As String) As String
     Dim strFileExtension As String
     Dim strFileName As String
     Dim strParentFolder As String
-    Dim strTempfilepath As String
+    Dim strTempFilePath As String
     Dim intCounter As Integer
     '------------------------------------------------------------------------------------------------------
 
     With fso
-        If .fileExists(filepath) Then
+        If .fileExists(filePath) Then
                                                                                                         
-            strParentFolder = .GetParentFolderName(filepath)
+            strParentFolder = .GetParentFolderName(filePath)
             If Not VBA.right$(strParentFolder, 1) = "\" Then strParentFolder = strParentFolder & "\"
-            strFileName = .GetBaseName(filepath)
-            strFileExtension = "." & .GetExtensionName(filepath)
+            strFileName = .GetBaseName(filePath)
+            strFileExtension = "." & .GetExtensionName(filePath)
                                                                                                         
             Do
                 intCounter = intCounter + 1
-                strTempfilepath = strParentFolder & strFileName & _
+                strTempFilePath = strParentFolder & strFileName & _
                                                 " (" & intCounter & ")" & strFileExtension
-            Loop While .fileExists(strTempfilepath)
+            Loop While .fileExists(strTempFilePath)
                                                                                                         
-            uniquefilepath = strTempfilepath
+            uniqueFilePath = strTempFilePath
                                                                                                         
         Else
-            uniquefilepath = filepath
+            uniqueFilePath = filePath
         End If
     End With
 
@@ -202,7 +202,7 @@ Public Function getUncPath(path As String) As String
         
         On Error Resume Next
         uncDrive = fso.Drives(driveName & "\").ShareName
-        On Error GoTo ErrHandler
+        On Error GoTo errHandler
         
         If VBA.Len(uncDrive) > 0 Then
             getUncPath = VBA.replace(path, driveName, uncDrive)
@@ -210,7 +210,7 @@ Public Function getUncPath(path As String) As String
         
     End If
     
-ErrHandler:
+errHandler:
     
 End Function
 
@@ -288,7 +288,7 @@ End Function
 
 Public Function getFolderFiles(folderPath As String, _
                                     Optional includeSubfolder As Boolean = False, _
-                                    Optional filepathPattern As String) As VBA.Collection
+                                    Optional filePathPattern As String) As VBA.Collection
     Dim folder As Scripting.folder
     Dim subfolder As Scripting.folder
     Dim file As Scripting.file
@@ -303,16 +303,16 @@ Public Function getFolderFiles(folderPath As String, _
     End With
     
     For Each file In folder.files
-        If VBA.Len(filepathPattern) Then
-            If f.regex.checkIfMatch(file.path, filepathPattern) Then Call getFolderFiles.add(file)
+        If VBA.Len(filePathPattern) Then
+            If f.regex.checkIfMatch(file.path, filePathPattern) Then Call getFolderFiles.Add(file)
         Else
-            Call getFolderFiles.add(file)
+            Call getFolderFiles.Add(file)
         End If
     Next file
     
     If includeSubfolder Then
         For Each subfolder In folder.SubFolders
-            Call f.Collections.appendCollection(getFolderFiles, getFolderFiles(subfolder.path, True, filepathPattern))
+            Call f.Collections.appendCollection(getFolderFiles, getFolderFiles(subfolder.path, True, filePathPattern))
         Next subfolder
     End If
     
@@ -320,13 +320,13 @@ End Function
 
 Public Function getFolderNewestFile(folderPath As String, _
                                     Optional includeSubfolders As Boolean = False, _
-                                    Optional filepathPattern As String) As Scripting.file
+                                    Optional filePathPattern As String) As Scripting.file
     Dim files As VBA.Collection
     Dim file As Scripting.file
     Dim modifiedDate As Date
     '------------------------------------------------------------------------------------------------------
     
-    Set files = getFolderFiles(folderPath, includeSubfolders, filepathPattern)
+    Set files = getFolderFiles(folderPath, includeSubfolders, filePathPattern)
     For Each file In files
         If file.DateLastModified > modifiedDate Then
             Set getFolderNewestFile = file
@@ -336,12 +336,28 @@ Public Function getFolderNewestFile(folderPath As String, _
     
 End Function
 
-Public Function getFileExtension(filepath As String) As String
+Public Function getFileExtension(filePath As String, Optional withDot As Boolean = False) As String
     Const REGEX_PATTERN As String = "\.([a-zA-Z0-9_]*)$"
     '------------------------------------------------------------------------------------------------------
-    getFileExtension = f.regex.getFirstGroupMatch(filepath, REGEX_PATTERN)
+    getFileExtension = f.regex.getFirstGroupMatch(filePath, REGEX_PATTERN)
+    If withDot Then getFileExtension = "." & getFileExtension
 End Function
 
+Public Function getFile(filePath As String) As Scripting.file
+    With fso
+        If .fileExists(filePath) Then
+            Set getFile = .getFile(filePath)
+        End If
+    End With
+End Function
+
+Public Function getFolder(folderPath As String) As Scripting.folder
+    With fso
+        If .folderExists(folderPath) Then
+            Set getFolder = .getFolder(folderPath)
+        End If
+    End With
+End Function
 
 
 
@@ -381,7 +397,7 @@ Private Function selectFile___(Optional defaultPath As String, Optional title As
     On Error Resume Next
     Call VBA.ChDrive(drive)
     Call VBA.ChDir(defaultPath)
-    On Error GoTo ErrHandler
+    On Error GoTo errHandler
     
     selection = Excel.Application.GetOpenFilename(filefilter:=FileType, title:=title, multiSelect:=multiSelect)
     
@@ -394,7 +410,7 @@ Private Function selectFile___(Optional defaultPath As String, Optional title As
     End If
 
 
-ErrHandler:
+errHandler:
 
 End Function
 
@@ -412,18 +428,18 @@ Public Function getParentFolder(path As String) As String
     getParentFolder = getFileFolderPath(path)
 End Function
 
-Public Function getDependentfilepath(pattern As String, Sourcefilepath As String) As String
+Public Function getDependentFilePath(pattern As String, sourceFilePath As String) As String
     Dim countAsterisks As Integer
     Dim topLevelFolder As folder
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
     
     countAsterisks = f.strings.countOccurrences(pattern, "*", False)
-    Set topLevelFolder = fso.getFolder(Sourcefilepath)
+    Set topLevelFolder = fso.getFolder(sourceFilePath)
     For i = 1 To countAsterisks
         Set topLevelFolder = topLevelFolder.parentFolder
     Next i
-    getDependentfilepath = topLevelFolder.path & VBA.replace(pattern, "*", vbNullString)
+    getDependentFilePath = topLevelFolder.path & VBA.replace(pattern, "*", vbNullString)
     
 End Function
 
@@ -483,13 +499,13 @@ End Function
 
 
 
-Public Function getShortenedfilepath(filepath As String) As String
+Public Function getShortenedFilePath(filePath As String) As String
     Dim FileName As String
     Dim folderName As String
     '------------------------------------------------------------------------------------------------------
-    FileName = getFileName(filepath)
-    folderName = getFileName(VBA.replace(filepath, "\" & FileName, vbNullString))
-    getShortenedfilepath = "...\" & folderName & "\" & FileName
+    FileName = getFileName(filePath)
+    folderName = getFileName(VBA.replace(filePath, "\" & FileName, vbNullString))
+    getShortenedFilePath = "...\" & folderName & "\" & FileName
 End Function
 
 Public Function isFolderWriteable(folderPath As String) As Boolean
@@ -508,7 +524,7 @@ Public Function isFolderWriteable(folderPath As String) As Boolean
                                                                                                         
         strTempFile = folderPath
         If Not VBA.right$(folderPath, 1) = "\" Then strTempFile = strTempFile & "\"
-        strTempFile = uniquefilepath(strTempFile & TEMP_FILE_NAME)
+        strTempFile = uniqueFilePath(strTempFile & TEMP_FILE_NAME)
                                                                                                         
         On Error Resume Next
         Call objFSO.CreateTextFile(strTempFile)
@@ -635,7 +651,7 @@ Public Function copyFolder(ByVal originalFolderPath As String, ByVal destination
     Const METHOD_NAME As String = "copyFolder"
     '------------------------------------------------------------------------------------------------------
     
-    On Error GoTo ErrHandler
+    On Error GoTo errHandler
     
     Call fso.copyFolder( _
                     cleanFolderPath(originalFolderPath), _
@@ -653,7 +669,7 @@ ExitPoint:
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
-ErrHandler:
+errHandler:
     errNumber = VBA.err.number: errDescription = VBA.err.description
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription)
     GoTo ExitPoint
@@ -661,20 +677,20 @@ ErrHandler:
 End Function
 
 
-Public Function getFileSize(Sourcefilepath As String) As Long
+Public Function getFileSize(sourceFilePath As String) As Long
     Dim f As file
     '------------------------------------------------------------------------------------------------------
-    If fileExists(Sourcefilepath) Then
-        Set f = fso.GetFile(Sourcefilepath)
+    If fileExists(sourceFilePath) Then
+        Set f = fso.getFile(sourceFilePath)
         getFileSize = f.size
     End If
 End Function
 
-Public Function getFileTimestamp(Sourcefilepath As String) As Date
+Public Function getFileTimestamp(sourceFilePath As String) As Date
     Dim f As file
     '------------------------------------------------------------------------------------------------------
-    If fileExists(Sourcefilepath) Then
-        Set f = fso.GetFile(Sourcefilepath)
+    If fileExists(sourceFilePath) Then
+        Set f = fso.getFile(sourceFilePath)
         getFileTimestamp = f.DateLastModified
     End If
 End Function
@@ -718,4 +734,132 @@ Public Function browseForFolder(Optional initialPath As String, _
         End If
     End With
 End Function
+
+
+
+
+
+
+
+    
+'https://www.mrexcel.com/board/threads/adding-custom-ribbon-to-a-workbook-using-vba.1048272/
+'--unzips file as source path and copys contents to target folder
+'--assumes Source file and Target folder already validated
+
+'--based on code by Ron de Bruin
+'  https://www.rondebruin.nl/win/s7/win002.htm
+
+Public Function unzip(sourceFilePath As String, targetFolderPath As String) As Scripting.folder
+    Const METHOD_NAME = "unzip"
+    '------------------------------------------------------------------------------------------------------
+    Dim app As Object
+    '------------------------------------------------------------------------------------------------------
+    
+    If Not DEV_MODE Then On Error GoTo errHandler
+    
+    'Extract the files into the newly created folder
+    Set app = VBA.CreateObject("Shell.Application")
+
+    app.Namespace("" & targetFolderPath).CopyHere _
+      app.Namespace("" & sourceFilePath).Items
+
+    Set unzip = f.files.getFolder(targetFolderPath)
+
+'==========================================================================================================
+ExitPoint:
+    Dim errNumber As Long, errDescription As String
+    If errNumber Then
+        Call VBA.err.raise(errNumber, CLASS_NAME & "." & METHOD_NAME, errDescription)
+    End If
+    Exit Function
+    
+'----------------------------------------------------------------------------------------------------------
+errHandler:
+    errNumber = err.number: errDescription = err.description
+    Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription)
+    GoTo ExitPoint
+    
+End Function
+    
+'--zips all files in source folder and its subfolders. Copies the zip to target file
+'--based on code by Ron de Bruin
+'  https://www.rondebruin.nl/win/s7/win001.htm
+Public Function zip(sourceFolderPath As String, targetFilePath As String) As Scripting.file
+    Const METHOD_NAME = "zip"
+    '------------------------------------------------------------------------------------------------------
+    Dim app As Object
+    Dim zipFileName As Variant, folderName As Variant
+    '------------------------------------------------------------------------------------------------------
+
+    If Not DEV_MODE Then On Error GoTo errHandler
+       
+    folderName = sourceFolderPath
+    zipFileName = targetFilePath
+    
+    '--create empty zip file
+    Call makeNewZip(VBA.CStr(zipFileName))
+    
+    Set app = VBA.CreateObject("Shell.Application")
+    '--copy the files to the compressed folder
+    app.Namespace(zipFileName).CopyHere app.Namespace(folderName).Items
+    
+    '--keep script waiting until compressing is done
+    On Error Resume Next
+    Do Until app.Namespace(zipFileName).Items.count = app.Namespace(folderName).Items.count
+        Application.Wait (Now + TimeValue("0:00:01"))
+    Loop
+    
+    On Error GoTo 0
+    
+    Set zip = f.files.getFile(targetFilePath)
+
+'==========================================================================================================
+ExitPoint:
+    Dim errNumber As Long, errDescription As String
+    If errNumber Then
+        Call VBA.err.raise(errNumber, CLASS_NAME & "." & METHOD_NAME, errDescription)
+    End If
+    Exit Function
+    
+'----------------------------------------------------------------------------------------------------------
+errHandler:
+    errNumber = err.number: errDescription = err.description
+    Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription)
+    GoTo ExitPoint
+    
+End Function
+
+
+
+
+Private Sub makeNewZip(path As String)
+    Const METHOD_NAME = "makeNewZip"
+    '------------------------------------------------------------------------------------------------------
+    Dim file As Object
+    '------------------------------------------------------------------------------------------------------
+    
+    If Not DEV_MODE Then On Error GoTo errHandler
+    
+    Set file = fso.CreateTextFile(path, True)
+    file.WriteLine (Chr$(80) & Chr$(75) & Chr$(5) & Chr$(6) & String(18, 0))
+    file.Close
+ 
+
+'==========================================================================================================
+ExitPoint:
+    Dim errNumber As Long, errDescription As String
+    If errNumber Then
+        Call VBA.err.raise(errNumber, CLASS_NAME & "." & METHOD_NAME, errDescription)
+    End If
+    Exit Sub
+    
+'----------------------------------------------------------------------------------------------------------
+errHandler:
+    errNumber = err.number: errDescription = err.description
+    Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription)
+    GoTo ExitPoint
+     
+ 
+End Sub
+
 

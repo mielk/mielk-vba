@@ -53,3 +53,7 @@ End Sub
 Private Sub getScreentip_YourProjectCodeName(ByVal control As IRibbonControl, ByRef returnedVal)
     Call RibbonManager.assignProperty(control.ID, "screentip", returnedVal)
 End Sub
+
+Private Sub getSize_YourProjectCodeName(ByVal control As IRibbonControl, ByRef returnedVal)
+    Call RibbonManager.assignProperty(control.ID, "size", returnedVal)
+End Sub

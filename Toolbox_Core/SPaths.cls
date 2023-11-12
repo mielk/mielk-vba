@@ -12,13 +12,14 @@ Option Explicit
 Private Const CLASS_NAME As String = "SPaths"
 '----------------------------------------------------------------------------------------------------------
 Private Const MAIN_FOLDER_PATH As String = "D:\Dropbox\tm\mielk\mielk-vba\Toolbox"
-'[Folder name constants] --------------------------------------------------------------------------------------
+'[Folder name constants] ----------------------------------------------------------------------------------
 Private Const FOLDER_NAME_BACKUPS As String = "backups"
 Private Const FOLDER_NAME_CONFIG As String = "config"
 Private Const FOLDER_NAME_DB As String = "db"
 Private Const FOLDER_NAME_ERRORS As String = "errors"
 Private Const FOLDER_NAME_LOGS As String = "logs"
 Private Const FOLDER_NAME_MSGS As String = "msgs"
+Private Const FOLDER_NAME_PROJECT As String = "project"
 Private Const FOLDER_NAME_QUERIES As String = "queries"
 Private Const FOLDER_NAME_RESOURCES As String = "resources"
 Private Const FOLDER_NAME_RIBBON As String = "ribbon"
@@ -47,6 +48,7 @@ Public Function FolderNameDb() As String: FolderNameDb = FOLDER_NAME_DB: End Fun
 Public Function FolderNameErrors() As String: FolderNameErrors = FOLDER_NAME_ERRORS: End Function
 Public Function FolderNameLogs() As String: FolderNameLogs = FOLDER_NAME_LOGS: End Function
 Public Function FolderNameMsgs() As String: FolderNameMsgs = FOLDER_NAME_MSGS: End Function
+Public Function FolderNameProject() As String: FolderNameProject = FOLDER_NAME_PROJECT: End Function
 Public Function FolderNameQueries() As String: FolderNameQueries = FOLDER_NAME_QUERIES: End Function
 Public Function FolderNameResources() As String: FolderNameResources = FOLDER_NAME_RESOURCES: End Function
 Public Function FolderNameRibbon() As String: FolderNameRibbon = FOLDER_NAME_RIBBON: End Function
@@ -65,61 +67,61 @@ Public Function MainFolderPath() As String
 End Function
 
 Public Function ResourcesFolderPath() As String
-    ResourcesFolderPath = F.Files.concatenatePath(ToolFolderPath, FOLDER_NAME_RESOURCES)
+    ResourcesFolderPath = F.files.concatenatePath(ToolFolderPath, FOLDER_NAME_RESOURCES)
 End Function
 
 Public Function TemplatesFolderPath() As String
-    TemplatesFolderPath = F.Files.concatenatePath(ResourcesFolderPath, FOLDER_NAME_TEMPLATES)
+    TemplatesFolderPath = F.files.concatenatePath(ResourcesFolderPath, FOLDER_NAME_TEMPLATES)
 End Function
 
 Public Function RibbonFolderPath() As String
-    RibbonFolderPath = F.Files.concatenatePath(ResourcesFolderPath, FOLDER_NAME_RIBBON)
+    RibbonFolderPath = F.files.concatenatePath(ResourcesFolderPath, FOLDER_NAME_RIBBON)
 End Function
 
 Public Function MessagesFolderPath() As String
-    MessagesFolderPath = F.Files.concatenatePath(ResourcesFolderPath, FOLDER_NAME_MSGS)
+    MessagesFolderPath = F.files.concatenatePath(ResourcesFolderPath, FOLDER_NAME_MSGS)
 End Function
 
 Public Function QueriesFolderPath() As String
-    QueriesFolderPath = F.Files.concatenatePath(ResourcesFolderPath, FOLDER_NAME_QUERIES)
+    QueriesFolderPath = F.files.concatenatePath(ResourcesFolderPath, FOLDER_NAME_QUERIES)
 End Function
 
 Public Function ConfigFolderPath() As String
-    ConfigFolderPath = F.Files.concatenatePath(ResourcesFolderPath, FOLDER_NAME_CONFIG)
+    ConfigFolderPath = F.files.concatenatePath(ResourcesFolderPath, FOLDER_NAME_CONFIG)
 End Function
 
 Public Function TempFolderPath() As String
-    TempFolderPath = F.Files.concatenatePath(ResourcesFolderPath, FOLDER_NAME_TEMPORARY_FILES)
+    TempFolderPath = F.files.concatenatePath(ResourcesFolderPath, FOLDER_NAME_TEMPORARY_FILES)
 End Function
 
 Public Function BackupsFolderPath() As String
-    BackupsFolderPath = F.Files.concatenatePath(ToolFolderPath, FOLDER_NAME_BACKUPS)
+    BackupsFolderPath = F.files.concatenatePath(ToolFolderPath, FOLDER_NAME_BACKUPS)
 End Function
 
 
 
 '[Static paths]
-Public Function RibbonConfigfilepath() As String
-    RibbonConfigfilepath = F.Files.concatenatePath(RibbonFolderPath, RIBBON_JSON_FILE)
+Public Function RibbonConfigFilePath() As String
+    RibbonConfigFilePath = F.files.concatenatePath(RibbonFolderPath, RIBBON_JSON_FILE)
 End Function
 
-Public Function EnvironmentNamefilepath() As String
-    EnvironmentNamefilepath = F.Files.concatenatePath(ResourcesFolderPath, ENVIRONMENT_INFO_FILE)
+Public Function EnvironmentNameFilePath() As String
+    EnvironmentNameFilePath = F.files.concatenatePath(ResourcesFolderPath, ENVIRONMENT_INFO_FILE)
 End Function
 
 
 
 '[Dynamic paths]
-Public Function getResourcesfilepath(ByVal filepath As String) As String
-    getResourcesfilepath = VBA.Replace(filepath, RESOURCES_FOLDER_PLACEHOLDER, ResourcesFolderPath)
+Public Function getResourcesFilePath(ByVal filepath As String) As String
+    getResourcesFilePath = VBA.Replace(filepath, RESOURCES_FOLDER_PLACEHOLDER, ResourcesFolderPath)
 End Function
 
-Public Function getTempfilepath(ByVal fileTag As String) As String
-    getTempfilepath = F.Files.concatenatePath(TemplatesFolderPath, fileTag)
+Public Function getTempFilePath(ByVal fileTag As String) As String
+    getTempFilePath = F.files.concatenatePath(TemplatesFolderPath, fileTag)
 End Function
 
-Public Function getConfigfilepath(ByVal fileTag As String) As String
-    getConfigfilepath = F.Files.concatenatePath(ConfigFolderPath, fileTag & ".json")
+Public Function getConfigFilePath(ByVal fileTag As String) As String
+    getConfigFilePath = F.files.concatenatePath(ConfigFolderPath, fileTag & ".json")
 End Function
 
 
@@ -129,12 +131,12 @@ Public Function BackEndPath() As String
     Static path As String
     '----------------------------------------------------------------------------------------------------------
     Dim dbProxyFolder As String
-    Dim dbProxy As Scripting.File
+    Dim dbProxy As Scripting.file
     '----------------------------------------------------------------------------------------------------------
     
     If VBA.Len(path) = 0 Then
-        dbProxyFolder = F.Files.concatenatePath(ToolFolderPath, FOLDER_NAME_DB)
-        Set dbProxy = F.Files.getFolderNewestFile(dbProxyFolder, False, DB_PROXY_NAME_PATTERN)
+        dbProxyFolder = F.files.concatenatePath(ToolFolderPath, FOLDER_NAME_DB)
+        Set dbProxy = F.files.getFolderNewestFile(dbProxyFolder, False, DB_PROXY_NAME_PATTERN)
         If Not dbProxy Is Nothing Then
             path = dbProxy.path
         End If
@@ -153,7 +155,7 @@ End Function
 
 '[Errors]
 Public Function ErrorsDbPath() As String
-    ErrorsDbPath = F.Files.concatenatePath(MainFolderPath, FOLDER_NAME_ERRORS, ERRORS_DB_NAME)
+    ErrorsDbPath = F.files.concatenatePath(MainFolderPath, FOLDER_NAME_ERRORS, ERRORS_DB_NAME)
 End Function
 
 Public Function ErrorsDbPassword() As String
@@ -161,14 +163,14 @@ Public Function ErrorsDbPassword() As String
 End Function
 
 Public Function ErrorLogsFolderPath() As String
-    ErrorLogsFolderPath = F.Files.concatenatePath(MainFolderPath, FOLDER_NAME_ERRORS)
+    ErrorLogsFolderPath = F.files.concatenatePath(MainFolderPath, FOLDER_NAME_ERRORS)
 End Function
 
 
 
 '[Action logs]
 Public Function LogsFolderPath() As String
-    LogsFolderPath = F.Files.concatenatePath(MainFolderPath, FOLDER_NAME_LOGS)
+    LogsFolderPath = F.files.concatenatePath(MainFolderPath, FOLDER_NAME_LOGS)
 End Function
 
 

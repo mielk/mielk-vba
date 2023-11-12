@@ -21,7 +21,7 @@ Private Const ERROR_GENERAL As String = "CreatingNewProject.Errors.FixingFilesRe
 Private Const ERROR_OPENING_VBA_PROJECT As String = "CreatingNewProject.Errors.OpeningVbaProject"
 Private Const ERROR_FILE_NOT_FOUND As String = "CreatingNewProject.Errors.ReferenceFileNotFound"
 Private Const ERROR_REMOVING_REFERENCE As String = "CreatingNewProject.Errors.RemovingSingleReference"
-Private Const ERROR_ADDING_REFERENCE As String = "CreatingNewProject.Errors.addingSingleReference"
+Private Const ERROR_ADDING_REFERENCE As String = "CreatingNewProject.Errors.AddingSingleReference"
 '[Status] -------------------------------------------------------------------------------------------------
 Private Const SUCCESS_MESSAGE As String = "CreatingNewProject.Messages.FixingReferencesSuccess"
 Private Const SEMISUCCESS_MESSAGE As String = "CreatingNewProject.Messages.FixingReferencesSemiSuccess"
@@ -58,9 +58,7 @@ Public Function getMessage() As String
     Else
         Select Case getStatus
             Case ItemProcessStatus_Correct
-                With pParent.getProject
-                    getMessage = f.Strings.Format(Msg.getText(SUCCESS_MESSAGE), .getName, .getFolderPath)
-                End With
+                getMessage = f.Strings.Format(Msg.getText(SUCCESS_MESSAGE), f.Collections.toString(pSuccessful, , VBA.vbCrLf))
             Case ItemProcessStatus_Error
                 getMessage = f.Collections.toString(pErrors, , VBA.vbCrLf)
         End Select
@@ -92,7 +90,7 @@ Public Sub process()
     Dim xls As Excel.Application
     Dim project As EProject
     Dim files As VBA.Collection
-    Dim varfilepath As Variant
+    Dim varFilePath As Variant
     Dim dictReferences As Scripting.Dictionary
     '[For Items Processor updates] ------------------------------------------------------------------------
     Dim caption As String
@@ -113,22 +111,22 @@ Public Sub process()
     End With
     
     Set files = f.files.getFolderFiles(project.getFolderPath, False, MACRO_FILE_REGEX_PATTERN)
-    For Each varfilepath In files
+    For Each varFilePath In files
         
         '[Updating ItemsProcessor progress bar] ---------------------------------------------|
-        caption = f.Strings.Format(Msg.getText(PBAR_FIXING_REFERENCES), varfilepath)        '|
+        caption = f.Strings.Format(Msg.getText(PBAR_FIXING_REFERENCES), varFilePath)        '|
         Call pParent.getProcessor.triggerDetailStatusUpdate(caption, counter / files.Count) '|
         counter = counter + 1                                                               '|
         '------------------------------------------------------------------------------------|
         
         '------------------------------------------------------------------------------------|
-        Set validation = fixReferencesInFile(xls, VBA.CStr(varfilepath), dictReferences)    '|
+        Set validation = fixReferencesInFile(xls, VBA.CStr(varFilePath), dictReferences)    '|
         If validation.getStatus = ItemProcessStatus_Error Then                              '|
-            Call pErrors.add(validation.getMessage)                                         '|
+            Call pErrors.Add(validation.getMessage)                                         '|
         End If                                                                              '|
         '------------------------------------------------------------------------------------|
         
-    Next varfilepath
+    Next varFilePath
     
 '==========================================================================================================
 ExitPoint:
@@ -141,7 +139,7 @@ ExitPoint:
 '----------------------------------------------------------------------------------------------------------
 errHandler:
     errNumber = Err.Number: errDescription = Err.Description
-    Call pErrors.add(f.Strings.Format(Msg.getText(ERROR_GENERAL), errDescription, errNumber))
+    Call pErrors.Add(f.Strings.Format(Msg.getText(ERROR_GENERAL), errDescription, errNumber))
     
 End Sub
 
@@ -156,8 +154,8 @@ Private Function adjustReferencesDictionary(dictReferences As Scripting.Dictiona
     For Each key In dictReferences.Keys
         fileName = f.Strings.replaceByDictionary(VBA.CStr(key), getReferenceTypeToNameDictionary)
         Set dictFileReferences = adjustSingleFileReferencesDictionary( _
-                                        f.cast.toCollection(dictReferences.Item(key)))
-        Call f.dictionaries.addItem(adjustReferencesDictionary, fileName, dictFileReferences)
+                                        f.cast.toCollection(dictReferences.item(key)))
+        Call f.dictionaries.AddItem(adjustReferencesDictionary, fileName, dictFileReferences)
     Next key
 
 End Function
@@ -207,12 +205,12 @@ Private Function adjustSingleFileReferencesDictionary(references As VBA.Collecti
         refPath = f.files.concatenatePath( _
                                 f.dictionaries.GetItem(getReferenceTypeToFolderPathDictionary, refType), _
                                 refName & EXTENSION_EXCEL_ADDIN)
-        Call f.dictionaries.addItem(adjustSingleFileReferencesDictionary, refName, refPath)
+        Call f.dictionaries.AddItem(adjustSingleFileReferencesDictionary, refName, refPath)
     Next varRef
     
 End Function
 
-Private Function fixReferencesInFile(xls As Excel.Application, filepath As String, _
+Private Function fixReferencesInFile(xls As Excel.Application, filePath As String, _
                                             dictReferences As Scripting.Dictionary) As ValidationObject
     Const FAILURE_MESSAGE_PATTERN As String = "CreatingNewProject.Errors.FixingFileReferences"
     '------------------------------------------------------------------------------------------------------
@@ -229,19 +227,19 @@ Private Function fixReferencesInFile(xls As Excel.Application, filepath As Strin
     '------------------------------------------------------------------------------------------------------
 
     '[Get config for this specific file (by file path). -----------------------------|
-    addInName = f.regex.getFirstGroupMatch(filepath, EXCEL_ADDIN_NAME_PATTERN)      '|
+    addInName = f.regex.getFirstGroupMatch(filePath, EXCEL_ADDIN_NAME_PATTERN)      '|
     Set configReferences = f.dictionaries.GetObject(dictReferences, addInName)      '|
     '--------------------------------------------------------------------------------|
     
     '[Open project and load references into dictionary ------------------------------|
     '(by file name, no extenstion).                                                 '|
-    Set wkb = f.Books.open_(filepath, False, xls)                                   '|
+    Set wkb = f.Books.open_(filePath, False, xls)                                   '|
     Set project = f.Developer.getVbProject(wkb)                                     '|
     Set projectReferences = getProjectReferencesDictionary(project)                 '|
     '--------------------------------------------------------------------------------|
 
     If project Is Nothing Then
-        message = f.Strings.Format(Msg.getText(ERROR_OPENING_VBA_PROJECT), filepath)
+        message = f.Strings.Format(Msg.getText(ERROR_OPENING_VBA_PROJECT), filePath)
         Call VBA.Err.Raise(1, , message)
     Else
         If f.dictionaries.isNonEmptyDictionary(configReferences) Then
@@ -250,9 +248,9 @@ Private Function fixReferencesInFile(xls As Excel.Application, filepath As Strin
                                         f.dictionaries.GetItem(configReferences, varKey), _
                                         f.dictionaries.GetItem(projectReferences, varKey))
                 If validation.getStatus = ItemProcessStatus_Correct Then
-                    Call pSuccessful.add(validation.getMessage)
+                    Call pSuccessful.Add(validation.getMessage)
                 ElseIf validation.getStatus = ItemProcessStatus_Error Then
-                    Call pErrors.add(validation.getMessage)
+                    Call pErrors.Add(validation.getMessage)
                 End If
             Next varKey
         End If
@@ -270,7 +268,7 @@ ExitPoint:
 '----------------------------------------------------------------------------------------------------------
 errHandler:
     errNumber = VBA.Err.Number: errDescription = VBA.Err.Description
-    message = f.Strings.Format(Msg.getText(FAILURE_MESSAGE_PATTERN), filepath, errDescription, errNumber)
+    message = f.Strings.Format(Msg.getText(FAILURE_MESSAGE_PATTERN), filePath, errDescription, errNumber)
     Set fixReferencesInFile = f.create.ValidationObject(ItemProcessStatus_Error, message)
 
 End Function
@@ -288,7 +286,7 @@ Private Function getProjectReferencesDictionary(project As vbide.VBProject) As S
                         f.regex.getFirstGroupMatch(ref.FullPath, EXCEL_ADDIN_NAME_PATTERN), _
                         pParent.getProject.getReplacements)
         refPath = ref.FullPath
-        Call f.dictionaries.addItem(getProjectReferencesDictionary, refName, refPath)
+        Call f.dictionaries.AddItem(getProjectReferencesDictionary, refName, refPath)
     Next ref
     
 End Function
@@ -297,6 +295,7 @@ Private Function fixSingleReference(project As vbide.VBProject, name As String, 
                                         desiredPath As String, currentPath As String) As ValidationObject
     Const SUCCESS_MESSAGE_PATTERN As String = "{0}::{1} [{2}]"
     Const FAILURE_MESSAGE_PATTERN As String = "CreatingNewProject.Errors.FixingSingleReference"
+    Dim errNumber As Long, errDescription As String
     '------------------------------------------------------------------------------------------------------
     Dim ref As vbide.Reference
     Dim message As String
@@ -322,8 +321,9 @@ Private Function fixSingleReference(project As vbide.VBProject, name As String, 
             Call project.references.Remove(ref)                                                         '|
             On Error GoTo errHandler                                                                    '|
             If project.references.Count <> counter - 1 Then                                             '|
+                errNumber = VBA.Err.Number: errDescription = VBA.Err.Description                        '|
                 message = f.Strings.Format(Msg.getText(ERROR_REMOVING_REFERENCE), _
-                                name, desiredPath, project.name, VBA.Err.Description, VBA.Err.Number)   '|
+                                            name, desiredPath, project.name, errDescription, errNumber) '|
                 Set fixSingleReference = f.create.ValidationObject(ItemProcessStatus_Error, message)    '|
             End If                                                                                      '|
         End If                                                                                          '|
@@ -332,11 +332,12 @@ Private Function fixSingleReference(project As vbide.VBProject, name As String, 
         '[Adding reference] -----------------------------------------------------------------------------|
         counter = project.references.Count                                                              '|
         On Error Resume Next                                                                            '|
-        Call project.references.addFromFile(desiredPath)                                                '|
+        Call project.references.AddFromFile(desiredPath)                                                '|
         On Error GoTo errHandler                                                                        '|
         If project.references.Count <> counter + 1 Then                                                 '|
+            errNumber = VBA.Err.Number: errDescription = VBA.Err.Description                            '|
             message = f.Strings.Format(Msg.getText(ERROR_ADDING_REFERENCE), _
-                                name, desiredPath, project.name, VBA.Err.Description, VBA.Err.Number)   '|
+                                            name, desiredPath, project.name, errDescription, errNumber) '|
             Set fixSingleReference = f.create.ValidationObject(ItemProcessStatus_Error, message)        '|
         End If                                                                                          '|
         '------------------------------------------------------------------------------------------------|
@@ -349,7 +350,6 @@ Private Function fixSingleReference(project As vbide.VBProject, name As String, 
 
 '==========================================================================================================
 ExitPoint:
-    Dim errNumber As Long, errDescription As String
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
@@ -487,7 +487,7 @@ End Function
 ''----------------------------------------------------------------------------------------------------------
 'ErrHandler:
 '    errNumber = VBA.Err.Number: errDescription = VBA.Err.Description
-'    Call pErrors.add(errDescription)
+'    Call pErrors.Add(errDescription)
 '
 'End Sub
 '

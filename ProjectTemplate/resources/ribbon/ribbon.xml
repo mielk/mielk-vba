@@ -1,20 +1,7 @@
-<customUI xmlns="http://schemas.microsoft.com/office/2006/01/customui" onLoad="ribbon_YourProjectCodeName_afterLoaded">
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui" onLoad="ribbon_YourProjectCodeName_afterLoaded">
     <ribbon>
         <tabs>
-            <tab id="tab.YourProjectCodeName" getLabel="getLabel_YourProjectCodeName">
-                <group id="group.session" getVisible="getVisible_YourProjectCodeName" getLabel="getLabel_YourProjectCodeName">
-                    <labelControl id="label.username" getVisible="getVisible_YourProjectCodeName" getLabel="getLabel_YourProjectCodeName" />
-                    <labelControl id="label.environment" getVisible="getVisible_YourProjectCodeName" getLabel="getLabel_YourProjectCodeName" />
-                </group>
-                <group id="group.actions" getVisible="getVisible_YourProjectCodeName" getLabel="getLabel_YourProjectCodeName">
-                        
-                </group>
-                <group id="group.settings" getVisible="getVisible_YourProjectCodeName" getLabel="getLabel_YourProjectCodeName">
-                    <menu id="menu.settings" getVisible="getVisible_YourProjectCodeName" getLabel="getLabel_YourProjectCodeName" size="large" getImage="getImage_YourProjectCodeName" >
-                        <button id="button.settings.changeLanguage" getVisible="getVisible_YourProjectCodeName" getEnabled="getEnabled_YourProjectCodeName" getLabel="getLabel_YourProjectCodeName" getImage="getImage_YourProjectCodeName" getScreentip="getScreentip_YourProjectCodeName" onAction="action_YourProjectCodeName" />
-                    </menu>
-                </group>
-            </tab>
+{0}
         </tabs>
     </ribbon>
 </customUI>

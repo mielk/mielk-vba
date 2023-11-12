@@ -209,7 +209,7 @@ Public Sub addError(ByVal className As String, ByVal methodName As String, ByVal
               setErrorNumber(number). _
               setErrorDescription(description). _
               setParams(paramsDict)
-    Call pErrors.add(Item)
+    Call pErrors.Add(Item)
     
     
 '==========================================================================================================
@@ -264,7 +264,7 @@ Private Function createDictionaryFromParamArray(arr As Variant) As Scripting.Dic
             counter = LBound(arr) + 1
             For i = LBound(arrVariablesNames) To UBound(arrVariablesNames)
                 If counter <= UBound(arr) Then
-                    Call createDictionaryFromParamArray.add(arrVariablesNames(i), arr(counter))
+                    Call createDictionaryFromParamArray.Add(arrVariablesNames(i), arr(counter))
                     counter = counter + 1
                 End If
             Next i
@@ -281,9 +281,9 @@ End Function
 
 
 '[ACTIONS]
-Public Sub save(Optional connection As Object, Optional ByVal customErrorMessage As String, Optional errorsfilepath As String)
+Public Sub save(Optional connection As Object, Optional ByVal customErrorMessage As String, Optional errorsFilePath As String)
     If pLogToDbMode Then Call logToDatabase(connection)
-    If pLogToTextFileMode Then Call logToTextFile(errorsfilepath)
+    If pLogToTextFileMode Then Call logToTextFile(errorsFilePath)
     Call display(customErrorMessage)
     Call toImmediate
 End Sub
@@ -339,7 +339,7 @@ End Sub
 
 
 
-Public Sub logToTextFile(Optional errorsfilepath As String)
+Public Sub logToTextFile(Optional errorsFilePath As String)
     Const METHOD_NAME As String = "logToTextFile"
     '------------------------------------------------------------------------------------------------------
     Dim FileName As String
@@ -348,8 +348,8 @@ Public Sub logToTextFile(Optional errorsfilepath As String)
     
     If Not DEV_MODE Then On Error GoTo ErrHandler
     
-    If VBA.Len(errorsfilepath) Then
-        filepath = errorsfilepath
+    If VBA.Len(errorsFilePath) Then
+        filepath = errorsFilePath
     ElseIf fso.folderExists(pLogFolder) Then
         FileName = VBA.format(VBA.Date, "YYYY-MM-DD") & ".txt"
         filepath = f.files.concatenatePath(pLogFolder, FileName)
@@ -374,7 +374,7 @@ ErrHandler:
     errMessage = getLogToTextfileErrorMessage & VBA.vbCrLf & VBA.vbCrLf & _
                 "----------- [Stack] -------------------------------------" & VBA.vbCrLf & _
                 " * ErrorManager.logToTextFile" & VBA.vbCrLf & _
-                        VBA.vbTab & "errorsfilepath: " & errorsfilepath & VBA.vbCrLf & _
+                        VBA.vbTab & "errorsFilePath: " & errorsFilePath & VBA.vbCrLf & _
                         VBA.vbTab & "pLogFolder: " & pLogFolder & VBA.vbCrLf & _
                 errDescription
     Call VBA.MsgBox(errMessage, vbCritical, App.getName)

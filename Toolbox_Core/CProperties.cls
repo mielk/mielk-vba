@@ -36,12 +36,20 @@ Private Sub insertEnumOptions()
 
     '[Ribbon]
     Call addEnumOption("RibbonType")
-    Call addEnumOption("Labels")
-    Call addEnumOption("Screentips")
-    Call addEnumOption("IsVisible")
-    Call addEnumOption("IsEnabled")
+    Call addEnumOption("Label")
+    Call addEnumOption("LabelsDict")
+    Call addEnumOption("Screentip")
+    Call addEnumOption("ScreentipsDict")
+    Call addEnumOption("Visible")
+    Call addEnumOption("Enabled")
     Call addEnumOption("Image")
     Call addEnumOption("Size")
+    Call addEnumOption("ItemsSize")
+    Call addEnumOption("OnAction")
+    Call addEnumOption("Attributes")
+    Call addEnumOption("Children")
+    Call addEnumOption("Controls")
+    Call addEnumOption("Functions")
     
 End Sub
 
@@ -52,7 +60,7 @@ Private Sub addEnumOption(name As String, Optional ByVal dbField As String)
     If VBA.Len(dbField) = 0 Then dbField = name
     Set enumProperty = F.Create.prop(name, dbField)
     
-    Call F.dictionaries.addItem(pByNames, enumProperty.getName, enumProperty, duplicateBehaviour_WarningInImmediateWindow)
+    Call F.dictionaries.AddItem(pByNames, enumProperty.getName, enumProperty, duplicateBehaviour_WarningInImmediateWindow)
     
 End Sub
 
@@ -89,9 +97,17 @@ Public Function ProjectToolFolderPath() As enumProperty: Set ProjectToolFolderPa
 
 '[Ribbon]
 Public Function RibbonType() As enumProperty: Set RibbonType = ByName("RibbonType"): End Function
-Public Function Labels() As enumProperty: Set Labels = ByName("Labels"): End Function
-Public Function Screentips() As enumProperty: Set Screentips = ByName("Screentips"): End Function
-Public Function IsVisible() As enumProperty: Set IsVisible = ByName("IsVisible"): End Function
-Public Function IsEnabled() As enumProperty: Set IsEnabled = ByName("IsEnabled"): End Function
+Public Function Label() As enumProperty: Set Label = ByName("Label"): End Function
+Public Function LabelsDict() As enumProperty: Set LabelsDict = ByName("LabelsDict"): End Function
+Public Function Screentip() As enumProperty: Set Screentip = ByName("Screentip"): End Function
+Public Function ScreentipsDict() As enumProperty: Set ScreentipsDict = ByName("ScreentipsDict"): End Function
+Public Function Visible() As enumProperty: Set Visible = ByName("Visible"): End Function
+Public Function Enabled() As enumProperty: Set Enabled = ByName("Enabled"): End Function
 Public Function Image() As enumProperty: Set Image = ByName("Image"): End Function
 Public Function Size() As enumProperty: Set Size = ByName("Size"): End Function
+Public Function ItemsSize() As enumProperty: Set ItemsSize = ByName("ItemsSize"): End Function
+Public Function OnAction() As enumProperty: Set OnAction = ByName("OnAction"): End Function
+Public Function Attributes() As enumProperty: Set Attributes = ByName("Attributes"): End Function
+Public Function Children() As enumProperty: Set Children = ByName("Children"): End Function
+Public Function Controls() As enumProperty: Set Controls = ByName("Controls"): End Function
+Public Function Functions() As enumProperty: Set Functions = ByName("Functions"): End Function

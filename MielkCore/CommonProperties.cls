@@ -51,6 +51,7 @@ Private Sub insertEnumOptions()
     Call addEnumOption("Item")
     Call addEnumOption("Items")
     Call addEnumOption("Message")
+    Call addEnumOption("Messages")
     Call addEnumOption("Method")
     Call addEnumOption("Parent")
     Call addEnumOption("Prop")
@@ -101,24 +102,25 @@ Private Sub insertEnumOptions()
     Call addEnumOption("Events")
     Call addEnumOption("HeaderEvents")
     Call addEnumOption("Template")
+    Call addEnumOption("Ribbon")
     
     '[Common - file types & paths]
-    Call addEnumOption("Destinationfilepath", "destination_file_path")
+    Call addEnumOption("DestinationFilePath", "destination_file_path")
     Call addEnumOption("FileCreator", "file_creator")
     Call addEnumOption("FileName", "file_name")
-    Call addEnumOption("filepath", "file_path")
+    Call addEnumOption("FilePath", "file_path")
     Call addEnumOption("FileSize", "file_size")
     Call addEnumOption("FileTimestamp", "file_timestamp")
     Call addEnumOption("FileType", "file_type")
     Call addEnumOption("FolderPath", "folder_path")
-    Call addEnumOption("Sourcefilepath", "source_file_path")
+    Call addEnumOption("SourceFilePath", "source_file_path")
 
     '[Common - Developers]
     Call addEnumOption("ProjectName", "project_name")
     Call addEnumOption("ProjectCodeName", "project_code_name")
     Call addEnumOption("References", "references")
     Call addEnumOption("RefName", "ref_name")
-    Call addEnumOption("Reffilepath", "ref_file_path")
+    Call addEnumOption("RefFilePath", "ref_file_path")
 
 End Sub
 
@@ -181,6 +183,7 @@ Public Function Index() As enumProperty: Set Index = ByName("Index"): End Functi
 Public Function Item() As enumProperty: Set Item = ByName("Item"): End Function
 Public Function Items() As enumProperty: Set Items = ByName("Items"): End Function
 Public Function message() As enumProperty: Set message = ByName("Message"): End Function
+Public Function Messages() As enumProperty: Set Messages = ByName("Messages"): End Function
 Public Function Method() As enumProperty: Set Method = ByName("Method"): End Function
 Public Function Parent() As enumProperty: Set Parent = ByName("Parent"): End Function
 Public Function Prop() As enumProperty: Set Prop = ByName("Prop"): End Function
@@ -232,21 +235,22 @@ Public Function StylesConditional() As enumProperty: Set StylesConditional = ByN
 Public Function Events() As enumProperty: Set Events = ByName("Events"): End Function
 Public Function HeaderEvents() As enumProperty: Set HeaderEvents = ByName("HeaderEvents"): End Function
 Public Function Template() As enumProperty: Set Template = ByName("Template"): End Function
+Public Function Ribbon() As enumProperty: Set Ribbon = ByName("Ribbon"): End Function
 
 '[Common - file types & paths]
-Public Function Destinationfilepath() As enumProperty: Set Destinationfilepath = ByName("Destinationfilepath"): End Function
+Public Function DestinationFilePath() As enumProperty: Set DestinationFilePath = ByName("DestinationFilePath"): End Function
 Public Function FileCreator() As enumProperty: Set FileCreator = ByName("FileCreator"): End Function
 Public Function FileName() As enumProperty: Set FileName = ByName("FileName"): End Function
-Public Function filepath() As enumProperty: Set filepath = ByName("filepath"): End Function
+Public Function filePath() As enumProperty: Set filePath = ByName("FilePath"): End Function
 Public Function FileSize() As enumProperty: Set FileSize = ByName("FileSize"): End Function
 Public Function FileTimestamp() As enumProperty: Set FileTimestamp = ByName("FileTimestamp"): End Function
 Public Function FileType() As enumProperty: Set FileType = ByName("FileType"): End Function
 Public Function folderPath() As enumProperty: Set folderPath = ByName("FolderPath"): End Function
-Public Function Sourcefilepath() As enumProperty: Set Sourcefilepath = ByName("Sourcefilepath"): End Function
+Public Function sourceFilePath() As enumProperty: Set sourceFilePath = ByName("SourceFilePath"): End Function
 
 '[Common - Developers]
 Public Function ProjectName() As enumProperty: Set ProjectName = ByName("ProjectName"): End Function
 Public Function ProjectCodeName() As enumProperty: Set ProjectCodeName = ByName("ProjectCodeName"): End Function
 Public Function References() As enumProperty: Set References = ByName("References"): End Function
 Public Function RefName() As enumProperty: Set RefName = ByName("RefName"): End Function
-Public Function Reffilepath() As enumProperty: Set Reffilepath = ByName("Reffilepath"): End Function
+Public Function RefFilePath() As enumProperty: Set RefFilePath = ByName("RefFilePath"): End Function

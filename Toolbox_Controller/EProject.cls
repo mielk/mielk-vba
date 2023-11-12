@@ -28,8 +28,8 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub setInitialValues()
-    pName = "Testowa aplikacja"
-    pCodeName = "test"
+    pName = "EY"
+    pCodeName = "ey"
     pParentFolder = "D:\vba-tests\apps\"
     pLibFolderPath = "D:\Dropbox\tm\mielk\mielk-vba\code\"
     pIsAddIn = False
@@ -71,6 +71,13 @@ Public Function getFolderPath() As String
     getFolderPath = f.files.concatenatePath(pParentFolder, pName) & "\"
 End Function
 
+Public Function getViewFilePath() As String
+    Dim fileName As String
+    '----------------------------------------------------------------------------------------------------------
+    fileName = pCodeName & VIEW_FILE_SUFFIX & VBA.IIf(pIsAddIn, EXTENSION_EXCEL_ADDIN, EXTENSION_EXCEL_MACRO_FILE)
+    getViewFilePath = f.files.concatenatePath(getFolderPath, fileName)
+End Function
+
 Public Function getLibFolderPath() As String
     getLibFolderPath = pLibFolderPath
 End Function
@@ -94,9 +101,9 @@ Public Function getValue(propName As String) As Variant
     Select Case propName
         Case props.ProjectName.getName:                     getValue = pName
         Case props.ProjectCodeName.getName:                 getValue = pCodeName
-        Case props_Project.ProjectCodeNameUCase.getName:    getValue = VBA.UCase$(pCodeName)
-        Case props_Project.ProjectLibFolderPath.getName:    getValue = pLibFolderPath
-        Case props_Project.ProjectToolFolderPath.getName:   getValue = getFolderPath
+        Case Props_Project.ProjectCodeNameUCase.getName:    getValue = VBA.UCase$(pCodeName)
+        Case Props_Project.ProjectLibFolderPath.getName:    getValue = pLibFolderPath
+        Case Props_Project.ProjectToolFolderPath.getName:   getValue = getFolderPath
     End Select
 End Function
 
@@ -108,9 +115,9 @@ Public Function getReplacements() As Scripting.Dictionary
     Set getReplacements = f.dictionaries.create(True)
     With getAllPlaceholders
         For Each key In .Keys
-            Set prop = .Item(key)
+            Set prop = .item(key)
             value = getValue(prop.getName)
-            Call getReplacements.add(key, value)
+            Call getReplacements.Add(key, value)
         Next key
     End With
 End Function

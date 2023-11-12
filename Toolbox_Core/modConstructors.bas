@@ -21,6 +21,19 @@ Public Function Msg() As MsgService
     
 End Function
 
+Public Function Config() As SConfig
+    Static instance As SConfig
+    '------------------------------------------------------------------------------------------------------
+    
+    If instance Is Nothing Then
+        Set instance = New SConfig
+        Call instance.loadJsonsFromFolder
+    End If
+    
+    Set Config = instance
+    
+End Function
+
 Public Function Paths(Optional inject As SPaths) As SPaths
     Static instance As SPaths
     '------------------------------------------------------------------------------------------------------
@@ -102,7 +115,7 @@ Public Function App() As ParentApp
         With instance
             Call .setName(APPLICATION_NAME)
             Call .setVersion(APPLICATION_VERSION)
-            Call .setPath(F.Files.getUncPath(Excel.Workbooks(VIEW_WORKBOOK_NAME).FullName))
+            Call .setPath(F.files.getUncPath(Excel.Workbooks(VIEW_WORKBOOK_NAME).FullName))
         End With
     End If
     Set App = instance

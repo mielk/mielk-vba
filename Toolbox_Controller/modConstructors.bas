@@ -24,6 +24,14 @@ Public Function RibbonManager(Optional inject As RibbonManager) As RibbonManager
     Set RibbonManager = instance
 End Function
 
+Public Function RibbonControlTypes(Optional inject As CRibbonControlTypes) As CRibbonControlTypes
+    Static instance As CRibbonControlTypes
+    '------------------------------------------------------------------------------------------------------
+    If instance Is Nothing Then
+        Set instance = New CRibbonControlTypes
+    End If
+    Set RibbonControlTypes = instance
+End Function
 
 
 '[Project-specific]

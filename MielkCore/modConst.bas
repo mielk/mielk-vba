@@ -24,6 +24,8 @@ Public Const LOCAL_METHOD As String = "$."
 Public Const EXTENSION_TXT As String = ".txt"
 Public Const EXTENSION_EXCEL_ADDIN As String = ".xlam"
 Public Const EXTENSION_EXCEL_MACRO_FILE As String = ".xlsm"
+Public Const EXTENSION_JSON As String = ".json"
+Public Const EXTENSION_ZIP As String = ".zip"
 '[Constants from other libraries - used with late binding] ------------------------------------------------
 '[Outlook]
 Public Const olMailItem As Long = 0

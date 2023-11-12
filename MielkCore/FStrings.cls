@@ -110,7 +110,7 @@ Public Function compareStrings(baseString As Variant, comparedString As Variant,
     Dim compareMethod As VBA.VbCompareMethod
     '------------------------------------------------------------------------------------------------------
 
-    If Not DEV_MODE Then On Error GoTo ErrHandler
+    If Not DEV_MODE Then On Error GoTo errHandler
     
     If trimmed Then
         compareStrings = (VBA.StrComp(VBA.trim(baseString), VBA.trim(comparedString), compareMethod) = 0)
@@ -125,7 +125,7 @@ ExitPoint:
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
-ErrHandler:
+errHandler:
     errNumber = err.number: errDescription = err.description
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, _
                         "baseString; comparedString; isCaseSensitive; trimmed", _
@@ -152,7 +152,7 @@ Public Function format(pattern As String, ParamArray replacements() As Variant) 
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
 
-    If Not DEV_MODE Then On Error GoTo ErrHandler
+    If Not DEV_MODE Then On Error GoTo errHandler
 
     'New line symbols
     format = VBA.replace(pattern, "\\", SLASH_TEMP_REPLACEMENT)
@@ -175,7 +175,7 @@ ExitPoint:
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
-ErrHandler:
+errHandler:
     errNumber = err.number: errDescription = err.description
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, _
                         "pattern; replacements; arr; index; tag", _
@@ -479,7 +479,7 @@ Private Function stringifyNotContainerObject(value As Object, stringifyMode As S
     errDescription = VBA.err.description
 
 
-    If Not DEV_MODE Then On Error GoTo ErrHandler
+    If Not DEV_MODE Then On Error GoTo errHandler
     
 
     If errNumber = Exceptions.MethodNotSupported.getNumber Then
@@ -501,7 +501,7 @@ ExitPoint:
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
-ErrHandler:
+errHandler:
     errNumber = err.number: errDescription = err.description
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, _
                                 "value; stringifyMode; pattern", value, stringifyMode, pattern)
@@ -608,7 +608,7 @@ Public Function substring(sourceText As String, leftSubstr As String, rightSubst
     Dim resultLength As Long
     '------------------------------------------------------------------------------------------------------
 
-    If Not DEV_MODE Then On Error GoTo ErrHandler
+    If Not DEV_MODE Then On Error GoTo errHandler
 
     compareMethod = VBA.IIf(isCaseSensitive, VBA.vbBinaryCompare, VBA.vbTextCompare)
 
@@ -642,7 +642,7 @@ ExitPoint:
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
-ErrHandler:
+errHandler:
     errNumber = err.number: errDescription = err.description
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, _
                     "sourceText; leftSubstr; rightSubstr; isCaseSensitive; startPosition; endPosition; compareMethod; resultLength", _
@@ -676,7 +676,7 @@ Public Function coalesce(ParamArray strings() As Variant) As String
     Dim varString As Variant
     '------------------------------------------------------------------------------------------------------
 
-    If Not DEV_MODE Then On Error GoTo ErrHandler
+    If Not DEV_MODE Then On Error GoTo errHandler
 
     For Each varString In strings
         If isDefinedPrimitiveVariable(varString) Then
@@ -694,7 +694,7 @@ ExitPoint:
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
-ErrHandler:
+errHandler:
     errNumber = err.number: errDescription = err.description
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, _
                     "strings; varString", f.arrays.fromParamArray(strings), varString)
@@ -707,7 +707,7 @@ Private Function isDefinedPrimitiveVariable(value As Variant) As Boolean
     Const METHOD_NAME As String = "isDefinedPrimitiveVariable"
     '------------------------------------------------------------------------------------------------------
 
-    If Not DEV_MODE Then On Error GoTo ErrHandler
+    If Not DEV_MODE Then On Error GoTo errHandler
 
     If f.Variables.isUndefined(value) Then
         isDefinedPrimitiveVariable = False
@@ -726,7 +726,7 @@ ExitPoint:
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
-ErrHandler:
+errHandler:
     errNumber = err.number: errDescription = err.description
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, "value", value)
     GoTo ExitPoint
@@ -735,7 +735,7 @@ End Function
 
 
 
-'#todo - zamieniÔøΩ na regex
+'#todo - zamieniÊ na regex
 Public Function onlyDigits(ByVal text As Variant, _
               Optional ByVal leaveSpecialChars As Boolean = True) As String
     Const METHOD_NAME As String = "onlyDigits"
@@ -822,7 +822,7 @@ Public Function trimLeft(text As String) As String
     Static objRegex As Object
     '------------------------------------------------------------------------------------------------------
 
-    If Not DEV_MODE Then On Error GoTo ErrHandler
+    If Not DEV_MODE Then On Error GoTo errHandler
 
     If objRegex Is Nothing Then
         Set objRegex = f.regex.Create(REGEX_PATTERN)
@@ -836,7 +836,7 @@ ExitPoint:
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
-ErrHandler:
+errHandler:
     errNumber = err.number: errDescription = err.description
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, "text", text)
     GoTo ExitPoint
@@ -862,7 +862,7 @@ Public Function trimRight(text As String) As String
     Static objRegex As Object
     '------------------------------------------------------------------------------------------------------
 
-    If Not DEV_MODE Then On Error GoTo ErrHandler
+    If Not DEV_MODE Then On Error GoTo errHandler
     
     If objRegex Is Nothing Then
         Set objRegex = f.regex.Create(REGEX_PATTERN)
@@ -876,7 +876,7 @@ ExitPoint:
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
-ErrHandler:
+errHandler:
     errNumber = err.number: errDescription = err.description
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, "text", text)
     GoTo ExitPoint
@@ -910,7 +910,7 @@ Public Function trimInside(text As String) As String
     Static objRegexSpace As Object
     '------------------------------------------------------------------------------------------------------
 
-    If Not DEV_MODE Then On Error GoTo ErrHandler
+    If Not DEV_MODE Then On Error GoTo errHandler
 
     If objRegexNewLine Is Nothing Then Set objRegexNewLine = f.regex.Create(REGEX_PATTERN_NEW_LINE)
     If objRegexTab Is Nothing Then Set objRegexTab = f.regex.Create(REGEX_PATTERN_TAB)
@@ -927,7 +927,7 @@ ExitPoint:
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
-ErrHandler:
+errHandler:
     errNumber = err.number: errDescription = err.description
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, "text", text)
     GoTo ExitPoint
@@ -955,7 +955,7 @@ Public Function trimFull(text As String) As String
     Const METHOD_NAME As String = "trimFull"
     '------------------------------------------------------------------------------------------------------
 
-    If Not DEV_MODE Then On Error GoTo ErrHandler
+    If Not DEV_MODE Then On Error GoTo errHandler
 
     trimFull = trimLeft(trimInside(trimRight(text)))
 
@@ -966,7 +966,7 @@ ExitPoint:
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
-ErrHandler:
+errHandler:
     errNumber = err.number: errDescription = err.description
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, "text", text)
     GoTo ExitPoint
@@ -1037,7 +1037,7 @@ Public Function countOccurrences(sourceText As String, substr As String, _
     Dim uCompareMethod As VBA.VbCompareMethod
     '------------------------------------------------------------------------------------------------------
 
-    If Not DEV_MODE Then On Error GoTo ErrHandler
+    If Not DEV_MODE Then On Error GoTo errHandler
 
     uCompareMethod = VBA.IIf(isCaseSensitive, VBA.vbBinaryCompare, VBA.vbTextCompare)
     If VBA.Len(sourceText) > 0 And VBA.Len(substr) > 0 Then
@@ -1054,7 +1054,7 @@ ExitPoint:
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
-ErrHandler:
+errHandler:
     errNumber = err.number: errDescription = err.description
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, _
                                 "sourceText; substr; isCaseSensitive", _
@@ -1067,24 +1067,24 @@ End Function
 Public Function latinize(ByVal text As String) As String
     Dim str As String:              str = text
     '------------------------------------------------------------------------------------------------------
-    str = VBA.replace(str, "ÔøΩ", "a")
-    str = VBA.replace(str, "ÔøΩ", "A")
-    str = VBA.replace(str, "ÔøΩ", "c")
-    str = VBA.replace(str, "ÔøΩ", "C")
-    str = VBA.replace(str, "ÔøΩ", "e")
-    str = VBA.replace(str, "ÔøΩ", "E")
-    str = VBA.replace(str, "ÔøΩ", "l")
-    str = VBA.replace(str, "ÔøΩ", "L")
-    str = VBA.replace(str, "ÔøΩ", "n")
-    str = VBA.replace(str, "ÔøΩ", "N")
-    str = VBA.replace(str, "ÔøΩ", "o")
-    str = VBA.replace(str, "ÔøΩ", "O")
-    str = VBA.replace(str, "ÔøΩ", "s")
-    str = VBA.replace(str, "ÔøΩ", "S")
-    str = VBA.replace(str, "ÔøΩ", "z")
-    str = VBA.replace(str, "ÔøΩ", "Z")
-    str = VBA.replace(str, "ÔøΩ", "z")
-    str = VBA.replace(str, "ÔøΩ", "Z")
+    str = VBA.replace(str, "π", "a")
+    str = VBA.replace(str, "•", "A")
+    str = VBA.replace(str, "Ê", "c")
+    str = VBA.replace(str, "∆", "C")
+    str = VBA.replace(str, "Í", "e")
+    str = VBA.replace(str, " ", "E")
+    str = VBA.replace(str, "≥", "l")
+    str = VBA.replace(str, "£", "L")
+    str = VBA.replace(str, "Ò", "n")
+    str = VBA.replace(str, "—", "N")
+    str = VBA.replace(str, "Û", "o")
+    str = VBA.replace(str, "”", "O")
+    str = VBA.replace(str, "ú", "s")
+    str = VBA.replace(str, "å", "S")
+    str = VBA.replace(str, "ü", "z")
+    str = VBA.replace(str, "è", "Z")
+    str = VBA.replace(str, "ø", "z")
+    str = VBA.replace(str, "Ø", "Z")
     latinize = str
 End Function
 
@@ -1130,7 +1130,26 @@ Public Function replaceByDictionary(baseString As String, replacements As Script
 End Function
 
 
+Public Function toSentenceCase(value As String) As String
+    toSentenceCase = VBA.UCase(VBA.left(value, 1)) & VBA.mid(value, 2)
+End Function
 
+Public Function toCamelCase(value As String) As String
+    Dim words As Variant
+    Dim word As String
+    Dim i As Long
+    '------------------------------------------------------------------------------------------------------
+    
+    words = VBA.Split(value, " ")
+    If f.arrays.isDefined(words) Then
+        For i = LBound(words) + 1 To UBound(words)
+            word = words(i)
+            words(i) = VBA.UCase(VBA.left(word, 1)) & VBA.mid(word, 2)
+        Next i
+        toCamelCase = VBA.join(words, "")
+    End If
+    
+End Function
 
 
 
@@ -1330,7 +1349,7 @@ End Function
 'End Function
 '
 'Public Function onlyLetters(text As String) As String
-'    Const REGEX_PATTERN As String = "[^a-zA-ZÔøΩÔøΩÔøΩÔøΩÛúüøÔøΩÔøΩ £ÔøΩ”åÔøΩÔøΩ]"
+'    Const REGEX_PATTERN As String = "[^a-zA-ZπÊÍ≥ÒÛúüø•∆ £—”åèØ]"
 '    '------------------------------------------------------------------------------------------------------
 '    Static objRegex As Object
 '    '------------------------------------------------------------------------------------------------------
@@ -1414,3 +1433,19 @@ End Function
 
 
 
+
+Public Function concatenate(ParamArray texts() As Variant) As String
+    On Error Resume Next
+    concatenate = VBA.join(texts, vbNullString)
+End Function
+
+
+Public Function convertLetterCasing(text As String, casing As LetterCasingEnum) As String
+    Select Case casing
+        Case LetterCasing_Lower:            convertLetterCasing = VBA.LCase(text)
+        Case LetterCasing_Upper:            convertLetterCasing = VBA.UCase(text)
+        Case LetterCasing_Sentence:         convertLetterCasing = toSentenceCase(text)
+        Case LetterCasing_Camel:            convertLetterCasing = toCamelCase(text)
+        Case LetterCasing_StartWithLower:   convertLetterCasing = VBA.LCase(VBA.left(text, 1)) & VBA.mid(text, 2)
+    End Select
+End Function

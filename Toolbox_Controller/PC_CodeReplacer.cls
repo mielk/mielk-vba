@@ -115,7 +115,7 @@ Public Sub process()
         '------------------------------------------------------------------------------------|
         Set validation = replaceSingleFile(VBA.CStr(varfilepath))                           '|
         If validation.getStatus = ItemProcessStatus_Error Then                              '|
-            Call pErrors.add(validation.getMessage)                                         '|
+            Call pErrors.Add(validation.getMessage)                                         '|
         End If                                                                              '|
         '------------------------------------------------------------------------------------|
         
@@ -129,7 +129,7 @@ ExitPoint:
 '----------------------------------------------------------------------------------------------------------
 errHandler:
     errNumber = Err.Number: errDescription = Err.Description
-    Call pErrors.add(f.Strings.Format(Msg.getText(ERROR_GENERAL), errDescription, errNumber))
+    Call pErrors.Add(f.Strings.Format(Msg.getText(ERROR_GENERAL), errDescription, errNumber))
     
 End Sub
 
@@ -168,11 +168,11 @@ Private Function replaceSingleFile(filepath As String) As ValidationObject
             ElseIf validation.getStatus = ItemProcessStatus_Correct Then                        '|
                 message = f.Strings.Format(SUCCESS_MESSAGE_PATTERN, _
                                                             project.fileName, component.name)   '|
-                Call pSuccessful.add(message)                                                   '|
+                Call pSuccessful.Add(message)                                                   '|
             ElseIf validation.getStatus = ItemProcessStatus_Error Then                          '|
                 message = f.Strings.Format(Msg.getText(FAILURE_MESSAGE_PATTERN), _
                                     project.fileName, component.name, validation.getMessage)    '|
-                Call pErrors.add(message)                                                       '|
+                Call pErrors.Add(message)                                                       '|
             End If                                                                              '|
             '------------------------------------------------------------------------------------|
             
@@ -226,6 +226,7 @@ End Function
 
 Private Function convertComponent(component As vbide.VBComponent) As ValidationObject
     Const ERROR_READING_MODULE_CONTENT As String = "CreatingNewProject.Errors.ReadingModuleContent"
+    Dim errNumber As Long, errDescription As String
     '----------------------------------------------------------------------------------------------------------
     Dim codeModule As vbide.codeModule
     '----------------------------------------------------------------------------------------------------------
@@ -252,10 +253,11 @@ Private Function convertComponent(component As vbide.VBComponent) As ValidationO
     content = f.Developer.getCodeModuleContent(codeModule)                          '|
     arrContent = VBA.Split(content, VBA.vbCrLf)                                     '|
     If Not f.arrays.isDefined(arrContent) Then                                      '|
+        errNumber = VBA.Err.Number: errDescription = VBA.Err.Description            '|
         message = f.Strings.Format(Msg.getText(ERROR_READING_MODULE_CONTENT), _
-                                                        VBA.Err.Description)        '|
+                                                                errDescription)     '|
         On Error GoTo errHandler                                                    '|
-        Call VBA.Err.Raise(VBA.Err.Number, , message)                               '|
+        Call VBA.Err.Raise(errNumber, , message)                                    '|
     End If                                                                          '|
     '--------------------------------------------------------------------------------|
     
@@ -277,7 +279,6 @@ Private Function convertComponent(component As vbide.VBComponent) As ValidationO
     
 '==========================================================================================================
 ExitPoint:
-    Dim errNumber As Long, errDescription As String
     If totalOccurrences Then
         Set convertComponent = f.create.ValidationObject(ItemProcessStatus_Correct)
     Else

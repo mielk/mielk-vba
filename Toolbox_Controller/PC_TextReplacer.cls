@@ -105,7 +105,7 @@ Public Sub process()
         'If project should be created as an add-in, -----------------------------------------|
         ' all "*-view.xlsm" should be replaced with *-view.xlam.                            '|
         If .isAddIn Then                                                                    '|
-            Call f.dictionaries.addItem(replacements, _
+            Call f.dictionaries.AddItem(replacements, _
                                 EXTENSION_EXCEL_MACRO_FILE, EXTENSION_EXCEL_ADDIN)          '|
         End If                                                                              '|
         '------------------------------------------------------------------------------------|
@@ -124,8 +124,8 @@ Public Sub process()
         '------------------------------------------------------------------------------------|
         Set validation = adjustTextFile(VBA.CStr(varPath), replacements)                    '|
         Select Case validation.getStatus                                                    '|
-            Case ItemProcessStatus_Error:       Call pErrors.add(validation.getMessage)     '|
-            Case ItemProcessStatus_Correct:     Call pSuccessful.add(varPath)               '|
+            Case ItemProcessStatus_Error:       Call pErrors.Add(validation.getMessage)     '|
+            Case ItemProcessStatus_Correct:     Call pSuccessful.Add(varPath)               '|
         End Select                                                                          '|
         '------------------------------------------------------------------------------------|
 
@@ -141,7 +141,7 @@ ExitPoint:
 '----------------------------------------------------------------------------------------------------------
 errHandler:
     errNumber = VBA.Err.Number: errDescription = VBA.Err.Description
-    Call pErrors.add(f.Strings.Format(Msg.getText(ERROR_GENERAL), errDescription, errNumber))
+    Call pErrors.Add(f.Strings.Format(Msg.getText(ERROR_GENERAL), errDescription, errNumber))
 
 End Sub
 
@@ -170,7 +170,7 @@ Private Function getTextFilesToBeAdjusted() As VBA.Collection
         Call .Add(f.files.concatenatePath(project.getFolderPath, Paths.FolderNameResources, _
                                         Paths.FolderNameRibbon, "ribbon.json"))
 
-        '[Ribbon - ribbon.json]
+        '[Ribbon - ribbon.xml]
         Call .Add(f.files.concatenatePath(project.getFolderPath, Paths.FolderNameResources, _
                                         Paths.FolderNameRibbon, "ribbon.xml"))
 
@@ -178,7 +178,7 @@ Private Function getTextFilesToBeAdjusted() As VBA.Collection
 
 End Function
 
-Private Function adjustTextFile(filepath As String, replacements As Scripting.Dictionary) As ValidationObject
+Private Function adjustTextFile(filePath As String, replacements As Scripting.Dictionary) As ValidationObject
     Dim errNumber As Long, errDescription As String
     '------------------------------------------------------------------------------------------------------
     Dim stream As Scripting.TextStream
@@ -191,14 +191,14 @@ Private Function adjustTextFile(filepath As String, replacements As Scripting.Di
     '[Reading original content of the file] -------------------------------------------------|
     On Error Resume Next                                                                    '|
     Call VBA.Err.Clear                                                                      '|
-    Set stream = fso.OpenTextFile(filepath, ForReading)                                     '|
+    Set stream = fso.OpenTextFile(filePath, ForReading)                                     '|
     content = stream.ReadAll                                                                '|
     Call stream.Close                                                                       '|
                                                                                             '|
     errNumber = VBA.Err.Number: errDescription = VBA.Err.Description                        '|
     If errNumber Then                                                                       '|
         On Error GoTo errHandler                                                            '|
-        message = f.Strings.Format(Msg.getText(ERROR_READING_FROM_TEXT_FILE), filepath, _
+        message = f.Strings.Format(Msg.getText(ERROR_READING_FROM_TEXT_FILE), filePath, _
                                                                 errDescription, errNumber)  '|
         Call VBA.Err.Raise(errNumber, , errDescription)                                     '|
     End If                                                                                  '|
@@ -208,14 +208,14 @@ Private Function adjustTextFile(filepath As String, replacements As Scripting.Di
     On Error Resume Next                                                                    '|
     Call VBA.Err.Clear                                                                      '|
     content = f.Strings.replaceByDictionary(content, replacements)                          '|
-    Set stream = fso.OpenTextFile(filepath, ForWriting)                                     '|
+    Set stream = fso.OpenTextFile(filePath, ForWriting)                                     '|
     Call stream.WriteLine(content)                                                          '|
     Call stream.Close                                                                       '|
                                                                                             '|
     errNumber = VBA.Err.Number: errDescription = VBA.Err.Description                        '|
     If errNumber Then                                                                       '|
         On Error GoTo errHandler                                                            '|
-        message = f.Strings.Format(Msg.getText(ERROR_WRITING_TO_TEXT_FILE), filepath, _
+        message = f.Strings.Format(Msg.getText(ERROR_WRITING_TO_TEXT_FILE), filePath, _
                                                                 errDescription, errNumber)  '|
         Call VBA.Err.Raise(errNumber, , message)                                            '|
     End If                                                                                  '|

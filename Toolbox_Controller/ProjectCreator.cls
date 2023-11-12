@@ -11,7 +11,7 @@ Option Explicit
 
 Private Const CLASS_NAME As String = "ProjectCreator"
 '[Config] -------------------------------------------------------------------------------------------------
-Private Const CONFIG_FILE_NAME As String = "new-project"
+Private Const CONFIG_NAME As String = CONFIG_NEW_PROJECT
 '[Captions] -----------------------------------------------------------------------------------------------
 Private Const WINDOW_TITLE As String = "CreatingNewProject.Window.Title"
 '[Errors] -------------------------------------------------------------------------------------------------
@@ -22,7 +22,8 @@ Private Const SUCCESS_MESSAGE As String = "CreatingNewProject.Messages.FinalSucc
 Private pConfig As Scripting.Dictionary
 Private pProject As EProject
 Private pProcessUnits As Scripting.Dictionary
-Private pProcessor As ItemsProcessor
+Private WithEvents pProcessor As ItemsProcessor
+Attribute pProcessor.VB_VarHelpID = -1
 Private pNoMacrosExcel As Excel.Application
 '[Settings] -----------------------------------------------------------------------------------------------
 Private pIsAborted As Boolean
@@ -36,10 +37,7 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub loadConfig()
-    Dim filepath As String
-    '------------------------------------------------------------------------------------------------------
-    filepath = Paths.getConfigfilepath(CONFIG_FILE_NAME)
-    Set pConfig = f.json.getJsonObjectFromFile(filepath)
+    Set pConfig = Config.getConfig(CONFIG_NAME)
 End Sub
 
 
@@ -129,15 +127,15 @@ Private Sub createProcessUnits()
                         CreatingProjectStep_CreatingProjectFolder, _
                         CreatingProjectStep_ApplyingChangesToTextFiles, _
                         CreatingProjectStep_ApplyingChangesToCode, _
-                        CreatingProjectStep_CreatingRibbonComponents, _
-                        CreatingProjectStep_FixingReferencesBetweenFiles _
+                        CreatingProjectStep_FixingReferencesBetweenFiles, _
+                        CreatingProjectStep_CreatingRibbonComponents _
                      )
                         
     Set pProcessUnits = f.dictionaries.create(False)
     For Each varStep In steps
         Set processUnit = createProcessUnit(VBA.CLng(varStep))
         If Not processUnit Is Nothing Then
-            Call f.dictionaries.addItem(pProcessUnits, varStep, processUnit)
+            Call f.dictionaries.AddItem(pProcessUnits, varStep, processUnit)
         End If
     Next varStep
     
@@ -146,10 +144,10 @@ End Sub
 
 Private Function createProcessUnit(step As CreatingProjectStepEnum) As IProjectCreatorProcessUnit
     Select Case step
-        'Case CreatingProjectStep_CreatingProjectFolder:             Set createProcessUnit = New PC_FolderCreator
-        'Case CreatingProjectStep_ApplyingChangesToCode:             Set createProcessUnit = New PC_CodeReplacer
-        'Case CreatingProjectStep_ApplyingChangesToTextFiles:        Set createProcessUnit = New PC_TextReplacer
-        'Case CreatingProjectStep_FixingReferencesBetweenFiles:      Set createProcessUnit = New PC_ReferencesFixer
+        Case CreatingProjectStep_CreatingProjectFolder:             Set createProcessUnit = New PC_FolderCreator
+        Case CreatingProjectStep_ApplyingChangesToCode:             Set createProcessUnit = New PC_CodeReplacer
+        Case CreatingProjectStep_ApplyingChangesToTextFiles:        Set createProcessUnit = New PC_TextReplacer
+        Case CreatingProjectStep_FixingReferencesBetweenFiles:      Set createProcessUnit = New PC_ReferencesFixer
         Case CreatingProjectStep_CreatingRibbonComponents:          Set createProcessUnit = New PC_RibbonGenerator
     End Select
     
@@ -179,7 +177,7 @@ Private Function getProcessViewer() As WDefaultItemsProcessorViewer
         Call .setWidth(USER_FORM_WIDTH)
         Call .setButtonsCaptions(okButtonCaption:=Msg.getText(OK))
         Call .setHasCancelButton(False)
-        Call .setWindowTitle(f.Strings.Format(Msg.getText(WINDOW_TITLE), pProject.getCodeName))
+        Call .setWindowTitle(f.Strings.Format(Msg.getText(WINDOW_TITLE), pProject.getName, pProject.getCodeName))
         Call .setStatusDictionary(getStatusViewDictionary)
     End With
     
@@ -195,6 +193,10 @@ Private Function getStatusViewDictionary() As Scripting.Dictionary
                         ItemProcessStatus_Warning, _
                         ItemProcessStatus_Error)
                         
-    Set getStatusViewDictionary = ItemsProcessor.getDefaultCategories(categories)
+    Set getStatusViewDictionary = ItemsProcessor.getDefaultCategories(categories, False, False, False)
     
 End Function
+
+Private Sub pProcessor_AfterConfirm()
+    Call f.files.openFolderInWindowsExplorer(pProject.getFolderPath)
+End Sub

@@ -67,6 +67,16 @@ Public Enum StringifyModeEnum
 End Enum
 
 
+Public Enum LetterCasingEnum
+    LetterCasing_Unknown = 0
+    LetterCasing_Lower = 1
+    LetterCasing_Upper = 2
+    LetterCasing_Sentence = 3
+    LetterCasing_Camel = 4
+    LetterCasing_StartWithLower = 5
+End Enum
+
+
 '[Sql]
 Public Enum SqlWhereEnum
     SqlWhere_Equal = 0

@@ -83,7 +83,7 @@ End Sub
 Public Sub process()
     Dim message As String
     Dim processor As ItemsProcessor:                Set processor = pParent.getProcessor
-    Dim destinationFolder As Scripting.Folder
+    Dim destinationFolder As Scripting.folder
     '------------------------------------------------------------------------------------------------------
 
     On Error GoTo errHandler
@@ -117,7 +117,7 @@ ExitPoint:
 '----------------------------------------------------------------------------------------------------------
 errHandler:
     errNumber = VBA.Err.Number: errDescription = VBA.Err.Description
-    Call pErrors.add(errDescription)
+    Call pErrors.Add(errDescription)
     GoTo ExitPoint
 
 End Sub
@@ -147,18 +147,20 @@ Private Sub checkProjectNameUniqueness()
 
 '==========================================================================================================
 ExitPoint:
+    Dim errNumber As Long, errDescription As String
     Exit Sub
 
 '----------------------------------------------------------------------------------------------------------
 errHandler:
+    errNumber = VBA.Err.Number: errDescription = VBA.Err.Description
     message = f.Strings.Format(Msg.getText(ERR_DELETING_PREVIOUS_VERSION), _
-                                    project.getName, VBA.Err.Description, VBA.Err.Number)
+                                    project.getName, errDescription, errNumber)
     Call VBA.Err.Raise(1, , message)
 
 End Sub
 
 
-Private Function createDestinationFolder() As Scripting.Folder
+Private Function createDestinationFolder() As Scripting.folder
     Dim project As EProject:                Set project = pParent.getProject
     Dim destinationFolderPath As String
     Dim message As String
@@ -181,6 +183,8 @@ ExitPoint:
 End Function
 
 Private Sub copyTemplateFiles()
+    Dim errNumber As Long, errDescription As String
+    '------------------------------------------------------------------------------------------------------
     Dim project As EProject:                Set project = pParent.getProject
     Dim message As String
     '------------------------------------------------------------------------------------------------------
@@ -191,8 +195,9 @@ Private Sub copyTemplateFiles()
     Call f.files.CopyFolder(Paths.ProjectTemplateFolderPath, project.getFolderPath)
                                                                                             
     If VBA.Err.Number Then
+        errNumber = VBA.Err.Number: errDescription = VBA.Err.Description
         message = f.Strings.Format(Msg.getText(ERR_CREATING_PARENT_FOLDER), _
-                                        project.getFolderPath, VBA.Err.Description, VBA.Err.Number)
+                                        project.getFolderPath, errDescription, errNumber)
         On Error GoTo 0
         Call VBA.Err.Raise(1, , message)
     End If
@@ -236,7 +241,7 @@ Private Sub renameMacroFiles()
                                                                 oldPath, newPath, errDescription, errNumber)
                 On Error GoTo 0
                 Call VBA.Err.Raise(errNumber, , message)
-                Call pErrors.add(message)
+                Call pErrors.Add(message)
             End If
         End If
     Next file
