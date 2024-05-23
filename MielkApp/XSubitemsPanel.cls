@@ -162,21 +162,21 @@ End Function
 Public Function setUiProperty(prop As UIProp, value As Variant) As XSubitemsPanel
     Set setUiProperty = Me
     Select Case prop.getId
-        Case UI.Props.top.getId:                    Call setTop(VBA.CSng(value))
-        Case UI.Props.left.getId:                   Call setLeft(VBA.CSng(value))
-        Case UI.Props.width.getId:                  pWidth = VBA.CSng(value)
-        Case UI.Props.MinWidth.getId:               pMinWidth = VBA.CSng(value)
-        Case UI.Props.maxWidth.getId:               pMaxWidth = VBA.CSng(value)
-        Case UI.Props.height.getId:                 pHeight = VBA.CSng(value)
-        Case UI.Props.minHeight.getId:              pMinHeight = VBA.CSng(value)
-        Case UI.Props.maxHeight.getId:              pMaxHeight = VBA.CSng(value)
-        Case UI.Props.padding.getId:
+        Case UI.props.top.getId:                    Call setTop(VBA.CSng(value))
+        Case UI.props.left.getId:                   Call setLeft(VBA.CSng(value))
+        Case UI.props.width.getId:                  pWidth = VBA.CSng(value)
+        Case UI.props.MinWidth.getId:               pMinWidth = VBA.CSng(value)
+        Case UI.props.maxWidth.getId:               pMaxWidth = VBA.CSng(value)
+        Case UI.props.height.getId:                 pHeight = VBA.CSng(value)
+        Case UI.props.minHeight.getId:              pMinHeight = VBA.CSng(value)
+        Case UI.props.maxHeight.getId:              pMaxHeight = VBA.CSng(value)
+        Case UI.props.padding.getId:
                                                     pHorizontalPadding = VBA.CSng(value)
                                                     pVerticalPadding = VBA.CSng(value)
-        Case UI.Props.paddingHorizontal.getId:      pHorizontalPadding = VBA.CSng(value)
-        Case UI.Props.paddingVertical.getId:        pVerticalPadding = VBA.CSng(value)
-        Case UI.Props.BackgroundColor.getId:        pBackColor = VBA.CLng(value)
-        Case UI.Props.BorderColor.getId:            pBorderColor = VBA.CLng(value)
+        Case UI.props.paddingHorizontal.getId:      pHorizontalPadding = VBA.CSng(value)
+        Case UI.props.paddingVertical.getId:        pVerticalPadding = VBA.CSng(value)
+        Case UI.props.BackgroundColor.getId:        pBackColor = VBA.CLng(value)
+        Case UI.props.BorderColor.getId:            pBorderColor = VBA.CLng(value)
     End Select
     
     If pIsRendered Then
@@ -240,10 +240,10 @@ Public Function getUiProperty(prop As UIProp) As Variant
     If UI.Forms.isControlValid(pInnerFrame) Then
         With pInnerFrame
             Select Case prop.getId
-                Case UI.Props.top.getId:                getUiProperty = .top
-                Case UI.Props.left.getId:               getUiProperty = .left
-                Case UI.Props.right.getId:              getUiProperty = .left + .width
-                Case UI.Props.bottom.getId:             getUiProperty = .top + .height
+                Case UI.props.top.getId:                getUiProperty = .top
+                Case UI.props.left.getId:               getUiProperty = .left
+                Case UI.props.right.getId:              getUiProperty = .left + .width
+                Case UI.props.bottom.getId:             getUiProperty = .top + .height
             End Select
         End With
     End If

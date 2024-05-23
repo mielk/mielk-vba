@@ -1334,7 +1334,7 @@ Private Sub mctlControl_DblClick(ByVal Cancel As MSForms.ReturnBoolean)
 
 End Sub
 
-Private Sub mctlControl_MouseDown(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+Private Sub mctlControl_MouseDown(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
 'PT temporarily activate and highlight the MouseDown node and a grey border to the previous activenode
 '   MouseUp and Click events will confirm the action or reset the previous active node
     Dim bFlag As Boolean
@@ -1367,11 +1367,11 @@ End Sub
 
 
 
-Private Sub mctlControl_MouseMove(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+Private Sub mctlControl_MouseMove(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
     Call setAsHoveredNode
 End Sub
 
-Private Sub mctlControl_MouseUp(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+Private Sub mctlControl_MouseUp(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
 ' PT MouseUp fires before the Click event, at this point we don't know 100% if user
 '    definately wants to activate the MouseDown node. If user drags the mouse off the MouseDown node the
 '    Click event will not fire which means user wants to cancel and revert to the previous activenode.
@@ -1385,7 +1385,7 @@ Dim bMoveCopy As Boolean
     If Not moLastActiveNode Is Nothing Then
         With Me.control
             ' is the mouse over the node or within a pixel of it
-            bMouseIsOver = (x >= -1 And x <= .width + 1) And (y >= -1 And y <= .height + 1)
+            bMouseIsOver = (x >= -1 And x <= .width + 1) And (Y >= -1 And Y <= .height + 1)
         End With
         
         If Not bMouseIsOver Then
@@ -1402,7 +1402,7 @@ Dim bMoveCopy As Boolean
 
             Set moLastActiveNode = Nothing
             
-        ElseIf button = 2 Then
+        ElseIf Button = 2 Then
             ' the click event doesn't fire with right click so explicitly call it
             moTree.NodeEventRouter Me, "Caption", tvRightClick
         End If
@@ -1557,7 +1557,7 @@ errH:
 End Sub
 
 
-Private Sub moEditBox_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)    'PT
+Private Sub moEditBox_KeyDown(ByVal keyCode As MSForms.ReturnInteger, ByVal shift As Integer)    'PT
 ' PT Textbox key events to Enter or Esc the Editbox,   006PT2
 ' PT ammended 026 to resize/reposition the editbox within the confines of the frame container
 '    remove any CR & LF to ensure the node label is a single line but retain line breaks in the property if bMultiLine
@@ -1567,10 +1567,10 @@ Private Sub moEditBox_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shif
     Dim sNewText As String
     
 
-    If KeyCode = vbKeyReturn And Shift = 0 Then
+    If keyCode = vbKeyReturn And shift = 0 Then
         sNewText = moEditBox
         If sNewText = Me.caption Then
-            KeyCode = vbKeyEscape
+            keyCode = vbKeyEscape
         Else
             ' note: sNewText could be parsed where the RaiseAfterLabelEdit is received
             bCancel = moTree.RaiseAfterLabelEdit(Me, sNewText)
@@ -1626,7 +1626,7 @@ Private Sub moEditBox_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shif
         End If
     End If
     
-    If KeyCode = vbKeyEscape Then
+    If keyCode = vbKeyEscape Then
         moTree.EditMode(Me) = False
         EditBox False
     End If
@@ -1697,7 +1697,7 @@ Private Sub addSpecialButtons(buttonDtos As VBA.Collection)
     Dim dto As Scripting.Dictionary
     Dim key As Variant
     '------------------------------------------------------------------------------------------------------
-    Dim button As UIIcon
+    Dim Button As UIIcon
     Dim left As Single:             left = getRightX + BUTTONS_LEFT_MARGIN
     '------------------------------------------------------------------------------------------------------
     
@@ -1705,19 +1705,19 @@ Private Sub addSpecialButtons(buttonDtos As VBA.Collection)
     
     If F.Collections.isNonEmptyCollection(buttonDtos) Then
         For Each dto In buttonDtos
-            Set button = UI.Create.UIIcon(getFrame). _
+            Set Button = UI.Create.UIIcon(getFrame). _
                             setListener(Me). _
                             setActionName(F.dictionaries.getItem(dto, UI_PROP_ACTION_NAME)). _
                             render. _
-                            move(left). _
+                            Move(left). _
                             setHeight(SPECIAL_BUTTON_SIZE). _
                             setWidth(SPECIAL_BUTTON_SIZE). _
                             setTooltip(F.dictionaries.getItem(dto, UI_PROP_TOOLTIP)). _
                             setPicture(F.dictionaries.getItem(dto, UI_PROP_PICTURE)). _
                             alignVertically(mctlControl)
                             
-                left = button.getRight + 0 ' BUTTONS_SPACE
-                Call pSpecialButtons.Add(button)
+                left = Button.getRight + 0 ' BUTTONS_SPACE
+                Call pSpecialButtons.Add(Button)
         Next dto
     End If
     
@@ -1964,22 +1964,22 @@ Private Sub IListener_catchEvent(Source As Variant, eventName As String, Optiona
     Call moTree.NodeEventRouter(Me, Source.getActionName, tvClick)
 End Sub
 
-Public Sub updatePosition(x As Single, y As Single)
+Public Sub updatePosition(x As Single, Y As Single)
     Dim offsetY As Single
     Dim offsetX As Single
     '------------------------------------------------------------------------------------------------------
     
     If pMoveMode Then
         offsetX = x - pMoveAnchorPoint.x
-        offsetY = y - pMoveAnchorPoint.y
+        offsetY = Y - pMoveAnchorPoint.Y
         
         With pMoveLabel
-            .top = y
+            .top = Y
             .left = x
         End With
         
         With pMoveCaptionLabel
-            .top = y
+            .top = Y
             .left = x
         End With
     End If
@@ -1994,7 +1994,7 @@ Private Sub pDropLabel_Click()
     Call pTreeView.setAsSelectedDropNode(Me)
 End Sub
 
-Private Sub pHoverBackground_MouseMove(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+Private Sub pHoverBackground_MouseMove(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
     Call setAsHoveredNode
 End Sub
 
@@ -2026,7 +2026,7 @@ Public Sub locateSpecialButtons()
         For Each img In pSpecialButtons
             With img
                 Call .setEnability(True)
-                Call .move(x:=left, y:=iconsTop)
+                Call .Move(x:=left, Y:=iconsTop)
                 left = .getRight + BUTTONS_SPACE
             End With
         Next img

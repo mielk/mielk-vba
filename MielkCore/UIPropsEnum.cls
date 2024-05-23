@@ -62,6 +62,8 @@ Private Const PROP_PICTURE As String = "picture"
 Private Const PROP_PICTURE_WIDTH As String = "pictureWidth"
 Private Const PROP_PICTURE_HEIGHT As String = "pictureHeight"
 Private Const PROP_PICTURE_MARGIN As String = "pictureMargin"
+'[Visibility]
+Private Const PROP_IS_VISIBLE As String = "visible"
 
 '[CONTROL SPECIFIC]
 '[Combobox]
@@ -172,39 +174,42 @@ Private Sub initializeProps()
     Call addProp(42, PROP_PICTURE_WIDTH, False, "pictureWidth", "picture-width", "picture.width")
     Call addProp(43, PROP_PICTURE_MARGIN, False, "pictureMargin", "picture-margin", "picture.margin")
     
+    '[Visibility]
+    Call addProp(44, PROP_IS_VISIBLE, False, "visible", "IsVisible", "is-visible", "is_visible")
+    
     '[Controls' specific]
-    Call addProp(44, PROP_MATCH_REQUIRED, False, "matchRequired", "match-required", "match.required", "match_required")
-    Call addProp(45, PROP_TRIPLE_STATE, False, "tripleState", "triple-state", "triple_state")
+    Call addProp(45, PROP_MATCH_REQUIRED, False, "matchRequired", "match-required", "match.required", "match_required")
+    Call addProp(46, PROP_TRIPLE_STATE, False, "tripleState", "triple-state", "triple_state")
     
     '::List
-    Call addProp(46, PROP_SCROLL_BARS, False, "scrollBars", "scroll-bars", "scroll_bars")
-    Call addProp(47, PROP_LINE_HEIGHT, False, "lineHeight", "line-height", "line_height")
+    Call addProp(47, PROP_SCROLL_BARS, False, "scrollBars", "scroll-bars", "scroll_bars")
+    Call addProp(48, PROP_LINE_HEIGHT, False, "lineHeight", "line-height", "line_height")
     'inheritable: text-align, text-transform, text-indent, line-height, border-color
     
     '[Worksheet]
-    Call addProp(48, PROP_INDENT_LEVEL, False, "indent", "indent-level", "indent.level", "indent_level")
-    Call addProp(49, PROP_WRAP_TEXT, False, "wrapText", "textWrap", "wrap-text", "wrap.text", _
+    Call addProp(49, PROP_INDENT_LEVEL, False, "indent", "indent-level", "indent.level", "indent_level")
+    Call addProp(50, PROP_WRAP_TEXT, False, "wrapText", "textWrap", "wrap-text", "wrap.text", _
                                             "wrap_text", "text-wrap", "text.wrap", "text_wrap", _
                                             "wrapWord", "wordWrap", "wrap-word", "wrap.word", _
                                             "wrap_word", "word-wrap", "word.wrap", "word_wrap")
-    Call addProp(50, PROP_AUTO_FIT, False, "autoFit", "auto-fit", "auto_fit", "auto.fit")
-    Call addProp(51, PROP_COLUMN_AUTO_FIT, False, "columnAutoFit", "column-auto-fit", "column_auto_fit", "column.auto.fit")
-    Call addProp(52, PROP_ROW_AUTO_FIT, False, "rowAutoFit", "row-auto-fit", "row_auto_fit", "row.auto.fit")
-    Call addProp(53, PROP_NUMBER_FORMAT, False, "numberFormat", "number-format", "number_format", "number.format")
+    Call addProp(51, PROP_AUTO_FIT, False, "autoFit", "auto-fit", "auto_fit", "auto.fit")
+    Call addProp(52, PROP_COLUMN_AUTO_FIT, False, "columnAutoFit", "column-auto-fit", "column_auto_fit", "column.auto.fit")
+    Call addProp(53, PROP_ROW_AUTO_FIT, False, "rowAutoFit", "row-auto-fit", "row_auto_fit", "row.auto.fit")
+    Call addProp(54, PROP_NUMBER_FORMAT, False, "numberFormat", "number-format", "number_format", "number.format")
     
 End Sub
 
-Private Function addProp(Id As Long, propName As String, isInheritable As Boolean, ParamArray Aliases() As Variant) As UIProp
+Private Function addProp(id As Long, propName As String, isInheritable As Boolean, ParamArray Aliases() As Variant) As UIProp
     Dim varAlias As Variant
     '----------------------------------------------------------------------------------------------------------
     Set addProp = New UIProp
     With addProp
-        Call .setId(Id)
+        Call .setId(id)
         Call .setName(propName)
         Call .setIsInheritable(isInheritable)
         '[Add to repositories]
-        Call pPropsByName.add(propName, addProp)
-        Call pPropsById.add(Id, addProp)
+        Call pPropsByName.Add(propName, addProp)
+        Call pPropsById.Add(id, addProp)
         '[Add aliases]
         For Each varAlias In Aliases
             Call addProp.addAlias(VBA.CStr(varAlias))
@@ -216,9 +221,10 @@ End Function
 
 
 
+
 '[API]
-Public Function getPropById(Id As Long) As UIProp
-    Set getPropById = f.dictionaries.getObject(pPropsById, Id)
+Public Function getPropById(id As Long) As UIProp
+    Set getPropById = f.dictionaries.getObject(pPropsById, id)
 End Function
 
 Public Function getPropByName(name As String) As UIProp
@@ -294,6 +300,8 @@ Public Function Picture() As UIProp: Set Picture = f.dictionaries.getObject(pPro
 Public Function PictureWidth() As UIProp: Set PictureWidth = f.dictionaries.getObject(pPropsByAliases, PROP_PICTURE_WIDTH): End Function
 Public Function PictureHeight() As UIProp: Set PictureHeight = f.dictionaries.getObject(pPropsByAliases, PROP_PICTURE_HEIGHT): End Function
 Public Function PictureMargin() As UIProp: Set PictureMargin = f.dictionaries.getObject(pPropsByAliases, PROP_PICTURE_MARGIN): End Function
+'[Visibility]
+Public Function IsVisible() As UIProp: Set IsVisible = f.dictionaries.getObject(pPropsByAliases, PROP_IS_VISIBLE): End Function
 '[Combo boxes]
 Public Function MatchRequired() As UIProp: Set MatchRequired = f.dictionaries.getObject(pPropsByAliases, PROP_MATCH_REQUIRED): End Function
 '[Checkbox]

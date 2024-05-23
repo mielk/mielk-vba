@@ -43,6 +43,13 @@ Public Function UITextBox(frame As MSForms.frame) As UITextBox
     End With
 End Function
 
+Public Function UIComboBox(frame As MSForms.frame) As UIComboBox
+    Set UIComboBox = New UIComboBox
+    With UIComboBox
+        Call .setFrame(frame)
+    End With
+End Function
+
 Public Function UIButton(frame As MSForms.frame) As UIButton
     Set UIButton = New UIButton
     With UIButton
@@ -121,7 +128,7 @@ Public Function SelectItemWindow(items As Scripting.Dictionary, Optional ByVal w
     Const DEFAULT_WINDOW_TITLE_TAG As String = "SelectItem.WindowTitle"
     '------------------------------------------------------------------------------------------------------
     
-    If VBA.Len(windowTitle) = 0 Then windowTitle = MsgService.GetText(DEFAULT_WINDOW_TITLE_TAG)
+    If VBA.Len(windowTitle) = 0 Then windowTitle = MsgService.getText(DEFAULT_WINDOW_TITLE_TAG)
     
     Set SelectItemWindow = New WSelectItem
     With SelectItemWindow
@@ -185,7 +192,7 @@ Public Function LocationPropsForCurrentCursor() As DLocation
     
     Set LocationPropsForCurrentCursor = UI.Create.locationProps. _
                                 setAnchorLeft(position.x * PIXEL_SIZE / dpiScaling.x). _
-                                setAnchorTop(position.y * PIXEL_SIZE / dpiScaling.y). _
+                                setAnchorTop(position.Y * PIXEL_SIZE / dpiScaling.Y). _
                                 setAnchorPoint(AnchorPoint_TopMiddle)
     
 End Function
@@ -194,7 +201,7 @@ Public Function LocationPropsForScreenCenter() As DLocation
     Dim screenArea As area
     Dim dpiScaling As Coordinate
     Dim x As Single
-    Dim y As Single
+    Dim Y As Single
     '------------------------------------------------------------------------------------------------------
     
     screenArea = F.Screen.getActiveMonitorWorkingArea
@@ -202,12 +209,12 @@ Public Function LocationPropsForScreenCenter() As DLocation
     
     With screenArea
         x = .left + .width / 2
-        y = .top + .height / 2
+        Y = .top + .height / 2
     End With
     
     Set LocationPropsForScreenCenter = UI.Create.locationProps. _
                                 setAnchorLeft(x / dpiScaling.x). _
-                                setAnchorTop(y / dpiScaling.y). _
+                                setAnchorTop(Y / dpiScaling.Y). _
                                 setAnchorPoint(AnchorPoint_Middle)
     
 End Function
@@ -226,7 +233,7 @@ Public Function SelectFromTreeWindow(items As Scripting.Dictionary, _
     Const DEFAULT_WINDOW_TITLE As String = "SelectItem.WindowTitle"
     '------------------------------------------------------------------------------------------------------
     
-    If VBA.Len(windowTitle) = 0 Then windowTitle = MsgService.GetText(DEFAULT_WINDOW_TITLE)
+    If VBA.Len(windowTitle) = 0 Then windowTitle = MsgService.getText(DEFAULT_WINDOW_TITLE)
     Set SelectFromTreeWindow = New WSelectFromTree
     With SelectFromTreeWindow
         Call .setTitle(windowTitle)

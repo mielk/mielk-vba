@@ -71,7 +71,7 @@ End Function
 
 '[RIBBON OBJECT]
 Private Sub saveRibbonPointer()
-    If Not f.Books.isValid(pWorkbook) Then
+    If Not f.Books.IsValid(pWorkbook) Then
     ElseIf pRibbon Is Nothing Then
     Else
         On Error Resume Next
@@ -121,22 +121,22 @@ End Function
 
 
 '[SETTINGS]
-Private Sub loadSettings(filePath As String)
+Private Sub loadSettings(filepath As String)
     Dim json As String
     '------------------------------------------------------------------------------------------------------
 
     On Error Resume Next
-    json = f.TextFiles.readTextFile(filePath)
+    json = f.TextFiles.readTextFile(filepath)
     If VBA.Len(json) Then Set pSettings = f.json.ParseJson(json)
     On Error GoTo 0
 
     'Icons folder path.
-    pIconsFolderPath = getImageFolderPath(filePath)
+    pIconsFolderPath = getImageFolderPath(filepath)
 
     'Ribbon controls properties
     If f.dictionaries.isNonEmptyDictionary(pSettings) Then
         With pSettings
-            If .exists(CONTROLS_TAG) Then Set pControlsProps = .Item(CONTROLS_TAG)
+            If .exists(CONTROLS_TAG) Then Set pControlsProps = .item(CONTROLS_TAG)
         End With
     End If
     
@@ -212,13 +212,13 @@ Public Sub assignProperty(controlId As String, propertyName As String, ByRef val
     'If pControlsProps Is Nothing Then Call loadSettings(pSettingsFilePath)
 
     On Error Resume Next
-    Set ctrlProps = pControlsProps.Item(controlId)
+    Set ctrlProps = pControlsProps.item(controlId)
     On Error GoTo 0
 
     If Not ctrlProps Is Nothing Then
         With ctrlProps
             If .exists(propertyName) Then
-                Set propDict = .Item(propertyName)
+                Set propDict = .item(propertyName)
                 value = getValueFromPropDict(controlId, propDict, functionGenerated)
             End If
         End With
@@ -254,13 +254,13 @@ Private Function getValueFromPropDict(controlId As String, propDict As Scripting
                 'Get value from function ------------------------------------------------------------|
                 On Error Resume Next                                                                '|
                 Call VBA.err.clear                                                                  '|
-                result = Application.Run(f.Reflection.getFunctionFullName( _
+                result = Application.run(f.Reflection.getFunctionFullName( _
                                                     VBA.CStr(varFunction), pWorkbook))              '|
                 If VBA.err.number = Exceptions.ArgumentNotOptional.getNumber Then                   '|
-                    result = Application.Run(f.Reflection.getFunctionFullName( _
+                    result = Application.run(f.Reflection.getFunctionFullName( _
                                                     VBA.CStr(varFunction), pWorkbook), controlId)   '|
                 End If                                                                              '|
-                If Not DEV_MODE Then On Error GoTo errHandler Else On Error GoTo 0                  '|
+                If Not DEV_MODE Then On Error GoTo ErrHandler Else On Error GoTo 0                  '|
                 '------------------------------------------------------------------------------------
                 
                 If result = False Then Exit For
@@ -275,7 +275,7 @@ Private Function getValueFromPropDict(controlId As String, propDict As Scripting
     End If
     
     
-errHandler:
+ErrHandler:
     
 End Function
 
@@ -283,7 +283,7 @@ Private Function isPropertyTranslatable(propName As String) As Boolean
     Static translatableProps As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
     If translatableProps Is Nothing Then
-        Set translatableProps = f.dictionaries.createFrom(Array("label", "tooltip"))
+        Set translatableProps = f.dictionaries.createFrom(Array("label", "tooltip", "screentip"))
     End If
     isPropertyTranslatable = translatableProps.exists(propName)
 End Function
@@ -297,7 +297,6 @@ Public Sub assignControlImage(controlId As String, ByRef image)
     Dim imageFileName As String
     Dim imagePath As String
     '------------------------------------------------------------------------------------------------------
-    
     Call assignProperty(controlId, "image", imageFileName)
     If VBA.Len(imageFileName) = 0 Then
         ' Image not defined

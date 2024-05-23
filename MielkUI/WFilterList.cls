@@ -126,7 +126,7 @@ End Function
 Public Sub edit()
     Set pForm = UI.Create.SelectItemWindow(getItems). _
                     setInitialSelection(pSelectedItems). _
-                    setTitle(F.Strings.format(MsgService.GetText(WINDOW_TITLE_TAG), pColumnName)). _
+                    setTitle(F.Strings.format(MsgService.getText(WINDOW_TITLE_TAG), pColumnName)). _
                     setMultiSelectAllowed(True). _
                     setHasSearchPanel(True). _
                     setHasTitlePanel(False)

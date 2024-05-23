@@ -27,10 +27,13 @@ Private pDictionaries As FDictionaries
 Private pExcel As FExcel
 Private pExcelNames As FExcelNames
 Private pFiles As FFiles
+Private pHttp As FHttp
 Private pJson As FJSON
 Private pMeta As FMeta
 Private pNumerics As FNumerics
 Private pObjects As FObjects
+Private pOutlook As FOutlook
+Private pPdfs As FPdfs
 Private pRanges As FRanges
 Private pReflection As FReflection
 Private pRegex As FRegex
@@ -63,10 +66,13 @@ Private Sub Class_Initialize()
     Set pExcel = New FExcel
     Set pExcelNames = New FExcelNames
     Set pFiles = New FFiles
+    Set pHttp = New FHttp
     Set pJson = New FJSON
     Set pMeta = New FMeta
     Set pNumerics = New FNumerics
     Set pObjects = New FObjects
+    Set pOutlook = New FOutlook
+    Set pPdfs = New FPdfs
     Set pRanges = New FRanges
     Set pReflection = New FReflection
     Set pRegex = New FRegex
@@ -121,6 +127,10 @@ Public Function Db() As FDatabase
     Set Db = pDatabase
 End Function
 
+Public Function Dev() As FDeveloper
+    Set Dev = pDeveloper
+End Function
+
 Public Function Developer() As FDeveloper
     Set Developer = pDeveloper
 End Function
@@ -145,6 +155,10 @@ Public Function files() As FFiles
     Set files = pFiles
 End Function
 
+Public Function Http() As FHttp
+    Set Http = pHttp
+End Function
+
 Public Function json() As FJSON
     Set json = pJson
 End Function
@@ -163,6 +177,14 @@ End Function
 
 Public Function Objects() As FObjects
     Set Objects = pObjects
+End Function
+
+Public Function Outlook() As FOutlook
+    Set Outlook = pOutlook
+End Function
+
+Public Function Pdfs() As FPdfs
+    Set Pdfs = pPdfs
 End Function
 
 Public Function ranges() As FRanges
@@ -185,8 +207,8 @@ Public Function Screen() As FScreen
     Set Screen = pScreen
 End Function
 
-Public Function Sheets() As FSheets
-    Set Sheets = pSheets
+Public Function sheets() As FSheets
+    Set sheets = pSheets
 End Function
 
 Public Function strings() As FStrings

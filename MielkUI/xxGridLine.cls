@@ -76,7 +76,7 @@ Public Function setTop(value As Single) As xxGridLine
     Set setTop = Me
     offsetY = value - pTop
     pTop = value
-    If pIsRendered Then Call offsetControls(y:=offsetY)
+    If pIsRendered Then Call offsetControls(Y:=offsetY)
 End Function
 
 Public Function setLineHeight(value As Single) As xxGridLine
@@ -195,7 +195,7 @@ Private Function insertLabel(column As DColumn) As UILabel
         Call .setIsUnderlined(column.isUnderlined)
         Call .setMousePointer(column.getMousePointer)
         Call .render
-        Call .move(column.getLeft)
+        Call .Move(column.getLeft)
         Call .alignVertically(pBackground)
         'left = .getRight + pManager.getColumnsSpace
     End With
@@ -217,7 +217,7 @@ Private Function insertIcon(column As DColumn) As UIIcon
         Call .setEnability(getControlEnability(column))
         Call .render
         Call .alignVertically(pBackground)
-        Call .move(column.getLeft)
+        Call .Move(column.getLeft)
         Call .setTooltip(column.getTooltip)
         'left = .getRight + pManager.getColumnsSpace
     End With
@@ -238,7 +238,7 @@ Private Sub relocateControls()
             Set ctrl = pControls.item(key)
             If Not ctrl Is Nothing Then
                 top = pTop + PIXEL_SIZE + (pLineHeight - ctrl.getHeight) / 2
-                Call ctrl.move(y:=top)
+                Call ctrl.Move(Y:=top)
                 'Call ctrl.alignVertically(pBackground)
             End If
         Next key
@@ -246,19 +246,19 @@ Private Sub relocateControls()
     
 End Sub
 
-Private Sub offsetControls(Optional x As Single, Optional y As Single)
+Private Sub offsetControls(Optional x As Single, Optional Y As Single)
     Dim key As Variant
     Dim ctrl As IControl
     '------------------------------------------------------------------------------------------------------
     
     If pIsRendered Then
-        If y Then
+        If Y Then
             pBorderLine.top = UI.Normalize.position(pBorderLine.top)
             pBackground.top = UI.Normalize.position(pBackground.top)
             For Each key In pControls.keys
                 Set ctrl = pControls.item(key)
                 If Not ctrl Is Nothing Then
-                    Call ctrl.offset(y:=y)
+                    Call ctrl.offset(Y:=Y)
                 End If
             Next key
         End If
@@ -380,7 +380,7 @@ Public Sub arrangeColumnsLayout()
         Set ctrl = F.dictionaries.getObject(pControls, column)
         If Not ctrl Is Nothing Then
             Call ctrl.setWidth(column.getWidth)
-            Call ctrl.move(x:=left)
+            Call ctrl.Move(x:=left)
             left = left + column.getWidth + pManager.getColumnsSpace
         End If
     Next column
@@ -436,7 +436,7 @@ Private Sub handleButtonClick(icon As UIIcon)
     If isActionAllowed Then
         Call pManager.runItemAction(pItem, icon.getActionName)
     Else
-        Call VBA.MsgBox(MsgService.GetText(ACTION_NOT_ALLOWED_TAG), vbExclamation)
+        Call VBA.MsgBox(MsgService.getText(ACTION_NOT_ALLOWED_TAG), vbExclamation)
     End If
 End Sub
 

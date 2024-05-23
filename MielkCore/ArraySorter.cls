@@ -68,7 +68,7 @@ Public Function sort(Optional ascending As Boolean = True, Optional sortColumn A
     ElseIf pDimensions = 2 Then
         Select Case sortType
             Case SortType_None:             sort = pArray
-            Case SortType_Bubble:           sort = bubbleSort_2D(pArray)
+            Case SortType_Bubble:           sort = mergeSort_2D(pArray) 'bubbleSort_2D(pArray)
             Case SortType_Merge:            sort = mergeSort_2D(pArray)
         End Select
     End If
@@ -85,6 +85,7 @@ Private Function determineSortType() As SortTypeEnum
     Dim nextEqual As Long
     Dim i As Long
     Dim itemsCounter As Long
+    Dim arr As Variant
     '------------------------------------------------------------------------------------------------------
     Dim bubbleSortComplexity As Double
     Dim mergeSortComplexity As Double
@@ -119,7 +120,7 @@ Private Function determineSortType() As SortTypeEnum
             determineSortType = SortType_None
         Else
             If nextLess > nextGreater Then
-                pArray = f.arrays.invert(pArray, dimensions:=pDimensions)
+                arr = f.arrays.invert(pArray, dimensions:=pDimensions)
                 Call f.Variables.swapValues(nextGreater, nextLess)
             End If
             bubbleSortComplexity = calculateBubbleSortTimeComplexity(itemsCounter, nextGreater)
@@ -137,7 +138,7 @@ Private Function determineSortType() As SortTypeEnum
             determineSortType = SortType_None
         Else
             If nextGreater > nextLess Then
-                pArray = f.arrays.invert(pArray, dimensions:=pDimensions)
+                arr = f.arrays.invert(pArray, dimensions:=pDimensions)
                 Call f.Variables.swapValues(nextGreater, nextLess)
             End If
             bubbleSortComplexity = calculateBubbleSortTimeComplexity(itemsCounter, nextLess)
@@ -198,7 +199,9 @@ Private Function bubbleSort_2D(arr As Variant) As Variant 'arr As Variant, colum
     For i = UBound(arr, 2) To LBound(arr, 2) Step -1
         noSwaps = True
         For j = LBound(arr, 2) To i - 1
-            If (arr(pSortColumn, j) > arr(pSortColumn, j + 1)) = pOrderAscending Then
+            'If (arr(pSortColumn, j) > arr(pSortColumn, j + 1)) = pOrderAscending Then
+            If (pOrderAscending And arr(pSortColumn, j) > arr(pSortColumn, j + 1)) Or _
+            (Not pOrderAscending And arr(pSortColumn, j) < arr(pSortColumn, j + 1)) Then
                 Call f.arrays.swapItems(arr, j, j + 1, dimensions:=pDimensions)
                 noSwaps = False
             End If
@@ -308,22 +311,23 @@ Private Function mergeArrays_2D(arr1 As Variant, arr2 As Variant) As Variant ', 
     ReDim result(LBound(arr2, 1) To UBound(arr2, 1), 1 To counter1 + counter2)
     Do While (i <= counter1 And j <= counter2)
         inserted = inserted + 1
-        If ((arr2(pSortColumn, j) >= arr1(pSortColumn, i)) = pOrderAscending) Then
+        If (Not pOrderAscending And arr2(pSortColumn, j) > arr1(pSortColumn, i)) Or _
+            (pOrderAscending And arr2(pSortColumn, j) < arr1(pSortColumn, i)) Then
             For k = LBound(arr2, 1) To UBound(arr2, 1)
                 Call f.Variables.assign(result(k, inserted), arr1(k, i))
             Next k
-            i = i + 1
-        Else
-            For k = LBound(arr2, 1) To UBound(arr2, 1)
-                Call f.Variables.assign(result(k, inserted), arr2(k, j))
-            Next k
             j = j + 1
+        Else
+            For k = LBound(arr1, 1) To UBound(arr1, 1)
+                Call f.Variables.assign(result(k, inserted), arr1(k, i))
+            Next k
+            i = i + 1
         End If
     Loop
     
     Do While (i <= counter1)
         inserted = inserted + 1
-        For k = LBound(arr2, 1) To UBound(arr2, 1)
+        For k = LBound(arr1, 1) To UBound(arr1, 1)
             Call f.Variables.assign(result(k, inserted), arr1(k, i))
         Next k
         i = i + 1

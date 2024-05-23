@@ -146,7 +146,7 @@ Public Function isUndefined(value As Variant, Optional includeEmptyString As Boo
         End If
     ElseIf VBA.isNumeric(value) And includeZero Then
         isUndefined = (value = 0)
-    ElseIf VBA.isDate(value) And includeZero Then
+    ElseIf VBA.IsDate(value) And includeZero Then
         isUndefined = (value = 0)
     ElseIf VBA.IsNull(value) Then
         isUndefined = True
@@ -171,10 +171,10 @@ Public Function isNothing(ByRef value As Variant) As Boolean
     End If
 End Function
 
-Public Function isAnyItemNothing(ParamArray Items() As Variant) As Boolean
+Public Function isAnyItemNothing(ParamArray items() As Variant) As Boolean
     Dim varItem As Variant
     '------------------------------------------------------------------------------------------------------
-    For Each varItem In Items
+    For Each varItem In items
         If isNothing(varItem) Then
             isAnyItemNothing = True
             Exit For
@@ -761,3 +761,19 @@ End Function
 '
 'End Function
 
+
+
+Public Function isEqualToAny(baseItem As Variant, ParamArray compared() As Variant) As Boolean
+    Const METHOD_NAME As String = "isEqualToAny"
+    '------------------------------------------------------------------------------------------------------
+    Dim value As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    For Each value In compared
+        If equals(baseItem, value) Then
+            isEqualToAny = True
+            Exit For
+        End If
+    Next value
+    
+End Function

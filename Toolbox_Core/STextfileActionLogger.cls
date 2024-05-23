@@ -29,11 +29,11 @@ Public Function addLog(action As String, Optional params As Variant, Optional fo
         'skip - log not required in such case
     Else
         
-        filepath = F.Files.concatenatePath( _
+        filepath = F.files.concatenatePath( _
                                 Paths.LogsFolderPath, _
                                 F.Dates.toString, _
                                 LOG_FILE_NAME)
-        Call F.Files.CreateFolder(F.Files.getFileFolderPath(filepath))
+        Call F.files.CreateFolder(F.files.getFileFolderPath(filepath))
         
         Set parts = getPartsCollection(action, params)
         text = F.Collections.toString(parts, StringifyMode_Normal, ";") & VBA.vbCrLf

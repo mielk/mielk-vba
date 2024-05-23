@@ -70,9 +70,9 @@ Private pCloseButtonMargin As Single
 Private pCaption As String
 '[Events] -------------------------------------------------------------------------------------------------
 Event AfterClose()
-Event MoveModeOn(ByVal x As Single, ByVal y As Single)
-Event move(ByVal x As Single, ByVal y As Single)
-Event MoveModeOff(ByVal x As Single, ByVal y As Single)
+Event MoveModeOn(ByVal x As Single, ByVal Y As Single)
+Event Move(ByVal x As Single, ByVal Y As Single)
+Event MoveModeOff(ByVal x As Single, ByVal Y As Single)
 Event HelpFileButtonClicked()
 '----------------------------------------------------------------------------------------------------------
 
@@ -225,7 +225,7 @@ End Sub
 
 Private Function getTranslatedContent() As String
     If F.Strings.startsWith(pCaption, "#") Then
-        getTranslatedContent = MsgService.GetText(VBA.Mid$(pCaption, 2))
+        getTranslatedContent = MsgService.getText(VBA.Mid$(pCaption, 2))
     Else
         getTranslatedContent = pCaption
     End If
@@ -391,7 +391,7 @@ Private Function confirmSkippingNotSavedData() As Boolean
     If Not pWindow.displayWarningWhenClosingWithUnsavedData Then
         confirmSkippingNotSavedData = True
     ElseIf Not pWindow.hasUnsavedChanges Then
-        confirmSkippingNotSavedData = F.Dialogs.getUserConfirmation(MsgService.GetText(UNSAVED_DATA_QUESTION))
+        confirmSkippingNotSavedData = F.Dialogs.getUserConfirmation(MsgService.getText(UNSAVED_DATA_QUESTION))
     Else
         confirmSkippingNotSavedData = True
     End If
@@ -402,17 +402,17 @@ Private Sub pHelpFileButton_Click()
     RaiseEvent HelpFileButtonClicked
 End Sub
 
-Private Sub pMoveLayer_MouseDown(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+Private Sub pMoveLayer_MouseDown(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
     Call ErrorManager.clear
-    If button = 1 Then RaiseEvent MoveModeOn(x, y)
+    If Button = 1 Then RaiseEvent MoveModeOn(x, Y)
 End Sub
 
-Private Sub pMoveLayer_MouseMove(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+Private Sub pMoveLayer_MouseMove(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
     Call ErrorManager.clear
-    If button = 1 Then RaiseEvent move(x, y)
+    If Button = 1 Then RaiseEvent Move(x, Y)
 End Sub
 
-Private Sub pMoveLayer_MouseUp(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+Private Sub pMoveLayer_MouseUp(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
     Call ErrorManager.clear
-    If button = 1 Then RaiseEvent MoveModeOff(x, y)
+    If Button = 1 Then RaiseEvent MoveModeOff(x, Y)
 End Sub

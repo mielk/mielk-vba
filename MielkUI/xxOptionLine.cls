@@ -249,7 +249,7 @@ ExitPoint:
     pEventsDisabled = False
 End Sub
 
-Friend Sub move(left As Single, top As Single)
+Friend Sub Move(left As Single, top As Single)
     pLeft = left
     pTop = top
     Call arrangeControls
@@ -272,19 +272,19 @@ End Sub
 
 
 '[EVENTS]
-Private Sub pCheckBox_MouseUp(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+Private Sub pCheckBox_MouseUp(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
     Call ErrorManager.clear
-    Call handleClick(button, Shift)
+    Call handleClick(Button, shift)
 End Sub
 
-Private Sub pLabel_MouseUp(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+Private Sub pLabel_MouseUp(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
     Call ErrorManager.clear
-    Call handleClick(button, Shift)
+    Call handleClick(Button, shift)
 End Sub
 
-Private Sub handleClick(ByVal button As Integer, ByVal Shift As Integer)
+Private Sub handleClick(ByVal Button As Integer, ByVal shift As Integer)
     If Not pEventsDisabled And Not pIsFixed Then
-        If Shift = 1 Or Shift = 2 Then
+        If shift = 1 Or shift = 2 Then
             Call pParent.changeSelectionForAllItems(Not pState)
         Else
             Call setState(Not pState)

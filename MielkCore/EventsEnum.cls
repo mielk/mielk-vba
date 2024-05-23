@@ -66,22 +66,22 @@ Private Sub initializeEvents()
 End Sub
 
 
-Private Sub addEvent(Id As Long, eventName As String, ParamArray Aliases() As Variant)
-    Dim Item As Event_
+Private Sub addEvent(id As Long, eventName As String, ParamArray Aliases() As Variant)
+    Dim item As Event_
     Dim varAlias As Variant
     '----------------------------------------------------------------------------------------------------------
     
-    Set Item = New Event_
-    With Item
-        Call .setId(Id)
+    Set item = New Event_
+    With item
+        Call .setId(id)
         Call .setName(eventName)
         '[Add to repositories]
-        Call pEventsById.add(Id, Item)
-        Call pEventsByName.add(eventName, Item)
+        Call pEventsById.Add(id, item)
+        Call pEventsByName.Add(eventName, item)
         '[Add aliases]
         For Each varAlias In Aliases
-            Call Item.addAlias(VBA.CStr(varAlias))
-            Call pEventsByAliases.add(varAlias, Item)
+            Call item.addAlias(VBA.CStr(varAlias))
+            Call pEventsByAliases.Add(varAlias, item)
         Next varAlias
     End With
     
@@ -90,8 +90,8 @@ End Sub
 
 
 
-Public Function ById(Id As Long) As Event_
-    Set ById = f.dictionaries.getObject(pEventsById, Id)
+Public Function ById(id As Long) As Event_
+    Set ById = f.dictionaries.getObject(pEventsById, id)
 End Function
 
 Public Function ByName(eventName As String) As Event_

@@ -49,6 +49,25 @@ End Type
 Private Const CC_RGBINIT = &H1&
 Private Const CC_FULLOPEN = &H2&
 Private Const CC_ANYCOLOR = &H100&
+Private Const C_RGB_RED As Long = &HFF&
+Private Const C_RGB_GREEN As Long = &HFF00&
+Private Const C_RGB_BLUE As Long = &HFF0000
+Private Const C_RGB_WHITE As Long = &HFFFFFF
+Private Const C_RGB_BLACK As Long = &H0&
+Private Const C_MIN_COLOR_INDEX = 1
+Private Const C_MAX_COLOR_INDEX = 56
+Private Const C_MIN_RGB = C_RGB_BLACK
+Private Const C_MAX_RGB = C_RGB_WHITE
+Private Const C_SHIFT_ONE_BYTE = &H100&
+Private Const C_SHIFT_TWO_BYTES = &H10000
+Private Const CC_PREVENTFULLOPEN = &H4&
+Private Const CC_SHOWHELP = &H8&
+Private Const CC_ENABLEHOOK = &H10&
+Private Const CC_ENABLETEMPLATE = &H20&
+Private Const CC_ENABLETEMPLATEHANDLE = &H40&
+Private Const CC_SOLIDCOLOR = &H80&
+Private Const CLR_INVALID = &HFFFF
+
 '----------------------------------------------------------------------------------------------------------
     
     

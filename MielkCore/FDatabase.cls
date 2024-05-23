@@ -46,22 +46,22 @@ Public Sub closeRecordset(rs As Object, Optional closeUnderlyingConnection As Bo
 End Sub
 
 
-Public Function createSqlInsertCommand(tableName As String, Items As Scripting.Dictionary) As String
+Public Function createSqlInsertCommand(tableName As String, items As Scripting.Dictionary) As String
     Const SQL_PATTERN As String = "INSERT INTO {0}({1}) SELECT {2}"
     '------------------------------------------------------------------------------------------------------
-    Dim Key As Variant
+    Dim key As Variant
     Dim fields As VBA.Collection
     Dim values As VBA.Collection
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
     
-    If f.dictionaries.isNonEmptyDictionary(Items) Then
+    If f.dictionaries.isNonEmptyDictionary(items) Then
         Set fields = New VBA.Collection
         Set values = New VBA.Collection
-        For Each Key In Items
-            Call fields.add(Key)
-            Call values.add(f.strings.toDbValue(Items.Item(Key)))
-        Next Key
+        For Each key In items
+            Call fields.Add(key)
+            Call values.Add(f.strings.toDbValue(items.item(key)))
+        Next key
         createSqlInsertCommand = f.strings.format(SQL_PATTERN, tableName, f.Collections.toString(fields), f.Collections.toString(values))
     End If
     

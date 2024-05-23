@@ -240,7 +240,7 @@ Private Sub arrangeLayout()
     If pColumn.hasFilter Then
         If Not pFilterIcon Is Nothing Then
             With pFilterIcon
-                Call .move(UI.Forms.getRight(pCaptionLabel) + FILTER_LEFT_MARGIN, (pFrame.InsideHeight - .getControl.height) / 2)
+                Call .Move(UI.Forms.getRight(pCaptionLabel) + FILTER_LEFT_MARGIN, (pFrame.InsideHeight - .getControl.height) / 2)
                 Call .alignVertically(pBackgroundLabel)
             End With
         End If
@@ -249,21 +249,21 @@ Private Sub arrangeLayout()
 End Sub
 
 
-Public Function move(Optional x As Variant, Optional y As Variant) As xxGridHeader
+Public Function Move(Optional x As Variant, Optional Y As Variant) As xxGridHeader
     Dim offsetX As Single
     Dim offsetY As Single
     '------------------------------------------------------------------------------------------------------
     
-    Set move = Me
+    Set Move = Me
     
     With pBackgroundLabel
         If VBA.IsNumeric(x) Then
             offsetX = (x - pLeft)
             pLeft = x
         End If
-        If VBA.IsNumeric(y) Then
-            offsetY = (y - pTop)
-            pTop = y
+        If VBA.IsNumeric(Y) Then
+            offsetY = (Y - pTop)
+            pTop = Y
         End If
     End With
     
@@ -272,9 +272,9 @@ Public Function move(Optional x As Variant, Optional y As Variant) As xxGridHead
 End Function
 
 
-Public Function offset(Optional x As Single, Optional y As Single) As xxGridHeader
+Public Function offset(Optional x As Single, Optional Y As Single) As xxGridHeader
     Set offset = Me
-    Call UI.Forms.offsetControls(x, y, pBackgroundLabel, pCaptionLabel, pFilterIcon)
+    Call UI.Forms.offsetControls(x, Y, pBackgroundLabel, pCaptionLabel, pFilterIcon)
 End Function
 
 Private Sub updateSize()
@@ -414,12 +414,12 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     'Call alignVertically(baseCtrl)
 End Sub
 
-Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
-    Set IControl_move = move(x, y)
+Private Function IControl_move(Optional x As Variant, Optional Y As Variant) As IControl
+    Set IControl_move = Move(x, Y)
 End Function
 
-Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl
-    Set IControl_offset = offset(x, y)
+Private Function IControl_offset(Optional x As Single, Optional Y As Single) As IControl
+    Set IControl_offset = offset(x, Y)
 End Function
 
 Private Sub IControl_triggerEvent(eventId As Long)
@@ -440,12 +440,12 @@ Private Sub IListener_catchEvent(Source As Variant, eventName As String, Optiona
 End Sub
 
 Private Sub handleFilterIconMouseUpEvent(Source As Variant, properties As Scripting.Dictionary)
-    Dim Shift As Long
+    Dim shift As Long
     '------------------------------------------------------------------------------------------------------
     
     If F.dictionaries.isNonEmptyDictionary(properties) Then
-        Shift = F.dictionaries.getItem(properties, TAG_SHIFT)
-        Select Case Shift
+        shift = F.dictionaries.getItem(properties, props.shift.getName)
+        Select Case shift
             Case 0:             Call pListener.catchEvent(Me, ACTION_FILTER_ON)
             Case CTRL_MASK:     Call pListener.catchEvent(Me, ACTION_FILTER_OFF)
         End Select

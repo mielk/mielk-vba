@@ -116,9 +116,9 @@ End Sub
 
 Private Sub setDefaultValues()
     '[Captions]
-    pDeleteItemTitle = MsgService.GetText(DELETE_ITEM_TITLE_TAG)
-    pDeleteItemQuestion = MsgService.GetText(DELETE_ITEM_QUESTION_TAG)
-    pDeleteSuccessInfo = MsgService.GetText(DELETE_ITEM_SUCCESS_TAG)
+    pDeleteItemTitle = MsgService.getText(DELETE_ITEM_TITLE_TAG)
+    pDeleteItemQuestion = MsgService.getText(DELETE_ITEM_QUESTION_TAG)
+    pDeleteSuccessInfo = MsgService.getText(DELETE_ITEM_SUCCESS_TAG)
 End Sub
 
 Private Sub Class_Terminate()
@@ -494,11 +494,11 @@ End Function
 
 
 '[SCALING]
-Private Sub updateScrollBars(y As Single)
+Private Sub updateScrollBars(Y As Single)
     With pRecordsContainer
-        If y > .InsideHeight Then
+        If Y > .InsideHeight Then
             .ScrollBars = fmScrollBarsVertical
-            .ScrollHeight = y
+            .ScrollHeight = Y
         Else
             .ScrollBars = fmScrollBarsNone
             .scrollTop = 0
@@ -1032,7 +1032,7 @@ Private Sub renderFooter()
         Set .picture = Icons.icoRemoveFilters.picture
         .MousePointer = fmMousePointerCustom
         Set .MouseIcon = Icons.getMousePointer
-        .ControlTipText = MsgService.GetText(TOOLTIP_DEACTIVATE_ALL_FILTERS)
+        .ControlTipText = MsgService.getText(TOOLTIP_DEACTIVATE_ALL_FILTERS)
     End With
     
     Set pExportToExcelButton = pFooterContainer.controls.Add(CREATE_LABEL_ID, EXPORT_TO_EXCEL_BUTTON_NAME, True)
@@ -1043,7 +1043,7 @@ Private Sub renderFooter()
         Set .picture = Icons.icoExcel.picture
         .MousePointer = fmMousePointerCustom
         Set .MouseIcon = Icons.getMousePointer
-        .ControlTipText = MsgService.GetText(TOOLTIP_EXPORT_TO_EXCEL)
+        .ControlTipText = MsgService.getText(TOOLTIP_EXPORT_TO_EXCEL)
     End With
     
     Call arrangeFooterComponents
@@ -1101,9 +1101,9 @@ End Sub
 
 '[EVENTS]
 
-Private Sub pSearchBox_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
+Private Sub pSearchBox_KeyDown(ByVal keyCode As MSForms.ReturnInteger, ByVal shift As Integer)
     Call ErrorManager.clear
-    If KeyCode = vbKeyReturn Then
+    If keyCode = vbKeyReturn Then
         Call setSearchText(pSearchBox.value)
     End If
 End Sub
@@ -1124,7 +1124,7 @@ Private Sub updateRecordsCounter()
     Dim text As String
     '------------------------------------------------------------------------------------------------------
     If pHasRecordsCounter Then
-        text = MsgService.GetText(RECORDS_COUNTER_TAG)
+        text = MsgService.getText(RECORDS_COUNTER_TAG)
         text = F.Strings.format(text, pFiltered.Count, pItems.Count)
         If UI.Forms.isControlValid(pRecordsCounterLabel) Then
             pRecordsCounterLabel.caption = text

@@ -69,7 +69,7 @@ End Function
 Public Function getText(tag As String) As String
     With pTags
         If .exists(tag) Then
-            getText = .Item(tag)
+            getText = .item(tag)
         Else
             Debug.Print "_________________ missing tag: " & tag
             getText = tag

@@ -24,5 +24,5 @@ End Function
 
 
 Public Sub showWarning(message As String)
-    Call VBA.MsgBox(message, VBA.vbExclamation, App.getNameVersion)
+    Call VBA.MsgBox(message, VBA.vbExclamation, app.getNameVersion)
 End Sub

@@ -102,12 +102,12 @@ Public Function getDefaultBordersStylesDictionary() As Scripting.Dictionary
                             KeyValue(BORDER_COLOR_TAG, DEFAULT_OUTSIDE_BORDER_COLOR))
         Set dict = f.dictionaries.Create(False)
         With dict
-            Call .add("left", dictOutside)
-            Call .add("right", dictOutside)
-            Call .add("top", dictOutside)
-            Call .add("bottom", dictOutside)
-            Call .add("inside-vertical", dictInside)
-            Call .add("inside-horizontal", dictInside)
+            Call .Add("left", dictOutside)
+            Call .Add("right", dictOutside)
+            Call .Add("top", dictOutside)
+            Call .Add("bottom", dictOutside)
+            Call .Add("inside-vertical", dictInside)
+            Call .Add("inside-horizontal", dictInside)
         End With
     End If
     

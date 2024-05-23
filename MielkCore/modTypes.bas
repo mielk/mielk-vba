@@ -6,7 +6,7 @@ Private Const CLASS_NAME As String = "modTypes"
 
 Public Type Coordinate
     x As Single
-    y As Single
+    Y As Single
 End Type
 
 Public Type area

@@ -48,7 +48,7 @@ End Type
     
     'Windows API calls into the GDI+ library
     Private Declare PtrSafe Function GdiplusStartup Lib "GDIPlus" (token As LongPtr, inputbuf As GdiplusStartupInput, Optional ByVal outputbuf As LongPtr = 0) As Long
-    Private Declare PtrSafe Function GdipCreateBitmapFromFile Lib "GDIPlus" (ByVal FileName As LongPtr, bitmap As LongPtr) As Long
+    Private Declare PtrSafe Function GdipCreateBitmapFromFile Lib "GDIPlus" (ByVal fileName As LongPtr, bitmap As LongPtr) As Long
     Private Declare PtrSafe Function GdipCreateHBITMAPFromBitmap Lib "GDIPlus" (ByVal bitmap As LongPtr, hbmReturn As LongPtr, ByVal background As LongPtr) As Long
     Private Declare PtrSafe Function GdipDisposeImage Lib "GDIPlus" (ByVal image As LongPtr) As Long
     Private Declare PtrSafe Sub GdiplusShutdown Lib "GDIPlus" (ByVal token As LongPtr)

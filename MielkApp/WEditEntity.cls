@@ -207,15 +207,15 @@ Friend Sub arrangeComponents()
     For Each panel In panels
         If panel.isVisible Then
             If isNotFirstPanel Then Call panel.insertBorder(xlEdgeTop, SEPARATOR_BACK_COLOR)
-            Call panel.setUiProperty(UI.Props.left, VBA.CSng(horizontalMargin)). _
-                        setUiProperty(UI.Props.top, top)
+            Call panel.setUiProperty(UI.props.left, VBA.CSng(horizontalMargin)). _
+                        setUiProperty(UI.props.top, top)
             '[Adjust width of all panels to the width of properties panel]
             If Not panel Is pPropertiesPanel Then
-                Call panel.setUiProperty(UI.Props.width, pPropertiesPanel.getWidth)
+                Call panel.setUiProperty(UI.props.width, pPropertiesPanel.getWidth)
             End If
             '[Update variables]
             isNotFirstPanel = True
-            top = panel.getUiProperty(UI.Props.bottom) + PANELS_VERTICAL_SPACE
+            top = panel.getUiProperty(UI.props.bottom) + PANELS_VERTICAL_SPACE
         End If
     Next panel
     

@@ -362,7 +362,7 @@ Private Sub insertAddButton()
             Call .setFontName(APP_FONT_FAMILY)
             Call .setFontBold(False)
             Call .setFontColor(ADD_ITEM_BUTTON_FONT_COLOR)
-            Call .setCaption(MsgService.GetText(ADD_ITEM_BUTTON_CAPTION))
+            Call .setCaption(MsgService.getText(ADD_ITEM_BUTTON_CAPTION))
             Call .setBackgroundColor(ADD_ITEM_BUTTON_BACK_COLOR)
             Call .setBorderColor(ADD_ITEM_BUTTON_BORDER_COLOR)
             Call .setVisibility(True)
@@ -413,12 +413,12 @@ Private Sub arrangeControls()
         End If
     End If
     
-    Call pList.move(UI.Normalize.position(horizontalMargin), calculateListBoxTop)
+    Call pList.Move(UI.Normalize.position(horizontalMargin), calculateListBoxTop)
 
     Call pValidationLabel.setTop(pList.getTop)
     
     If Not pAddButton Is Nothing Then
-        Call pAddButton.move(horizontalMargin, pList.getBottom + verticalMargin)
+        Call pAddButton.Move(horizontalMargin, pList.getBottom + verticalMargin)
     End If
     
 End Sub
@@ -457,17 +457,17 @@ Private Sub validate()
             
             If pMinItemsSelected > 0 And selectionCounter < pMinItemsSelected Then
                 Set validation = F.Create.ValidationObject(False, _
-                                       F.Strings.format(MsgService.GetText("SelectItem.ValidationError.MinSelectionNotMetSingle"), pMinItemsSelected))
+                                       F.Strings.format(MsgService.getText("SelectItem.ValidationError.MinSelectionNotMetSingle"), pMinItemsSelected))
             ElseIf pMaxItemsSelected > 0 And selectionCounter > pMaxItemsSelected Then
                 Set validation = F.Create.ValidationObject(False, _
-                                       F.Strings.format(MsgService.GetText("SelectItem.ValidationError.MaxSelectionNotMetSingle"), pMaxItemsSelected))
+                                       F.Strings.format(MsgService.getText("SelectItem.ValidationError.MaxSelectionNotMetSingle"), pMaxItemsSelected))
             Else
                 Set validation = F.Create.ValidationObject(True)
             End If
         ElseIf Not F.Variables.isUndefined(.getSelectedKey) Then
             Set validation = F.Create.ValidationObject(True)
         Else
-            Set validation = F.Create.ValidationObject(False, MsgService.GetText("SelectItem.ValidationError.NoItemSelected"))
+            Set validation = F.Create.ValidationObject(False, MsgService.getText("SelectItem.ValidationError.NoItemSelected"))
         End If
     End With
     
@@ -533,10 +533,10 @@ Private Sub pSearchTextBox_Change()
     Call updateSearching(pSearchTextBox.value)
 End Sub
 
-Private Sub pSearchTextBox_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
-    If KeyCode = vbKeyDown Then
+Private Sub pSearchTextBox_KeyDown(ByVal keyCode As MSForms.ReturnInteger, ByVal shift As Integer)
+    If keyCode = vbKeyDown Then
         Call pList.setFocus(False, True, False)
-    ElseIf KeyCode = vbKeyTab Then
+    ElseIf keyCode = vbKeyTab Then
         Call pList.setFocus(False, True, False)
     End If
 End Sub

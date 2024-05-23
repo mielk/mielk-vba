@@ -51,10 +51,10 @@ Public Function DoubleDictionary() As DoubleDictionary
     Set DoubleDictionary = New DoubleDictionary
 End Function
 
-Public Function Coordinate(x As Single, y As Single) As Coordinate
+Public Function Coordinate(x As Single, Y As Single) As Coordinate
     With Coordinate
         .x = x
-        .y = y
+        .Y = Y
     End With
 End Function
 

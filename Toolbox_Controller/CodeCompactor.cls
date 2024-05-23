@@ -50,9 +50,9 @@ Private Sub createProcessUnits()
             Set unit = New CodeCompactorProcessUnit
             With unit
                 Call .setParent(Me)
-                Call .setfilepath(VBA.CStr(file))
+                Call .setFilePath(VBA.CStr(file))
             End With
-            Call f.dictionaries.addItem(pItems, VBA.CStr(file), unit)
+            Call f.dictionaries.AddItem(pItems, VBA.CStr(file), unit)
         Next file
     End If
     
@@ -129,5 +129,3 @@ Private Sub pProcessor_AfterConfirm()
     Call pExcel.Quit
     Set pExcel = Nothing
 End Sub
-
-

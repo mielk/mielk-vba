@@ -33,13 +33,13 @@ End Function
 '***** WITHOUT UNIT TESTS *****
 
 
-Public Function isApplicationValid(App As Excel.Application) As Boolean
+Public Function isApplicationValid(app As Excel.Application) As Boolean
     Dim name As String
     '------------------------------------------------------------------------------------------------------
     
-    If Not App Is Nothing Then
+    If Not app Is Nothing Then
         On Error Resume Next
-        name = App.name
+        name = app.name
         On Error GoTo 0
         isApplicationValid = (VBA.Len(name) > 0)
     End If
@@ -76,6 +76,15 @@ NegativeColumnIndexException:
 
 End Function
 
+Public Function getColumnHeadersDictionary(Optional maxIndex As Long = 26) As Scripting.Dictionary
+    Dim i As Long
+    '------------------------------------------------------------------------------------------------------
+    Set getColumnHeadersDictionary = f.dictionaries.Create(False)
+    For i = 1 To maxIndex
+        Call getColumnHeadersDictionary.Add(i, getColumnHeader(i))
+    Next i
+End Function
+
 Public Function getLastAction() As String
     Const UNDO_CTRL_ID As Long = 128
     '------------------------------------------------------------------------------------------------------
@@ -83,7 +92,7 @@ Public Function getLastAction() As String
     Dim ctrl As CommandBarControl
     '------------------------------------------------------------------------------------------------------
     Set cb = Application.CommandBars("Standard")
-    Set ctrl = cb.FindControl(Id:=UNDO_CTRL_ID)
+    Set ctrl = cb.FindControl(id:=UNDO_CTRL_ID)
     If Not ctrl Is Nothing Then
         On Error Resume Next
         getLastAction = ctrl.List(1)
@@ -124,7 +133,7 @@ Public Sub showHideBook(wkb As Excel.Workbook, show As Boolean)
     End With
     
     For Each wnd In Application.Windows
-        If wnd.Caption = wkb.name Then
+        If wnd.caption = wkb.name Then
             wnd.visible = show
             Exit For
         End If
@@ -138,16 +147,16 @@ End Sub
 
 
 Public Sub freeze(ByRef state As ExcelState)
-    Dim App As Excel.Application:                       Set App = Excel.Application
+    Dim app As Excel.Application:                       Set app = Excel.Application
     '------------------------------------------------------------------------------------------------------
     
     With state
-        If .ScreenUpdating Then App.ScreenUpdating = False
-        If .EnableEvents Then App.EnableEvents = False
+        If .ScreenUpdating Then app.ScreenUpdating = False
+        If .EnableEvents Then app.EnableEvents = False
         If .Interactive Then
-            App.Interactive = False
-            App.EnableCancelKey = xlDisabled
-            App.cursor = xlWait
+            app.Interactive = False
+            app.EnableCancelKey = xlDisabled
+            app.cursor = xlWait
         End If
         If Not .Sheet Is Nothing Then
             If .SheetProtection Then
@@ -160,7 +169,7 @@ End Sub
 
 
 Public Sub unfreeze(ByRef state As ExcelState)
-    Dim App As Excel.Application:                       Set App = Excel.Application
+    Dim app As Excel.Application:                       Set app = Excel.Application
     '------------------------------------------------------------------------------------------------------
     
     With state
@@ -185,14 +194,14 @@ Public Sub unfreeze(ByRef state As ExcelState)
             End If
         End If
         
-        If .EnableEvents Then App.EnableEvents = True
+        If .EnableEvents Then app.EnableEvents = True
         If .Interactive Then
-            App.Interactive = True
-            App.EnableCancelKey = xlInterrupt
-            App.cursor = xlDefault
+            app.Interactive = True
+            app.EnableCancelKey = xlInterrupt
+            app.cursor = xlDefault
         End If
         
-        If .ScreenUpdating Then App.ScreenUpdating = True
+        If .ScreenUpdating Then app.ScreenUpdating = True
         
     End With
     
@@ -200,15 +209,15 @@ End Sub
 
 
 Public Function getDefaultExcelState(Optional Sheet As Excel.Worksheet, Optional protectionPassword As String) As ExcelState
-    Dim App As Excel.Application:               Set App = Excel.Application
+    Dim app As Excel.Application:               Set app = Excel.Application
     '------------------------------------------------------------------------------------------------------
     
     With getDefaultExcelState
-        .ScreenUpdating = App.ScreenUpdating
-        .EnableEvents = App.EnableEvents
-        .Interactive = App.Interactive
+        .ScreenUpdating = app.ScreenUpdating
+        .EnableEvents = app.EnableEvents
+        .Interactive = app.Interactive
         If Not VBA.IsMissing(Sheet) Then
-            If f.Sheets.isValid(Sheet) Then
+            If f.sheets.IsValid(Sheet) Then
                 Set .Sheet = Sheet
                 .SheetProtection = Sheet.ProtectContents
                 Set .ProtectionLevels = Sheet.Protection
@@ -227,8 +236,9 @@ Public Function getDefaultExcelState(Optional Sheet As Excel.Worksheet, Optional
 End Function
 
 
-Public Sub quitApp()
-    With Excel.Application
+Public Sub quitApp(Optional ByVal xls As Excel.Application)
+    If xls Is Nothing Then Set xls = Excel.Application
+    With xls
         .EnableEvents = False
         .displayAlerts = False
         Call .Quit
@@ -262,11 +272,13 @@ End Function
 
 
 
-Public Function getBackgroundInstance() As Excel.Application
+Public Function getBackgroundInstance(Optional visible As Boolean = False, _
+                                      Optional macroEnabled As Boolean = True) As Excel.Application
     If Not f.Excel.isValidAppReference(pBackgroundExcel) Then
         Set pBackgroundExcel = New Excel.Application
         With pBackgroundExcel
-            .visible = False
+            .visible = visible
+            .AutomationSecurity = VBA.IIf(macroEnabled, msoAutomationSecurityByUI, msoAutomationSecurityForceDisable)
             .displayAlerts = False
         End With
     End If
@@ -282,6 +294,16 @@ Public Function closeBackgroundInstance() As Excel.Application
 End Function
 
 
+Public Function getMacroDisabledInstance() As Excel.Application
+    If Not f.Excel.isValidAppReference(pBackgroundExcel) Then
+        Set pBackgroundExcel = New Excel.Application
+        With pBackgroundExcel
+            .visible = False
+            .displayAlerts = False
+        End With
+    End If
+    Set getMacroDisabledInstance = pBackgroundExcel
+End Function
 
 
 Public Sub adjustExcelSettings(Optional ByVal xls As Excel.Application)
@@ -304,3 +326,13 @@ Public Sub adjustExcelSettings(Optional ByVal xls As Excel.Application)
     Excel.ActiveWindow.WindowState = xlMaximized
     
 End Sub
+
+
+
+Public Function createNewInstance(Optional visible As Boolean = True) As Excel.Application
+    Set createNewInstance = New Excel.Application
+    With createNewInstance
+        .visible = visible
+        .displayAlerts = VBA.IIf(visible, .displayAlerts, False)
+    End With
+End Function

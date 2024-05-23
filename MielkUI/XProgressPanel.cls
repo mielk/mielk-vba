@@ -441,7 +441,7 @@ Public Sub render()
     pIsRendered = True
 End Sub
 
-Public Sub move(Optional left As Variant, Optional top As Variant)
+Public Sub Move(Optional left As Variant, Optional top As Variant)
     If left <> pLeft Or top <> pTop Then
         If F.Variables.isOfNumericType(left) Then pLeft = left
         If F.Variables.isOfNumericType(top) Then pTop = top
@@ -677,7 +677,7 @@ Private Sub autoSizeBackgroundFrame()
     '----------------------------------------------------------------------------------------------------------
     Call hideShowDetailsProgressBar
     endPoint = UI.Forms.calculateRightBottomPoint(pContainerFrame, True)
-    pContainerFrame.height = endPoint.y + pTopPadding
+    pContainerFrame.height = endPoint.Y + pTopPadding
 End Sub
 
 Private Sub hideShowDetailsProgressBar()

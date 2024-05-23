@@ -15,149 +15,58 @@ Private Const DEFAULT_DATE_TIME_FORMAT As String = "YYYY-MM-DD HH:MM:SS"
 Private Const DEFAULT_DATE_ONLY_FORMAT As String = "YYYY-MM-DD"
 Private Const DEFAULT_TIME_ONLY_FORMAT As String = "HH:MM:SS"
 '----------------------------------------------------------------------------------------------------------
+Private Const ISO_TIME_REGEX_PATTERN As String = "((\d{4})-([01]\d)-([0-3]\d)T([0-2]\d):([0-5]\d):([0-5]\d)\.(\d+([+-][0-2]\d:[0-5]" & _
+                                                 "\d|Z)))|((\d{4})-([01]\d)-([0-3]\d)T([0-2]\d):([0-5]\d):([0-5]\d([+-][0-2]\d:[0-5]\d|Z)))" & _
+                                                 "|((\d{4})-([01]\d)-([0-3]\d)T([0-2]\d):([0-5]\d)(([+-][0-2]\d:[0-5]\d|Z)))"
+Private Const TIMEPART_DISALLOWED_REGEX_PATTERN As String = "^\s*(\d{4})\s*(?:-|\.|\/|\\)\s*(\d{2})\s*(?:-|\.|\/|\\)\s*(\d{2})\s*$"
+Private Const TIMEPART_ALLOWED_REGEX_PATTERN As String = "^\s*(\d{4})\s*(?:-|\.|\/|\\|_)\s*(\d{2})\s*(?:-|\.|\/|\\|_)\s*(\d{2})\s*" & _
+                                                         "(?:|(\d{2})\s*(?:-|\.|\/|\\|_|:)\s*(\d{2})\s*(?:|(?:-|\.|\/|\\|_|:)\s*(\d{2})\s*))$"
+Private Const TIMEPART_DISALLOWED_REVERSED_REGEX_PATTERN As String = "^\s*(\d{2})\s*(?:-|\.|\/|\\)\s*(\d{2})\s*(?:-|\.|\/|\\)\s*(\d{4})\s*$"
+Private Const TIMEPART_ALLOWED_REVERSED_REGEX_PATTERN As String = "^\s*(\d{2})\s*(?:-|\.|\/|\\|_)\s*(\d{2})" & _
+                                    "\s*(?:-|\.|\/|\\|_)\s*(\d{4})\s*(|\d{2})\s*(?:-|\.|\/|\\|_|:)\s*(\d{2})" & _
+                                    "\s*(?:|(?:-|\.|\/|\\|_|:)\s*(\d{2})\s*)$"
+Private Const MMDDYY_REGEX_PATTERN As String = "^\s*(\d{2})[\/\.](\d{2})[\/\.](\d{2})\s*$"
+'----------------------------------------------------------------------------------------------------------
 
 
-
-
-'Public Function isDateString(ByVal value As String, Optional allowTimePart As Boolean = True) As Boolean
-'    Const TIMEPART_DISALLOWED_REGEX_PATTERN As String = "^(((((1[26]|2[048])00)|[12]\d([2468][048]|[13579][26]|0[48]))-" & _
-'            "((((0[13578]|1[02])-(0[1-9]|[12]\d|3[01]))|((0[469]|11)-(0[1-9]|[12]\d|30)))|" & _
-'            "(02-(0[1-9]|[12]\d))))|((([12]\d([02468][1235679]|[13579][01345789]))|((1[1345789]|2[1235679])00))" & _
-'            "-((((0[13578]|1[02])-(0[1-9]|[12]\d|3[01]))|((0[469]|11)-(0[1-9]|[12]\d|30)))|(02-(0[1-9]|1\d|2[0-8])))))$"
-'    Const TIMEPART_ALLOWED_REGEX_PATTERN As String = "^(((((1[26]|2[048])00)|[12]\d([2468][048]|[13579][26]|0[48]))-" & _
-'            "((((0[13578]|1[02])-(0[1-9]|[12]\d|3[01]))|((0[469]|11)-(0[1-9]|[12]\d|30)))|(02-(0[1-9]|[12]\d))))|" & _
-'            "((([12]\d([02468][1235679]|[13579][01345789]))|((1[1345789]|2[1235679])00))-((((0[13578]|1[02])-(0[1-9]|[12]\d|3[01]))|" & _
-'            "((0[469]|11)-(0[1-9]|[12]\d|30)))|(02-(0[1-9]|1\d|2[0-8])))))( ([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?)?$"
-'    Const TIMEPART_DISALLOWED_REVERSED_REGEX_PATTERN As String = "^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)" & _
-'            "(?:0?[1,3-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?" & _
-'            "(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)" & _
-'            "(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$"
-'    Const TIMEPART_ALLOWED_REVERSED_REGEX_PATTERN As String = "^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)" & _
-'            "(?:0?[1,3-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?" & _
-'            "(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)" & _
-'            "(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})( ([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?)?$"
-'
-'    Static objRegexForTimepartDisallowed As Object
-'    Static objRegexForTimepartAllowed As Object
-'    Static objRevRegexForTimepartDisallowed As Object
-'    Static objRevRegexForTimepartAllowed As Object
-'    '------------------------------------------------------------------------------------------------------
-'    Dim objRegex As Object
-'    Dim objRevRegex As Object
-'    '------------------------------------------------------------------------------------------------------
-'
-'    If allowTimePart Then
-'        If objRegexForTimepartAllowed Is Nothing Then Set objRegexForTimepartAllowed = F.regex.create(TIMEPART_ALLOWED_REGEX_PATTERN)
-'        If objRevRegexForTimepartAllowed Is Nothing Then Set objRevRegexForTimepartAllowed = F.regex.create(TIMEPART_ALLOWED_REVERSED_REGEX_PATTERN)
-'        Set objRegex = objRegexForTimepartAllowed
-'        Set objRevRegex = objRevRegexForTimepartAllowed
-'    Else
-'        If objRegexForTimepartDisallowed Is Nothing Then Set objRegexForTimepartDisallowed = F.regex.create(TIMEPART_DISALLOWED_REGEX_PATTERN)
-'        If objRevRegexForTimepartDisallowed Is Nothing Then Set objRevRegexForTimepartDisallowed = F.regex.create(TIMEPART_DISALLOWED_REVERSED_REGEX_PATTERN)
-'        Set objRegex = objRegexForTimepartDisallowed
-'        Set objRevRegex = objRevRegexForTimepartDisallowed
-'    End If
-'
-'    If objRegex.Test(value) Then
-'        isDateString = True
-'    ElseIf objRegex.Test(VBA.Replace(F.Strings.trimFull(F.Strings.stringify(value)), "/", "-")) Then
-'        isDateString = True
-'    ElseIf objRegex.Test(VBA.Replace(F.Strings.trimFull(F.Strings.stringify(value)), ".", "-")) Then
-'        isDateString = True
-'    ElseIf objRevRegex.Test(value) Then
-'        isDateString = True
-'    ElseIf objRevRegex.Test(F.Strings.trimFull(value)) Then
-'        isDateString = True
-'    End If
-'
-'End Function
-
-
-Public Function isDateString(ByVal value As String, Optional allowTimePart As Boolean = True, Optional ByRef d As Date) As Boolean
-    Const TIMEPART_DISALLOWED_REGEX_PATTERN As String = "^\s*\d{4}\s*(-|\.|\/|\\)\s*\d{2}\s*(-|\.|\/|\\)\s*\d{2}\s*$"
-    Const TIMEPART_ALLOWED_REGEX_PATTERN As String = "^\s*\d{4}\s*(-|\.|\/|\\|_)\s*\d{2}\s*(-|\.|\/|\\|_)\s*\d{2}\s*(|\d{2}\s*(-|\.|\/|\\|_|:)\s*\d{2}\s*(|(-|\.|\/|\\|_|:)\s*\d{2}\s*))$"
-    Const TIMEPART_DISALLOWED_REVERSED_REGEX_PATTERN As String = "^\s*\d{2}\s*(-|\.|\/|\\)\s*\d{2}\s*(-|\.|\/|\\)\s*\d{4}\s*$"
-    Const TIMEPART_ALLOWED_REVERSED_REGEX_PATTERN As String = "^\s*\d{2}\s*(-|\.|\/|\\|_)\s*\d{2}\s*(-|\.|\/|\\|_)\s*\d{4}\s*(|\d{2}\s*(-|\.|\/|\\|_|:)\s*\d{2}\s*(|(-|\.|\/|\\|_|:)\s*\d{2}\s*))$"
-    '------------------------------------------------------------------------------------------------------
-    Static objRegexForTimepartDisallowed As Object
-    Static objRegexForTimepartAllowed As Object
-    Static objRevRegexForTimepartDisallowed As Object
-    Static objRevRegexForTimepartAllowed As Object
-    '------------------------------------------------------------------------------------------------------
-    Dim objRegex As Object
-    Dim objRevRegex As Object
-    Dim yearFirst As Long
-    Dim hasTime As Boolean
-    Dim rejected As Boolean
-    Dim strDate As String
-    '------------------------------------------------------------------------------------------------------
-    Dim Year As Integer
-    Dim Month As Integer
-    Dim day As Integer
-    Dim hour As Integer
-    Dim minute As Integer
-    Dim second As Integer
+Public Function isDateString(ByVal value As Variant, Optional allowTimePart As Boolean = True, Optional ByRef d As Date) As Boolean
+    Dim patterns As VBA.Collection
+    Dim pattern As Variant
+    Dim offset As Long
+    Dim arrDateParts As Variant
     '------------------------------------------------------------------------------------------------------
 
-    If allowTimePart Then
-        If objRegexForTimepartAllowed Is Nothing Then Set objRegexForTimepartAllowed = f.regex.Create(TIMEPART_ALLOWED_REGEX_PATTERN)
-        If objRevRegexForTimepartAllowed Is Nothing Then Set objRevRegexForTimepartAllowed = f.regex.Create(TIMEPART_ALLOWED_REVERSED_REGEX_PATTERN)
-        Set objRegex = objRegexForTimepartAllowed
-        Set objRevRegex = objRevRegexForTimepartAllowed
-    Else
-        If objRegexForTimepartDisallowed Is Nothing Then Set objRegexForTimepartDisallowed = f.regex.Create(TIMEPART_DISALLOWED_REGEX_PATTERN)
-        If objRevRegexForTimepartDisallowed Is Nothing Then Set objRevRegexForTimepartDisallowed = f.regex.Create(TIMEPART_DISALLOWED_REVERSED_REGEX_PATTERN)
-        Set objRegex = objRegexForTimepartDisallowed
-        Set objRevRegex = objRevRegexForTimepartDisallowed
-    End If
-
-    If objRegex.test(value) Then
-        yearFirst = True
-        'isDateString = True
-    ElseIf objRevRegex.test(value) Then
-        yearFirst = False
-    Else
-        rejected = True
-    End If
-
-    If Not rejected Then
-        strDate = f.strings.onlyDigits(value, False)
-        If yearFirst Then
-            Year = VBA.left$(strDate, 4)
-            Month = VBA.mid$(strDate, 5, 2)
-            day = VBA.mid$(strDate, 7, 2)
-        Else
-            day = VBA.left$(strDate, 2)
-            Month = VBA.mid$(strDate, 3, 2)
-            Year = VBA.mid$(strDate, 5, 4)
+    Set patterns = New VBA.Collection
+    With patterns
+        Call .Add(TIMEPART_DISALLOWED_REGEX_PATTERN)
+        Call .Add(TIMEPART_DISALLOWED_REVERSED_REGEX_PATTERN)
+        
+        If allowTimePart Then
+            Call .Add(ISO_TIME_REGEX_PATTERN)
+            Call .Add(TIMEPART_ALLOWED_REGEX_PATTERN)
+            Call .Add(TIMEPART_ALLOWED_REVERSED_REGEX_PATTERN)
         End If
-
-        If VBA.Len(strDate) > 8 Then
-            hour = VBA.mid$(strDate, 9, 2)
-            minute = VBA.mid$(strDate, 11, 2)
-            If VBA.Len(strDate) > 12 Then
-                second = VBA.mid$(strDate, 13, 2)
-            End If
+    End With
+    
+    For Each pattern In patterns
+        If f.regex.checkIfMatch(VBA.CStr(value), VBA.CStr(pattern)) Then
+            arrDateParts = f.regex.getMatchArray(VBA.CStr(value), VBA.CStr(pattern))
+            If arrDateParts(LBound(arrDateParts)) = value Then offset = 1
+            d = convertDatePartsArrayToDate(arrDateParts, offset)
+            isDateString = True
+            Exit For
         End If
-
-        d = VBA.DateSerial(Year, Month, day) + VBA.TimeSerial(hour, minute, second)
-        If Year <> VBA.Year(d) Then
-            isDateString = False
-        ElseIf Month <> VBA.Month(d) Then
-            isDateString = False
-        ElseIf day <> VBA.day(d) Then
-            isDateString = False
-        ElseIf hour <> VBA.hour(d) Then
-            isDateString = False
-        ElseIf minute <> VBA.minute(d) Then
-            isDateString = False
-        ElseIf second <> VBA.second(d) Then
-            isDateString = False
-        Else
+    Next pattern
+    
+    
+    '[Other data formats. Check if they matches VBA built-in date formats.
+    If Not isDateString Then
+        If VBA.IsDate(value) Then
+            d = VBA.CDate(value)
             isDateString = True
         End If
-
     End If
+    
 
 End Function
 
@@ -185,10 +94,40 @@ Public Function getDateFromString(ByVal value As String) As Variant
     If isDateString(value, True, d) Then
         getDateFromString = d
     Else
-        On Error Resume Next
-        getDateFromString = VBA.DateValue(value)
-        On Error GoTo 0
+        getDateFromString = Empty
     End If
+End Function
+
+Private Function convertDatePartsArrayToDate(arr As Variant, Optional offset As Long = 1) As Date
+    Dim yearFirst As Boolean
+    '------------------------------------------------------------------------------------------------------
+    Dim year As Long
+    Dim month As Long
+    Dim day As Long
+    Dim hours As Long
+    Dim minutes As Long
+    Dim seconds As Long
+    '------------------------------------------------------------------------------------------------------
+    
+    yearFirst = VBA.CLng(arr(LBound(arr) + offset)) > 1000
+    
+    If yearFirst Then
+        year = VBA.CLng(arr(LBound(arr) + offset))
+        day = VBA.CLng(arr(LBound(arr) + 2 + offset))
+    Else
+        year = VBA.CLng(arr(LBound(arr) + offset))
+        day = VBA.CLng(arr(LBound(arr) + offset))
+    End If
+    
+    month = VBA.CLng(arr(LBound(arr) + 1 + offset))
+    If f.arrays.getSize(arr) >= 6 Then
+        hours = VBA.CLng(arr(LBound(arr) + 3 + offset))
+        minutes = VBA.CLng(arr(LBound(arr) + 4 + offset))
+        seconds = VBA.CLng(arr(LBound(arr) + 5 + offset))
+    End If
+    
+    convertDatePartsArrayToDate = VBA.DateSerial(year, month, day) + VBA.TimeSerial(hours, minutes, seconds)
+    
 End Function
 
 Private Function getDateFromFullMonthNameDateString(value As String) As Variant
@@ -207,13 +146,17 @@ Private Function getDateFromFullMonthNameDateString(value As String) As Variant
     
 End Function
 
-Public Function fromString(ByVal value As String, Optional ignoreErrors As Boolean = True) As Date
+Public Function fromString(ByVal value As String) As Date
     Const ILLEGAL_STRING_ERR_DESC As String = "Date/Time string was expected"
+    '------------------------------------------------------------------------------------------------------
+    Dim d As Date
     '------------------------------------------------------------------------------------------------------
 
     If isDDMMYYYYDate(value) Then
         fromString = fromDDMMYYYYString(value)
-    ElseIf VBA.isDate(value) Then
+    ElseIf f.regex.checkIfMatch(value, MMDDYY_REGEX_PATTERN) Then
+        fromString = fromDDMMYYString(value)
+    ElseIf VBA.IsDate(value) Then
         fromString = VBA.CDate(value)
     ElseIf isDateString(value) Then
         On Error Resume Next
@@ -225,14 +168,21 @@ Public Function fromString(ByVal value As String, Optional ignoreErrors As Boole
         On Error GoTo 0
     ElseIf isTimeString(value) Then
         fromString = VBA.CDate(value)
-    ElseIf Not ignoreErrors Then
-        Call Exceptions.IllegalValue.raiseWithCustomMessage(ILLEGAL_STRING_ERR_DESC)
+    Else
+        On Error Resume Next
+        d = fromIso8601(value)
+        If d > 0 Then
+            fromString = d
+        Else
+            Call Exceptions.IllegalValue.raiseWithCustomMessage(ILLEGAL_STRING_ERR_DESC)
+        End If
+        On Error GoTo 0
     End If
 
 End Function
 
 Private Function isDDMMYYYYDate(value As String) As Boolean
-    Const REGEX_PATTERN As String = "^\d\d[-|.|\/]\d\d[-|.|\/]\d\d\d\d$"
+    Const REGEX_PATTERN As String = "^\d{2}[-|.|\/]\d{2}[-|.|\/]\d{4}$"
     Static objRegex As Object
     '------------------------------------------------------------------------------------------------------
 
@@ -248,7 +198,6 @@ Public Function fromYYYYMMDDString(ByVal value As String) As Date
     Dim months As Long
     Dim years As Long
     '------------------------------------------------------------------------------------------------------
-    value = f.strings.onlyDigits(value)
     If VBA.Len(value) = 8 Then
         years = VBA.left$(value, 4)
         months = VBA.mid$(value, 5, 2)
@@ -262,13 +211,13 @@ Private Function fromDDMMYYYYString(ByVal value As String) As Date
     Dim months As Long
     Dim years As Long
     '-----------------------------------------------------------------------------------------------------
-    value = f.strings.onlyDigits(value)
+    value = f.strings.onlyDigits(value, False)
     If VBA.Len(value) = 8 Then
         days = VBA.left$(value, 2)
         months = VBA.mid$(value, 3, 2)
         years = VBA.right$(value, 4)
+        fromDDMMYYYYString = VBA.DateSerial(years, months, days)
     End If
-    fromDDMMYYYYString = VBA.DateSerial(years, months, days)
 End Function
 
 Private Function fromDDMMYYString(ByVal value As String) As Date
@@ -276,13 +225,13 @@ Private Function fromDDMMYYString(ByVal value As String) As Date
     Dim months As Long
     Dim years As Long
     '-----------------------------------------------------------------------------------------------------
-    value = f.strings.onlyDigits(value)
+    value = f.strings.onlyDigits(value, False)
     If VBA.Len(value) = 6 Then
         days = VBA.left$(value, 2)
         months = VBA.mid$(value, 3, 2)
-        years = VBA.right$(value, 2)
+        years = 2000 + VBA.right$(value, 2)
+        fromDDMMYYString = VBA.DateSerial(years, months, days)
     End If
-    fromDDMMYYString = VBA.DateSerial(years, months, days)
 End Function
 
 Public Function fromMMDDYYYYString(text As String) As Date
@@ -352,22 +301,22 @@ Public Function getTimeOnly(value As Date) As Date
 End Function
 
 Public Function fromIso8601(dateString As String) As Date
-    Dim Year As Integer
-    Dim Month As Integer
+    Dim year As Integer
+    Dim month As Integer
     Dim day As Integer
     Dim hour As Integer
     Dim minute As Integer
     Dim second As Integer
     '------------------------------------------------------------------------------------------------------
 
-    Year = VBA.left$(dateString, 4) * 1
-    Month = VBA.mid$(dateString, 6, 2) * 1
+    year = VBA.left$(dateString, 4) * 1
+    month = VBA.mid$(dateString, 6, 2) * 1
     day = VBA.mid$(dateString, 9, 2) * 1
     hour = VBA.mid$(dateString, 12, 2) * 1
     minute = VBA.mid$(dateString, 15, 2) * 1
     second = VBA.mid$(dateString, 18, 2) * 1
 
-    fromIso8601 = VBA.DateSerial(Year, Month, day) + VBA.TimeSerial(hour, minute, second)
+    fromIso8601 = VBA.DateSerial(year, month, day) + VBA.TimeSerial(hour, minute, second)
 
 End Function
 
@@ -377,8 +326,8 @@ Public Function toUnix(dt As Variant) As Long
     End If
 End Function
 
-Public Function fromUnix(Timestamp As Long) As Date
-    fromUnix = VBA.DateAdd("s", Timestamp, #1/1/1970#)
+Public Function fromUnix(timestamp As Long) As Date
+    fromUnix = VBA.DateAdd("s", timestamp, #1/1/1970#)
 End Function
 
 Public Function getMonthNumberFromName(name As String) As Integer
@@ -412,16 +361,60 @@ Public Function getMonthNumberFromName(name As String) As Integer
 
 End Function
 
+Public Function getMonthName(d As Date, _
+                                Optional shortName As Boolean = True, _
+                                Optional nameType As MonthNameTypeEnum = MonthName_ByRegionalSettings) As String
+    Dim index As Long
+    Dim arr As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    If nameType = MonthName_ByRegionalSettings Then
+        If shortName Then
+            getMonthName = VBA.format(d, "mmm")
+        Else
+            getMonthName = VBA.format(d, "mmmm")
+        End If
+    Else
+        If shortName Then
+            Select Case nameType
+                Case MonthName_English:     arr = VBA.Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", _
+                                                            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+            End Select
+        Else
+            Select Case nameType
+                Case MonthName_English:     arr = VBA.Array("January", "February", "March", "April", "May", "June", _
+                                                            "July", "August", "September", "October", "November", "December")
+            End Select
+        End If
+    End If
+    
+    index = VBA.month(d)
+    If f.arrays.isDefined(arr) Then
+        getMonthName = arr(index + LBound(arr) - 1)
+    End If
+                                
+End Function
+
 Public Function getNextMonthStart(d As Date) As Date
     Dim tempDate As Date
     '------------------------------------------------------------------------------------------------------
     tempDate = VBA.DateAdd("m", 1, d)
-    getNextMonthStart = VBA.DateSerial(VBA.Year(tempDate), VBA.Month(tempDate), 1)
+    getNextMonthStart = VBA.DateSerial(VBA.year(tempDate), VBA.month(tempDate), 1)
 End Function
 
 Public Function getMonthFirstDay(d As Date) As Date
-    getMonthFirstDay = VBA.DateSerial(VBA.Year(d), VBA.Month(d), 1)
+    Dim year As Long
+    Dim month As Long
+    '------------------------------------------------------------------------------------------------------
+    year = VBA.year(d)
+    month = VBA.month(d)
+    getMonthFirstDay = VBA.DateSerial(year, month, 1)
 End Function
+
+Public Function getMonthLastDay(d As Date) As Date
+    getMonthLastDay = VBA.DateAdd("m", 1, VBA.DateSerial(VBA.year(d), VBA.month(d), 1)) - 1
+End Function
+
 
 '
 'Public Function countWorkingDays(startDate As Date, endDate As Date) As Integer
@@ -451,22 +444,22 @@ End Function
 'End Function
 
 Public Function convertIso8601ToDate(dateString As String) As Date
-    Dim Year As Integer
-    Dim Month As Integer
+    Dim year As Integer
+    Dim month As Integer
     Dim day As Integer
     Dim hour As Integer
     Dim minute As Integer
     Dim second As Integer
     '------------------------------------------------------------------------------------------------------
 
-    Year = VBA.left$(dateString, 4) * 1
-    Month = VBA.mid$(dateString, 6, 2) * 1
+    year = VBA.left$(dateString, 4) * 1
+    month = VBA.mid$(dateString, 6, 2) * 1
     day = VBA.mid$(dateString, 9, 2) * 1
     hour = VBA.mid$(dateString, 12, 2) * 1
     minute = VBA.mid$(dateString, 15, 2) * 1
     second = VBA.mid$(dateString, 18, 2) * 1
 
-    convertIso8601ToDate = DateSerial(Year, Month, day) + TimeSerial(hour, minute, second)
+    convertIso8601ToDate = DateSerial(year, month, day) + TimeSerial(hour, minute, second)
 
 End Function
 
@@ -478,8 +471,8 @@ End Function
 
 Public Function toMonthYearString(value As Variant) As String
     Dim arr As Variant
-    Dim Month As Long
-    Dim Year As Long
+    Dim month As Long
+    Dim year As Long
     '----------------------------------------------------------------------------------------------------------
     
     If f.Variables.isUndefined(value) Then
@@ -487,41 +480,41 @@ Public Function toMonthYearString(value As Variant) As String
     ElseIf Not f.Variables.isPrimitive(value) Then
         ' skip
     ElseIf f.Dates.isDateString(VBA.CStr(value)) Then
-        Month = VBA.Month(value)
-        Year = VBA.Year(value)
+        month = VBA.month(value)
+        year = VBA.year(value)
     Else
         arr = f.regex.getMatchArray(VBA.CStr(value), MONTH_YEAR_REGEX_PATTERN)
         If f.arrays.isDefined(arr) Then
-            Month = arr(LBound(arr))
-            Year = arr(LBound(arr) + 1)
+            month = arr(LBound(arr))
+            year = arr(LBound(arr) + 1)
         End If
     End If
     
-    If Not f.Math.isInRange(Month, 1, 12) Then
-    ElseIf Not f.Math.isInRange(Year, 2000, 2100) Then
+    If Not f.Math.isInRange(month, 1, 12) Then
+    ElseIf Not f.Math.isInRange(year, 2000, 2100) Then
     Else
-        toMonthYearString = f.strings.addLeadingZeros(Month, 2) & "/" & Year
+        toMonthYearString = f.strings.addLeadingZeros(month, 2) & "/" & year
     End If
     
 End Function
 
 Public Function getDateFromMonthYearString(value As Variant) As Date
     Dim arr As Variant
-    Dim Month As Long
-    Dim Year As Long
+    Dim month As Long
+    Dim year As Long
     '----------------------------------------------------------------------------------------------------------
     
     If Not f.Variables.isUndefined(value) Then
         arr = f.regex.getMatchArray(VBA.CStr(value), MONTH_YEAR_REGEX_PATTERN)
         If f.arrays.isDefined(arr) Then
-            Month = arr(LBound(arr))
-            Year = arr(LBound(arr) + 1)
+            month = arr(LBound(arr))
+            year = arr(LBound(arr) + 1)
         End If
         
-        If Not f.Math.isInRange(Month, 1, 12) Then
-        ElseIf Year <= 0 Then
+        If Not f.Math.isInRange(month, 1, 12) Then
+        ElseIf year <= 0 Then
         Else
-            getDateFromMonthYearString = f.strings.addLeadingZeros(Month, 2) & "/" & Year
+            getDateFromMonthYearString = f.strings.addLeadingZeros(month, 2) & "/" & year
         End If
     End If
     

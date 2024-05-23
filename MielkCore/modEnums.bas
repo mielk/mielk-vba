@@ -102,6 +102,11 @@ Public Enum DateVisibilityEnum
     DateVisibility_TimeOnly = 2
 End Enum
 
+Public Enum MonthNameTypeEnum
+    MonthName_ByRegionalSettings = 0
+    MonthName_English = 0
+End Enum
+
 
 '[Developers]
 Public Enum ReferenceTypeEnum
@@ -111,6 +116,21 @@ Public Enum ReferenceTypeEnum
     ReferenceType_ExternalLibrary = 3
 End Enum
 
+
+'[Other]
+Public Enum ComparisonResultEnum
+    ComparisonResult_Common = 1
+    ComparisonResult_OnlyInBase = 2
+    ComparisonResult_OnlyInCompared = 3
+End Enum
+
+
+'[System]
+Public Enum SystemSettingEnum
+    SystemSetting_DecimalSeparator = 1
+    SystemSetting_ListSeparator = 2
+    SystemSetting_DateFormat = 3
+End Enum
 
 
 

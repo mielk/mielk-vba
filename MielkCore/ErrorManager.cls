@@ -196,20 +196,20 @@ Public Sub addError(ByVal className As String, ByVal methodName As String, ByVal
                     ParamArray params() As Variant)
     Dim errLocal As VBA.errObject, errNumber As Long, errDescription As String, errSource As String
     '------------------------------------------------------------------------------------------------------
-    Dim Item As ErrorObject
+    Dim item As ErrorObject
     Dim paramsDict As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
     
     On Error Resume Next
     
     Set paramsDict = createDictionaryFromParamArray(f.arrays.fromParamArray(params))
-    Set Item = New ErrorObject
-    Call Item.setClassName(className). _
+    Set item = New ErrorObject
+    Call item.setClassName(className). _
               setMethodName(methodName). _
               setErrorNumber(number). _
               setErrorDescription(description). _
               setParams(paramsDict)
-    Call pErrors.Add(Item)
+    Call pErrors.Add(item)
     
     
 '==========================================================================================================
@@ -234,7 +234,7 @@ ErrHandler:
                         VBA.vbCrLf & VBA.vbCrLf & _
                     errDescription
     
-    Call VBA.MsgBox(errMessage, vbCritical, App.getName)
+    Call VBA.MsgBox(errMessage, vbCritical, app.getName)
     Set paramsDict = Nothing
 
 End Sub
@@ -305,7 +305,7 @@ Public Sub display(Optional ByVal message As String)
         message = pFixedMessage
     ElseIf VBA.Len(message) = 0 Then
         For i = pErrors.count To 1 Step -1
-            Set errObj = pErrors.Item(i)
+            Set errObj = pErrors.item(i)
             If errObj Is Nothing Then
             ElseIf errObj.getErrorDescription = INTERFACE_REGULAR_ERROR Then
             Else
@@ -315,7 +315,7 @@ Public Sub display(Optional ByVal message As String)
         Next i
     End If
 
-    Call VBA.MsgBox(message, vbCritical, App.getNameVersion)
+    Call VBA.MsgBox(message, vbCritical, app.getNameVersion)
     
     '[Clear pFixedMessage to avoid case that this is displayed again later for completely different error]
     pFixedMessage = vbNullString
@@ -332,7 +332,7 @@ ErrHandler:
     errMessage = getDisplayErrorMessage & VBA.vbCrLf & VBA.vbCrLf & _
                 "----------- [Stack] -------------------------------------" & VBA.vbCrLf & _
                 " * ErrorManager.display" & VBA.vbCrLf & errDescription
-    Call VBA.MsgBox(errMessage, vbCritical, App.getName)
+    Call VBA.MsgBox(errMessage, vbCritical, app.getName)
     GoTo ExitPoint
 
 End Sub
@@ -342,7 +342,7 @@ End Sub
 Public Sub logToTextFile(Optional errorsFilePath As String)
     Const METHOD_NAME As String = "logToTextFile"
     '------------------------------------------------------------------------------------------------------
-    Dim FileName As String
+    Dim fileName As String
     Dim filepath As String
     '------------------------------------------------------------------------------------------------------
     
@@ -351,15 +351,15 @@ Public Sub logToTextFile(Optional errorsFilePath As String)
     If VBA.Len(errorsFilePath) Then
         filepath = errorsFilePath
     ElseIf fso.folderExists(pLogFolder) Then
-        FileName = VBA.format(VBA.Date, "YYYY-MM-DD") & ".txt"
-        filepath = f.files.concatenatePath(pLogFolder, FileName)
+        fileName = VBA.format(VBA.Date, "YYYY-MM-DD") & ".txt"
+        filepath = f.files.concatenatePath(pLogFolder, fileName)
     End If
     
     If VBA.Len(filepath) Then
         Call f.TextFiles.printToTextFile(getStack, filepath, False)
     Else
         Call VBA.MsgBox(getLogToTextfileErrorMessage & VBA.vbCrLf & "Empty [filepath]", _
-                    vbCritical, App.getName)
+                    vbCritical, app.getName)
     End If
 
 '==========================================================================================================
@@ -377,7 +377,7 @@ ErrHandler:
                         VBA.vbTab & "errorsFilePath: " & errorsFilePath & VBA.vbCrLf & _
                         VBA.vbTab & "pLogFolder: " & pLogFolder & VBA.vbCrLf & _
                 errDescription
-    Call VBA.MsgBox(errMessage, vbCritical, App.getName)
+    Call VBA.MsgBox(errMessage, vbCritical, app.getName)
     GoTo ExitPoint
 
 End Sub
@@ -394,8 +394,8 @@ Private Function getStack() As String
     
     If Not DEV_MODE Then On Error GoTo ErrHandler
     
-    getStack = f.strings.format(STACK_INFO_PATTERN, App.getName, App.getVersion, f.System.getWindowsUserName, _
-                                App.getUncPath, f.System.getDecimalSeparator, f.System.getDateFormat, _
+    getStack = f.strings.format(STACK_INFO_PATTERN, app.getName, app.getVersion, f.System.getWindowsUserName, _
+                                app.getUncPath, f.System.getDecimalSeparator, f.System.getDateFormat, _
                                 f.System.getSystemBits, f.System.getErrorHandlingSetting)
     
     For Each error In pErrors
@@ -461,7 +461,7 @@ ErrHandler:
     errMessage = getLogToDatabaseErrorMessage & VBA.vbCrLf & VBA.vbCrLf & _
                 "----------- [Stack] -------------------------------------" & VBA.vbCrLf & _
                 " * ErrorManager.logToDatabase" & VBA.vbCrLf & errDescription
-    Call VBA.MsgBox(errMessage, vbCritical, App.getName)
+    Call VBA.MsgBox(errMessage, vbCritical, app.getName)
     GoTo ExitPoint
     
 End Sub
@@ -485,7 +485,7 @@ Private Sub logErrorStack(connection As Object, ByRef callStackId As Long)
     Set rs = VBA.CreateObject(ADODB_RECORDSET)
     With rs
         Call .Open(sql, connection, adOpenKeyset, adLockPessimistic)
-        Call .AddNew(dictProps.Keys, dictProps.Items)
+        Call .addNew(dictProps.Keys, dictProps.items)
         callStackId = .fields(FIELD_CALL_STACK_ID).value
     End With
     
@@ -520,9 +520,9 @@ Private Function createGeneralPropertiesDictionary() As Scripting.Dictionary
     
     Set createGeneralPropertiesDictionary = f.dictionaries.Create(False)
     With createGeneralPropertiesDictionary
-        Call .Add(FIELD_APP_NAME, App.getName)
-        Call .Add(FIELD_APP_VERSION, App.getVersion)
-        Call .Add(FIELD_APP_PATH, App.getUncPath)
+        Call .Add(FIELD_APP_NAME, app.getName)
+        Call .Add(FIELD_APP_VERSION, app.getVersion)
+        Call .Add(FIELD_APP_PATH, app.getUncPath)
         Call .Add(FIELD_USER_NAME, f.System.getWindowsUserName)
         Call .Add(FIELD_DECIMAL_SEPARATOR, f.System.getDecimalSeparator)
         Call .Add(FIELD_DATE_FORMAT, f.System.getDateFormat)

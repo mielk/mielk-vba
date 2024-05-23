@@ -37,7 +37,7 @@ Private pCancelledByUser As Boolean
 
 
 Private Sub Class_Initialize()
-    pTitle = MsgService.GetText(DEFAULT_TITLE_TAG)
+    pTitle = MsgService.getText(DEFAULT_TITLE_TAG)
 End Sub
 
 

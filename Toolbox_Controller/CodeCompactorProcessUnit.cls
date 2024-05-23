@@ -33,8 +33,8 @@ Public Function setItemsProcessor(value As ItemsProcessor) As CodeCompactorProce
     Set pProcessor = value
 End Function
 
-Public Function setfilepath(value As String) As CodeCompactorProcessUnit
-    Set setfilepath = Me
+Public Function setFilePath(value As String) As CodeCompactorProcessUnit
+    Set setFilePath = Me
     pfilepath = value
 End Function
 
@@ -74,7 +74,7 @@ Public Sub process()
     Set wkb = xls.Workbooks.Open(pfilepath, , False)
     Set project = wkb.VBProject
     
-    Call project.VBE.Windows.Item(1).SetFocus
+    Call project.VBE.Windows.item(1).SetFocus
     password = pParent.getVbaCodePassword
     If VBA.Len(password) Then Call setPasswordOnProject(project, password)
     
@@ -83,7 +83,7 @@ Public Sub process()
     Debug.Print pfilepath & " | Initial timestamp: " & initialTimestamp
     
     Call xls.SendKeys("^s")
-    Call Sleep(1000)
+    Call sleep(1000)
     
     Do
         finalTimestamp = getFileTimestamp(pfilepath)
@@ -118,7 +118,7 @@ End Sub
 
 
 
-Private Function getFileTimestamp(filepath As String) As Date
+Private Function getFileTimestamp(filePath As String) As Date
     Const TIMEOUT As Long = 10
     '------------------------------------------------------------------------------------------------------
     Dim f As Scripting.file
@@ -128,12 +128,12 @@ Private Function getFileTimestamp(filepath As String) As Date
     startTime = VBA.Timer
     Do Until getFileTimestamp > 0
         On Error Resume Next
-        Set f = fso.GetFile(filepath)
+        Set f = fso.GetFile(filePath)
         getFileTimestamp = f.DateLastModified
         On Error GoTo 0
         
         If VBA.Timer - startTime > TIMEOUT Then
-            Call VBA.Err.Raise(1, Description:="Error while trying to refer to file " & filepath)
+            Call VBA.Err.Raise(1, Description:="Error while trying to refer to file " & filePath)
         End If
     Loop
     
@@ -165,31 +165,31 @@ End Sub
 'https://stackoverflow.com/questions/53323655/locking-a-project-programmatically-in-vba
 Private Sub setPasswordOnProject(project As Object, password As String)
 
-    Call project.VBE.CommandBars(1).FindControl(ID:=2578, recursive:=True).Execute
+    Call project.VBE.CommandBars(1).FindControl(id:=2578, recursive:=True).Execute
     
     With pParent.getExcel
-        Call Sleep(250)
+        Call sleep(250)
         .SendKeys "^{PGDN}"
-        Call Sleep(250)
+        Call sleep(250)
         
         'Check [Lock project for viewing] checkbox
         .SendKeys "%v"
-        Call Sleep(250)
+        Call sleep(250)
         
         'Enter password
         .SendKeys "%p"
-        Call Sleep(250)
+        Call sleep(250)
         .SendKeys password
-        Call Sleep(250)
+        Call sleep(250)
         
         'Confirm password
         .SendKeys "%c"
-        Call Sleep(250)
+        Call sleep(250)
         .SendKeys password
-        Call Sleep(250)
+        Call sleep(250)
         
         .SendKeys "{ENTER}"
-        Call Sleep(250)
+        Call sleep(250)
         
     End With
 

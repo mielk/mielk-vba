@@ -28,6 +28,6 @@ Public Function getFolder() As Scripting.folder
     '------------------------------------------------------------------------------------------------------
     If fso Is Nothing Then Set fso = New Scripting.FileSystemObject
     path = Excel.ThisWorkbook.fullName
-    Set file = fso.GetFile(path)
-    Set getFolder = file.ParentFolder
+    Set file = fso.getFile(path)
+    Set getFolder = file.parentFolder
 End Function

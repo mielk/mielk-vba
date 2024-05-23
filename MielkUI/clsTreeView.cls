@@ -116,8 +116,8 @@ Event RightClick(cNode As clsNode)
 ' Event MouseAction(cNode As clsNode, Action As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
 Event NodeCheck(cNode As clsNode)   'Checkbox change event
 Event AfterLabelEdit(ByRef Cancel As Boolean, NewString As String, cNode As clsNode)
-Event KeyDown(cNode As clsNode, ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
-Event MouseDown(cNode As clsNode, ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+Event KeyDown(cNode As clsNode, ByVal keyCode As MSForms.ReturnInteger, ByVal shift As Integer)
+Event MouseDown(cNode As clsNode, ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
 Event CustomEvent(cNode As clsNode, eventName As String)
 Event BeforeDragDrop(draggedNode As clsNode)
 Event AfterDragDrop(draggedNode As clsNode, dropNode As clsNode)
@@ -128,7 +128,7 @@ Event AfterExpandCollapse()
                     
 Private Type POINTAPI
     x As Long
-    y As Long
+    Y As Long
 End Type
 
 #If Mac Then
@@ -138,7 +138,7 @@ End Type
             ByRef lpPoint As POINTAPI) As Long
     Private Declare PtrSafe Function SetCursorPos Lib "user32.dll" ( _
             ByVal x As Long, _
-            ByVal y As Long) As Long
+            ByVal Y As Long) As Long
     Private Declare PtrSafe Function getTickCount Lib "kernel32.dll" Alias "GetTickCount" () As Long
 #Else
     Private Declare Function GetCursorPos Lib "user32.dll" ( _
@@ -721,7 +721,7 @@ Public Sub Copy(cSource As clsNode, cDest As clsNode, _
     
 End Sub
 
-Public Sub move(cSource As clsNode, cDest As clsNode, _
+Public Sub Move(cSource As clsNode, cDest As clsNode, _
                 Optional vBefore, Optional ByVal vAfter, _
                 Optional ByVal bShowError As Boolean)
 ' PT Move source node + children to destination node
@@ -1312,7 +1312,7 @@ Friend Function RaiseAfterLabelEdit(cNode As clsNode, sNewText As String) As Boo
 End Function
 
 Friend Sub NodeEventRouter(cNode As clsNode, sControl As String, lAction As tvMouse, _
-                           Optional button As Integer, Optional Shift As Integer, Optional x As Single, Optional y As Single)
+                           Optional Button As Integer, Optional shift As Integer, Optional x As Single, Optional Y As Single)
 Dim bFlag As Boolean
 Dim lngViewable As Long
 Dim cLastChild As clsNode
@@ -1947,7 +1947,7 @@ Sub HourGlassCursor(bApply As Boolean)
         If Not bApply Then
             ' in some systems the cursor may fail to reset to default, this forces it
             GetCursorPos pt
-            SetCursorPos pt.x, pt.y
+            SetCursorPos pt.x, pt.Y
         End If
     #End If
 
@@ -2608,24 +2608,24 @@ End Sub
 
 
 
-Private Sub TreeControl_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
+Private Sub TreeControl_KeyDown(ByVal keyCode As MSForms.ReturnInteger, ByVal shift As Integer)
     Dim sngVisTop As Single
     Dim cNode As clsNode
 
     ' PT toggle expand/collapse with key Enter
-    If KeyCode = vbKeyReturn Then
+    If keyCode = vbKeyReturn Then
         If ActiveNode.Expanded Then
-            KeyCode = vbKeyLeft
+            keyCode = vbKeyLeft
         Else
-            KeyCode = vbKeyRight
+            keyCode = vbKeyRight
         End If
     End If
 
     If Not ActiveNode Is Nothing Then
-        Select Case KeyCode
+        Select Case keyCode
         #If Mac Then
-            If Shift = 2 And KeyCode = 85 Then
-                KeyCode = vbKeyF2  ' Ctrl-U = F2 edit
+            If shift = 2 And keyCode = 85 Then
+                keyCode = vbKeyF2  ' Ctrl-U = F2 edit
             End If
         #End If
         Case vbKeyLeft
@@ -2681,7 +2681,7 @@ Private Sub TreeControl_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Sh
             End If
 
         Case vbKeyUp, vbKeyDown
-            If ActiveNode.VisIndex = mlVisCount And KeyCode = vbKeyDown Then
+            If ActiveNode.VisIndex = mlVisCount And keyCode = vbKeyDown Then
                 ' if the activenode is the last node and collaped, expand it and activate the 1st childnode
                 If Not ActiveNode.childNodes Is Nothing Then
                     If ActiveNode.Expanded = False Then
@@ -2691,11 +2691,11 @@ Private Sub TreeControl_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Sh
                 End If
             End If
 
-            Set cNode = NextVisibleNodeInTree(ActiveNode, (KeyCode = vbKeyUp))
+            Set cNode = NextVisibleNodeInTree(ActiveNode, (keyCode = vbKeyUp))
 
             If Not cNode Is Nothing Then
                 Set ActiveNode = cNode
-                ScrollToView ActiveNode, IIf(KeyCode = vbKeyUp, -1, -2) ' the -ve means will scroll won't change if the node is visible
+                ScrollToView ActiveNode, IIf(keyCode = vbKeyUp, -1, -2) ' the -ve means will scroll won't change if the node is visible
 
                 NodeEventRouter ActiveNode, "Caption", 1
             End If
@@ -2723,7 +2723,7 @@ Private Sub TreeControl_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Sh
 
         mbKeyDown = True    ' PT
 
-        RaiseEvent KeyDown(ActiveNode, KeyCode, Shift)
+        RaiseEvent KeyDown(ActiveNode, keyCode, shift)
     Else
         If Not mcolNodes Is Nothing Then
             If mcolNodes.Count Then
@@ -2734,7 +2734,7 @@ Private Sub TreeControl_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Sh
 
 End Sub
 
-Private Sub TreeControl_KeyUp(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
+Private Sub TreeControl_KeyUp(ByVal keyCode As MSForms.ReturnInteger, ByVal shift As Integer)
 '-------------------------------------------------------------------------
 ' Procedure : TreeControl_KeyUp
 ' Company   : JKP Application Development Services (c)
@@ -2758,15 +2758,15 @@ Private Sub TreeControl_KeyUp(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shif
 
     If Not ActiveNode Is Nothing Then
 
-        Select Case KeyCode
+        Select Case keyCode
 
         ' PT look into moving more key events into KeyDown
 
         Case 48 To 57, 96 To 105
-            If KeyCode >= 96 Then KeyCode = KeyCode - 48
-            If (KeyCode > vbKey0 Or mbRootButton) And Shift = 0 Then
+            If keyCode >= 96 Then keyCode = keyCode - 48
+            If (keyCode > vbKey0 Or mbRootButton) And shift = 0 Then
                 'SetTreeExpansionLevel (KeyCode - 49)
-                ExpandToLevel (KeyCode - 48)
+                ExpandToLevel (keyCode - 48)
                 BuildRoot False
             End If
 
@@ -2797,7 +2797,7 @@ Private Sub TreeControl_KeyUp(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shif
             End If
             
         Case vbKeyHome, vbKeyEnd
-            If KeyCode = vbKeyHome Then lIdx = 1 Else lIdx = mlVisCount
+            If keyCode = vbKeyHome Then lIdx = 1 Else lIdx = mlVisCount
             lIdx = mlVisOrder(lIdx)
             If ActiveNode.index <> lIdx Then
                 Set ActiveNode = mcolNodes(lIdx)
@@ -2829,9 +2829,9 @@ Public Function getScrollTop() As Single
     getScrollTop = TreeControl.scrollTop
 End Function
 
-Private Sub TreeControl_MouseDown(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+Private Sub TreeControl_MouseDown(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
     Call setHoveredNode(Nothing)
-    RaiseEvent MouseDown(Nothing, button, Shift, x, y)
+    RaiseEvent MouseDown(Nothing, Button, shift, x, Y)
 End Sub
 
 Public Sub setHoveredNode(node As clsNode)
@@ -2899,7 +2899,7 @@ Private Sub runCustomRefreshActions()
 End Sub
 
 
-Private Sub TreeControl_MouseMove(ByVal button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+Private Sub TreeControl_MouseMove(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
     Call setHoveredNode(Nothing)
 End Sub
 

@@ -36,42 +36,42 @@ Private Sub Class_Terminate()
 End Sub
 
 
-Public Sub addItem(Key As Variant, Item As Variant, Optional name As String)
-    Call f.dictionaries.addItem(pItems, Key, Item)
+Public Sub addItem(key As Variant, item As Variant, Optional name As String)
+    Call f.dictionaries.addItem(pItems, key, item)
     If VBA.Len(name) Then
-        Call f.dictionaries.addItem(pNameToKeyMap, name, Key)
+        Call f.dictionaries.addItem(pNameToKeyMap, name, key)
     End If
 End Sub
 
-Public Sub removeItem(Key As Variant, Optional name As String)
+Public Sub removeItem(key As Variant, Optional name As String)
     Dim varNameKey As Variant
     Dim subkey As Variant
     '------------------------------------------------------------------------------------------------------
     
-    Call f.dictionaries.removeItem(pItems, Key)
+    Call f.dictionaries.removeItem(pItems, key)
     
     For Each varNameKey In pNameToKeyMap.Keys
-        subkey = pNameToKeyMap.Item(varNameKey)
-        If subkey = Key Then
+        subkey = pNameToKeyMap.item(varNameKey)
+        If subkey = key Then
             Call pNameToKeyMap.Remove(varNameKey)
         End If
     Next varNameKey
     
 End Sub
 
-Public Function exists(Key As Variant) As Boolean
-    exists = pItems.exists(Key)
+Public Function exists(key As Variant) As Boolean
+    exists = pItems.exists(key)
 End Function
 
-Public Function getItem(Key As Variant) As Variant
-    Call f.Variables.assign(getItem, f.dictionaries.getObject(pItems, Key))
+Public Function getItem(key As Variant) As Variant
+    Call f.Variables.assign(getItem, f.dictionaries.getObject(pItems, key))
 End Function
 
 Public Function getItemByName(name As String) As Variant
-    Dim Key As Variant
+    Dim key As Variant
     '------------------------------------------------------------------------------------------------------
-    Key = f.dictionaries.getItem(pNameToKeyMap, name)
-    Call f.Variables.assign(getItemByName, f.dictionaries.getObject(pItems, Key))
+    key = f.dictionaries.getItem(pNameToKeyMap, name)
+    Call f.Variables.assign(getItemByName, f.dictionaries.getObject(pItems, key))
 End Function
 
 Public Function getItemsCollection() As VBA.Collection
@@ -87,14 +87,14 @@ Public Function getItemsDictionaryById() As Scripting.Dictionary
 End Function
 
 Public Function getItemsDictionaryByName() As Scripting.Dictionary
-    Dim Key As Variant
-    Dim Id As Variant
+    Dim key As Variant
+    Dim id As Variant
     '------------------------------------------------------------------------------------------------------
     Set getItemsDictionaryByName = f.dictionaries.Create(False)
-    For Each Key In pNameToKeyMap.Keys
-        Id = pNameToKeyMap.Item(Key)
-        If pItems.exists(Id) Then
-            Call getItemsDictionaryByName.add(Key, pItems.Item(Id))
+    For Each key In pNameToKeyMap.Keys
+        id = pNameToKeyMap.item(key)
+        If pItems.exists(id) Then
+            Call getItemsDictionaryByName.Add(key, pItems.item(id))
         End If
-    Next Key
+    Next key
 End Function

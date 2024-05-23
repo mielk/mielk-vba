@@ -7,12 +7,14 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
-'sprawdziï¿½ czym siï¿½ rï¿½ni getColumnIndexByHeader od getColumnIndex (to samo dla Row)
-'ogarnï¿½ï¿½ funkcje slice (wystï¿½pujï¿½ dwa razy)
+'sprawdziæ czym siê ró¿ni getColumnIndexByHeader od getColumnIndex (to samo dla Row)
+'ogarn¹æ funkcje slice (wystêpuj¹ dwa razy)
 
 Option Explicit
 
 Private Const CLASS_NAME As String = "FArrays"
+'----------------------------------------------------------------------------------------------------------
+Private Const MULTIDIMENSIONAL_ARRAY_TAG As String = "[{0}-dimensional array]"
 '----------------------------------------------------------------------------------------------------------
 
 
@@ -585,7 +587,7 @@ End Function
 '   * dimension         Dimension checked.
 '   * arr               Array for which index is checked.
     '----------------------------------------------------------------------------------------------------------
-Public Function isInBounds(Index As Long, dimension As Long, arr As Variant) As Boolean
+Public Function isInBounds(index As Long, dimension As Long, arr As Variant) As Boolean
     Const METHOD_NAME As String = "isInBounds"
     '------------------------------------------------------------------------------------------------------
     Dim lowBound As Long
@@ -598,7 +600,7 @@ Public Function isInBounds(Index As Long, dimension As Long, arr As Variant) As 
         If countDimensions(arr) >= dimension Then
             lowBound = LBound(arr, dimension)
             upBound = UBound(arr, dimension)
-            If Index >= lowBound And Index <= upBound Then
+            If index >= lowBound And index <= upBound Then
                 isInBounds = True
             End If
         Else
@@ -617,7 +619,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = f.dictionaries.createWithItems(False, KeyValue("index", Index), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("index", index), _
                                                     KeyValue("dimension", dimension), KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
@@ -711,6 +713,13 @@ AssigningExceptionHandler:
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Sub
+
+Private Function getEmptyDynamicVariantArray() As Variant()
+    Dim arr() As Variant
+    '------------------------------------------------------------------------------------------------------
+    ReDim arr(1 To 1)
+    getEmptyDynamicVariantArray = arr
+End Function
 
 
 
@@ -966,7 +975,7 @@ Private Function arrayToString_1D(arr As Variant, stringifyMode As StringifyMode
                         ByVal itemEndTag As String, Optional skipHeader As Boolean = False) As String
     Const METHOD_NAME As String = "arrayToString_1D"
     '------------------------------------------------------------------------------------------------------
-    Dim Items() As String
+    Dim items() As String
     Dim itemText As String
     Dim i As Long
     Dim size As Long
@@ -982,12 +991,12 @@ Private Function arrayToString_1D(arr As Variant, stringifyMode As StringifyMode
 
     size = UBound(arr) - LBound(arr) + 1
     If size - VBA.IIf(skipHeader, 1, 0) > 0 Then
-        ReDim Items(LBound(arr) + VBA.IIf(skipHeader, 1, 0) To UBound(arr))
+        ReDim items(LBound(arr) + VBA.IIf(skipHeader, 1, 0) To UBound(arr))
         For i = LBound(arr) + VBA.IIf(skipHeader, 1, 0) To UBound(arr)
             itemText = f.strings.stringify(arr(i), stringifyMode)
-            Items(i) = itemStartTag & itemText & itemEndTag
+            items(i) = itemStartTag & itemText & itemEndTag
         Next i
-        arrayToString_1D = VBA.join(Items, itemSeparator)
+        arrayToString_1D = VBA.join(items, itemSeparator)
     End If
     
 '==========================================================================================================
@@ -1014,7 +1023,7 @@ Private Function arrayToString_2D(arr As Variant, stringifyMode As StringifyMode
     Const METHOD_NAME As String = "arrayToString_2D"
     '------------------------------------------------------------------------------------------------------
     Dim Rows() As String
-    Dim row As Long
+    Dim Row As Long
     Dim size As Long
     '------------------------------------------------------------------------------------------------------
 
@@ -1032,10 +1041,10 @@ Private Function arrayToString_2D(arr As Variant, stringifyMode As StringifyMode
     size = UBound(arr, 1) - LBound(arr, 1) + 1
     If size - VBA.IIf(skipHeader, 1, 0) > 0 Then
         ReDim Rows(LBound(arr, 1) + VBA.IIf(skipHeader, 1, 0) To UBound(arr, 1))
-        For row = LBound(arr, 1) + VBA.IIf(skipHeader, 1, 0) To UBound(arr, 1)
-            Rows(row) = rowStartTag & get2DArrayRowAsString(arr, stringifyMode, row, _
+        For Row = LBound(arr, 1) + VBA.IIf(skipHeader, 1, 0) To UBound(arr, 1)
+            Rows(Row) = rowStartTag & get2DArrayRowAsString(arr, stringifyMode, Row, _
                                                         colSeparator, colStartTag, colEndTag) & rowEndTag
-        Next row
+        Next Row
         arrayToString_2D = VBA.join(Rows, rowSeparator)
     End If
     
@@ -1057,23 +1066,23 @@ ErrHandler:
     
 End Function
 
-Private Function get2DArrayRowAsString(arr As Variant, stringifyMode As StringifyModeEnum, row As Long, _
+Private Function get2DArrayRowAsString(arr As Variant, stringifyMode As StringifyModeEnum, Row As Long, _
                         itemsDelimiter As String, itemStartTag As String, itemEndTag As String) As String
     Const METHOD_NAME As String = "get2DArrayRowAsString"
     '------------------------------------------------------------------------------------------------------
-    Dim Items() As String
+    Dim items() As String
     Dim column As Long
     Dim itemText As String
     '------------------------------------------------------------------------------------------------------
 
     If Not DEV_MODE Then On Error GoTo ErrHandler
 
-    ReDim Items(LBound(arr, 2) To UBound(arr, 2))
+    ReDim items(LBound(arr, 2) To UBound(arr, 2))
     For column = LBound(arr, 2) To UBound(arr, 2)
-        itemText = f.strings.stringify(arr(row, column), stringifyMode)
-        Items(column) = itemStartTag & itemText & itemEndTag
+        itemText = f.strings.stringify(arr(Row, column), stringifyMode)
+        items(column) = itemStartTag & itemText & itemEndTag
     Next column
-    get2DArrayRowAsString = VBA.join(Items, itemsDelimiter)
+    get2DArrayRowAsString = VBA.join(items, itemsDelimiter)
     
 '==========================================================================================================
 ExitPoint:
@@ -1120,7 +1129,7 @@ Public Function toCollection(arr As Variant) As VBA.Collection
     Set toCollection = New VBA.Collection
     If isDefined(arr) Then
         For i = LBound(arr) To UBound(arr)
-            Call toCollection.add(arr(i))
+            Call toCollection.Add(arr(i))
         Next i
     End If
     
@@ -1204,7 +1213,7 @@ ErrHandler:
 End Function
 
 Public Function to2DArray(value As Variant) As Variant
-    Call f.Variables.assign(to2DArray, to2D(value))
+    to2DArray = to2D(value)
 End Function
 
 Private Function convertTo2DArray_From1DArray(sourceArr As Variant) As Variant
@@ -1246,7 +1255,7 @@ Private Function convertTo2DArray_FromDictionary(value As Variant) As Variant
     Const METHOD_NAME As String = "convertTo2DArray_FromDictionary"
     '------------------------------------------------------------------------------------------------------
     Dim dict As Scripting.Dictionary
-    Dim Key As Variant
+    Dim key As Variant
     Dim arr() As Variant
     Dim counter As Long
     '------------------------------------------------------------------------------------------------------
@@ -1259,11 +1268,11 @@ Private Function convertTo2DArray_FromDictionary(value As Variant) As Variant
 
     If f.dictionaries.isNonEmptyDictionary(dict) Then
         ReDim arr(1 To dict.count, 1 To 2)
-        For Each Key In dict.Keys
+        For Each key In dict.Keys
             counter = counter + 1
-            Call f.Variables.assign(arr(counter, 1), Key)
-            Call f.Variables.assign(arr(counter, 2), dict.Item(Key))
-        Next Key
+            Call f.Variables.assign(arr(counter, 1), key)
+            Call f.Variables.assign(arr(counter, 2), dict.item(key))
+        Next key
     End If
 
     convertTo2DArray_FromDictionary = arr
@@ -1286,7 +1295,7 @@ Private Function convertTo2DArray_FromCollection(value As Variant) As Variant
     Const METHOD_NAME As String = "convertTo2DArray_FromCollection"
     '------------------------------------------------------------------------------------------------------
     Dim col As Object
-    Dim Item As Variant
+    Dim item As Variant
     Dim arr() As Variant
     Dim counter As Long
     '------------------------------------------------------------------------------------------------------
@@ -1299,10 +1308,10 @@ Private Function convertTo2DArray_FromCollection(value As Variant) As Variant
 
     If f.Collections.isNonEmptyCollection(col) Then
         ReDim arr(1 To col.count, 1 To 1)
-        For Each Item In col
+        For Each item In col
             counter = counter + 1
-            Call f.Variables.assign(arr(counter, 1), Item)
-        Next Item
+            Call f.Variables.assign(arr(counter, 1), item)
+        Next item
     End If
 
     convertTo2DArray_FromCollection = arr
@@ -1686,22 +1695,22 @@ ErrHandler:
         
 End Function
 
-Private Function getItem_PassTest(Item As Variant, skipUndefinedItems As Boolean, _
+Private Function getItem_PassTest(item As Variant, skipUndefinedItems As Boolean, _
                                             skipEmptyStrings As Boolean, skipZeros As Boolean) As Boolean
     Const METHOD_NAME As String = "getItem_PassTest"
     '------------------------------------------------------------------------------------------------------
 
     If Not DEV_MODE Then On Error GoTo ErrHandler
 
-    If f.Variables.isUndefined(Item) Then
+    If f.Variables.isUndefined(item) Then
         getItem_PassTest = (Not skipUndefinedItems)
-    ElseIf VBA.IsObject(Item) Then
+    ElseIf VBA.IsObject(item) Then
         getItem_PassTest = True
-    ElseIf VBA.IsArray(Item) Then
+    ElseIf VBA.IsArray(item) Then
         getItem_PassTest = True
-    ElseIf Item = vbNullString Then
+    ElseIf item = vbNullString Then
         getItem_PassTest = (Not skipEmptyStrings)
-    ElseIf Item = 0 Then
+    ElseIf item = 0 Then
         getItem_PassTest = (Not skipZeros)
     Else
         getItem_PassTest = True
@@ -1715,7 +1724,7 @@ ExitPoint:
 ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
-    Set params = f.dictionaries.createWithItems(False, KeyValue("item", Item), _
+    Set params = f.dictionaries.createWithItems(False, KeyValue("item", item), _
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
@@ -1934,9 +1943,9 @@ Public Function slice2D_ByEndIndex(sourceArray As Variant, _
     Dim realEndColumnIndex As Long
     Dim arr() As Variant
     Dim Rows As Long
-    Dim Columns As Long
+    Dim columns As Long
     Dim i As Long
-    Dim row As Long
+    Dim Row As Long
     Dim j As Long
     Dim column As Long
     '------------------------------------------------------------------------------------------------------
@@ -1971,16 +1980,16 @@ Public Function slice2D_ByEndIndex(sourceArray As Variant, _
 
     'Creating final array.
     Rows = VBA.Abs(realStartRowIndex - realEndRowIndex) + 1
-    Columns = VBA.Abs(realStartColumnIndex - realEndColumnIndex) + 1
+    columns = VBA.Abs(realStartColumnIndex - realEndColumnIndex) + 1
 
-    ReDim arr(1 To Rows, 1 To Columns)
+    ReDim arr(1 To Rows, 1 To columns)
     For i = 1 To Rows
-        row = VBA.IIf(realEndRowIndex < realStartRowIndex, realStartRowIndex - i + 1, _
+        Row = VBA.IIf(realEndRowIndex < realStartRowIndex, realStartRowIndex - i + 1, _
                                                                             realStartRowIndex + i - 1)
-        For j = 1 To Columns
+        For j = 1 To columns
             column = VBA.IIf(realEndColumnIndex < realStartColumnIndex, _
                                            realStartColumnIndex - j + 1, realStartColumnIndex + j - 1)
-            Call f.Variables.assign(arr(i, j), sourceArray(row, column))
+            Call f.Variables.assign(arr(i, j), sourceArray(Row, column))
         Next j
     Next i
 
@@ -2035,7 +2044,7 @@ End Function
 '                                       initialized yet.
 '   * WrongDimensionsNumberException    Thrown if the given array has more or less than 2 dimensions.
     '----------------------------------------------------------------------------------------------------------
-Public Function getRow(sourceArray As Variant, rowIndex As Long, _
+Public Function getRow(sourceArray As Variant, RowIndex As Long, _
                                                     Optional absoluteIndex As Boolean = True) As Variant
     Const METHOD_NAME As String = "getRow"
     '------------------------------------------------------------------------------------------------------
@@ -2050,22 +2059,22 @@ Public Function getRow(sourceArray As Variant, rowIndex As Long, _
     If countDimensions(sourceArray) <> 2 Then Exceptions.InvalidDimension.raise
 
     If absoluteIndex Then
-        If Not isInBounds(rowIndex, 1, sourceArray) Then Call Exceptions.IndexOutOfBound.raise
+        If Not isInBounds(RowIndex, 1, sourceArray) Then Call Exceptions.IndexOutOfBound.raise
     Else
-        If Not f.Numerics.isInRange(rowIndex, 0, getSize(sourceArray, 1), False, True) Then _
+        If Not f.Numerics.isInRange(RowIndex, 0, getSize(sourceArray, 1), False, True) Then _
                                                                    Call Exceptions.IndexOutOfBound.raise
     End If
 
     If absoluteIndex Then
         ReDim arr(LBound(sourceArray, 2) To UBound(sourceArray, 2))
         For i = LBound(sourceArray, 2) To UBound(sourceArray, 2)
-            Call f.Variables.assign(arr(i), sourceArray(rowIndex, i))
+            Call f.Variables.assign(arr(i), sourceArray(RowIndex, i))
         Next i
     Else
         ReDim arr(1 To getSize(sourceArray, 2))
         For i = 1 To getSize(sourceArray, 2)
             Call f.Variables.assign(arr(i), _
-                        sourceArray(rowIndex + LBound(sourceArray, 1) - 1, i + LBound(sourceArray, 2) - 1))
+                        sourceArray(RowIndex + LBound(sourceArray, 1) - 1, i + LBound(sourceArray, 2) - 1))
         Next i
     End If
 
@@ -2080,7 +2089,7 @@ ErrHandler:
     Dim err As VBA.errObject, errNumber As Long, errDescription As String, params As Scripting.Dictionary
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
-                        KeyValue("rowIndex", rowIndex), KeyValue("absoluteIndex", absoluteIndex))
+                        KeyValue("rowIndex", RowIndex), KeyValue("absoluteIndex", absoluteIndex))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
     Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
@@ -2249,13 +2258,13 @@ Public Function getUniqueValues(arr As Variant, Optional strictDataType As Boole
 
             With dict
                 If Not .exists(varKey) Then
-                    Call .add(varKey, arr(i))
+                    Call .Add(varKey, arr(i))
                 End If
             End With
 
         Next i
 
-        getUniqueValues = dict.Items
+        getUniqueValues = dict.items
 
     Else
 
@@ -2412,22 +2421,27 @@ Public Function getRowIndexByFirstValue(arr As Variant, value As Variant, Option
 End Function
 
 
-Public Function getItemIndex(arr As Variant, Item As Variant, Optional useRegex As Boolean = False) As Variant
+Public Function getItemIndex(arr As Variant, item As Variant, Optional useRegex As Boolean = False, _
+                                            Optional ByVal startColumn As Long = 123456789) As Variant
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
     
+    If startColumn = 123456789 Then startColumn = LBound(arr)
+    
     If Not f.arrays.isDefined(arr) Then
+        ' skip - not an array
     ElseIf Not f.arrays.countDimensions(arr) = 1 Then
+        ' skip - only 1D arrays are handled
     Else
         getItemIndex = LBound(arr) - 1
-        For i = LBound(arr) To UBound(arr)
+        For i = startColumn To UBound(arr)
             If useRegex Then
-                If f.regex.checkIfMatch(VBA.CStr(arr(i)), VBA.CStr(Item)) Then
+                If f.regex.checkIfMatch(VBA.CStr(arr(i)), VBA.CStr(item)) Then
                     getItemIndex = i
                     Exit For
                 End If
             Else
-                If f.Variables.equals(arr(i), Item) Then
+                If f.Variables.equals(arr(i), item) Then
                     getItemIndex = i
                     Exit For
                 End If
@@ -2582,7 +2596,7 @@ End Function
 Public Function join(ParamArray arrays() As Variant) As Variant
     Dim arr() As Variant
     Dim colArrays As VBA.Collection
-    Dim Items As Long
+    Dim items As Long
     Dim varItem As Variant
     Dim i As Long
     Dim upBound As Long:                            upBound = 1
@@ -2591,12 +2605,12 @@ Public Function join(ParamArray arrays() As Variant) As Variant
     Set colArrays = New VBA.Collection
     For Each varItem In arrays
         If f.arrays.countDimensions(varItem) = 1 Then
-            Items = Items + f.arrays.getSize(varItem)
-            Call colArrays.add(varItem)
+            items = items + f.arrays.getSize(varItem)
+            Call colArrays.Add(varItem)
         End If
     Next varItem
 
-    ReDim arr(upBound To Items)
+    ReDim arr(upBound To items)
     For Each varItem In colArrays
         For i = LBound(varItem) To UBound(varItem)
             arr(upBound + i - LBound(varItem)) = varItem(i)
@@ -2615,7 +2629,7 @@ Public Function join2D(ParamArray arrays() As Variant) As Variant
     Dim varArray As Variant
     Dim minColumn As Long
     Dim maxColumn As Long
-    Dim Items As Long
+    Dim items As Long
     Dim i As Long
     Dim j As Long
     Dim upBound As Long:                            upBound = 1
@@ -2631,13 +2645,13 @@ Public Function join2D(ParamArray arrays() As Variant) As Variant
                 Else
                     minColumn = Excel.Application.WorksheetFunction.Min(minColumn, LBound(varArray, 1))
                 End If
-                Items = Items + f.arrays.getSize(varArray, 2)
-                Call colArrays.add(varArray)
+                items = items + f.arrays.getSize(varArray, 2)
+                Call colArrays.Add(varArray)
             End If
         Next varArray
     Next varContainer
 
-    ReDim arr(minColumn To maxColumn, upBound To Items)
+    ReDim arr(minColumn To maxColumn, upBound To items)
     For j = minColumn To maxColumn
         upBound = 1
         For Each varArray In colArrays
@@ -2662,7 +2676,7 @@ Public Function toDictionary(arr As Variant, Optional keyColumn As Long = 1, Opt
     '------------------------------------------------------------------------------------------------------
     Dim dimensions As Long
     Dim i As Long
-    Dim Key As Variant
+    Dim key As Variant
     Dim value As Variant
     '------------------------------------------------------------------------------------------------------
     
@@ -2674,24 +2688,24 @@ Public Function toDictionary(arr As Variant, Optional keyColumn As Long = 1, Opt
         For i = LBound(arr, dimensions) To UBound(arr, dimensions)
             Select Case dimensions
                 Case 1
-                    Call f.Variables.assign(Key, f.Reflection.modifyValue(arr(i), keyFunction, keyFunctionInvoker))
+                    Call f.Variables.assign(key, f.Reflection.modifyValue(arr(i), keyFunction, keyFunctionInvoker))
                     Call f.Variables.assign(value, arr(i))
                 Case 2
-                    Call f.Variables.assign(Key, f.Reflection.modifyValue(arr(keyColumn, i), keyFunction, keyFunctionInvoker))
+                    Call f.Variables.assign(key, f.Reflection.modifyValue(arr(keyColumn, i), keyFunction, keyFunctionInvoker))
                     Call f.Variables.assign(value, arr(valueColumn, i))
             End Select
         
             With toDictionary
-                If Not .exists(Key) Then
-                    Call .add(Key, value)
+                If Not .exists(key) Then
+                    Call .Add(key, value)
                 ElseIf duplicateBehaviour = duplicateBehaviour_Override Then
                     If VBA.IsObject(value) Then
-                        Set .Item(Key) = value
+                        Set .item(key) = value
                     Else
-                        .Item(Key) = value
+                        .item(key) = value
                     End If
                 ElseIf duplicateBehaviour = duplicateBehaviour_ThrowError Then
-                    Call Exceptions.DuplicateKey.raise(f.strings.stringify(Key))
+                    Call Exceptions.DuplicateKey.raise(f.strings.stringify(key))
                 End If
             End With
         Next i
@@ -2729,8 +2743,8 @@ End Function
 Public Function fromRange(rng As Excel.Range, Optional ifPossibleTo1D As Boolean = True) As Variant
     Dim arr As Variant
     '------------------------------------------------------------------------------------------------------
-    If f.ranges.isValid(rng) Then
-        If rng.Cells.count = 1 Then
+    If f.ranges.IsValid(rng) Then
+        If rng.cells.count = 1 Then
             If ifPossibleTo1D Then
                 fromRange = VBA.Array(rng.value)
             Else
@@ -2739,7 +2753,7 @@ Public Function fromRange(rng As Excel.Range, Optional ifPossibleTo1D As Boolean
         ElseIf rng.Rows.count = 1 And ifPossibleTo1D Then
             arr = rng
             fromRange = f.arrays.getRow(arr, 1, False)
-        ElseIf rng.Columns.count = 1 And ifPossibleTo1D Then
+        ElseIf rng.columns.count = 1 And ifPossibleTo1D Then
             arr = rng
             fromRange = f.arrays.getColumn(arr, 1, False)
         Else
@@ -2750,7 +2764,7 @@ End Function
 
 
 
-Public Function fromParamArray(ParamArray Items() As Variant) As Variant
+Public Function fromParamArray(ParamArray items() As Variant) As Variant
     Dim arr As Variant
     Dim isFirstItemArray As Boolean
     Dim isParamArray As Boolean
@@ -2760,7 +2774,7 @@ Public Function fromParamArray(ParamArray Items() As Variant) As Variant
     
     'Only one item should be passed to this function (array of values). However to allow
     'passing ParamArray values directly to this function it has to be defined as ParamArray as well.
-    For Each varItem In Items
+    For Each varItem In items
         arr = varItem
         Exit For
     Next varItem
@@ -2776,7 +2790,7 @@ Public Function fromParamArray(ParamArray Items() As Variant) As Variant
         isParamArray = (counter = 1 And isFirstItemArray)
         
         If isParamArray Then
-            For Each varItem In Items
+            For Each varItem In items
                 fromParamArray = varItem(LBound(varItem))
                 Exit For
             Next varItem
@@ -2817,7 +2831,7 @@ Public Function to1D(value As Variant) As Variant
         End Select
     ElseIf VBA.IsObject(value) Then
         If TypeOf value Is Scripting.Dictionary Then
-            to1D = f.cast.toDictionary(value).Items
+            to1D = f.cast.toDictionary(value).items
         ElseIf TypeOf value Is VBA.Collection Then
             to1D = f.Collections.toArray(f.cast.toCollection(value))
         Else
@@ -2868,7 +2882,7 @@ Public Function hasDuplicates(arr As Variant, Optional column As Long) As Boolea
                 hasDuplicates = True
                 Exit For
             Else
-                Call dict.add(value, vbEmpty)
+                Call dict.Add(value, vbEmpty)
             End If
             
         Next i
@@ -2883,7 +2897,7 @@ Public Function flatArray(arr As Variant) As Variant
     Dim col As VBA.Collection
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
-    Dim subarr As Variant
+    Dim subArr As Variant
     Dim size As Long
     Dim counter As Long
     '------------------------------------------------------------------------------------------------------
@@ -2897,22 +2911,22 @@ Public Function flatArray(arr As Variant) As Variant
     Else
         Set col = New VBA.Collection
         For i = LBound(arr) To UBound(arr)
-            Call col.add(flatArray(arr(i)))
+            Call col.Add(flatArray(arr(i)))
         Next i
         
         'Count total items in all subarrays
-        For Each subarr In col
-            size = size + f.arrays.getSize(subarr)
-        Next subarr
+        For Each subArr In col
+            size = size + f.arrays.getSize(subArr)
+        Next subArr
         
         'Create final array
         ReDim result(1 To size)
-        For Each subarr In col
-            For i = LBound(subarr) To UBound(subarr)
+        For Each subArr In col
+            For i = LBound(subArr) To UBound(subArr)
                 counter = counter + 1
-                result(counter) = subarr(i)
+                result(counter) = subArr(i)
             Next i
-        Next subarr
+        Next subArr
         
         flatArray = result
         
@@ -2949,7 +2963,8 @@ End Function
 Public Function getColumnIndex(arr As Variant, Header As Variant, _
                                                     Optional absoluteIndex As Boolean = False, _
                                                     Optional searchOnlyHeader As Boolean = True, _
-                                                    Optional searchAsRegex As Boolean = False) As Long
+                                                    Optional searchAsRegex As Boolean = False, _
+                                                    Optional ByVal startColumn As Long = 123456789) As Long
     Dim headers As Variant
     Dim i As Long
     Dim j As Long
@@ -2958,13 +2973,15 @@ Public Function getColumnIndex(arr As Variant, Header As Variant, _
     Dim objRegex As Object
     '------------------------------------------------------------------------------------------------------
     
+    If Not f.arrays.isInBounds(startColumn, 1, arr) Then startColumn = LBound(arr, 1)
+    
     If searchAsRegex Then Set objRegex = f.regex.Create(VBA.CStr(Header))
     
     If searchOnlyHeader Then
         headers = f.arrays.getColumn(arr, 1, False)
-        getColumnIndex = getItemIndex(headers, Header)
+        getColumnIndex = getItemIndex(headers, Header, searchAsRegex, startColumn)
     Else
-        For i = LBound(arr, 1) To UBound(arr, 1)
+        For i = startColumn To UBound(arr, 1)
             For j = LBound(arr, 2) To UBound(arr, 2)
                 value = arr(i, j)
                 If VBA.IsError(value) Then
@@ -2990,7 +3007,8 @@ End Function
 Public Function getRowIndex(arr As Variant, label As Variant, _
                             Optional absoluteIndex As Boolean = False, _
                             Optional searchOnlyFirstColumn As Boolean = True, _
-                            Optional searchAsRegex As Boolean = False) As Long
+                            Optional searchAsRegex As Boolean = False, _
+                            Optional ByVal startRow As Long = 123456789) As Long
     Dim labels As Variant
     Dim i As Long
     Dim j As Long
@@ -2999,14 +3017,16 @@ Public Function getRowIndex(arr As Variant, label As Variant, _
     Dim objRegex As Object
     '------------------------------------------------------------------------------------------------------
     
+    If Not f.arrays.isInBounds(startRow, 1, arr) Then startRow = LBound(arr, 2)
+    
     If searchAsRegex Then Set objRegex = f.regex.Create(VBA.CStr(label))
     
     If searchOnlyFirstColumn Then
         labels = f.arrays.getRow(arr, 1, True)
-        getRowIndex = getItemIndex(labels, label)
+        getRowIndex = getItemIndex(labels, label, searchAsRegex)
     Else
-        For i = LBound(arr, 1) To UBound(arr, 1)
-            For j = LBound(arr, 2) To UBound(arr, 2)
+        For i = LBound(arr, 2) To UBound(arr, 1)
+            For j = startRow To UBound(arr, 2)
                 value = arr(i, j)
                 If searchAsRegex Then
                     match = objRegex.test(value)
@@ -3116,15 +3136,7 @@ Public Function find2DArrayFieldByRegex(arr As Variant, regexPattern As String, 
 End Function
 
 
-Public Function toDtos(arr As Variant, Optional hasHeader As Boolean = True) As VBA.Collection
-    Dim headers As Variant
-    Dim i As Long
-    Dim j As Long
-    '------------------------------------------------------------------------------------------------------
-    Dim dto As Scripting.Dictionary
-    Dim Key As Variant
-    Dim value As Variant
-    '------------------------------------------------------------------------------------------------------
+Public Function toDtos(arr As Variant, Optional columns As Scripting.Dictionary) As VBA.Collection
     
     Set toDtos = New VBA.Collection
     
@@ -3132,17 +3144,206 @@ Public Function toDtos(arr As Variant, Optional hasHeader As Boolean = True) As 
         Call Exceptions.NotArray.raise
     ElseIf f.arrays.countDimensions(arr) <> 2 Then
         Call Exceptions.InvalidDimension.raiseWithCustomMessage("Function supports only 2D arrays")
+    ElseIf f.dictionaries.isNonEmptyDictionary(columns) Then
+        Set toDtos = getDtosWithPreselectedColumns(arr, columns)
     Else
-        headers = f.arrays.getRow(arr, 1, False)
-        For i = LBound(arr, 1) + 1 To UBound(arr, 1)
-            Set dto = f.dictionaries.Create(False)
-            For j = LBound(arr, 2) To UBound(arr, 2)
-                Key = headers(j)
-                value = arr(i, j)
-                Call f.dictionaries.addItem(dto, Key, value, duplicateBehaviour_Override)
-            Next j
-            Call toDtos.add(dto)
-        Next i
+        Set toDtos = getDtosArrayWithAllColumns(arr)
     End If
     
 End Function
+
+Private Function getDtosArrayWithAllColumns(arr As Variant) As VBA.Collection
+    Dim headers As Variant
+    Dim i As Long
+    Dim j As Long
+    '------------------------------------------------------------------------------------------------------
+    Dim dto As Scripting.Dictionary
+    Dim key As Variant
+    Dim value As Variant
+    '------------------------------------------------------------------------------------------------------
+
+    Set getDtosArrayWithAllColumns = New VBA.Collection
+
+    headers = f.arrays.getRow(arr, 1, False)
+    For i = LBound(arr, 1) + 1 To UBound(arr, 1)
+        Set dto = f.dictionaries.Create(False)
+        For j = LBound(arr, 2) To UBound(arr, 2)
+            key = headers(j)
+            value = arr(i, j)
+            Call f.dictionaries.addItem(dto, key, value, duplicateBehaviour_Override)
+        Next j
+        Call getDtosArrayWithAllColumns.Add(dto)
+    Next i
+
+End Function
+
+Private Function getDtosWithPreselectedColumns(arr As Variant, columns As Scripting.Dictionary) As VBA.Collection
+    Dim i As Long
+    Dim colIndex As Long
+    '------------------------------------------------------------------------------------------------------
+    Dim dto As Scripting.Dictionary
+    Dim key As Variant
+    Dim value As Variant
+    '------------------------------------------------------------------------------------------------------
+
+    Set getDtosWithPreselectedColumns = New VBA.Collection
+
+    For i = LBound(arr, 1) + 1 To UBound(arr, 1)
+        Set dto = f.dictionaries.Create(False)
+        For Each key In columns.Keys
+            colIndex = columns.item(key)
+            value = arr(i, colIndex)
+            Call f.dictionaries.addItem(dto, key, value, duplicateBehaviour_Override)
+        Next key
+        Call getDtosWithPreselectedColumns.Add(dto)
+    Next i
+
+End Function
+
+
+Public Function toDtosDictionary(arr As Variant, keyProp As enumProperty, _
+                                        Optional columns As Scripting.Dictionary) As Scripting.Dictionary
+    Dim dtos As VBA.Collection
+    Dim dto As Scripting.Dictionary
+    Dim key As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set toDtosDictionary = f.dictionaries.Create(False)
+    Set dtos = toDtos(arr, columns)
+    If f.Collections.isNonEmptyCollection(dtos) Then
+        For Each dto In dtos
+            key = f.dictionaries.getItem(dto, keyProp.getName)
+            Call f.dictionaries.addItem(toDtosDictionary, key, dto)
+        Next dto
+    End If
+    
+End Function
+
+Public Function getArraysOffset(arr1 As Variant, arr2 As Variant, Optional dimension As Long = 1) As Long
+    getArraysOffset = LBound(arr1, dimension) - LBound(arr2, dimension)
+End Function
+
+Public Function getItemsSum(arr As Variant) As Double
+    Dim i As Long
+    '------------------------------------------------------------------------------------------------------
+    If countDimensions(arr) = 1 Then
+        For i = LBound(arr) To UBound(arr)
+            If VBA.isNumeric(arr(i)) Then
+                getItemsSum = getItemsSum + arr(i)
+            End If
+        Next i
+    End If
+End Function
+
+
+
+
+
+
+
+
+
+'[TRANSFERING DATA BETWEEN ARRAYS]
+
+'[From old version - to be checked]
+Public Sub copyContent(ByRef sourceArray As Variant, ByRef destinationArray As Variant)
+
+    If Not VBA.IsArray(sourceArray) Then Call Exceptions.NotArray.raise
+
+    If f.Variables.isDeclaredAsVariant(destinationArray) Then
+        'If variable to which content is to be copied is declared as Variant,
+        'it can be simply replace with the original array.
+        destinationArray = sourceArray
+    Else
+        If Not VBA.IsArray(destinationArray) Then Call Exceptions.NotArray.raise
+        If isDynamic(destinationArray) Then
+            Call copyContentIntoDynamicArray(sourceArray, destinationArray)
+        Else
+            Call copyContentIntoStaticArray(sourceArray, destinationArray)
+        End If
+    End If
+End Sub
+
+Private Sub copyContentIntoDynamicArray(ByRef sourceArray As Variant, ByRef destinationArray As Variant)
+
+    On Error GoTo ExceptionHandler
+    destinationArray = sourceArray
+
+'==========================================================================================================
+ExitPoint:
+    Exit Sub
+'----------------------------------------------------------------------------------------------------------
+ExceptionHandler:
+    Call composeDynamicArrayFromOtherArray(sourceArray, destinationArray)
+    GoTo ExitPoint
+End Sub
+
+Private Sub composeDynamicArrayFromOtherArray(ByRef sourceArray As Variant, ByRef destinationArray As Variant)
+    Dim arrBounds() As Long
+    '------------------------------------------------------------------------------------------------------
+    arrBounds = getDimensionsBounds(sourceArray)
+    Call resizeDynamicArrayToTheGivenBounds(destinationArray, arrBounds)
+    Call populateArrayWithValuesFromOtherArray(sourceArray, destinationArray)
+End Sub
+
+Private Sub resizeDynamicArrayToTheGivenBounds(ByRef arr As Variant, bounds() As Long)
+    Dim dimensions As Integer
+    '------------------------------------------------------------------------------------------------------
+    dimensions = getSize(bounds, 1)
+    Select Case dimensions
+        Case 0:         Erase arr
+        Case 1:         ReDim arr(bounds(1, 1) To bounds(1, 2))
+        Case 2:         ReDim arr(bounds(1, 1) To bounds(1, 2), _
+                                  bounds(2, 1) To bounds(2, 2))
+        Case Else:      Call Exceptions.InvalidDimension.raise
+    End Select
+End Sub
+
+Private Sub populateArrayWithValuesFromOtherArray(ByRef sourceArray As Variant, ByRef destinationArray As Variant)
+    Dim dimensions As Integer
+    '------------------------------------------------------------------------------------------------------
+    dimensions = countDimensions(sourceArray)
+    Select Case dimensions
+        Case 0:
+        Case 1:         Call populateArrayWithValuesFrom1DArray(sourceArray, destinationArray)
+        Case 2:         Call populateArrayWithValuesFrom2DArray(sourceArray, destinationArray)
+        Case Else:      Call Exceptions.InvalidDimension.raise
+    End Select
+End Sub
+
+Private Sub populateArrayWithValuesFrom1DArray(ByRef sourceArray As Variant, ByRef destinationArray As Variant)
+    Dim item As Long
+    Dim indexationDifference As Long
+    '------------------------------------------------------------------------------------------------------
+    indexationDifference = LBound(destinationArray) - LBound(sourceArray)
+    For item = LBound(sourceArray) To UBound(sourceArray)
+        Call f.Variables.assign(destinationArray(item + indexationDifference), sourceArray(item))
+    Next item
+End Sub
+
+Private Sub populateArrayWithValuesFrom2DArray(ByRef sourceArray As Variant, ByRef destinationArray As Variant)
+    Dim Row As Long
+    Dim column As Long
+    Dim rowsIndexationDifference As Long
+    Dim columnsIndexationDifference As Long
+    '------------------------------------------------------------------------------------------------------
+
+    rowsIndexationDifference = LBound(destinationArray, 1) - LBound(sourceArray, 1)
+    columnsIndexationDifference = LBound(destinationArray, 2) - LBound(sourceArray, 2)
+
+    For Row = LBound(sourceArray) To UBound(sourceArray)
+        For column = LBound(sourceArray, 2) To UBound(sourceArray, 2)
+            Call f.Variables.assign(destinationArray(Row + rowsIndexationDifference, column + columnsIndexationDifference), _
+                        sourceArray(Row, column))
+        Next column
+    Next Row
+End Sub
+
+Private Sub copyContentIntoStaticArray(ByRef sourceArray As Variant, ByRef destinationArray As Variant)
+    If Not compareSizes(sourceArray, destinationArray, True) Then
+        Call Exceptions.IndexOutOfBound.raise
+    Else
+        Call populateArrayWithValuesFromOtherArray(sourceArray, destinationArray)
+    End If
+End Sub
+

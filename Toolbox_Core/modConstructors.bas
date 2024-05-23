@@ -121,3 +121,14 @@ Public Function App() As ParentApp
     Set App = instance
     
 End Function
+
+
+
+Public Function RibbonManager(Optional inject As RibbonManager) As RibbonManager
+    Static instance As RibbonManager
+    '------------------------------------------------------------------------------------------------------
+    If Not inject Is Nothing Then
+        Set instance = inject
+    End If
+    Set RibbonManager = instance
+End Function

@@ -50,8 +50,8 @@ End Function
 
 Public Function setValue(propName As String, value As Variant) As EAlias
     Select Case VBA.LCase$(propName)
-        Case VBA.LCase$(Props.alias.getName):               Call setAlias(VBA.CStr(value))
-        Case VBA.LCase$(Props.parent.getName):              Call setParent(value)
+        Case VBA.LCase$(props.alias.getName):               Call setAlias(VBA.CStr(value))
+        Case VBA.LCase$(props.parent.getName):              Call setParent(value)
     End Select
 End Function
 

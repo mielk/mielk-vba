@@ -63,6 +63,10 @@ Public Function getDecimalSeparator() As String
     getDecimalSeparator = VBA.CreateObject("WScript.Shell").RegRead("HKCU\Control Panel\International\sDecimal")
 End Function
 
+Public Function getThousandSeparator() As String
+    getThousandSeparator = VBA.CreateObject("WScript.Shell").RegRead("HKCU\Control Panel\International\sThousand")
+End Function
+
 
 
 
@@ -124,12 +128,18 @@ End Function
 
 Public Function isDeveloper() As Boolean
     Const DEVELOPERS_COMPUTER_NAMES As String = ";DESKTOP-PE9TCEP;"
+    Const DEVELOPERS_UIDS As String = ";______;"
     '------------------------------------------------------------------------------------------------------
     Dim compName As String
+    Dim userName As String
     '------------------------------------------------------------------------------------------------------
     
     compName = f.System.GetComputerName
+    userName = f.System.getUserUid
+    
     If VBA.InStr(1, DEVELOPERS_COMPUTER_NAMES, ";" & compName & ";", vbTextCompare) > 0 Then
+        isDeveloper = True
+    ElseIf VBA.InStr(1, DEVELOPERS_UIDS, ";" & userName & ";", vbTextCompare) > 0 Then
         isDeveloper = True
     End If
     

@@ -13,7 +13,7 @@ Private Sub ribbon_toolbox_afterLoaded(ByVal ribbon As IRibbonUI)
     Call RibbonManager(F.Create.RibbonManager. _
                         setRibbon(ribbon). _
                         setWorkbook(Excel.ThisWorkbook). _
-                        setJsonfilepath(Paths.RibbonConfigfilepath))
+                        setJsonFilePath(Paths.RibbonConfigFilePath))
     
     Call ribbon.ActivateTab("tab.toolbox")
     Call RibbonManager.setUpdateDisabled(False)

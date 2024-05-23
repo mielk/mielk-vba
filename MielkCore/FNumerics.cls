@@ -171,13 +171,13 @@ Public Function isNumeric(value As Variant) As Boolean
 End Function
 
 Public Function toNumeric(ByVal value As Variant) As Variant
-    Dim Separator As String:                Separator = f.System.getDecimalSeparator
+    Dim separator As String:                separator = f.System.getDecimalSeparator
     
     If f.Variables.isUndefined(value) Then
         toNumeric = 0
     ElseIf f.Variables.isPrimitive(value) Then
         value = VBA.replace(value, " ", vbNullString)
-        toNumeric = VBA.replace(VBA.replace(value, ".", Separator), ",", Separator) * 1
+        toNumeric = VBA.replace(VBA.replace(value, ".", separator), ",", separator) * 1
     Else
         toNumeric = 0
     End If
@@ -203,25 +203,40 @@ End Function
 
 
 
-'
-'
-'
-'
-'Public Function isPositive(value As Variant, Optional strictType As Boolean = False) As Boolean
-'    Dim variableType As VBA.VbVarType
-'    '------------------------------------------------------------------------------------------------------
-'    If Not isNumeric(value) Then
-'
-'    ElseIf VBA.Val(value) <= 0 Then
-'
-'    ElseIf strictType Then
-'        variableType = VBA.varType(value)
-'        isPositive = (variableType <> vbString)
-'    Else
-'        isPositive = True
-'    End If
-'End Function
-'
+
+Public Function isPositive(value As Variant, Optional strictType As Boolean = False) As Boolean
+    Dim variableType As VBA.VbVarType
+    '------------------------------------------------------------------------------------------------------
+    If Not isNumeric(value) Then
+    
+    ElseIf VBA.Val(value) <= 0 Then
+    
+    ElseIf strictType Then
+        variableType = VBA.varType(value)
+        isPositive = (variableType <> vbString)
+    Else
+        isPositive = True
+    End If
+End Function
+
+Public Function isNotPositive(value As Variant, Optional strictType As Boolean = False) As Boolean
+    Dim variableType As VBA.VbVarType
+    '------------------------------------------------------------------------------------------------------
+    If Not isNumeric(value) Then
+    
+    ElseIf VBA.Val(value) <= 0 Then
+        variableType = VBA.varType(value)
+        If variableType = vbBoolean Or variableType = vbEmpty Then
+            isNotPositive = False
+        ElseIf strictType Then
+            variableType = VBA.varType(value)
+            isNotPositive = (variableType <> vbString)
+        Else
+            isNotPositive = True
+        End If
+    End If
+End Function
+
 Public Function isNotNegative(value As Variant, Optional strictType As Boolean = False) As Boolean
     Dim variableType As VBA.VbVarType
     '------------------------------------------------------------------------------------------------------
@@ -240,78 +255,88 @@ Public Function isNotNegative(value As Variant, Optional strictType As Boolean =
         End If
     End If
 End Function
-'
-'Public Function isNegative(value As Variant, Optional strictType As Boolean = False) As Boolean
-'    Dim variableType As VBA.VbVarType
-'    '------------------------------------------------------------------------------------------------------
-'    If Not isNumeric(value) Then
-'
-'    ElseIf VBA.Val(value) < 0 Then
-'        variableType = VBA.varType(value)
-'        If variableType = vbBoolean Then
-'
-'        ElseIf strictType Then
-'            isNegative = (variableType <> vbString)
-'        Else
-'            isNegative = True
-'        End If
-'    End If
-'End Function
-'
-'Public Function isNotPositive(value As Variant, Optional strictType As Boolean = False) As Boolean
-'    Dim variableType As VBA.VbVarType
-'    '------------------------------------------------------------------------------------------------------
-'    If Not isNumeric(value) Then
-'
-'    ElseIf VBA.Val(value) <= 0 Then
-'        variableType = VBA.varType(value)
-'        If variableType = vbBoolean Or variableType = vbEmpty Then
-'            isNotPositive = False
-'        ElseIf strictType Then
-'            variableType = VBA.varType(value)
-'            isNotPositive = (variableType <> vbString)
-'        Else
-'            isNotPositive = True
-'        End If
-'    End If
-'End Function
-'
-'
-'
-'
-'
+
+Public Function isNegative(value As Variant, Optional strictType As Boolean = False) As Boolean
+    Dim variableType As VBA.VbVarType
+    '------------------------------------------------------------------------------------------------------
+    If Not isNumeric(value) Then
+        
+    ElseIf VBA.Val(value) < 0 Then
+        variableType = VBA.varType(value)
+        If variableType = vbBoolean Then
+        
+        ElseIf strictType Then
+            isNegative = (variableType <> vbString)
+        Else
+            isNegative = True
+        End If
+    End If
+End Function
+
 '
 ''***** WITHOUT UNIT TESTS *****
-'Public Function fromBoolean(value As Boolean) As Integer
-'    If value Then fromBoolean = 1
-'End Function
-'
-'
-'Public Function getLimitedValue(value As Variant, minValue As Variant, maxValue As Variant) As Variant
-'    If value < minValue Then
-'        getLimitedValue = minValue
-'    ElseIf value > maxValue Then
-'        getLimitedValue = maxValue
-'    Else
-'        getLimitedValue = value
-'    End If
-'End Function
-'
-'Public Function isProperPercent(value As Variant) As Boolean
-'    Const REGEX_PATTERN As String = "^[-|+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)%$"
-'    Static objRegex As Object
-'    '------------------------------------------------------------------------------------------------------
-'    If F.Variables.isUndefined(value) Then
-'    ElseIf VBA.IsArray(value) Then
-'    ElseIf VBA.IsObject(value) Then
-'    Else
-'        If objRegex Is Nothing Then
-'            Set objRegex = F.regex.Create(REGEX_PATTERN)
-'        End If
-'        isProperPercent = objRegex.test(value)
-'    End If
-'End Function
-'
+Public Function fromBoolean(value As Boolean) As Integer
+    If value Then fromBoolean = 1
+End Function
+
+Public Function getLimitedValue(value As Variant, minValue As Variant, maxValue As Variant) As Variant
+    If value < minValue Then
+        getLimitedValue = minValue
+    ElseIf value > maxValue Then
+        getLimitedValue = maxValue
+    Else
+        getLimitedValue = value
+    End If
+End Function
+
+Public Function isProperPercent(value As Variant) As Boolean
+    Const REGEX_PATTERN As String = "^[-|+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)%$"
+    Static objRegex As Object
+    '------------------------------------------------------------------------------------------------------
+    If f.Variables.isUndefined(value) Then
+    ElseIf VBA.IsArray(value) Then
+    ElseIf VBA.IsObject(value) Then
+    Else
+        If objRegex Is Nothing Then
+            Set objRegex = f.regex.Create(REGEX_PATTERN)
+        End If
+        isProperPercent = objRegex.test(value)
+    End If
+End Function
+
+
 'Public Function fromPercent(value As String) As Double
 '    fromPercent = VBA.CDbl(VBA.left$(value, VBA.Len(value) - 1)) / 100
 'End Function
+
+
+Public Function isNumber(value As Variant) As Boolean
+    Const REGEX_PATTERN As String = "^(-?\d+(?:\.|\,)\d+)$|^(-?\d+)$"
+    '------------------------------------------------------------------------------------------------------
+    Static objRegex As Object
+    '------------------------------------------------------------------------------------------------------
+    
+    If objRegex Is Nothing Then
+        Set objRegex = VBA.CreateObject("VBScript.RegExp")
+        With objRegex
+            .pattern = REGEX_PATTERN
+            .ignoreCase = True
+        End With
+    End If
+    
+    isNumber = objRegex.test(value)
+    
+End Function
+
+
+Public Function toNumber(value As Variant) As Variant
+    Dim separator As String:            separator = f.System.getDecimalSeparator
+    '------------------------------------------------------------------------------------------------------
+    If f.Variables.isUndefined(value) Then
+        toNumber = 0
+    ElseIf f.Variables.isPrimitive(value) Then
+        toNumber = VBA.replace(VBA.replace(value, ".", separator), ",", separator) * 1
+    Else
+        toNumber = 0
+    End If
+End Function

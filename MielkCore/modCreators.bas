@@ -30,12 +30,12 @@ Public Function ErrorManager() As ErrorManager
     Set ErrorManager = instance
 End Function
 
-Public Function App() As ParentApp
+Public Function app() As ParentApp
     Static instance As ParentApp
     If instance Is Nothing Then
         Set instance = New ParentApp
     End If
-    Set App = instance
+    Set app = instance
 End Function
 
 Public Function KeyValue(key As Variant, value As Variant) As Variant

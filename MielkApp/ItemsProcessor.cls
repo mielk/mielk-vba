@@ -291,10 +291,7 @@ End Sub
 
 '[STATIC METHODS]
 
-Public Function getDefaultCategory(status As ItemProcessStatusEnum, _
-                                    Optional hasPreviewIcon As Boolean = True, _
-                                    Optional hasReprocessIcon As Boolean = True, _
-                                    Optional hasRemoveIcon As Boolean = True) As Scripting.Dictionary
+Public Function getDefaultCategory(status As ItemProcessStatusEnum) As Scripting.Dictionary
     Set getDefaultCategory = F.dictionaries.Create(False)
     With getDefaultCategory
     
@@ -313,9 +310,9 @@ Public Function getDefaultCategory(status As ItemProcessStatusEnum, _
                 Call .Add(TAG_ICON_STATUS, UI.Icons.getSuccessIcon)
                 Call .Add(TAG_ICON_EXPAND, UI.Icons.getExpandSuccessIcon)
                 Call .Add(TAG_ICON_COLLAPSE, UI.Icons.getCollapseSuccessIcon)
-                If hasPreviewIcon Then Call .Add(TAG_ICON_PREVIEW, UI.Icons.getPreviewFileNormalImage)
-                If hasReprocessIcon Then Call .Add(TAG_ICON_REPROCESS, UI.Icons.getRefreshNormalImage)
-                If hasRemoveIcon Then Call .Add(TAG_ICON_REMOVE, UI.Icons.getRemoveItemNormalImage)
+                Call .Add(TAG_ICON_PREVIEW, UI.Icons.getPreviewFileNormalImage)
+                Call .Add(TAG_ICON_REPROCESS, UI.Icons.getRefreshNormalImage)
+                Call .Add(TAG_ICON_REMOVE, UI.Icons.getRemoveItemNormalImage)
 
             Case ItemProcessStatus_Warning
                 Call .Add(TAG_MAIN_BACKGROUND, 12641023)
@@ -323,9 +320,9 @@ Public Function getDefaultCategory(status As ItemProcessStatusEnum, _
                 Call .Add(TAG_ICON_STATUS, UI.Icons.getWarningIcon)
                 Call .Add(TAG_ICON_EXPAND, UI.Icons.getExpandWarningIcon)
                 Call .Add(TAG_ICON_COLLAPSE, UI.Icons.getCollapseWarningIcon)
-                If hasPreviewIcon Then Call .Add(TAG_ICON_PREVIEW, UI.Icons.getPreviewFileWarningImage)
-                If hasReprocessIcon Then Call .Add(TAG_ICON_REPROCESS, UI.Icons.getRefreshWarningImage)
-                If hasRemoveIcon Then Call .Add(TAG_ICON_REMOVE, UI.Icons.getRemoveItemWarningImage)
+                Call .Add(TAG_ICON_PREVIEW, UI.Icons.getPreviewFileWarningImage)
+                Call .Add(TAG_ICON_REPROCESS, UI.Icons.getRefreshWarningImage)
+                Call .Add(TAG_ICON_REMOVE, UI.Icons.getRemoveItemWarningImage)
                 
             Case ItemProcessStatus_Error
                 Call .Add(TAG_MAIN_BACKGROUND, 12632319)
@@ -333,9 +330,9 @@ Public Function getDefaultCategory(status As ItemProcessStatusEnum, _
                 Call .Add(TAG_ICON_STATUS, UI.Icons.getErrorIcon)
                 Call .Add(TAG_ICON_EXPAND, UI.Icons.getExpandErrorIcon)
                 Call .Add(TAG_ICON_COLLAPSE, UI.Icons.getCollapseErrorIcon)
-                If hasPreviewIcon Then Call .Add(TAG_ICON_PREVIEW, UI.Icons.getPreviewFileErrorImage)
-                If hasReprocessIcon Then Call .Add(TAG_ICON_REPROCESS, UI.Icons.getRefreshErrorImage)
-                If hasRemoveIcon Then Call .Add(TAG_ICON_REMOVE, UI.Icons.getRemoveItemErrorImage)
+                Call .Add(TAG_ICON_PREVIEW, UI.Icons.getPreviewFileErrorImage)
+                Call .Add(TAG_ICON_REPROCESS, UI.Icons.getRefreshErrorImage)
+                Call .Add(TAG_ICON_REMOVE, UI.Icons.getRemoveItemErrorImage)
 
         End Select
         
@@ -343,10 +340,7 @@ Public Function getDefaultCategory(status As ItemProcessStatusEnum, _
     
 End Function
 
-Public Function getDefaultCategories(ByVal categories As Variant, _
-                                    Optional hasPreviewIcon As Boolean = True, _
-                                    Optional hasReprocessIcon As Boolean = True, _
-                                    Optional hasRemoveIcon As Boolean = True) As Scripting.Dictionary
+Public Function getDefaultCategories(ByVal categories As Variant) As Scripting.Dictionary
     Dim varCategory As Variant
     '------------------------------------------------------------------------------------------------------
 
@@ -357,8 +351,13 @@ Public Function getDefaultCategories(ByVal categories As Variant, _
         For Each varCategory In categories
             Call getDefaultCategories.Add( _
                                 varCategory, _
-                                getDefaultCategory(VBA.CInt(varCategory), hasPreviewIcon, hasReprocessIcon, hasRemoveIcon))
+                                getDefaultCategory(VBA.CInt(varCategory)))
         Next varCategory
     End If
 
 End Function
+
+
+                        
+
+

@@ -24,7 +24,7 @@ Private Const ERROR_REMOVING_REFERENCE As String = "CreatingNewProject.Errors.Re
 Private Const ERROR_ADDING_REFERENCE As String = "CreatingNewProject.Errors.AddingSingleReference"
 '[Status] -------------------------------------------------------------------------------------------------
 Private Const SUCCESS_MESSAGE As String = "CreatingNewProject.Messages.FixingReferencesSuccess"
-Private Const SEMISUCCESS_MESSAGE As String = "CreatingNewProject.Messages.FixingReferencesSemiSuccess"
+Private Const SEMISUCCEsSS_MESSAGE As String = "CreatingNewProject.Messages.FixingReferencesSemiSuccess"
 Private Const FAILURE_MESSAGE As String = "CreatingNewProject.Messages.FixingReferencesFailure"
 '[Progress bar] -------------------------------------------------------------------------------------------
 Private Const ITEMS_PROCESSOR_CAPTION As String = "CreatingNewProject.Steps.FixingReferences"

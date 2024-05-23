@@ -116,8 +116,8 @@ Public Function getResourcesFilePath(ByVal filepath As String) As String
     getResourcesFilePath = VBA.Replace(filepath, RESOURCES_FOLDER_PLACEHOLDER, ResourcesFolderPath)
 End Function
 
-Public Function getTempFilePath(ByVal fileTag As String) As String
-    getTempFilePath = F.files.concatenatePath(TemplatesFolderPath, fileTag)
+Public Function getTemplateFilePath(ByVal fileTag As String) As String
+    getTemplateFilePath = F.files.concatenatePath(TemplatesFolderPath, fileTag)
 End Function
 
 Public Function getConfigFilePath(ByVal fileTag As String) As String

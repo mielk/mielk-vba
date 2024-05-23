@@ -516,8 +516,8 @@ Public Sub render()
     pIsRendered = True
 End Sub
 
-Public Function move(Optional left As Variant, Optional top As Variant) As UIList
-    Set move = Me
+Public Function Move(Optional left As Variant, Optional top As Variant) As UIList
+    Set Move = Me
     If F.Variables.isOfNumericType(left) Then pLeft = left
     If F.Variables.isOfNumericType(top) Then pTop = top
     Call arrangeControls
@@ -570,8 +570,8 @@ Private Sub insertSelectingLabels()
     If showMassSelectionButtons Then
         Set pSelectAllButton = pParent.controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_SelectAll), True)
         Set pDeselectAllButton = pParent.controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_DeselectAll), True)
-        Call refreshMassSelectionButton(pSelectAllButton, pSelectAllButtonColor, MsgService.GetText(SELECT_ALL_TOOLTIP))
-        Call refreshMassSelectionButton(pDeselectAllButton, pDeselectAllButtonColor, MsgService.GetText(UNSELECT_ALL_TOOLTIP))
+        Call refreshMassSelectionButton(pSelectAllButton, pSelectAllButtonColor, MsgService.getText(SELECT_ALL_TOOLTIP))
+        Call refreshMassSelectionButton(pDeselectAllButton, pDeselectAllButtonColor, MsgService.getText(UNSELECT_ALL_TOOLTIP))
     End If
 End Sub
 
@@ -715,7 +715,7 @@ End Sub
 
 Private Sub arrangeLines()
     Dim line As UIListLine
-    Dim y As Single:                                y = 0.25
+    Dim Y As Single:                                Y = 0.25
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
     
@@ -723,8 +723,8 @@ Private Sub arrangeLines()
         Set line = pLines(i)
         With line
             If line.isVisible Then
-                Call .move(top:=y)
-                y = .getBottom
+                Call .Move(top:=Y)
+                Y = .getBottom
             End If
         End With
     Next i
@@ -753,7 +753,7 @@ Private Sub sortItems(Optional ascending As Boolean = True)
     For Each key In pFiltered.keys
         If Not VBA.IsEmpty(key) Then
             If isConstKey(key) Then
-                Call constItems.add(key)
+                Call constItems.Add(key)
             Else
                 Call F.dictionaries.addItem(sortableItems, getItemCaption(key), key)
             End If
@@ -908,7 +908,7 @@ Public Sub renderHeaders()
                 Call .setTotalPages(countPages)
                 Call .render
             End With
-            Call pHeaderDefinitions.add(pHeaderLine)
+            Call pHeaderDefinitions.Add(pHeaderLine)
         Next headerDefinition
     End If
     
@@ -1313,7 +1313,7 @@ Public Function getSelectedIndex() As Variant
     For Each key In pSelection.keys
         Set line = F.dictionaries.getObject(pLinesByKey, key)
         If Not line Is Nothing Then
-            Call col.add(line.getIndex)
+            Call col.Add(line.getIndex)
         End If
     Next key
     
@@ -1370,33 +1370,33 @@ End Sub
 
 
 '[KEY EVENTS]
-Private Sub pFocusTextbox_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
-    Select Case KeyCode
+Private Sub pFocusTextbox_KeyDown(ByVal keyCode As MSForms.ReturnInteger, ByVal shift As Integer)
+    Select Case keyCode
         '[Navigation]
         Case vbKeyUp                    'Up
             Call changeActiveRow(-1)
-            KeyCode = 0
+            keyCode = 0
         Case vbKeyPageUp                'PageUp
             Call changeActiveRow(-getVisibleRowsCounter + 1)
-            KeyCode = 0
+            keyCode = 0
         Case vbKeyDown                  'Down
             Call changeActiveRow(1)
-            KeyCode = 0
+            keyCode = 0
         Case vbKeyLeft                  'Left
             Call changePage(pCurrentPage - 1)
-            KeyCode = 0
+            keyCode = 0
         Case vbKeyRight                 'Right
             Call changePage(pCurrentPage + 1)
-            KeyCode = 0
+            keyCode = 0
         Case vbKeyPageDown              'PageDown
             Call changeActiveRow(getVisibleRowsCounter - 1)
-            KeyCode = 0
+            keyCode = 0
         Case vbKeyHome                  'Home
             Call changeActiveRow(-pFiltered.Count)
-            KeyCode = 0
+            keyCode = 0
         Case vbKeyEnd                   'End
             Call changeActiveRow(pFiltered.Count)
-            KeyCode = 0
+            keyCode = 0
         Case vbKeySpace
             Call changeSelection(pActiveLine)
         Case vbKeyReturn
@@ -1550,11 +1550,11 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     'Call alignVertically(baseCtrl)
 End Sub
 
-Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
-    Set IControl_move = move(x, y)
+Private Function IControl_move(Optional x As Variant, Optional Y As Variant) As IControl
+    Set IControl_move = Move(x, Y)
 End Function
 
-Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl
+Private Function IControl_offset(Optional x As Single, Optional Y As Single) As IControl
     Stop
     'Set IControl_offset = offset(x, y)
 End Function

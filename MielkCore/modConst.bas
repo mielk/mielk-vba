@@ -15,12 +15,15 @@ Public Const METHOD_START_TAG As String = "{"
 Public Const METHOD_END_TAG As String = "}"
 Public Const GET_NAME As String = "getName"
 Public Const NEW_LINE_SYMBOL As String = "\n"
+Public Const TAB_SYMBOL As String = "\t"
 '[Validation constants]
 Public Const VALUE_____ As String = "*%Value%*_;M}(H;C'M+?.>'#bx{pzk}2@.y%4Pr$z"
 Public Const WARNING_CODE As Long = 123456789
+Public Const ERROR_CODE As Long = 987654321
 '[Reflection] ---------------------------------------------------------------------------------------------
 Public Const LOCAL_METHOD As String = "$."
 '[Extensions] ---------------------------------------------------------------------------------------------
+Public Const EXTENSION_CSV As String = ".csv"
 Public Const EXTENSION_TXT As String = ".txt"
 Public Const EXTENSION_EXCEL_ADDIN As String = ".xlam"
 Public Const EXTENSION_EXCEL_MACRO_FILE As String = ".xlsm"
@@ -28,8 +31,19 @@ Public Const EXTENSION_JSON As String = ".json"
 Public Const EXTENSION_ZIP As String = ".zip"
 '[Constants from other libraries - used with late binding] ------------------------------------------------
 '[Outlook]
+Public Const OUTLOOK_APP As String = "Outlook.Application"
+Public Const OL_CLASS_NAME_MAIL_ITEM As String = "MailItem"
 Public Const olMailItem As Long = 0
-'[VBIDE]
+'__ Mail importance __
+Public Const olImportanceLow = 0
+Public Const olImportanceNormal = 1
+Public Const olImportanceHigh = 2
+'__ Folders __
+Public Const olFolderDeletedItems = 3
+Public Const olFolderDrafts = 16
+'__ Other Outlook constants __
+Public Const olFormatHtml = 2
+'[VBIDE] --------------------------------------------------------------------------------------------------
 Public Const vbext_pk_Proc As Long = 0
 Public Const vbext_pk_Let As Long = 1
 Public Const vbext_pk_Set As Long = 2
@@ -40,13 +54,10 @@ Public Const vbext_ct_MSForm As Long = 3
 Public Const vbext_ct_Document As Long = 100
 '[View] ---------------------------------------------------------------------------------------------------
 Public Const PIXEL_SIZE As Single = 0.75
-
 '[Control keys] -------------------------------------------------------------------------------------------
 Public Const SHIFT_MASK As Long = 1
 Public Const CTRL_MASK As Long = 2
 Public Const ALT_MASK As Long = 4
-
-
 
 '#FORCHECK
 '[Xml tags] -----------------------------------------------------------------------------------------------
@@ -72,4 +83,8 @@ Public Const CONTEXT_MENU_TAG_PARAM As String = "param"
 '[Action logs] --------------------------------------------------------------------------------------------
 Public Const ACTION_LOG_START As String = "Start app"
 Public Const ACTION_LOG_CLOSE As String = "Close app"
+'[File patterns] ------------------------------------------------------------------------------------------
+Public Const ACCESS_FILE As String = "Access files, *.mdb; *.mde; *.accdb; *.accde"
+Public Const EXCEL_FILES As String = "Excel files, *.xls; *.xlsm; *.xlsx; *.xlsb"
+Public Const EXCEL_MACRO_FILES As String = "Excel macro files, *.xlsm; *.xlsb; *.xla; *.xlam"
 '----------------------------------------------------------------------------------------------------------

@@ -47,7 +47,7 @@ Private pBorderColor As Long
 Private pHoverBackColor As Long
 '[Events] -------------------------------------------------------------------------------------------------
 Event AfterChange()
-Event KeyPressed(ByVal KeyCode As MSForms.ReturnInteger)
+Event KeyPressed(ByVal keyCode As MSForms.ReturnInteger)
 '----------------------------------------------------------------------------------------------------------
 
 
@@ -275,19 +275,19 @@ End Sub
 
 
 
-Public Function move(Optional x As Variant, Optional y As Variant) As UITextBox
+Public Function Move(Optional x As Variant, Optional Y As Variant) As UITextBox
     Dim offsetX As Single
     Dim offsetY As Single
     '------------------------------------------------------------------------------------------------------
     
-    Set move = Me
+    Set Move = Me
     
     With pBackgroundLabel
         If VBA.IsNumeric(x) Then
             offsetX = (x - .left)
         End If
-        If VBA.IsNumeric(y) Then
-            offsetY = (y - .top)
+        If VBA.IsNumeric(Y) Then
+            offsetY = (Y - .top)
         End If
     End With
     
@@ -295,9 +295,9 @@ Public Function move(Optional x As Variant, Optional y As Variant) As UITextBox
     
 End Function
 
-Public Function offset(Optional x As Single, Optional y As Single) As UITextBox
+Public Function offset(Optional x As Single, Optional Y As Single) As UITextBox
     Set offset = Me
-    Call UI.Forms.offsetControls(x, y, pBackgroundLabel, pTextBox)
+    Call UI.Forms.offsetControls(x, Y, pBackgroundLabel, pTextBox)
     With pBackgroundLabel
         pTop = .top
         pLeft = .left
@@ -440,16 +440,16 @@ Private Sub pTextBox_Change()
     End If
 End Sub
 
-Private Sub pTextBox_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
+Private Sub pTextBox_KeyDown(ByVal keyCode As MSForms.ReturnInteger, ByVal shift As Integer)
     Call ErrorManager.clear
     
     If Not pEventsDisabled Then
-        RaiseEvent KeyPressed(KeyCode)
+        RaiseEvent KeyPressed(keyCode)
         If Not pListener Is Nothing Then
             Call pListener.catchEvent(Me, UI.Events.KeyDown.getName, _
                                             F.dictionaries.createWithItems(False, _
-                                                    KeyValue(TAG_KEY, KeyCode), _
-                                                    KeyValue(TAG_SHIFT, Shift)))
+                                                    KeyValue(props.keyCode.getName, keyCode), _
+                                                    KeyValue(props.shift.getName, shift)))
         End If
     End If
 End Sub
@@ -500,12 +500,12 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     Call alignVertically(baseCtrl)
 End Sub
 
-Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
-    Set IControl_move = move(x, y)
+Private Function IControl_move(Optional x As Variant, Optional Y As Variant) As IControl
+    Set IControl_move = Move(x, Y)
 End Function
 
-Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl
-    Set IControl_offset = offset(x, y)
+Private Function IControl_offset(Optional x As Single, Optional Y As Single) As IControl
+    Set IControl_offset = offset(x, Y)
 End Function
 
 Private Sub IControl_triggerEvent(eventId As Long)

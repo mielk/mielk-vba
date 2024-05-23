@@ -14,11 +14,11 @@ Private Const CLASS_NAME As String = "FUtils"
 Private Const BACKUP_FOLDER_PATH As String = "E:\dane\VBA\backups"
 '----------------------------------------------------------------------------------------------------------
 
-Public Sub printfilepaths()
+Public Sub printFilePaths()
     Dim addIn As Excel.addIn
     '------------------------------------------------------------------------------------------------------
     
-    For Each addIn In Application.addIns2
+    For Each addIn In Application.AddIns2
         If addIn.isOpen Then
             Debug.Print addIn.fullName
         End If
@@ -26,17 +26,20 @@ Public Sub printfilepaths()
     
 End Sub
 
-Public Sub saveAllAddIns(Optional ByVal saveBackups As Boolean = False, Optional ByVal saveFolder As String = BACKUP_FOLDER_PATH)
+Public Sub saveAllAddIns( _
+                    Optional ByVal skipRepoFiles As Boolean = False, _
+                    Optional ByVal saveBackups As Boolean = False, _
+                    Optional ByVal saveFolder As String = BACKUP_FOLDER_PATH)
     Const REGEX_MACRO_ENABLED As String = "\.xlsm$"
     '------------------------------------------------------------------------------------------------------
     Dim addIn As Excel.addIn
     Dim wkb As Excel.Workbook
-    Dim Timestamp As Date:                          Timestamp = VBA.Now
+    Dim timestamp As Date:                          timestamp = VBA.Now
     '------------------------------------------------------------------------------------------------------
     
     'Save all add-ins
-    For Each addIn In Application.addIns2
-        If Not isAddInSkippedFromSaving(addIn.name) Then
+    For Each addIn In Application.AddIns2
+        If Not isAddInSkippedFromSaving(addIn.name, skipRepoFiles) Then
             If addIn.isOpen Then
                 On Error Resume Next
                 Set wkb = Application.Workbooks(addIn.name)
@@ -46,7 +49,7 @@ Public Sub saveAllAddIns(Optional ByVal saveBackups As Boolean = False, Optional
                     Call wkb.save
                     Debug.Print wkb.fullName & " saved"
                     If saveBackups Then
-                        Call saveBackup(wkb, Timestamp)
+                        Call saveBackup(wkb, timestamp)
                     End If
                 End If
             End If
@@ -59,7 +62,7 @@ Public Sub saveAllAddIns(Optional ByVal saveBackups As Boolean = False, Optional
             Call wkb.save
             Debug.Print wkb.fullName & " saved"
             If saveBackups Then
-                Call saveBackup(wkb, Timestamp)
+                Call saveBackup(wkb, timestamp)
             End If
         End If
     Next wkb
@@ -68,17 +71,21 @@ Public Sub saveAllAddIns(Optional ByVal saveBackups As Boolean = False, Optional
     
 End Sub
 
-Private Function isAddInSkippedFromSaving(ByVal addinName As String) As Boolean
+Private Function isAddInSkippedFromSaving(ByVal addinName As String, ByVal skipRepoFiles As Boolean) As Boolean
+    Const REGEX_REPO_FILE As String = "mielk-.*\.xlam$"
+    '------------------------------------------------------------------------------------------------------
     If VBA.InStr(1, addinName, "solver", vbTextCompare) Then
         isAddInSkippedFromSaving = True
     ElseIf VBA.InStr(1, addinName, ".xll", vbTextCompare) Then
         isAddInSkippedFromSaving = True
+    ElseIf skipRepoFiles Then
+        isAddInSkippedFromSaving = f.regex.checkIfMatch(addinName, REGEX_REPO_FILE)
     Else
         isAddInSkippedFromSaving = False
     End If
 End Function
 
-Private Sub saveBackup(wkb As Excel.Workbook, Timestamp As Date)
+Private Sub saveBackup(wkb As Excel.Workbook, timestamp As Date)
     Static fso As Scripting.FileSystemObject
     '------------------------------------------------------------------------------------------------------
     Dim folderName As String
@@ -91,7 +98,7 @@ Private Sub saveBackup(wkb As Excel.Workbook, Timestamp As Date)
         Set fso = New Scripting.FileSystemObject
     End If
     
-    folderName = VBA.format$(Timestamp, "YYYY-MM-DD HHMMSS")
+    folderName = VBA.format$(timestamp, "YYYY-MM-DD HHMMSS")
     folderPath = f.files.concatenatePath(BACKUP_FOLDER_PATH, folderName)
     If fso.folderExists(folderPath) Then
         Set folder = fso.getFolder(folderPath)
@@ -117,7 +124,7 @@ End Sub
 
 
 
-Public Function convertToAddIn(originalfilepath As String, _
+Public Function convertToAddIn(originalFilePath As String, _
                                 Optional ByVal destinationPath As String, _
                                 Optional overwriteIfExists As Boolean = False, _
                                 Optional ByVal xls As Excel.Application) As String
@@ -125,16 +132,16 @@ Public Function convertToAddIn(originalfilepath As String, _
     '------------------------------------------------------------------------------------------------------
     
     If VBA.Len(destinationPath) = 0 Then
-        destinationPath = VBA.replace(originalfilepath, ".xlsm", ".xlam")
+        destinationPath = VBA.replace(originalFilePath, ".xlsm", ".xlam")
     End If
     
     If Not overwriteIfExists Then
-        destinationPath = f.files.uniquefilepath(f.files.getUncPath(destinationPath))
+        destinationPath = f.files.uniqueFilePath(f.files.getUncPath(destinationPath))
     End If
     
     If xls Is Nothing Then Set xls = f.Excel.getBackgroundInstance
     
-    Set wkb = f.Books.open_(originalfilepath, False, xls)
+    Set wkb = f.Books.open_(originalFilePath, False, xls)
     With wkb
         .IsAddin = True
         .CheckCompatibility = False

@@ -13,6 +13,7 @@ Public Sub quitApp(Optional message As String)
     
     If F.System.isDeveloper Then Stop
     Application.EnableEvents = False
+    Call ContextManager.removeCustomMenuItems
     Call ThisWorkbook.Close(False)
     
 End Sub

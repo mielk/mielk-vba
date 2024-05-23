@@ -359,8 +359,8 @@ Public Sub render()
     pIsRendered = True
 End Sub
 
-Public Function move(Optional left As Variant, Optional top As Variant) As UIListLine
-    Set move = Me
+Public Function Move(Optional left As Variant, Optional top As Variant) As UIListLine
+    Set Move = Me
     'Left cannot be modified - line always fills the whole frame, therefore Left = 0.
     If F.Variables.isOfNumericType(top) Then pTop = top
     Call arrangeControls
@@ -855,12 +855,12 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     'N/A
 End Sub
 
-Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
-    Set IControl_move = move(x, y)
+Private Function IControl_move(Optional x As Variant, Optional Y As Variant) As IControl
+    Set IControl_move = Move(x, Y)
 End Function
 
-Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl
-    Set IControl_offset = offset(x, y)
+Private Function IControl_offset(Optional x As Single, Optional Y As Single) As IControl
+    Set IControl_offset = offset(x, Y)
 End Function
 
 Private Sub IControl_triggerEvent(eventId As Long)

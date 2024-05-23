@@ -193,11 +193,11 @@ End Function
 
 Public Sub addExtraButton(id As String, caption As String, Optional backgroundColor As Long = 13273922, _
                                                             Optional fontColor As Long = vbWhite)
-    Dim button As UIButton
+    Dim Button As UIButton
     '------------------------------------------------------------------------------------------------------
     
-    Set button = UI.Create.UIButton(pContainer)
-    With button
+    Set Button = UI.Create.UIButton(pContainer)
+    With Button
         Call .setTag(id)
         Call .setHeight(pButtonHeight)
         Call .setWidth(pButtonWidth)
@@ -214,7 +214,7 @@ Public Sub addExtraButton(id As String, caption As String, Optional backgroundCo
     End With
     
     If pExtraButtons Is Nothing Then Set pExtraButtons = New VBA.Collection
-    Call pExtraButtons.Add(button)
+    Call pExtraButtons.Add(Button)
     Call arrangeButtons
     
 End Sub
@@ -288,7 +288,7 @@ Private Sub insertOkButton()
             Call .setFontName(pFontFamily)
             Call .setFontBold(pFontBold)
             Call .setFontColor(CONFIRM_FONT_COLOR)
-            Call .setCaption(MsgService.GetText(pOkCaption))
+            Call .setCaption(MsgService.getText(pOkCaption))
             Call .setBackgroundColor(CONFIRM_BACK_COLOR)
             Call .setBorderColor(CONFIRM_BORDER_COLOR)
             Call .setVisibility(pHasOkButton And pStatus)
@@ -309,7 +309,7 @@ Private Sub insertCancelButton()
             Call .setFontName(pFontFamily)
             Call .setFontBold(pFontBold)
             Call .setFontColor(CANCEL_FONT_COLOR)
-            Call .setCaption(MsgService.GetText(pCancelCaption))
+            Call .setCaption(MsgService.getText(pCancelCaption))
             Call .setBackgroundColor(CANCEL_BACK_COLOR)
             Call .setBorderColor(CANCEL_BORDER_COLOR)
             Call .setVisibility(pHasCancelButton)
@@ -333,7 +333,7 @@ Private Sub insertUnsavedDataWarnings()
         .BackStyle = fmBackStyleTransparent
         .borderStyle = fmBorderStyleNone
         .width = pContainer.InsideWidth
-        .caption = MsgService.GetText(UNSAVED_DATA_TAG)
+        .caption = MsgService.getText(UNSAVED_DATA_TAG)
         .font.name = UNSAVED_CAPTION_FONT_NAME
         .font.size = UNSAVED_CAPTION_FONT_SIZE
         .font.Bold = UNSAVED_CAPTION_FONT_BOLD
@@ -375,7 +375,7 @@ End Sub
 
 Private Sub arrangeButtons()
     Dim x As Single
-    Dim button As UIButton
+    Dim Button As UIButton
     Dim buttons As VBA.Collection
     '------------------------------------------------------------------------------------------------------
     
@@ -398,28 +398,28 @@ Private Sub arrangeButtons()
     
     x = pContainer.InsideWidth - pPadding
     Set buttons = F.Collections.Create(pCancelButton, pOkButton)
-    For Each button In buttons
-        If button Is Nothing Then
+    For Each Button In buttons
+        If Button Is Nothing Then
             '
-        ElseIf Not button.isVisible Then
+        ElseIf Not Button.isVisible Then
             '
         Else
-            With button
-                Call .move(x - .getWidth, (pContainer.height - .getHeight) / 2)
+            With Button
+                Call .Move(x - .getWidth, (pContainer.height - .getHeight) / 2)
                 x = .getLeft - pButtonsSpace
             End With
         End If
-    Next button
+    Next Button
     
     '[Extra buttons]
     x = pPadding
     If F.Collections.isNonEmptyCollection(pExtraButtons) Then
-        For Each button In pExtraButtons
-            With button
-                Call .move(x, (pContainer.height - .getHeight) / 2)
+        For Each Button In pExtraButtons
+            With Button
+                Call .Move(x, (pContainer.height - .getHeight) / 2)
                 x = .getRight + pButtonsSpace
             End With
-        Next button
+        Next Button
     End If
     
 End Sub
@@ -434,11 +434,11 @@ End Sub
 
 Private Sub updateButtonsCaptions()
     If Not pOkButton Is Nothing Then
-        Call pOkButton.setCaption(MsgService.GetText(pOkCaption))
+        Call pOkButton.setCaption(MsgService.getText(pOkCaption))
     End If
     
     If Not pCancelButton Is Nothing Then
-        Call pCancelButton.setCaption(MsgService.GetText(pCancelCaption))
+        Call pCancelButton.setCaption(MsgService.getText(pCancelCaption))
     End If
     
 End Sub
@@ -460,7 +460,7 @@ Private Function confirmSkippingNotSavedData() As Boolean
     If Not pWindow.displayWarningWhenClosingWithUnsavedData Then
         confirmSkippingNotSavedData = True
     ElseIf pHasUnsavedData Then
-        confirmSkippingNotSavedData = F.Dialogs.getUserConfirmation(MsgService.GetText(UNSAVED_DATA_QUESTION))
+        confirmSkippingNotSavedData = F.Dialogs.getUserConfirmation(MsgService.getText(UNSAVED_DATA_QUESTION))
     Else
         confirmSkippingNotSavedData = True
     End If
@@ -490,9 +490,9 @@ End Sub
 
 '[Implementation of IListener interface]
 Private Sub IListener_catchEvent(Source As Variant, eventName As String, Optional properties As Scripting.IDictionary)
-    Dim button As UIButton
+    Dim Button As UIButton
     '------------------------------------------------------------------------------------------------------
-    Set button = Source
-    Call pWindow.triggerCustomAction(button.getTag)
+    Set Button = Source
+    Call pWindow.triggerCustomAction(Button.getTag)
 End Sub
 

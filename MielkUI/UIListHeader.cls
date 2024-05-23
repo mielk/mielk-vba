@@ -194,8 +194,8 @@ Public Sub render()
     pIsRendered = True
 End Sub
 
-Public Function move(Optional left As Variant, Optional top As Variant) As UIListHeader
-    Set move = Me
+Public Function Move(Optional left As Variant, Optional top As Variant) As UIListHeader
+    Set Move = Me
     If F.Variables.isOfNumericType(left) Then pLeft = left
     '[top cannot be changed from this level - it depends on parental list settings]
     Call arrangeControls
@@ -363,7 +363,7 @@ End Sub
 Private Sub updatePaginationStatusCaption()
     Dim caption As String
     '----------------------------------------------------------------------------------------------------------
-    caption = F.Strings.format(MsgService.GetText(PAGINATION_STATUS), pCurrentPage, pTotalPages)
+    caption = F.Strings.format(MsgService.getText(PAGINATION_STATUS), pCurrentPage, pTotalPages)
     With pPaginationStatus
         .width = pBackgroundLabel.width
         .caption = caption
@@ -482,12 +482,12 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     'N/A
 End Sub
 
-Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
-    Set IControl_move = move(x, y)
+Private Function IControl_move(Optional x As Variant, Optional Y As Variant) As IControl
+    Set IControl_move = Move(x, Y)
 End Function
 
-Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl
-    Set IControl_offset = offset(x, y)
+Private Function IControl_offset(Optional x As Single, Optional Y As Single) As IControl
+    Set IControl_offset = offset(x, Y)
 End Function
 
 Private Sub IControl_triggerEvent(eventId As Long)

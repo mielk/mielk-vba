@@ -80,7 +80,7 @@ Friend Function addAlias(value As String) As UIProp
     Set addAlias = Me
     With pAliases
         If Not .exists(value) Then
-            Call .add(value, value)
+            Call .Add(value, value)
         End If
     End With
 End Function
@@ -131,7 +131,7 @@ End Function
 
 Public Function convertValue(value As Variant) As Variant
     If VBA.Len(pConvertionFunction) Then
-        Call f.Variables.assign(convertValue, Excel.Application.Run(pConvertionFunction, value))
+        Call f.Variables.assign(convertValue, Excel.Application.run(pConvertionFunction, value))
     Else
         Call f.Variables.assign(convertValue, value)
     End If
@@ -154,7 +154,7 @@ End Function
 Public Function getConvertedValue(value As Variant) As Variant
     If VBA.Len(pConvertionFunction) Then
         On Error GoTo ConversionException
-        Call f.Variables.assign(getConvertedValue, Application.Run(f.Reflection.getFunctionFullName(pConvertionFunction), value))
+        Call f.Variables.assign(getConvertedValue, Application.run(f.Reflection.getFunctionFullName(pConvertionFunction), value))
     Else
         Call f.Variables.assign(getConvertedValue, value)
     End If
@@ -165,9 +165,9 @@ ConversionException:
     
 End Function
 
-Public Function getAliasesString(Optional Separator As String = ";") As String
+Public Function getAliasesString(Optional separator As String = ";") As String
     If Not pAliases Is Nothing Then
         getAliasesString = f.dictionaries.toString(pAliases, DictPart_KeyOnly, StringifyMode_Normal, _
-                                                                Separator, vbNullString, vbNullString)
+                                                                separator, vbNullString, vbNullString)
     End If
 End Function

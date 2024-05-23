@@ -46,7 +46,7 @@ Private Sub readMonitorsInfoFromScreenHelperTextFile()
                     Call .setHandle(VBA.CLngPtr(info(i, 1)))
                     Call .setBounds(VBA.CLng(info(i, 2)), VBA.CLng(info(i, 3)), VBA.CLng(info(i, 4)), VBA.CLng(info(i, 5)))
                 End With
-                Call pMonitors.add(Monitor)
+                Call pMonitors.Add(Monitor)
             Next i
         End If
     End If
@@ -99,14 +99,14 @@ Public Function getActiveMonitorWorkingArea() As area
 '            End If
 '        Next Monitor
 '    End If
-    monitorHandle = MonitorFromPoint(cursorPosition, MONITOR_DEFAULTTONEAREST)
+    'monitorHandle = MonitorFromPoint(cursorPosition, MONITOR_DEFAULTTONEAREST)
 #Else
-    monitorHandle = MonitorFromPoint(cursorPosition, MONITOR_DEFAULTTONEAREST)
+    'monitorHandle = MonitorFromPoint(cursorPosition, MONITOR_DEFAULTTONEAREST)
 #End If
 
     info.cbSize = Len(info)
     If getMonitorInfo(monitorHandle, info) = False Then
-        Call VBA.err.raise(1, description:="Error when trying to read monitor info")
+        'Call VBA.err.raise(1, description:="Error when trying to read monitor info")
     End If
     
     With info.rcWork
@@ -128,7 +128,7 @@ Public Function getDpiScaling() As Coordinate
     If GetDpiForMonitor(MonitorFromWindow(Excel.Application.hWnd, MONITOR_DEFAULTTONEAREST), MDT_DEFAULT, dpiX, dpiY) = S_OK Then
         With getDpiScaling
             .x = dpiX / DPI_BASE_SETTING
-            .y = dpiY / DPI_BASE_SETTING
+            .Y = dpiY / DPI_BASE_SETTING
         End With
     Else
         Call VBA.err.raise(1, description:="Error when trying to read DPI scaling")
@@ -143,7 +143,7 @@ Public Function getCursorPosition() As Coordinate
     Call GetCursorPos(coordinates)
     With getCursorPosition
         .x = coordinates.x
-        .y = coordinates.y
+        .Y = coordinates.Y
     End With
     
 End Function

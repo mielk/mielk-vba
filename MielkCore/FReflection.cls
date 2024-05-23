@@ -43,9 +43,9 @@ Public Function modifyValue(originalValue As Variant, ByVal functionName As Stri
             End If
         Else
             If params Is Nothing Then
-                Call f.Variables.assign(modifyValue, Excel.Application.Run(functionName, originalValue))
+                Call f.Variables.assign(modifyValue, Excel.Application.run(functionName, originalValue))
             Else
-                Call f.Variables.assign(modifyValue, Excel.Application.Run(functionName, originalValue, params))
+                Call f.Variables.assign(modifyValue, Excel.Application.run(functionName, originalValue, params))
             End If
         End If
     Else
@@ -56,14 +56,14 @@ End Function
 
 
 
-Public Function runMethod(Item As Variant, ByVal functionName As String, Optional functionInvoker As Object, _
+Public Function runMethod(item As Variant, ByVal functionName As String, Optional functionInvoker As Object, _
                             Optional params As Scripting.Dictionary) As Variant
     Dim invoker As Object
     '------------------------------------------------------------------------------------------------------
     
     If VBA.Len(functionName) Then
         If f.strings.startsWith(functionName, LOCAL_METHOD) Then
-            If functionInvoker Is Nothing Then Set invoker = Item Else Set invoker = functionInvoker
+            If functionInvoker Is Nothing Then Set invoker = item Else Set invoker = functionInvoker
             functionName = VBA.mid$(functionName, VBA.Len(LOCAL_METHOD) + 1)
             If params Is Nothing Then
                 Call VBA.CallByName(invoker, functionName, VbMethod)
@@ -72,9 +72,9 @@ Public Function runMethod(Item As Variant, ByVal functionName As String, Optiona
             End If
         Else
             If params Is Nothing Then
-                Call Excel.Application.Run(functionName, Item)
+                Call Excel.Application.run(functionName, item)
             Else
-                Call Excel.Application.Run(functionName, Item, params)
+                Call Excel.Application.run(functionName, item, params)
             End If
         End If
     End If

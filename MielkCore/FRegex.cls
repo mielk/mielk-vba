@@ -78,12 +78,16 @@ Public Function checkIfAnyMatch(text As String, patterns As Variant, _
 End Function
 
 Public Function replace(text As String, regexPattern As String, replacement As String, _
-                                            Optional ignoreCase As Boolean = True) As String
+                                            Optional ignoreCase As Boolean = True, _
+                                            Optional searchGlobal As Boolean = True, _
+                                            Optional multiline As Boolean = True) As String
     Static objRegex As Object
     '------------------------------------------------------------------------------------------------------
     If objRegex Is Nothing Then Set objRegex = f.regex.Create
     With objRegex
         .ignoreCase = ignoreCase
+        .Global = searchGlobal
+        .multiline = multiline
         .pattern = regexPattern
         replace = .replace(text, replacement)
     End With
@@ -207,7 +211,7 @@ Public Function getMatchArraysCollection(text As String, pattern As String, _
                 For i = 0 To counter - 1
                     arr(i + 1) = match.SubMatches(i)
                 Next i
-                Call getMatchArraysCollection.add(arr)
+                Call getMatchArraysCollection.Add(arr)
             End If
         Next match
     End If

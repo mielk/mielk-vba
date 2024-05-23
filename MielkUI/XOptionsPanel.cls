@@ -452,7 +452,7 @@ Private Sub updatePanelHeightAndScrollBar()
     Dim lastLineBottom As Single
     '------------------------------------------------------------------------------------------------------
     
-    lastLineBottom = UI.Forms.calculateRightBottomPoint(pFrame, True).y
+    lastLineBottom = UI.Forms.calculateRightBottomPoint(pFrame, True).Y
     
     With pFrame
         '[Panel height]
@@ -507,10 +507,10 @@ Public Sub updateValidation()
         
         If pMinItemsSelected > 0 And pMinItemsSelected > countSelected Then
             Set pValidation = F.Create.ValidationObject(False, _
-                                    F.Strings.format(MsgService.GetText(WARNING_TOO_LESS_ITEMS_SELECTED), pMinItemsSelected))
+                                    F.Strings.format(MsgService.getText(WARNING_TOO_LESS_ITEMS_SELECTED), pMinItemsSelected))
         ElseIf pMaxItemsSelected > 0 And pMaxItemsSelected < countSelected Then
             Set pValidation = F.Create.ValidationObject(False, _
-                                    F.Strings.format(MsgService.GetText(WARNING_TOO_MANY_ITEMS_SELECTED), pMaxItemsSelected))
+                                    F.Strings.format(MsgService.getText(WARNING_TOO_MANY_ITEMS_SELECTED), pMaxItemsSelected))
         Else
             Set pValidation = F.Create.ValidationObject(True)
         End If
@@ -661,11 +661,11 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     Stop
 End Sub
 
-Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
+Private Function IControl_move(Optional x As Variant, Optional Y As Variant) As IControl
     Stop
 End Function
 
-Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl
+Private Function IControl_offset(Optional x As Single, Optional Y As Single) As IControl
     Stop
 End Function
 

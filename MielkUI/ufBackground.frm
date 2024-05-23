@@ -38,7 +38,7 @@ Private Sub UserForm_Activate()
     If Not pIsActivated Then
         pIsActivated = True
         
-        Call UI.Forms.hideTitleBarAndBorder(Me)
+        Call UI.Forms.HideTitleBarAndBorder(Me)
         Call UI.Forms.makeUserFormTransparent(Me)
         
         Set frm = pWindow.getForm

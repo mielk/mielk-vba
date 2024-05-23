@@ -18,7 +18,7 @@ Public Function getEnvironmentName() As String
     Dim envName As String
     '------------------------------------------------------------------------------------------------------
     
-    path = Paths.EnvironmentNamefilepath
+    path = Paths.EnvironmentNameFilePath
     If F.files.FileExists(path) Then
         envName = F.TextFiles.readTextFile(path)
     End If
@@ -58,8 +58,14 @@ Private Sub action_toolbox(ByVal control As IRibbonControl)
         Call setParentApp               'To make sure that the information was not cleared.
         
         Select Case control.ID
-            Case "button.actions.createNewProject":                         Call Toolbox.createNewProject(getSheetsDictionary)
-            Case "button.actions.compactFiles":                             Call CodeCompactor.run
+            '[Code]
+            Case "button.code.createNewProject":                        Call Toolbox.createNewProject(getSheetsDictionary)
+            Case "button.code.compactFiles":                            Call CodeCompactor.run
+            Case "button.code.compareCode":                             Call CodeComparisonManager.run
+            '[Access]
+            Case "button.access.printDbStructure":                      Stop
+            Case "button.access.compareDatabases":                      Stop
+            'Case "button.access.relinkDatabase":                        Call DbRelinker.run
         End Select
         inProgress = False
     Else

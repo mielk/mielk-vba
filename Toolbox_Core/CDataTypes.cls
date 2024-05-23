@@ -38,7 +38,7 @@ Private Sub addEnumOption(ByVal name As String, ByVal readDbTable As String, Opt
     If VBA.Len(writeDbTable) = 0 Then writeDbTable = readDbTable
     Set enumDataType = F.Create.DataType(name, readDbTable, writeDbTable)
     
-    Call F.dictionaries.addItem(pByName, enumDataType.getName, enumDataType, duplicateBehaviour_WarningInImmediateWindow)
+    Call F.dictionaries.AddItem(pByName, enumDataType.getName, enumDataType, duplicateBehaviour_WarningInImmediateWindow)
     
 End Sub
 

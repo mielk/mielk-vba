@@ -228,7 +228,7 @@ Private Sub insertProgressPanel()
     Dim frame As MSForms.frame
     '------------------------------------------------------------------------------------------------------
     
-    Set frame = pWindow.getContentFrame.controls.Add(CREATE_FRAME_ID, PROGRESS_FRAME_ID)
+    Set frame = pWindow.getContentFrame.Controls.Add(CREATE_FRAME_ID, PROGRESS_FRAME_ID)
     Set pProgressPanel = UI.Create.ProgressPanel(pWindow, frame)
     With pProgressPanel
         Call .setController(Me)
@@ -246,7 +246,7 @@ Private Sub insertSummaryPanel()
     Dim frame As MSForms.frame
     '------------------------------------------------------------------------------------------------------
     If pHasSummaryPanel Then
-        Set frame = pWindow.getContentFrame.controls.Add(CREATE_FRAME_ID, PROGRESS_FRAME_ID)
+        Set frame = pWindow.getContentFrame.Controls.Add(CREATE_FRAME_ID, PROGRESS_FRAME_ID)
         Set pSummaryPanel = MApp.Create.processSummaryPanel
         With pSummaryPanel
             Call .setController(Me)
@@ -262,7 +262,7 @@ End Sub
 Private Sub insertItemsListControl()
     Dim frame As MSForms.frame
     '------------------------------------------------------------------------------------------------------
-    Set frame = pWindow.getContentFrame.controls.Add(CREATE_FRAME_ID, ITEMS_LIST_FRAME_ID)
+    Set frame = pWindow.getContentFrame.Controls.Add(CREATE_FRAME_ID, ITEMS_LIST_FRAME_ID)
     Set pItemsListControl = MApp.Create.processItemsList
     With pItemsListControl
         Call .setProcessor(pProcessor)

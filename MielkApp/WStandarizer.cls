@@ -357,8 +357,8 @@ Private Function getSpecialItemsFormatsDict() As Scripting.Dictionary
     If formats Is Nothing Then
         Set formats = F.dictionaries.Create(False)
         With formats
-            Call .Add(UI.Props.FontColor.getName, VBA.RGB(100, 100, 100))
-            Call .Add(UI.Props.FontItalic.getName, True)
+            Call .Add(UI.props.FontColor.getName, VBA.RGB(100, 100, 100))
+            Call .Add(UI.props.FontItalic.getName, True)
         End With
     End If
     

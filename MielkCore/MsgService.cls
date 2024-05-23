@@ -12,7 +12,7 @@ Option Explicit
 Implements ITranslator
 
 Private Const CLASS_NAME As String = "MsgService"
-    '----------------------------------------------------------------------------------------------------------
+'----------------------------------------------------------------------------------------------------------
 Private Const JSON_TAG_LANGUAGES As String = "languages"
 Private Const JSON_TAG_MESSAGES As String = "messages"
 Private Const JSON_TAG_NAME As String = "name"
@@ -23,7 +23,7 @@ Private pCurrentLanguage As Language
 Private pSourceFolderPath As String
 '[Events] -------------------------------------------------------------------------------------------------
 Event AfterLanguageChange()
-    '----------------------------------------------------------------------------------------------------------
+'----------------------------------------------------------------------------------------------------------
 
 
 
@@ -38,8 +38,8 @@ Public Sub setCurrentLanguage(Language As Language)
     End If
 End Sub
 
-Public Sub setCurrentLanguageByKey(Key As String)
-    Call setCurrentLanguage(getLanguageByKey(Key))
+Public Sub setCurrentLanguageByKey(key As String)
+    Call setCurrentLanguage(getLanguageByKey(key))
 End Sub
 
 
@@ -77,8 +77,8 @@ Private Function findLanguage(Language As Variant) As Language
     End If
 End Function
 
-Private Function getLanguageByKey(Key As String) As Language
-    Set getLanguageByKey = f.dictionaries.getObject(pLanguages, Key)
+Private Function getLanguageByKey(key As String) As Language
+    Set getLanguageByKey = f.dictionaries.getObject(pLanguages, key)
 End Function
 
 Public Function getLanguagesCollection() As VBA.Collection
@@ -149,10 +149,10 @@ Private Sub loadLanguages(dict As Scripting.Dictionary)
                 Set Language = createLanguage(VBA.CStr(varKey))
                 Call f.dictionaries.addItem(pLanguages, varKey, Language)
             Else
-                Set Language = pLanguages.Item(varKey)
+                Set Language = pLanguages.item(varKey)
             End If
             
-            Call loadLanguageProperties(Language, dict.Item(varKey))
+            Call loadLanguageProperties(Language, dict.item(varKey))
 
         Next varKey
     End If
@@ -167,19 +167,19 @@ Private Sub loadTexts(dict As Scripting.Dictionary, prefix As String)
     
     If f.dictionaries.isNonEmptyDictionary(dict) Then
         For Each varKey In dict.Keys
-            Set subDict = f.cast.toDictionary(dict.Item(varKey))
+            Set subDict = f.cast.toDictionary(dict.item(varKey))
             If Not subDict Is Nothing Then
                 If subDict.count Then
-                    Call loadTexts(dict.Item(varKey), prefix & VBA.IIf(VBA.Len(prefix), ".", vbNullString) & varKey)
+                    Call loadTexts(dict.item(varKey), prefix & VBA.IIf(VBA.Len(prefix), ".", vbNullString) & varKey)
                 End If
             Else
                 Set Language = f.dictionaries.getObject(pLanguages, varKey)
                 If Language Is Nothing Then
                     Set Language = createLanguage(VBA.CStr(varKey))
-                    Call pLanguages.add(varKey, Language)
+                    Call pLanguages.Add(varKey, Language)
                 End If
                 If Not Language Is Nothing Then
-                    Call Language.addText(prefix, dict.Item(varKey))
+                    Call Language.addText(prefix, dict.item(varKey))
                 End If
             End If
         Next varKey
@@ -187,9 +187,9 @@ Private Sub loadTexts(dict As Scripting.Dictionary, prefix As String)
     
 End Sub
 
-Private Function createLanguage(Key As String) As Language
+Private Function createLanguage(key As String) As Language
     Set createLanguage = New Language
-    Call createLanguage.setKey(Key)
+    Call createLanguage.setKey(key)
 End Function
 
 Private Sub loadLanguageProperties(Language As Language, Props As Scripting.Dictionary)

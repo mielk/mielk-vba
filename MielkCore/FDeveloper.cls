@@ -10,7 +10,29 @@ Attribute VB_Exposed = True
 Option Explicit
 
 Private Const CLASS_NAME As String = "FDeveloper"
-    '----------------------------------------------------------------------------------------------------------
+'----------------------------------------------------------------------------------------------------------
+
+
+'[VALIDATIONS]
+Public Function isValidComponent(component As Variant) As Boolean
+    Const ILLEGAL_COMPONENT_NAME As String = "1?!"
+    '------------------------------------------------------------------------------------------------------
+    Dim name As String:                 name = ILLEGAL_COMPONENT_NAME
+    '------------------------------------------------------------------------------------------------------
+    
+    If Not VBA.IsObject(component) Then
+        isValidComponent = False
+    ElseIf component Is Nothing Then
+        isValidComponent = False
+    ElseIf Not TypeOf component Is VBIDE.VBComponent Then
+        isValidComponent = False
+    Else
+        On Error Resume Next
+        name = component.name
+        isValidComponent = (name <> ILLEGAL_COMPONENT_NAME)
+    End If
+    
+End Function
 
 
 '[CONVERTERS]
@@ -23,24 +45,16 @@ Public Function procTypeToString(procType As Long) As String
     End Select
 End Function
 
-Private Function isComponentExportable(component As VBIDE.VBComponent) As Boolean
-    If component.Type = vbext_ct_Document Then
-        isComponentExportable = False
-    ElseIf component.Type = vbext_ct_ActiveXDesigner Then
-        isComponentExportable = False
-    Else
-        isComponentExportable = True
-    End If
-End Function
-
-Private Function getComponentExtension(component As VBIDE.VBComponent) As String
-    Select Case component.Type
-        Case vbext_ct_ClassModule:      getComponentExtension = ".cls"
-        Case vbext_ct_StdModule:        getComponentExtension = ".bas"
-        Case vbext_ct_MSForm:           getComponentExtension = ".frm"
-        Case vbext_ct_Document:         getComponentExtension = vbNullString
+Public Function getProcTypeFromName(name As String) As VBIDE.vbext_ProcKind
+    Select Case VBA.LCase(name)
+        Case "sub", "function":             getProcTypeFromName = vbext_pk_Proc
+        Case "property get":                getProcTypeFromName = vbext_pk_Get
+        Case "property let":                getProcTypeFromName = vbext_pk_Let
+        Case "property set":                getProcTypeFromName = vbext_pk_Set
     End Select
 End Function
+
+
 
 Public Function getProcTypes() As Variant
     getProcTypes = VBA.Array(vbext_pk_Proc, vbext_pk_Let, vbext_pk_Get, vbext_pk_Set)
@@ -69,6 +83,28 @@ End Function
 
 
 
+'[PROPERTIES]
+Private Function isComponentExportable(component As VBIDE.VBComponent) As Boolean
+    If component.Type = vbext_ct_Document Then
+        isComponentExportable = False
+    ElseIf component.Type = vbext_ct_ActiveXDesigner Then
+        isComponentExportable = False
+    Else
+        isComponentExportable = True
+    End If
+End Function
+
+Private Function getComponentExtension(component As VBIDE.VBComponent) As String
+    Select Case component.Type
+        Case vbext_ct_ClassModule:      getComponentExtension = ".cls"
+        Case vbext_ct_StdModule:        getComponentExtension = ".bas"
+        Case vbext_ct_MSForm:           getComponentExtension = ".frm"
+        Case vbext_ct_Document:         getComponentExtension = vbNullString
+    End Select
+End Function
+
+
+
 '[PROJECTS]
 
 Public Function getVbProjectByName(name As String, Optional ByVal instance As Excel.Application) As Object 'VBIDE.VBProject
@@ -91,9 +127,9 @@ End Function
 
 Public Function getVbProject(Optional project As Variant) As Object 'VBIDE.VBProject
     If VBA.IsMissing(project) Then
-        Set getVbProject = Excel.ThisWorkbook.vbProject
+        Set getVbProject = Excel.ThisWorkbook.VBProject
     ElseIf TypeOf project Is Excel.Workbook Then
-        Set getVbProject = project.vbProject
+        Set getVbProject = project.VBProject
     ElseIf isVbProject(project) Then
         Set getVbProject = project
     End If
@@ -150,10 +186,35 @@ Public Function getVbCodeModuleByObject(object As Variant) As Object 'VBIDE.code
     End If
 End Function
 
-Public Function getCodeModuleContent(codeModule As Object) As String
+Public Function getCodeModuleContent(codeModule As Object, _
+                                Optional ByVal startLine As Long = 1, _
+                                Optional ByVal linesCounter As Long = 0) As String
+    Dim totalLines As Long
+    '------------------------------------------------------------------------------------------------------
+    
     With codeModule
-        getCodeModuleContent = .lines(1, .CountOfLines)
+        totalLines = .CountOfLines
+        
+        '[Normalize start line parameter] -----------------------|
+        If startLine <= 0 Then                                  '|
+            startLine = 1                                       '|
+        ElseIf startLine > totalLines Then                      '|
+            startLine = 1                                       '|
+        End If                                                  '|
+        '--------------------------------------------------------|
+        
+        '[Normalize lines counter parameter] --------------------|
+        If linesCounter <= 0 Then                               '|
+            linesCounter = totalLines - startLine + 1           '|
+        ElseIf linesCounter + startLine > totalLines Then       '|
+            linesCounter = totalLines - startLine + 1           '|
+        End If                                                  '|
+        '--------------------------------------------------------|
+        
+        getCodeModuleContent = .lines(startLine, linesCounter)
+        
     End With
+    
 End Function
 
 Public Function getCodeModuleMethods(cm As Object) As Scripting.Dictionary
@@ -210,18 +271,18 @@ Public Function getProjectMethods(book As Excel.Workbook) As Scripting.Dictionar
     If Not project Is Nothing Then
         Set getProjectMethods = getVbComponentsDictionary(project)
         For Each key In getProjectMethods.Keys
-            Set getProjectMethods.Item(key) = getCodeModuleMethods(getProjectMethods.Item(key))
+            Set getProjectMethods.item(key) = getCodeModuleMethods(getProjectMethods.item(key))
         Next key
     End If
     
 End Function
 
 Public Sub exportModules(book As Excel.Workbook, folderPath As String)
-    Dim project As VBIDE.vbProject
+    Dim project As VBIDE.VBProject
     Dim component As VBIDE.VBComponent
     '------------------------------------------------------------------------------------------------------
     Dim subfolder As Scripting.folder
-    Dim FileName As String
+    Dim fileName As String
     '------------------------------------------------------------------------------------------------------
     
     Set project = getVbProject(book)
@@ -229,8 +290,8 @@ Public Sub exportModules(book As Excel.Workbook, folderPath As String)
         Set subfolder = f.files.createFolder(f.files.concatenatePath(folderPath, project.name))
         For Each component In project.VBComponents
             If isComponentExportable(component) Then
-                FileName = f.files.concatenatePath(subfolder.path, component.name & getComponentExtension(component))
-                Call component.Export(FileName)
+                fileName = f.files.concatenatePath(subfolder.path, component.name & getComponentExtension(component))
+                Call component.Export(fileName)
             End If
         Next component
     End If
@@ -259,3 +320,59 @@ Public Function getReferenceType(ref As VBIDE.Reference, projectTag As String) A
     End If
     
 End Function
+
+
+Public Function getProcType(cm As codeModule, line As Long) As VBIDE.vbext_ProcKind
+    Const OPENING_REGEX_PATTERN As String = "^(?:|Public |Private |Friend )(Sub|Function|Property (?:G|L|S)et)"
+    '------------------------------------------------------------------------------------------------------
+    Dim text As String
+    Dim lines As Variant
+    Dim i As Long
+    Dim openingText As String
+    '------------------------------------------------------------------------------------------------------
+    
+    text = getCodeModuleContent(cm)
+    lines = VBA.Split(text, VBA.vbCrLf)
+    
+    If f.arrays.isInBounds(line, 1, lines) Then
+        For i = line To LBound(lines) Step -1
+            openingText = f.regex.getFirstGroupMatch(VBA.CStr(lines(i)), OPENING_REGEX_PATTERN)
+            If VBA.Len(openingText) Then
+                getProcType = getProcTypeFromName(openingText)
+                Exit For
+            End If
+        Next i
+    Else
+        'Invalid [line] index
+        Stop
+    End If
+    
+End Function
+
+
+
+
+Public Sub clearCodeModule(cm As VBIDE.codeModule)
+    If Not cm Is Nothing Then
+        With cm
+            Call .DeleteLines(1, .CountOfLines)
+        End With
+    End If
+End Sub
+
+Public Sub overrideCodeModuleContent(cm As VBIDE.codeModule, content As String)
+    If Not cm Is Nothing Then
+        With cm
+            Call .DeleteLines(1, .CountOfLines)
+            Call .AddFromString(content)
+        End With
+    End If
+End Sub
+
+Public Sub appendToCodeModule(cm As VBIDE.codeModule, content As String)
+    If Not cm Is Nothing Then
+        With cm
+            Call .AddFromString(content)
+        End With
+    End If
+End Sub

@@ -14,12 +14,12 @@ Implements IGridParentWindow
 Private Type MoveCache
     isActive As Boolean
     x As Single
-    y As Single
+    Y As Single
 End Type
 
 Private Type FormPosition
     x As Single
-    y As Single
+    Y As Single
 End Type
 
 
@@ -593,8 +593,8 @@ Public Sub arrangeComponents()
     End If
     
     '[Extra frames]
-    If extraFramesBottomRightPoint.y > top Then
-        top = UI.Normalize.size(extraFramesBottomRightPoint.y)
+    If extraFramesBottomRightPoint.Y > top Then
+        top = UI.Normalize.size(extraFramesBottomRightPoint.Y)
     End If
     
     '[Validation]
@@ -645,7 +645,7 @@ Private Sub adjustContentFrameSize()
     
     rightBottomPoint = UI.Forms.calculateRightBottomPoint(pContentFrame)
     With pContentFrame
-        .height = rightBottomPoint.y + pContentFrameVerticalMargin
+        .height = rightBottomPoint.Y + pContentFrameVerticalMargin
         
         '[Vertical scroll bar]
         If .height < pMinHeight Then
@@ -689,12 +689,12 @@ Private Function getExtraFramesBottomRightPoint() As Coordinate
                 width = frame.left + frame.width
                 height = frame.top + frame.height
                 If width > .x Then .x = width
-                If height > .y Then .y = height
+                If height > .Y Then .Y = height
             End If
         Next key
         
         .x = .x + pContentFrameHorizontalMargin
-        .y = .y + pContentFrameVerticalMargin
+        .Y = .Y + pContentFrameVerticalMargin
         
     End With
     
@@ -737,15 +737,15 @@ End Sub
 
 
 '[POSITION]
-Private Sub setMoveModeOn(ByVal x As Single, ByVal y As Single)
+Private Sub setMoveModeOn(ByVal x As Single, ByVal Y As Single)
     With pMoveCache
         .isActive = True
         .x = x
-        .y = y
+        .Y = Y
     End With
 End Sub
 
-Private Sub moveForm(ByVal x As Single, ByVal y As Single)
+Private Sub moveForm(ByVal x As Single, ByVal Y As Single)
     Dim xOffset As Single
     Dim yOffset As Single
     Dim left As Single
@@ -755,7 +755,7 @@ Private Sub moveForm(ByVal x As Single, ByVal y As Single)
     With pMoveCache
         If .isActive Then
             xOffset = x - .x
-            yOffset = y - .y
+            yOffset = Y - .Y
             With pForm
                 left = .getLeft + xOffset
                 top = .getTop + yOffset
@@ -817,17 +817,17 @@ Private Sub pTitlePanel_HelpFileButtonClicked()
     RaiseEvent HelpFileButtonClicked
 End Sub
 
-Private Sub pTitlePanel_MoveModeOn(ByVal x As Single, ByVal y As Single)
+Private Sub pTitlePanel_MoveModeOn(ByVal x As Single, ByVal Y As Single)
     Call ErrorManager.clear
-    Call setMoveModeOn(x, y)
+    Call setMoveModeOn(x, Y)
 End Sub
 
-Private Sub pTitlePanel_Move(ByVal x As Single, ByVal y As Single)
+Private Sub pTitlePanel_Move(ByVal x As Single, ByVal Y As Single)
     Call ErrorManager.clear
-    Call moveForm(x, y)
+    Call moveForm(x, Y)
 End Sub
 
-Private Sub pTitlePanel_MoveModeOff(ByVal x As Single, ByVal y As Single)
+Private Sub pTitlePanel_MoveModeOff(ByVal x As Single, ByVal Y As Single)
     Call ErrorManager.clear
     Call setMoveModeOff
 End Sub
@@ -909,7 +909,7 @@ Public Sub sendToBackground()
         Call .setHeight(height)
     End With
     
-    Call UI.Forms.setFormOpacity(pForm, BACKGROUND_OPACITY)
+    Call UI.Forms.SetFormOpacity(pForm, BACKGROUND_OPACITY)
     
 End Sub
 
@@ -935,7 +935,7 @@ Public Sub locateRelativeTo(locationProps As DLocation)
                 With pForm
                     .StartUpPosition = 0
                     .left = topLeftPoint.x
-                    .top = topLeftPoint.y
+                    .top = topLeftPoint.Y
                 End With
                 
             End If

@@ -38,7 +38,7 @@ Public Function addAlias(value As String) As Event_
     Set addAlias = Me
     With pAliases
         If Not .exists(value) Then
-            Call .add(value, value)
+            Call .Add(value, value)
         End If
     End With
 End Function

@@ -52,10 +52,10 @@ Public Sub addContextMenuItem(methodName As String, buttonCaption As String, but
     If Not contextMenuItem Is Nothing Then
         contextMenuItem.OnAction = methodName
     Else
-        With ContextMenu.Controls.add(Type:=msoControlButton, before:=before)
+        With ContextMenu.Controls.Add(Type:=msoControlButton, before:=before)
             .OnAction = methodName
             .faceId = faceId
-            .Caption = buttonCaption
+            .caption = buttonCaption
             .tag = buttonTag
         End With
         
@@ -85,13 +85,13 @@ End Function
 
 Public Sub clearContextMenu()
     Dim ContextMenu As Object:                      Set ContextMenu = getContextMenu
-    Dim Item As Object
+    Dim item As Object
     '------------------------------------------------------------------------------------------------------
 
     If Not ContextMenu Is Nothing Then
-        For Each Item In ContextMenu.Controls
-            Call Item.delete
-        Next Item
+        For Each item In ContextMenu.Controls
+            Call item.delete
+        Next item
     End If
     
     Application.ShowMenuFloaties = True
@@ -103,7 +103,7 @@ Public Sub resetContextMenu()
     '------------------------------------------------------------------------------------------------------
     
     If Not ContextMenu Is Nothing Then
-        Call ContextMenu.Reset
+        Call ContextMenu.reset
     End If
     
     Application.ShowMenuFloaties = False
@@ -114,7 +114,7 @@ Public Sub clearContextMenuFromCustomItems(Optional projectPrefix As String)
     Call deleteContextMenuItemsByRegex("^" & MENU_ITEM_PREFIX, "^" & projectPrefix)
 End Sub
 
-Private Sub deleteContextMenuItemsByRegex(ParamArray Items() As Variant)
+Private Sub deleteContextMenuItemsByRegex(ParamArray items() As Variant)
     Dim ContextMenu As Object:                      Set ContextMenu = getContextMenu
     Dim objRegex As Object
     Dim ctrl As Object
@@ -123,7 +123,7 @@ Private Sub deleteContextMenuItemsByRegex(ParamArray Items() As Variant)
 
     Set objRegex = f.regex.Create
     
-    For Each varItem In Items
+    For Each varItem In items
         objRegex.pattern = VBA.CStr(varItem)
         For Each ctrl In ContextMenu.Controls
             If objRegex.test(ctrl.tag) Then

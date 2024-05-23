@@ -28,8 +28,8 @@ Public Event BeforeUpdate(ByRef Cancel As Integer)
 Public Event Click()
 Public Event DblClick()
 Public Event KeyDown( _
-    ByVal KeyCode As MSForms.ReturnInteger, _
-    ByVal Shift As Integer)
+    ByVal keyCode As MSForms.ReturnInteger, _
+    ByVal shift As Integer)
 
 '# Members for Main Object
 Private WithEvents CBxY As MSForms.comboBox
@@ -191,7 +191,7 @@ Public Property Let ShowTitle(ByVal bShowTitle As Boolean)
     bPShowTitle = bShowTitle
     If bInit Then
         CLb.visible = bPShowTitle
-        Call move
+        Call Move
     End If
 End Property
 
@@ -206,7 +206,7 @@ Public Property Let ShowDays(ByVal bShowDays As Boolean)
         For i = 0 To 6
             mLabelButtons(i).Obj_CmBl.visible = bShowDays
         Next
-        Call move
+        Call Move
     End If
 End Property
 
@@ -219,7 +219,7 @@ Public Property Let ShowDateSelectors(ByVal bShowDateSelectors As Boolean)
     If bInit Then
         CBxY.visible = bShowDateSelectors
         CBxM.visible = bShowDateSelectors
-        Call move
+        Call Move
     End If
 End Property
 
@@ -331,7 +331,7 @@ Public Property Let height(ByVal sHeight As Single)
     sPHeight = sHeight
     If bInit Then
         CBxY.parent.height = sHeight
-        Call move
+        Call Move
     End If
 End Property
 
@@ -345,7 +345,7 @@ Public Property Let width(ByVal sWidth As Single)
     sPWidth = sWidth
     If bInit Then
         CBxY.parent.width = sWidth
-        Call move
+        Call Move
     End If
 End Property
 
@@ -829,7 +829,7 @@ Public Sub Add_Calendar_into_Frame(ByVal cFrame As MSForms.frame)
     
     Call Refresh_Properities
     
-    Call move
+    Call Move
     
 End Sub
 
@@ -895,7 +895,7 @@ Private Sub ApplyFont(fTo As MSForms.NewFont, fFrom As MSForms.NewFont)
 
 End Sub
 
-Public Sub move( _
+Public Sub Move( _
         Optional vLeft, _
         Optional vTop, _
         Optional vWidth, _
@@ -1081,8 +1081,8 @@ End Sub
 
 
 Private Sub CmB_KeyDown( _
-    ByVal KeyCode As MSForms.ReturnInteger, _
-    ByVal Shift As Integer)
+    ByVal keyCode As MSForms.ReturnInteger, _
+    ByVal shift As Integer)
     
     Dim newDate As Date
 
@@ -1093,7 +1093,7 @@ Private Sub CmB_KeyDown( _
     
     newDate = dValue
     
-    Select Case KeyCode
+    Select Case keyCode
     Case 37
         If bPRightToLeft Then
             newDate = newDate + 1
@@ -1116,10 +1116,10 @@ Private Sub CmB_KeyDown( _
     If newDate <> dValue Then
         Main.Obj_ValueSelectionEnabled = bPValueSelectable
         Main.value = newDate
-        KeyCode = 0
+        keyCode = 0
     Else
         If bPValueSelectable Then
-            Call Main.Event_KeyDown(KeyCode, Shift)
+            Call Main.Event_KeyDown(keyCode, shift)
         End If
     End If
 End Sub
@@ -1375,10 +1375,10 @@ Public Sub EVENT_CLICK()
 End Sub
 
 Public Sub Event_KeyDown( _
-    ByVal KeyCode As MSForms.ReturnInteger, _
-    ByVal Shift As Integer)
+    ByVal keyCode As MSForms.ReturnInteger, _
+    ByVal shift As Integer)
     
-    RaiseEvent KeyDown(KeyCode, Shift)
+    RaiseEvent KeyDown(keyCode, shift)
 End Sub
 
 Private Sub Refresh_Properities()
@@ -1652,7 +1652,7 @@ Public Function HasColoredDateArray() As Boolean
 End Function
 
 Public Function AddColoredDateArray(color As OLE_COLOR, dates As Variant, Optional Selectable As Variant = Empty, Optional index As Long = -1) As Long
-    Dim r As Object 'Excel.Range
+    Dim R As Object 'Excel.Range
     Dim dateList() As Variant
     Dim aColoredArrayTable() As Variant
     Dim aColoredArrayRec() As Variant
@@ -1664,8 +1664,8 @@ Public Function AddColoredDateArray(color As OLE_COLOR, dates As Variant, Option
     If TypeName(dates) = "Variant()" Then
         dateList = dates
     ElseIf TypeName(dates) = "Range" Then
-        Set r = dates
-        dateList = r.Value2
+        Set R = dates
+        dateList = R.Value2
     Else
         Err.Raise 20001, "Invalid input type for dates: " & TypeName(dates) & " (Valid: Range, Variant())"
     End If

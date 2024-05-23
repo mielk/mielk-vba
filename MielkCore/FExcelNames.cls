@@ -14,7 +14,7 @@ Private Const CLASS_NAME As String = "FExcelNames"
 
 Public Function addValue(Parent As Variant, name As String, ByVal value As Variant) As Excel.name
     If Len(value) = 0 Then value = "_"
-    Call Parent.names.add(name, value)
+    Call Parent.names.Add(name, value)
 End Function
 
 Public Function getValue(Parent As Object, name As String) As Variant
@@ -105,19 +105,19 @@ End Function
 
 Public Function getReferredRange(excelName As Excel.name) As Excel.Range
     Dim wks As Excel.Worksheet
-    Dim SheetName As String
+    Dim sheetName As String
     Dim address As String
     '------------------------------------------------------------------------------------------------------
     
     With excelName
-        SheetName = VBA.replace(f.strings.substring(.RefersTo, "=", "!"), "'", vbNullString)
+        sheetName = VBA.replace(f.strings.substring(.RefersTo, "=", "!"), "'", vbNullString)
         address = f.strings.substring(.RefersTo, "!", "")
         
         On Error Resume Next
         If TypeOf excelName.Parent Is Excel.Worksheet Then
             Set wks = excelName.Parent
         ElseIf TypeOf excelName.Parent Is Excel.Workbook Then
-            Set wks = excelName.Parent.Worksheets(SheetName)
+            Set wks = excelName.Parent.Worksheets(sheetName)
         End If
         On Error GoTo 0
         
@@ -138,7 +138,7 @@ Public Function assignRange(Parent As Object, name As String, rng As Excel.Range
 
     Set assignRange = get_(Parent, name)
 
-    If f.ranges.isValid(rng) Then
+    If f.ranges.IsValid(rng) Then
         If assignRange Is Nothing Then
             rng.name = fullName
         Else
@@ -154,7 +154,7 @@ Public Function assignRange(Parent As Object, name As String, rng As Excel.Range
 End Function
 
 Public Sub assignValue(Parent As Object, name As String, value As Variant, _
-                                                                     Optional isVisible As Boolean = False)
+                                                                     Optional IsVisible As Boolean = False)
     Dim fullName As String:             fullName = getFullPath(Parent, name)
     Dim excelName As Excel.name
     '------------------------------------------------------------------------------------------------------
@@ -164,7 +164,7 @@ Public Sub assignValue(Parent As Object, name As String, value As Variant, _
         Call delete(Parent, name)
     End If
         
-    Call Parent.names.add(name:=name, RefersTo:=value, visible:=isVisible)
+    Call Parent.names.Add(name:=name, RefersTo:=value, visible:=IsVisible)
 
 End Sub
 
@@ -176,7 +176,7 @@ Public Function getWorkbookExcelNames(wkb As Excel.Workbook) As Variant
     Dim arr As Variant
     '------------------------------------------------------------------------------------------------------
     
-    If f.Books.isValid(wkb) Then
+    If f.Books.IsValid(wkb) Then
         If wkb.names.count Then
             ReDim arr(1 To 5, 1 To wkb.names.count)
             For Each en In wkb.names

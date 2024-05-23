@@ -14,12 +14,12 @@ Private Const CLASS_NAME As String = "FSheets"
 
 
 '***** WITHOUT UNIT TESTS *****
-Public Function isValid(wks As Excel.Worksheet) As Boolean
+Public Function IsValid(wks As Excel.Worksheet) As Boolean
     Dim strSheetName As String
     '------------------------------------------------------------------------------------------------------
     On Error Resume Next
     strSheetName = wks.name
-    isValid = VBA.Len(strSheetName)
+    IsValid = VBA.Len(strSheetName)
 End Function
 
 Public Function getNamedRange(wks As Excel.Worksheet, RangeName As String) As Excel.Range
@@ -30,56 +30,54 @@ End Function
 Public Sub closeParentWorkbook(wks As Excel.Worksheet, Optional saveChanges As Boolean = False)
     Dim wkb As Excel.Workbook
     '------------------------------------------------------------------------------------------------------
-    If isValid(wks) Then
+    If IsValid(wks) Then
         Set wkb = wks.Parent
         Call wkb.Close(saveChanges)
     End If
 End Sub
 
 Public Function getNonEmptyRegion(wks As Excel.Worksheet) As Variant
-    Stop
-'    Dim firstRow As Long
-'    Dim firstColumn As Long
-'    Dim lastRow As Long
-'    Dim lastColumn As Long
-'    '------------------------------------------------------------------------------------------------------
-'
-'    firstRow = 1
-'    firstColumn = 1
-'    lastRow = lastNonEmptyRow(wks)
-'    lastColumn = lastNonEmptyColumn(wks)
-'
-'    If lastRow > 0 And lastColumn > 0 Then
-'        With wks
-'            getNonEmptyRegion = .Range(.Cells(firstRow, firstColumn), .Cells(lastRow, lastColumn))
-'        End With
-'    End If
-'
+    Dim firstRow As Long
+    Dim firstColumn As Long
+    Dim lastRow As Long
+    Dim lastColumn As Long
+    '------------------------------------------------------------------------------------------------------
+
+    firstRow = 1
+    firstColumn = 1
+    lastRow = f.ranges.getLastNonEmptyRow(wks)
+    lastColumn = f.ranges.getLastNonEmptyColumn(wks)
+
+    If lastRow > 0 And lastColumn > 0 Then
+        With wks
+            getNonEmptyRegion = .Range(.cells(firstRow, firstColumn), .cells(lastRow, lastColumn))
+        End With
+    End If
+
 End Function
 
 Public Function getDataArray(wks As Excel.Worksheet, Optional startFromA1 As Boolean = False) As Variant
-    Stop
-'    Dim firstRow As Long
-'    Dim firstColumn As Long
-'    Dim lastRow As Long
-'    Dim lastColumn As Long
-'    '------------------------------------------------------------------------------------------------------
-'
-'    If startFromA1 Then
-'        firstRow = 1
-'        firstColumn = 1
-'    Else
-'        firstRow = F.ranges.getFirstNonEmptyRow(wks)
-'        firstColumn = firstNonEmptyColumn(wks)
-'    End If
-'
-'    lastRow = lastNonEmptyRow(wks)
-'    lastColumn = lastNonEmptyColumn(wks)
-'
-'    With wks
-'        getDataArray = .Range(.Cells(firstRow, firstColumn), .Cells(lastRow, lastColumn))
-'    End With
-'
+    Dim firstRow As Long
+    Dim firstColumn As Long
+    Dim lastRow As Long
+    Dim lastColumn As Long
+    '------------------------------------------------------------------------------------------------------
+
+    If startFromA1 Then
+        firstRow = 1
+        firstColumn = 1
+    Else
+        firstRow = f.ranges.getFirstNonEmptyRow(wks)
+        firstColumn = f.ranges.firstNonEmptyColumn(wks)
+    End If
+
+    lastRow = f.ranges.getLastNonEmptyRow(wks)
+    lastColumn = f.ranges.getLastNonEmptyColumn(wks)
+
+    With wks
+        getDataArray = .Range(.cells(firstRow, firstColumn), .cells(lastRow, lastColumn))
+    End With
+
 End Function
 
 Public Function getContent(filepath As String, Optional sheetIndex As Long = 1, Optional xls As Excel.Application) As Variant
@@ -97,7 +95,7 @@ Public Function getContent(filepath As String, Optional sheetIndex As Long = 1, 
     
     Set wkb = f.Books.open_(filepath, True, xls, wasOpen:=fileWasOpen)
     Set wks = wkb.Worksheets(sheetIndex)
-    getContent = wks.Cells(1, 1).CurrentRegion
+    getContent = wks.cells(1, 1).CurrentRegion
     
     If Not fileWasOpen Then
         Call wkb.Close(False)
@@ -111,28 +109,40 @@ Public Function getContent(filepath As String, Optional sheetIndex As Long = 1, 
     
 End Function
 
-
+Public Function isShapeValid(shape As Excel.shape) As Boolean
+    Dim baseName As String: baseName = f.Crypto.createUUID
+    Dim name As String
+    '----------------------------------------------------------------------------------------------------------
+    
+    name = baseName
+    On Error Resume Next
+    name = shape.DrawingObject.name
+    On Error GoTo 0
+    
+    isShapeValid = (name <> baseName)
+    
+End Function
 
 Public Function getSheetsDictionary(wkb As Excel.Workbook, Optional includeHiddenSheets As Boolean = False) As Scripting.Dictionary
     Dim wks As Excel.Worksheet
     '------------------------------------------------------------------------------------------------------
     Set getSheetsDictionary = f.dictionaries.Create
-    If f.Books.isValid(wkb) Then
+    If f.Books.IsValid(wkb) Then
         For Each wks In wkb.Worksheets
             If includeHiddenSheets Or wks.visible = xlSheetVisible Then
-                Call getSheetsDictionary.add(wks.name, wks)
+                Call getSheetsDictionary.Add(wks.name, wks)
             End If
         Next wks
     End If
 End Function
 
-Public Function getSheet(wkb As Excel.Workbook, SheetName As String, Optional useAsRegex As Boolean = False) As Excel.Worksheet
-    If f.Books.isValid(wkb) Then
+Public Function getSheet(wkb As Excel.Workbook, sheetName As String, Optional useAsRegex As Boolean = False) As Excel.Worksheet
+    If f.Books.IsValid(wkb) Then
         If useAsRegex Then
-            Set getSheet = getSheetByNameRegex(wkb, SheetName)
+            Set getSheet = getSheetByNameRegex(wkb, sheetName)
         Else
             On Error Resume Next
-            Set getSheet = wkb.Worksheets(SheetName)
+            Set getSheet = wkb.Worksheets(sheetName)
         End If
     End If
 End Function
@@ -142,12 +152,12 @@ Public Function getSheetsByName(wkb As Excel.Workbook, regex As String, Optional
     '------------------------------------------------------------------------------------------------------
     
     Set getSheetsByName = New VBA.Collection
-    If f.Books.isValid(wkb) Then
+    If f.Books.IsValid(wkb) Then
         For Each wks In wkb.Worksheets
             If ignoreHiddenSheets And wks.visible <> xlSheetVisible Then
                 'skip this worksheet
             ElseIf f.regex.checkIfMatch(wks.name, regex) Then
-                Call getSheetsByName.add(wks)
+                Call getSheetsByName.Add(wks)
             End If
         Next wks
     End If
@@ -174,7 +184,7 @@ Private Function getSheetByNameRegex(wkb As Excel.Workbook, regexPattern As Stri
     
 End Function
 
-Public Sub delete(wkb As Excel.Workbook, SheetName As String)
+Public Sub delete(wkb As Excel.Workbook, sheetName As String)
     Dim displayAlerts As Boolean
     '------------------------------------------------------------------------------------------------------
     
@@ -182,7 +192,7 @@ Public Sub delete(wkb As Excel.Workbook, SheetName As String)
     wkb.Application.displayAlerts = False
     
     On Error Resume Next
-    Call wkb.Worksheets(SheetName).delete
+    Call wkb.Worksheets(sheetName).delete
     On Error GoTo 0
     
     wkb.Application.displayAlerts = displayAlerts
@@ -207,7 +217,7 @@ Public Function getUniqueName(wkb As Excel.Workbook, name As String) As String
 
 
     'Check if the book to be checked is not closed. -----------------------------------------------------|
-    If Not f.Books.isValid(wkb) Then Call Exceptions.InvalidBook.raise
+    If Not f.Books.IsValid(wkb) Then Call Exceptions.InvalidBook.raise
     '----------------------------------------------------------------------------------------------------|
 
 
@@ -283,13 +293,13 @@ End Function
 
 
 '[Shapes]
-Public Function getShape(wks As Excel.Worksheet, shapeName As String) As Excel.Shape
+Public Function getShape(wks As Excel.Worksheet, shapeName As String) As Excel.shape
     On Error Resume Next
     Set getShape = wks.Shapes(shapeName)
 End Function
 
 Public Sub removeShape(wks As Excel.Worksheet, shapeName As String)
-    Dim shp As Excel.Shape
+    Dim shp As Excel.shape
     '------------------------------------------------------------------------------------------------------
     Set shp = getShape(wks, shapeName)
     If Not shp Is Nothing Then
@@ -297,14 +307,14 @@ Public Sub removeShape(wks As Excel.Worksheet, shapeName As String)
     End If
 End Sub
 
-Public Sub removeShapesByCell(wks As Excel.Worksheet, Optional row As Long, Optional column As Long)
-    Dim shp As Excel.Shape
+Public Sub removeShapesByCell(wks As Excel.Worksheet, Optional Row As Long, Optional column As Long)
+    Dim shp As Excel.shape
     Dim cell As Excel.Range
     '------------------------------------------------------------------------------------------------------
-    If f.Sheets.isValid(wks) Then
+    If f.sheets.IsValid(wks) Then
         For Each shp In wks.Shapes
             Set cell = shp.TopLeftCell
-            If row > 0 And cell.row <> row Then
+            If Row > 0 And cell.Row <> Row Then
             ElseIf column > 0 And cell.column <> column Then
             Else
                 Call shp.delete
@@ -314,3 +324,65 @@ Public Sub removeShapesByCell(wks As Excel.Worksheet, Optional row As Long, Opti
 End Sub
 
 
+
+
+Public Sub clearColumnsStartingFrom(wks As Excel.Worksheet, initialColumn As Long, _
+                                        Optional ignoreErrors As Boolean = True, _
+                                        Optional keepFormatting As Boolean = True)
+    Dim rng As Excel.Range
+    '------------------------------------------------------------------------------------------------------
+    
+    If Not f.sheets.IsValid(wks) Then
+        If Not ignoreErrors Then Call Exceptions.IllegalSheet.raise
+    ElseIf initialColumn <= 0 Then
+        If Not ignoreErrors Then Call Exceptions.IllegalValue.raiseWithCustomMessage("Initial column index must be greater than 0")
+    ElseIf initialColumn >= wks.columns.count Then
+        If Not ignoreErrors Then Call Exceptions.IllegalValue.raiseWithCustomMessage("Initial column index cannot be greater than the total number of columns in the sheet")
+    Else
+        With wks
+            Set rng = .Range(.cells(1, initialColumn), .cells(1, .columns.count)).EntireColumn
+            If keepFormatting Then
+                Call rng.ClearContents
+            Else
+                Call rng.clear
+            End If
+        End With
+    End If
+    
+End Sub
+
+
+Public Function copy(originalSheet As Excel.Worksheet, destinationBook As Excel.Workbook, _
+                                                        Optional sheetName As String) As Excel.Worksheet
+    Dim bookSheets As Scripting.Dictionary
+    Dim wks As Excel.Worksheet
+    '------------------------------------------------------------------------------------------------------
+    
+    If Not f.Books.IsValid(destinationBook) Then
+        Call Exceptions.InvalidBook.raise
+    ElseIf Not f.sheets.IsValid(originalSheet) Then
+        Call Exceptions.InvalidSheet.raise
+    Else
+        Set bookSheets = f.Books.getSheetsDictionary(destinationBook)
+        Call originalSheet.copy(After:=f.Books.getLastSheet(destinationBook))
+        
+        'Find a worksheet that name is not in the [bookSheets] dictionary - it is a worksheet
+        'that has just been added.
+        For Each wks In destinationBook.Worksheets
+            If Not bookSheets.exists(wks.name) Then
+                Set copy = wks
+                If VBA.Len(sheetName) Then
+                    copy.name = f.sheets.getUniqueName(destinationBook, sheetName)
+                End If
+                Exit For
+            End If
+        Next wks
+        
+    End If
+    
+End Function
+
+Public Function getFormulasRange(wks As Excel.Worksheet) As Excel.Range
+    On Error Resume Next
+    Set getFormulasRange = wks.cells.SpecialCells(xlCellTypeFormulas)
+End Function

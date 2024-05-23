@@ -29,7 +29,7 @@ Public Sub formatArray(rng As Excel.Range, dictConfig As Scripting.Dictionary, O
     If F.dictionaries.isNonEmptyDictionary(dictConfig) Then
             
         '[Apply general styling]
-        Set styles = F.dictionaries.GetObject(dictConfig, Props.styles.getName)
+        Set styles = F.dictionaries.GetObject(dictConfig, props.styles.getName)
         Call F.Ranges.applyFormatFromDictionary(rng, styles)
         Call F.Ranges.applyFormatFromDictionary(rng, getConditionalStyles(styles, arrayTag))
         
@@ -44,8 +44,8 @@ Public Sub formatArray(rng As Excel.Range, dictConfig As Scripting.Dictionary, O
         Stop 'TM - refactoring
         Debug.Print "TM refactoring 2023-10-27"
         'rowsFirst = F.dictionaries.getItem(dictConfig, Props.rowsFirst.getName)
-        Set rows = F.dictionaries.GetObject(dictConfig, Props.rows.getName)
-        Set columns = F.dictionaries.GetObject(dictConfig, Props.columns.getName)
+        Set rows = F.dictionaries.GetObject(dictConfig, props.rows.getName)
+        Set columns = F.dictionaries.GetObject(dictConfig, props.columns.getName)
         
         If rowsFirst Then
             Call applyRowsStyling(rng, rows)
@@ -64,7 +64,7 @@ End Sub
 Private Function getConditionalStyles(styles As Scripting.Dictionary, arrayTag As String) As Scripting.Dictionary
     Dim dict As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
-    Set dict = F.dictionaries.GetObject(styles, Props.StylesConditional.getName)
+    Set dict = F.dictionaries.GetObject(styles, props.StylesConditional.getName)
     If F.dictionaries.isNonEmptyDictionary(dict) Then
         Set getConditionalStyles = F.dictionaries.GetObject(dict, arrayTag)
     End If
@@ -76,9 +76,9 @@ Private Sub applyHeaderConfig(rng As Excel.Range, dictConfig As Scripting.Dictio
     Dim rngHeader As Excel.Range
     '------------------------------------------------------------------------------------------------------
     
-    Set headerConfig = F.dictionaries.GetObject(dictConfig, Props.header.getName)
+    Set headerConfig = F.dictionaries.GetObject(dictConfig, props.header.getName)
     If F.dictionaries.isNonEmptyDictionary(headerConfig) Then
-        Set styles = F.dictionaries.GetObject(headerConfig, Props.styles.getName)
+        Set styles = F.dictionaries.GetObject(headerConfig, props.styles.getName)
         If F.dictionaries.isNonEmptyDictionary(styles) Then
             If F.Ranges.isValid(rng) Then
                 Set rngHeader = rng.resize(1)
@@ -121,12 +121,12 @@ Private Sub applySingleColumnStyle(rng As Excel.Range, columnDto As Scripting.Di
     Dim dtoSubrange As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
 
-    index = F.dictionaries.getItem(columnDto, Props.index.getDbField)
+    index = F.dictionaries.getItem(columnDto, props.index.getDbField)
     Debug.Print "TM refactoring 2023-10-27"
     'fromIndex = F.dictionaries.getItem(columnDto, Props.IndexFrom.getDbField)
     'toIndex = F.dictionaries.getItem(columnDto, Props.IndexTo.getDbField)
     
-    Set styles = F.dictionaries.GetObject(columnDto, Props.styles.getName)
+    Set styles = F.dictionaries.GetObject(columnDto, props.styles.getName)
 
     If index <> 0 Then
         Set rngColumn = rng.Offset(, calculateIndexNumber(rng, index, False) - 1).resize(, 1)
@@ -169,12 +169,12 @@ Private Sub applySingleRowStyle(rng As Excel.Range, rowDto As Scripting.Dictiona
     Dim dtoSubrange As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
 
-    index = F.dictionaries.getItem(rowDto, Props.index.getDbField)
+    index = F.dictionaries.getItem(rowDto, props.index.getDbField)
     Debug.Print "TM refactoring 2023-10-27"
     'fromIndex = F.dictionaries.getItem(rowDto, Props.IndexFrom.getDbField)
     'toIndex = F.dictionaries.getItem(rowDto, Props.IndexTo.getDbField)
     
-    Set styles = F.dictionaries.GetObject(rowDto, Props.styles.getName)
+    Set styles = F.dictionaries.GetObject(rowDto, props.styles.getName)
     
     '[Find the range]
     If index <> 0 Then
@@ -234,8 +234,8 @@ Public Sub applyFreezing(wks As Excel.Worksheet, dictConfig As Scripting.Diction
     
     Set dict = F.dictionaries.GetObject(dictConfig, FREEZING_TAG)
     If Not dict Is Nothing Then
-        rows = F.dictionaries.getItem(dict, Props.rows.getName)
-        columns = F.dictionaries.getItem(dict, Props.columns.getName)
+        rows = F.dictionaries.getItem(dict, props.rows.getName)
+        columns = F.dictionaries.getItem(dict, props.columns.getName)
         
         If rows > 0 Or columns > 0 Then
             On Error Resume Next

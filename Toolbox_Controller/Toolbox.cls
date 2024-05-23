@@ -23,6 +23,10 @@ Public Sub createNewProject(sheets As Scripting.Dictionary)
     '------------------------------------------------------------------------------------------------------
     
     Set project = New EProject
-    Call project.create(sheets)
+    With project
+        If .isValid Then
+            Call .create(sheets)
+        End If
+    End With
     
 End Sub

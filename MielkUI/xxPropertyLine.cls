@@ -496,7 +496,7 @@ Private Sub insertValidationLabel()
     
 End Sub
 
-Public Sub move(left As Single, top As Single)
+Public Sub Move(left As Single, top As Single)
     pLeft = left
     pTop = top
     Call arrangeControls
@@ -693,15 +693,15 @@ Private Sub pTextBox_Change()
     End If
 End Sub
 
-Private Sub pTextBox_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
+Private Sub pTextBox_KeyDown(ByVal keyCode As MSForms.ReturnInteger, ByVal shift As Integer)
     Dim clipboardText As String
     '------------------------------------------------------------------------------------------------------
     
-    If KeyCode = vbKeyReturn Then
+    If keyCode = vbKeyReturn Then
         If confirmAfterEnterClick Then
             Call pParent.triggerConfirm
         End If
-    ElseIf pIsLocked And KeyCode = vbKeyV And Shift = 2 Then
+    ElseIf pIsLocked And keyCode = vbKeyV And shift = 2 Then
         clipboardText = F.System.getClipboardContentAsString
         If VBA.Len(clipboardText) Then pTextBox.value = clipboardText
     End If

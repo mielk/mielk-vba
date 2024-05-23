@@ -86,7 +86,7 @@ End Function
 Public Function getParamsAsString() As String
     Const METHOD_NAME As String = "getParamsAsString"
     '------------------------------------------------------------------------------------------------------
-    Dim Key As Variant
+    Dim key As Variant
     Dim arr() As String
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
@@ -96,10 +96,10 @@ Public Function getParamsAsString() As String
     If Not pParams Is Nothing Then
         If pParams.count Then
             ReDim arr(1 To pParams.count)
-            For Each Key In pParams.Keys
+            For Each key In pParams.Keys
                 i = i + 1
-                arr(i) = "{" & Key & ":" & f.strings.stringify(pParams.Item(Key), StringifyMode_Normal, True) & "}"
-            Next Key
+                arr(i) = "{" & key & ":" & f.strings.stringify(pParams.item(key), StringifyMode_Normal, True) & "}"
+            Next key
             getParamsAsString = VBA.join(arr, ", ")
         End If
     End If
@@ -166,7 +166,7 @@ End Function
 Private Function getParamsStringForTextFile() As String
     Const METHOD_NAME As String = "getParamsStringForTextFile"
     '------------------------------------------------------------------------------------------------------
-    Dim Key As Variant
+    Dim key As Variant
     Dim arr() As String
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
@@ -175,10 +175,10 @@ Private Function getParamsStringForTextFile() As String
     
     If f.dictionaries.isNonEmptyDictionary(pParams) Then
         ReDim arr(1 To pParams.count)
-        For Each Key In pParams.Keys
+        For Each key In pParams.Keys
             i = i + 1
-            arr(i) = "[" & Key & "]: " & f.strings.stringify(pParams.Item(Key), StringifyMode_Normal, False)
-        Next Key
+            arr(i) = "[" & key & "]: " & f.strings.stringify(pParams.item(key), StringifyMode_Normal, False)
+        Next key
         getParamsStringForTextFile = VBA.join(arr, VBA.vbCrLf & VBA.String(32, " "))
     Else
         getParamsStringForTextFile = "(no params)"

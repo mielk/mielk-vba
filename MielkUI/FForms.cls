@@ -37,7 +37,7 @@ End Sub
 
 
 
-Public Sub hideTitleBarAndBorder(frm As Object)
+Public Sub HideTitleBarAndBorder(frm As Object)
 #If Win64 Then
     Dim frmHandle As LongPtr
     Dim lngWindow As LongPtr
@@ -183,7 +183,7 @@ Public Function getBottom(ctrl As MSForms.control) As Single
     End With
 End Function
 
-Public Sub offsetControls(x As Single, y As Single, ParamArray controls() As Variant)
+Public Sub offsetControls(x As Single, Y As Single, ParamArray controls() As Variant)
     Dim ctrl As Variant
     Dim customControl As IControl
     Dim msFormsControl As MSForms.control
@@ -196,13 +196,13 @@ Public Sub offsetControls(x As Single, y As Single, ParamArray controls() As Var
             ' skip
         ElseIf TypeOf ctrl Is IControl Then             '[IControl]
             Set customControl = ctrl
-            Call customControl.offset(x, y)
+            Call customControl.offset(x, Y)
         ElseIf TypeOf ctrl Is MSForms.control Then      '[MSForms.Control]
             Set msFormsControl = ctrl
             If isControlValid(msFormsControl) Then
                 With msFormsControl
                     .left = F.Numerics.roundTo(.left + x, PIXEL_SIZE)
-                    .top = F.Numerics.roundTo(.top + y, PIXEL_SIZE)
+                    .top = F.Numerics.roundTo(.top + Y, PIXEL_SIZE)
                 End With
             End If
         End If
@@ -214,21 +214,21 @@ End Sub
 Public Function calculateRightBottomPoint(frame As MSForms.frame, Optional onlyVisible As Boolean = True) As Coordinate
     Dim ctrl As MSForms.control
     Dim x As Single
-    Dim y As Single
+    Dim Y As Single
     '------------------------------------------------------------------------------------------------------
     
     For Each ctrl In frame.controls
         If ctrl.parent Is frame Then
             If onlyVisible = False Or ctrl.visible = True Then
                 x = getRight(ctrl)
-                y = getBottom(ctrl)
+                Y = getBottom(ctrl)
                 
                 If x > calculateRightBottomPoint.x Then
                     calculateRightBottomPoint.x = x
                 End If
                 
-                If y > calculateRightBottomPoint.y Then
-                    calculateRightBottomPoint.y = y
+                If Y > calculateRightBottomPoint.Y Then
+                    calculateRightBottomPoint.Y = Y
                 End If
                 
             End If
@@ -302,7 +302,7 @@ Public Function getControl(frm As MSForms.frame, controlName As String) As MSFor
 End Function
 
 
-Public Sub setFormOpacity(uf As MSForms.UserForm, opacity As Byte)
+Public Sub SetFormOpacity(uf As MSForms.UserForm, Opacity As Byte)
 #If VBA7 Then
     Dim frmHandle As LongPtr
     Dim winLng As LongPtr
@@ -322,7 +322,7 @@ Public Sub setFormOpacity(uf As MSForms.UserForm, opacity As Byte)
     result = SetWindowLong(frmHandle, GWL_EXSTYLE, winLng Or WS_EX_LAYERED)
     If result = 0 Then Exit Sub
     
-    result = SetLayeredWindowAttributes(frmHandle, 0, opacity, LWA_ALPHA)
+    result = SetLayeredWindowAttributes(frmHandle, 0, Opacity, LWA_ALPHA)
     If result = 0 Then Exit Sub
     
 End Sub
@@ -344,7 +344,7 @@ Public Function handleOfUserForm(uf As MSForms.UserForm) As Long
     Dim formHandle As Long
 #End If
     Dim caption As String
-    Dim windowCaption As String
+    Dim WindowCaption As String
     '------------------------------------------------------------------------------------------------------
     
     caption = uf.caption

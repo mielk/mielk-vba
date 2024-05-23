@@ -28,7 +28,7 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub setInitialValues()
-    pName = "EY"
+    pName = "Effective Yields"
     pCodeName = "ey"
     pParentFolder = "D:\vba-tests\apps\"
     pLibFolderPath = "D:\Dropbox\tm\mielk\mielk-vba\code\"
@@ -120,4 +120,8 @@ Public Function getReplacements() As Scripting.Dictionary
             Call getReplacements.Add(key, value)
         Next key
     End With
+End Function
+
+Public Function isValid() As Boolean
+    Stop
 End Function

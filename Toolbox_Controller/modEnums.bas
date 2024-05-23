@@ -13,6 +13,14 @@ Public Enum CreatingProjectStepEnum
     CreatingProjectStep_FixingReferencesBetweenFiles = 5
 End Enum
 
+Public Enum CodeComparisonStatusEnum
+    CodeComparisonStatus_Unknown = 0
+    CodeComparisonStatus_Equal = 1
+    CodeComparisonStatus_Different = 2
+    CodeComparisonStatus_BaseOnly = 3
+    CodeComparisonStatus_CompareOnly = 4
+End Enum
+
 
 
 

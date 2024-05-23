@@ -83,7 +83,7 @@ Public Function SHA1HASH(str)
     
     ReDim arr(0 To VBA.Len(str) - 1)
     For i = 0 To VBA.Len(str) - 1
-        arr(i) = VBA.asc(VBA.mid(str, i + 1, 1))
+        arr(i) = VBA.Asc(VBA.mid(str, i + 1, 1))
     Next i
     SHA1HASH = VBA.replace(VBA.LCase(HexDefaultSHA1(arr)), " ", "")
     
@@ -109,7 +109,7 @@ End Sub
 
 Private Sub xSHA1(message() As Byte, ByVal Key1 As Long, ByVal Key2 As Long, ByVal Key3 As Long, ByVal Key4 As Long, H1 As Long, H2 As Long, H3 As Long, H4 As Long, H5 As Long)
     Dim u As Long, p As Long
-    Dim fb As FourBytes, OL As OneLong
+    Dim fb As FourBytes, ol As OneLong
     Dim i As Integer
     Dim w(0 To 80) As Long
     Dim a As Long, b As Long, C As Long, d As Long, E As Long
@@ -117,7 +117,7 @@ Private Sub xSHA1(message() As Byte, ByVal Key1 As Long, ByVal Key2 As Long, ByV
     
     H1 = &H67452301: H2 = &HEFCDAB89: H3 = &H98BADCFE: H4 = &H10325476: H5 = &HC3D2E1F0
     
-    u = UBound(message) + 1: OL.l = U32ShiftLeft3(u): a = u \ &H20000000: LSet fb = OL 'U32ShiftRight29(U)
+    u = UBound(message) + 1: ol.l = U32ShiftLeft3(u): a = u \ &H20000000: LSet fb = ol 'U32ShiftRight29(U)
     
     ReDim Preserve message(0 To (u + 8 And -64) + 63)
     message(u) = 128
@@ -135,8 +135,8 @@ Private Sub xSHA1(message() As Byte, ByVal Key1 As Long, ByVal Key2 As Long, ByV
             fb.C = message(p + 1)
             fb.b = message(p + 2)
             fb.a = message(p + 3)
-            LSet OL = fb
-            w(i) = OL.l
+            LSet ol = fb
+            w(i) = ol.l
             p = p + 4
         Next i
     

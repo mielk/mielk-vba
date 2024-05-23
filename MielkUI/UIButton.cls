@@ -357,19 +357,19 @@ Private Sub insertEventsLayer()
     End With
 End Sub
 
-Public Function move(Optional x As Variant, Optional y As Variant) As UIButton
+Public Function Move(Optional x As Variant, Optional Y As Variant) As UIButton
     Dim offsetX As Single
     Dim offsetY As Single
     '------------------------------------------------------------------------------------------------------
     
-    Set move = Me
+    Set Move = Me
     
     With pBackgroundLabel
         If VBA.IsNumeric(x) Then
             offsetX = (x - .left)
         End If
-        If VBA.IsNumeric(y) Then
-            offsetY = (y - .top)
+        If VBA.IsNumeric(Y) Then
+            offsetY = (Y - .top)
         End If
     End With
     
@@ -377,9 +377,9 @@ Public Function move(Optional x As Variant, Optional y As Variant) As UIButton
     
 End Function
 
-Public Function offset(Optional x As Single, Optional y As Single) As UIButton
+Public Function offset(Optional x As Single, Optional Y As Single) As UIButton
     Set offset = Me
-    Call UI.Forms.offsetControls(x, y, pBackgroundLabel, pCaptionLabel, pPictureLabel, pEventsLayerLabel)
+    Call UI.Forms.offsetControls(x, Y, pBackgroundLabel, pCaptionLabel, pPictureLabel, pEventsLayerLabel)
     With pBackgroundLabel
         pTop = .top
         pLeft = .left
@@ -394,7 +394,7 @@ Public Function alignVertically(ctrl As MSForms.control) As UIButton
     
     If UI.Forms.isControlValid(ctrl) Then
         yOffset = (ctrl.top + (ctrl.height - pHeight) / 2) - pTop
-        If yOffset Then Call offset(y:=yOffset)
+        If yOffset Then Call offset(Y:=yOffset)
     End If
     
 End Function
@@ -744,12 +744,12 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     Call alignVertically(baseCtrl)
 End Sub
 
-Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
-    Set IControl_move = move(x, y)
+Private Function IControl_move(Optional x As Variant, Optional Y As Variant) As IControl
+    Set IControl_move = Move(x, Y)
 End Function
 
-Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl
-    Set IControl_offset = offset(x, y)
+Private Function IControl_offset(Optional x As Single, Optional Y As Single) As IControl
+    Set IControl_offset = offset(x, Y)
 End Function
 
 Private Sub IControl_resize(Optional width As Variant, Optional height As Variant)

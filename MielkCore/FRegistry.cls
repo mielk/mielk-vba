@@ -10,6 +10,8 @@ Attribute VB_Exposed = True
 Option Explicit
 Option Compare Text
 
+' By Chip Pearson, www.cpearson.com, chip@cpearson.com
+
 Private Const CLASS_NAME As String = "FRegistry"
     '----------------------------------------------------------------------------------------------------------
 Private Const C_REG_ERR_NO_ERROR = 0
@@ -94,7 +96,7 @@ Private Type SECURITY_DESCRIPTOR
         Sbz1 As Byte
         control As Long
         Owner As Long
-        Group As Long
+        group As Long
         Sacl As ACL
         Dacl As ACL
 End Type

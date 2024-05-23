@@ -88,7 +88,7 @@ Public Function reset() As WProgressBar
     Set pLevels = New VBA.Collection
     pCaptionLocked = False
     Call setProgress(0)
-    Call setCaption(MsgService.GetText(TAG_INITIALIZATION_PROCESS))
+    Call setCaption(MsgService.getText(TAG_INITIALIZATION_PROCESS))
     
 End Function
 

@@ -496,9 +496,9 @@ Private Function json_ParseObject(json_String As String, ByRef json_Index As Lon
             json_Key = json_ParseKey(json_String, json_Index)
             json_NextChar = json_Peek(json_String, json_Index)
             If json_NextChar = "[" Or json_NextChar = "{" Then
-                Set json_ParseObject.Item(json_Key) = json_ParseValue(json_String, json_Index)
+                Set json_ParseObject.item(json_Key) = json_ParseValue(json_String, json_Index)
             Else
-                json_ParseObject.Item(json_Key) = json_ParseValue(json_String, json_Index)
+                json_ParseObject.item(json_Key) = json_ParseValue(json_String, json_Index)
             End If
         Loop
     End If
@@ -523,7 +523,7 @@ Private Function json_ParseArray(json_String As String, ByRef json_Index As Long
                 json_SkipSpaces json_String, json_Index
             End If
 
-            json_ParseArray.add json_ParseValue(json_String, json_Index)
+            json_ParseArray.Add json_ParseValue(json_String, json_Index)
         Loop
     End If
 End Function
@@ -778,7 +778,7 @@ Private Function json_StringIsLargeNumber(json_String As Variant) As Boolean
         json_StringIsLargeNumber = True
 
         For json_CharIndex = 1 To json_Length
-            json_CharCode = VBA.asc(VBA.mid$(json_String, json_CharIndex, 1))
+            json_CharCode = VBA.Asc(VBA.mid$(json_String, json_CharIndex, 1))
             Select Case json_CharCode
             ' Look for .|0-9|E|e
             Case 46, 48 To 57, 69, 101
@@ -1120,8 +1120,8 @@ End Function
 #Else
 
 Private Function utc_DateToSystemTime(utc_Value As Date) As utc_SYSTEMTIME
-    utc_DateToSystemTime.utc_wYear = VBA.Year(utc_Value)
-    utc_DateToSystemTime.utc_wMonth = VBA.Month(utc_Value)
+    utc_DateToSystemTime.utc_wYear = VBA.year(utc_Value)
+    utc_DateToSystemTime.utc_wMonth = VBA.month(utc_Value)
     utc_DateToSystemTime.utc_wDay = VBA.day(utc_Value)
     utc_DateToSystemTime.utc_wHour = VBA.hour(utc_Value)
     utc_DateToSystemTime.utc_wMinute = VBA.minute(utc_Value)

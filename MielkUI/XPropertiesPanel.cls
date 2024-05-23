@@ -374,12 +374,12 @@ Friend Sub arrangeLines()
         For Each key In pLines.keys
             Set line = pLines.item(key)
             If line.isVisible Then
-                Call line.move(pHorizontalPadding, top)
+                Call line.Move(pHorizontalPadding, top)
                 right = line.getRight
                 If right > pRight Then pRight = right
                 top = top + pLineHeight
             Else
-                Call line.move(pHorizontalPadding, 0 - pLineHeight)
+                Call line.Move(pHorizontalPadding, 0 - pLineHeight)
             End If
         Next key
         pBottom = top
@@ -415,12 +415,12 @@ Private Sub updateSize()
         '[Height]
         If pHeight >= 0 Then
             .height = pHeight
-        ElseIf pMinHeight > 0 And lastPoint.y < pMinHeight Then
+        ElseIf pMinHeight > 0 And lastPoint.Y < pMinHeight Then
             .height = pMinHeight
-        ElseIf pMaxHeight > 0 And lastPoint.y > pMaxHeight Then
+        ElseIf pMaxHeight > 0 And lastPoint.Y > pMaxHeight Then
             .height = pMaxHeight
         Else
-            .height = lastPoint.y
+            .height = lastPoint.Y
         End If
         
     End With
@@ -439,8 +439,8 @@ Private Sub updateScrollBars()
         .ScrollBars = fmScrollBarsNone
         
         '[Vertical scroll bar]
-        .ScrollHeight = lastPoint.y
-        If lastPoint.y > .InsideHeight Then
+        .ScrollHeight = lastPoint.Y
+        If lastPoint.Y > .InsideHeight Then
             .ScrollBars = .ScrollBars + fmScrollBarsVertical
             .scrollTop = 0
         End If

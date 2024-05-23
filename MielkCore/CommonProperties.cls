@@ -48,6 +48,7 @@ Private Sub insertEnumOptions()
     '[Common - processing]
     Call addEnumOption("DbProp")
     Call addEnumOption("Index", "index")
+    Call addEnumOption("IsDate")
     Call addEnumOption("Item")
     Call addEnumOption("Items")
     Call addEnumOption("Message")
@@ -55,6 +56,10 @@ Private Sub insertEnumOptions()
     Call addEnumOption("Method")
     Call addEnumOption("Parent")
     Call addEnumOption("Prop")
+    Call addEnumOption("Regex")
+    Call addEnumOption("Required")
+    Call addEnumOption("Validation")
+    Call addEnumOption("Warning")
 
     '[Common - status]
     Call addEnumOption("IsActive", "is_active")
@@ -65,6 +70,7 @@ Private Sub insertEnumOptions()
     Call addEnumOption("IsIncluded", "is_included")
     Call addEnumOption("IsMissing", "is_missing")
     Call addEnumOption("IsSelected")
+    Call addEnumOption("IsValid")
     Call addEnumOption("Status", "status")
     
     '[Common - date & time]
@@ -84,13 +90,15 @@ Private Sub insertEnumOptions()
     Call addEnumOption("Header", "header")
     Call addEnumOption("Layout")
     Call addEnumOption("WindowTitle")
-
+    
     '[Common - sheets & ranges]
     Call addEnumOption("Column")
+    Call addEnumOption("ColumnIndex")
     Call addEnumOption("Columns")
     Call addEnumOption("Range")
     Call addEnumOption("RangeName")
     Call addEnumOption("Row")
+    Call addEnumOption("RowIndex")
     Call addEnumOption("Rows")
     Call addEnumOption("Shape")
     Call addEnumOption("Sheet")
@@ -114,14 +122,21 @@ Private Sub insertEnumOptions()
     Call addEnumOption("FileType", "file_type")
     Call addEnumOption("FolderPath", "folder_path")
     Call addEnumOption("SourceFilePath", "source_file_path")
-
+    
     '[Common - Developers]
     Call addEnumOption("ProjectName", "project_name")
     Call addEnumOption("ProjectCodeName", "project_code_name")
     Call addEnumOption("References", "references")
     Call addEnumOption("RefName", "ref_name")
     Call addEnumOption("RefFilePath", "ref_file_path")
-
+    
+    '[Common - events handling]
+    Call addEnumOption("KeyCode")
+    Call addEnumOption("Shift")
+    Call addEnumOption("Button")
+    Call addEnumOption("XPos")
+    Call addEnumOption("YPos")
+    
 End Sub
 
 Private Sub addEnumOption(name As String, Optional ByVal dbField As String)
@@ -162,7 +177,7 @@ End Function
 
 '[Common - basic]
 Public Function Alias() As enumProperty: Set Alias = ByName("Alias"): End Function
-Public Function Id() As enumProperty: Set Id = ByName("Id"): End Function
+Public Function id() As enumProperty: Set id = ByName("Id"): End Function
 Public Function key() As enumProperty: Set key = ByName("Key"): End Function
 Public Function name() As enumProperty: Set name = ByName("Name"): End Function
 Public Function Uuid() As enumProperty: Set Uuid = ByName("Uuid"): End Function
@@ -179,14 +194,19 @@ Public Function Version() As enumProperty: Set Version = ByName("Version"): End 
 
 '[Common - processing]
 Public Function DbProp() As enumProperty: Set DbProp = ByName("DbProp"): End Function
-Public Function Index() As enumProperty: Set Index = ByName("Index"): End Function
-Public Function Item() As enumProperty: Set Item = ByName("Item"): End Function
-Public Function Items() As enumProperty: Set Items = ByName("Items"): End Function
+Public Function index() As enumProperty: Set index = ByName("Index"): End Function
+Public Function IsDate() As enumProperty: Set IsDate = ByName("IsDate"): End Function
+Public Function item() As enumProperty: Set item = ByName("Item"): End Function
+Public Function items() As enumProperty: Set items = ByName("Items"): End Function
 Public Function message() As enumProperty: Set message = ByName("Message"): End Function
 Public Function Messages() As enumProperty: Set Messages = ByName("Messages"): End Function
 Public Function Method() As enumProperty: Set Method = ByName("Method"): End Function
 Public Function Parent() As enumProperty: Set Parent = ByName("Parent"): End Function
 Public Function Prop() As enumProperty: Set Prop = ByName("Prop"): End Function
+Public Function regex() As enumProperty: Set regex = ByName("Regex"): End Function
+Public Function Required() As enumProperty: Set Required = ByName("Required"): End Function
+Public Function Validation() As enumProperty: Set Validation = ByName("Validation"): End Function
+Public Function Warning() As enumProperty: Set Warning = ByName("Warning"): End Function
 
 '[Common - status]
 Public Function IsActive() As enumProperty: Set IsActive = ByName("IsActive"): End Function
@@ -197,6 +217,7 @@ Public Function IsFixed() As enumProperty: Set IsFixed = ByName("IsFixed"): End 
 Public Function IsIncluded() As enumProperty: Set IsIncluded = ByName("IsIncluded"): End Function
 Public Function IsMissing() As enumProperty: Set IsMissing = ByName("IsMissing"): End Function
 Public Function IsSelected() As enumProperty: Set IsSelected = ByName("IsSelected"): End Function
+Public Function IsValid() As enumProperty: Set IsValid = ByName("IsValid"): End Function
 Public Function Status() As enumProperty: Set Status = ByName("Status"): End Function
     
 '[Common - date & time]
@@ -204,30 +225,32 @@ Public Function Date_() As enumProperty: Set Date_ = ByName("Date_"): End Functi
 Public Function Dates() As enumProperty: Set Dates = ByName("Dates"): End Function
 Public Function EndDate() As enumProperty: Set EndDate = ByName("EndDate"): End Function
 Public Function EndMonth() As enumProperty: Set EndMonth = ByName("EndMonth"): End Function
-Public Function Month() As enumProperty: Set Month = ByName("Month"): End Function
+Public Function month() As enumProperty: Set month = ByName("Month"): End Function
 Public Function StartDate() As enumProperty: Set StartDate = ByName("StartDate"): End Function
 Public Function StartMonth() As enumProperty: Set StartMonth = ByName("StartMonth"): End Function
-Public Function Timestamp() As enumProperty: Set Timestamp = ByName("Timestamp"): End Function
-Public Function Year() As enumProperty: Set Year = ByName("Year"): End Function
+Public Function timestamp() As enumProperty: Set timestamp = ByName("Timestamp"): End Function
+Public Function year() As enumProperty: Set year = ByName("Year"): End Function
 
 '[Common - user forms]
-Public Function Caption() As enumProperty: Set Caption = ByName("Caption"): End Function
+Public Function caption() As enumProperty: Set caption = ByName("Caption"): End Function
 Public Function ContextMenu() As enumProperty: Set ContextMenu = ByName("ContextMenu"): End Function
 Public Function Header() As enumProperty: Set Header = ByName("Header"): End Function
 Public Function Layout() As enumProperty: Set Layout = ByName("Layout"): End Function
-Public Function WindowTitle() As enumProperty: Set WindowTitle = ByName("WindowTitle"): End Function
+Public Function windowTitle() As enumProperty: Set windowTitle = ByName("WindowTitle"): End Function
 
 '[Common - sheets & ranges]
-Public Function Column() As enumProperty: Set Column = ByName("Column"): End Function
-Public Function Columns() As enumProperty: Set Columns = ByName("Columns"): End Function
+Public Function column() As enumProperty: Set column = ByName("Column"): End Function
+Public Function columnIndex() As enumProperty: Set columnIndex = ByName("columnIndex"): End Function
+Public Function columns() As enumProperty: Set columns = ByName("Columns"): End Function
 Public Function Range() As enumProperty: Set Range = ByName("Range"): End Function
 Public Function RangeName() As enumProperty: Set RangeName = ByName("RangeName"): End Function
 Public Function Row() As enumProperty: Set Row = ByName("Row"): End Function
+Public Function RowIndex() As enumProperty: Set RowIndex = ByName("RowIndex"): End Function
 Public Function Rows() As enumProperty: Set Rows = ByName("Rows"): End Function
 
-Public Function Shape() As enumProperty: Set Shape = ByName("Shape"): End Function
+Public Function shape() As enumProperty: Set shape = ByName("Shape"): End Function
 Public Function Sheet() As enumProperty: Set Sheet = ByName("Sheet"): End Function
-Public Function SheetName() As enumProperty: Set SheetName = ByName("SheetName"): End Function
+Public Function sheetName() As enumProperty: Set sheetName = ByName("SheetName"): End Function
 
 '[Common - Styling]
 Public Function Styles() As enumProperty: Set Styles = ByName("Styles"): End Function
@@ -240,11 +263,11 @@ Public Function Ribbon() As enumProperty: Set Ribbon = ByName("Ribbon"): End Fun
 '[Common - file types & paths]
 Public Function DestinationFilePath() As enumProperty: Set DestinationFilePath = ByName("DestinationFilePath"): End Function
 Public Function FileCreator() As enumProperty: Set FileCreator = ByName("FileCreator"): End Function
-Public Function FileName() As enumProperty: Set FileName = ByName("FileName"): End Function
-Public Function filePath() As enumProperty: Set filePath = ByName("FilePath"): End Function
+Public Function fileName() As enumProperty: Set fileName = ByName("FileName"): End Function
+Public Function filepath() As enumProperty: Set filepath = ByName("FilePath"): End Function
 Public Function FileSize() As enumProperty: Set FileSize = ByName("FileSize"): End Function
 Public Function FileTimestamp() As enumProperty: Set FileTimestamp = ByName("FileTimestamp"): End Function
-Public Function FileType() As enumProperty: Set FileType = ByName("FileType"): End Function
+Public Function fileType() As enumProperty: Set fileType = ByName("FileType"): End Function
 Public Function folderPath() As enumProperty: Set folderPath = ByName("FolderPath"): End Function
 Public Function sourceFilePath() As enumProperty: Set sourceFilePath = ByName("SourceFilePath"): End Function
 
@@ -254,3 +277,10 @@ Public Function ProjectCodeName() As enumProperty: Set ProjectCodeName = ByName(
 Public Function References() As enumProperty: Set References = ByName("References"): End Function
 Public Function RefName() As enumProperty: Set RefName = ByName("RefName"): End Function
 Public Function RefFilePath() As enumProperty: Set RefFilePath = ByName("RefFilePath"): End Function
+
+'[Common - events handling]
+Public Function KeyCode() As enumProperty: Set KeyCode = ByName("KeyCode"): End Function
+Public Function Shift() As enumProperty: Set Shift = ByName("Shift"): End Function
+Public Function Button() As enumProperty: Set Button = ByName("Button"): End Function
+Public Function XPos() As enumProperty: Set XPos = ByName("XPos"): End Function
+Public Function YPos() As enumProperty: Set YPos = ByName("YPos"): End Function

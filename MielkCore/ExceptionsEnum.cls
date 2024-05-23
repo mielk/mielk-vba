@@ -11,6 +11,7 @@ Option Explicit
 
 Private Const CLASS_NAME As String = "ExceptionsEnum"
 '----------------------------------------------------------------------------------------------------------
+Private Const ERR_CUSTOM_NUMBER As Long = 1
 '[Values]
 Private Const ERR_VALUES_ILLEGAL_DATA_TYPE As Long = 13
 Private Const ERR_VALUES_ILLEGAL_VALUE As Long = 2001
@@ -55,6 +56,10 @@ Private pExceptionsByNumber As Scripting.Dictionary
 '[Static constants]
 Public Function DESCRIPTION_PATTERN() As String
     DESCRIPTION_PATTERN = "{0} ({1})"
+End Function
+
+Public Function CUSTOM_NUMBER() As String
+    CUSTOM_NUMBER = ERR_CUSTOM_NUMBER
 End Function
 
 
@@ -118,16 +123,16 @@ Private Sub initializeExceptions()
 End Sub
 
 Private Sub addException(number As Long, name As String)
-    Dim Item As Exception
+    Dim item As Exception
     '----------------------------------------------------------------------------------------------------------
     
-    Set Item = New Exception
-    With Item
+    Set item = New Exception
+    With item
         Call .setNumber(number)
         Call .setName(name)
         
         '[Add to repositories]
-        Call pExceptionsByNumber.add(number, Item)
+        Call pExceptionsByNumber.Add(number, item)
     End With
     
 End Sub

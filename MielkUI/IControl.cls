@@ -40,10 +40,10 @@ Public Function getRectangle() As RECT
 End Function
 
 
-Public Function move(Optional x As Variant, Optional y As Variant) As IControl
+Public Function Move(Optional x As Variant, Optional Y As Variant) As IControl
 End Function
 
-Public Function offset(Optional x As Single, Optional y As Single) As IControl
+Public Function offset(Optional x As Single, Optional Y As Single) As IControl
 End Function
 
 Public Sub alignVertically(baseCtrl As MSForms.control)

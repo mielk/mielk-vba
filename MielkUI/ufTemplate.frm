@@ -38,7 +38,7 @@ Private Sub UserForm_Activate()
     
     Call ErrorManager.clear
     
-    Call UI.Forms.hideTitleBarAndBorder(Me)
+    Call UI.Forms.HideTitleBarAndBorder(Me)
     Call UI.Forms.makeUserFormTransparent(Me, TRANSPARENCY_LAYER_COLOR)
     
     '[Run underlying method if it is specified]

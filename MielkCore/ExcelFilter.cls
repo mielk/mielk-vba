@@ -40,7 +40,7 @@ Public Sub readFromSheet(Optional wks As Excel.Worksheet)
     
     If Not wks Is Nothing Then Set pSheet = wks
     
-    If f.Sheets.isValid(pSheet) Then
+    If f.sheets.IsValid(pSheet) Then
         With pSheet
             '[Meta properties]
             pHasFilter = .AutoFilterMode
@@ -51,10 +51,10 @@ Public Sub readFromSheet(Optional wks As Excel.Worksheet)
                 With .AutoFilter
                     Set pRange = .Range
                     Set pFilters = f.dictionaries.Create(False)
-                    For Each filter In .Filters
+                    For Each filter In .filters
                         counter = counter + 1
                         If filter.On Then
-                            Call pFilters.add(counter, getFilterPropsDictionary(filter, counter))
+                            Call pFilters.Add(counter, getFilterPropsDictionary(filter, counter))
                         End If
                     Next filter
                 End With
@@ -65,11 +65,11 @@ Public Sub readFromSheet(Optional wks As Excel.Worksheet)
     
 End Sub
 
-Private Function getFilterPropsDictionary(filter As Excel.filter, Index As Long) As Scripting.Dictionary
+Private Function getFilterPropsDictionary(filter As Excel.filter, index As Long) As Scripting.Dictionary
     Dim filterActive As Boolean
     Dim dict As Scripting.Dictionary
     Dim criteria As Scripting.Dictionary
-    Dim Key As Variant
+    Dim key As Variant
     Dim criteriaValue As Variant
     '------------------------------------------------------------------------------------------------------
     
@@ -81,28 +81,28 @@ Private Function getFilterPropsDictionary(filter As Excel.filter, Index As Long)
         Set getFilterPropsDictionary = f.dictionaries.Create(False)
         
         With filter
-            Call getFilterPropsDictionary.add(FILTER_OPERATOR, f.Math.coalesce(.operator, xlFilterValues))
+            Call getFilterPropsDictionary.Add(FILTER_OPERATOR, f.Math.coalesce(.operator, xlFilterValues))
             '[Criteria1]
             Set criteria = f.dictionaries.Create(False)
             With criteria
                 On Error Resume Next
-                Call .add(CRITERIA_1, filter.criteria1)
-                Call .add(CRITERIA_2, filter.criteria2)
+                Call .Add(CRITERIA_1, filter.criteria1)
+                Call .Add(CRITERIA_2, filter.criteria2)
                 '###if not errHandler
                 
                 If f.dictionaries.isNonEmptyDictionary(criteria) Then
-                    For Each Key In .Keys
-                        If Not f.Variables.isUndefined(.Item(Key)) Then
-                            Call f.Variables.assign(criteriaValue, getFilterCriteriaValue(.Item(Key), filter))
+                    For Each key In .Keys
+                        If Not f.Variables.isUndefined(.item(key)) Then
+                            Call f.Variables.assign(criteriaValue, getFilterCriteriaValue(.item(key), filter))
                             If Not f.Variables.isUndefined(criteriaValue) Then
-                                Call getFilterPropsDictionary.add(Key, f.dictionaries.createWithItems(False, KeyValue(VALUE_____, criteriaValue)))
+                                Call getFilterPropsDictionary.Add(key, f.dictionaries.createWithItems(False, KeyValue(VALUE_____, criteriaValue)))
                             End If
                         End If
-                    Next Key
+                    Next key
                 Else
-                    Call f.Variables.assign(criteriaValue, getCriteriaValueFromSheet(filter, Index))
+                    Call f.Variables.assign(criteriaValue, getCriteriaValueFromSheet(filter, index))
                     If Not f.Variables.isUndefined(criteriaValue) Then
-                        Call getFilterPropsDictionary.add(FROM_SHEET, criteriaValue)
+                        Call getFilterPropsDictionary.Add(FROM_SHEET, criteriaValue)
                     End If
                 End If
                 
@@ -123,7 +123,7 @@ Private Function getFilterCriteriaValue(value As Variant, filter As Excel.filter
     End Select
 End Function
 
-Private Function getCriteriaValueFromSheet(filter As Excel.filter, Index As Long) As Scripting.Dictionary
+Private Function getCriteriaValueFromSheet(filter As Excel.filter, index As Long) As Scripting.Dictionary
     Dim Parent As AutoFilter
     Dim rng As Excel.Range
     Dim visibleCells As Excel.Range
@@ -139,21 +139,21 @@ Private Function getCriteriaValueFromSheet(filter As Excel.filter, Index As Long
     
     If Not Parent Is Nothing Then
         Set rng = Parent.Range
-        If f.ranges.isValid(rng) Then
-            If rng.Columns.count >= Index Then
+        If f.ranges.IsValid(rng) Then
+            If rng.columns.count >= index Then
                 On Error Resume Next
-                Set visibleCells = rng.Columns(Index).SpecialCells(xlCellTypeVisible)
+                Set visibleCells = rng.columns(index).SpecialCells(xlCellTypeVisible)
                 '### errHandler
             End If
         End If
         
         Set dict = f.dictionaries.Create(False)
-        If f.ranges.isValid(visibleCells) Then
+        If f.ranges.IsValid(visibleCells) Then
             For Each cell In visibleCells
-                If cell.row <> rng.row Then
-                    isDateValue = VBA.IIf(isDateValue, isDateValue, VBA.isDate(cell.value))
+                If cell.Row <> rng.Row Then
+                    isDateValue = VBA.IIf(isDateValue, isDateValue, VBA.IsDate(cell.value))
                     If Not dict.exists(cell.value2) Then
-                        Call dict.add(cell.value2, vbNullString)
+                        Call dict.Add(cell.value2, vbNullString)
                     End If
                 End If
             Next cell
@@ -162,14 +162,14 @@ Private Function getCriteriaValueFromSheet(filter As Excel.filter, Index As Long
     End If
     
     If f.dictionaries.isNonEmptyDictionary(dict) Then
-        Call getCriteriaValueFromSheet.add(VALUE_____, dict.Keys)
-        Call getCriteriaValueFromSheet.add(IS_DATE, isDateValue)
+        Call getCriteriaValueFromSheet.Add(VALUE_____, dict.Keys)
+        Call getCriteriaValueFromSheet.Add(IS_DATE, isDateValue)
     End If
     
 End Function
 
 Public Sub removeFilter()
-    If f.Sheets.isValid(pSheet) Then
+    If f.sheets.IsValid(pSheet) Then
         If pSheet.FilterMode Then
             pSheet.AutoFilterMode = False
         End If
@@ -177,40 +177,41 @@ Public Sub removeFilter()
 End Sub
 
 Public Sub applyFilter()
-    Dim Index As Variant
+    Dim index As Variant
     Dim dictCriteria As Scripting.Dictionary
     Dim operator As XlAutoFilterOperator
     Dim criteria1 As Scripting.Dictionary
     Dim criteria2 As Scripting.Dictionary
     Dim fromSheet As Scripting.Dictionary
-    Dim isDate As Boolean
+    Dim IsDate As Boolean
     '------------------------------------------------------------------------------------------------------
     
-    If f.Sheets.isValid(pSheet) Then
+    If f.sheets.IsValid(pSheet) Then
         If pHasFilter Then
             If pIsActive Then
                 pSheet.AutoFilterMode = False
                 Call pRange.AutoFilter
                 'Call pRange.AutoFilter
                 If f.dictionaries.isNonEmptyDictionary(pFilters) Then
-                    For Each Index In pFilters.Keys
-                        If Index > 0 And Index < pRange.Columns.count Then
-                            Set dictCriteria = pFilters.Item(Index)
+                    For Each index In pFilters.Keys
+                        If index > 0 And index < pRange.columns.count Then
+                            Set dictCriteria = pFilters.item(index)
                             operator = f.dictionaries.getItem(dictCriteria, FILTER_OPERATOR)
                             Set criteria1 = f.dictionaries.getObject(dictCriteria, CRITERIA_1)
                             Set criteria2 = f.dictionaries.getObject(dictCriteria, CRITERIA_2)
                             Set fromSheet = f.dictionaries.getObject(dictCriteria, FROM_SHEET)
-                            isDate = f.dictionaries.getItem(fromSheet, IS_DATE)
+                            IsDate = f.dictionaries.getItem(fromSheet, IS_DATE)
                             
                             If Not criteria2 Is Nothing Then
-                                Call pRange.AutoFilter(Field:=Index, criteria1:=getCriteriaValueFromJson(f.dictionaries.getItem(dictCriteria, CRITERIA_1)), operator:=operator, criteria2:=getCriteriaValueFromJson(f.dictionaries.getItem(dictCriteria, CRITERIA_2)))
+                                Call pRange.AutoFilter(Field:=index, criteria1:=getCriteriaValueFromJson(f.dictionaries.getItem(dictCriteria, CRITERIA_1)), operator:=operator, criteria2:=getCriteriaValueFromJson(f.dictionaries.getItem(dictCriteria, CRITERIA_2)))
                             ElseIf Not criteria1 Is Nothing Then
-                                Call pRange.AutoFilter(Field:=Index, criteria1:=getCriteriaValueFromJson(f.dictionaries.getItem(dictCriteria, CRITERIA_1)), operator:=operator)
+                                Call pRange.AutoFilter(Field:=index, criteria1:=getCriteriaValueFromJson(f.dictionaries.getItem(dictCriteria, CRITERIA_1)), operator:=operator)
                             ElseIf Not fromSheet Is Nothing Then
-                                Call pRange.AutoFilter(Field:=Index, criteria2:=getCriteriaValueFromJson(f.dictionaries.getItem(dictCriteria, fromSheet), isDate), operator:=operator)
+                                'Call pRange.AutoFilter(Field:=index, criteria2:=getCriteriaValueFromJson(f.dictionaries.getItem(dictCriteria, CRITERIA_1), isDate), operator:=operator)
+                                Call pRange.AutoFilter(Field:=index, criteria2:=getCriteriaValueFromJson(f.dictionaries.getItem(dictCriteria, fromSheet), IsDate), operator:=operator)
                             End If
                         End If
-                    Next Index
+                    Next index
                     
                 End If
                 
@@ -220,15 +221,15 @@ Public Sub applyFilter()
     
 End Sub
 
-Public Function getCriteriaValueFromJson(dict As Scripting.Dictionary, Optional isDate As Boolean = False) As Variant
+Public Function getCriteriaValueFromJson(dict As Scripting.Dictionary, Optional IsDate As Boolean = False) As Variant
     If f.dictionaries.isNonEmptyDictionary(dict) Then
         If Not dict.exists(VALUE_____) Then
-        ElseIf isDate Then
-            getCriteriaValueFromJson = createDatesFilterArray(dict.Item(VALUE_____))
-        ElseIf VBA.IsObject(dict.Item(VALUE_____)) Then
-            Set getCriteriaValueFromJson = dict.Item(VALUE_____)
+        ElseIf IsDate Then
+            getCriteriaValueFromJson = createDatesFilterArray(dict.item(VALUE_____))
+        ElseIf VBA.IsObject(dict.item(VALUE_____)) Then
+            Set getCriteriaValueFromJson = dict.item(VALUE_____)
         Else
-            getCriteriaValueFromJson = dict.Item(VALUE_____)
+            getCriteriaValueFromJson = dict.item(VALUE_____)
             If f.Variables.isString(getCriteriaValueFromJson) Then
                 If f.strings.startsWith(VBA.CStr(getCriteriaValueFromJson), "=") Then
                     getCriteriaValueFromJson = VBA.mid$(getCriteriaValueFromJson, 2)
@@ -248,8 +249,8 @@ Public Function createDatesFilterArray(arr As Variant) As Variant
         Set col = New VBA.Collection
         For i = LBound(arr) To UBound(arr)
             d = arr(i)
-            Call col.add(2)
-            Call col.add(VBA.replace(VBA.format(d, "m/d/yyyy"), "-", "/"))
+            Call col.Add(2)
+            Call col.Add(VBA.replace(VBA.format(d, "m/d/yyyy"), "-", "/"))
         Next i
     End If
     

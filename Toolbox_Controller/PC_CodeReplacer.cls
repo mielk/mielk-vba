@@ -87,7 +87,7 @@ End Sub
 Public Sub process()
     Dim project As EProject
     Dim files As VBA.Collection
-    Dim varfilepath As Variant
+    Dim varFilePath As Variant
     '[For Items Processor updates] ------------------------------------------------------------------------
     Dim caption As String
     Dim counter As Long
@@ -104,22 +104,22 @@ Public Sub process()
     Set project = pParent.getProject
 
     Set files = f.files.getFolderFiles(project.getFolderPath, False, MACRO_FILE_REGEX_PATTERN)
-    For Each varfilepath In files
+    For Each varFilePath In files
         
         '[Updating ItemsProcessor progress bar] ---------------------------------------------|
-        caption = f.Strings.Format(Msg.getText(PBAR_ADJUSTING_CODE), varfilepath)           '|
+        caption = f.Strings.Format(Msg.getText(PBAR_ADJUSTING_CODE), varFilePath)           '|
         Call pParent.getProcessor.triggerDetailStatusUpdate(caption, counter / files.Count) '|
         counter = counter + 1                                                               '|
         '------------------------------------------------------------------------------------|
         
         '------------------------------------------------------------------------------------|
-        Set validation = replaceSingleFile(VBA.CStr(varfilepath))                           '|
+        Set validation = replaceSingleFile(VBA.CStr(varFilePath))                           '|
         If validation.getStatus = ItemProcessStatus_Error Then                              '|
             Call pErrors.Add(validation.getMessage)                                         '|
         End If                                                                              '|
         '------------------------------------------------------------------------------------|
         
-    Next varfilepath
+    Next varFilePath
     
 '==========================================================================================================
 ExitPoint:
@@ -134,7 +134,7 @@ errHandler:
 End Sub
 
 
-Private Function replaceSingleFile(filepath As String) As ValidationObject
+Private Function replaceSingleFile(filePath As String) As ValidationObject
     Const SUCCESS_MESSAGE_PATTERN As String = VB_COMPONENT_FULL_NAME_PATTERN
     Const FAILURE_MESSAGE_PATTERN As String = ERROR_CONVERTING_COMPONENT
     Const GENERAL_FAILURE_MESSAGE_PATTERN As String = ERROR_CONVERTING_PROJECT
@@ -148,10 +148,10 @@ Private Function replaceSingleFile(filepath As String) As ValidationObject
     
     On Error GoTo errHandler
     
-    Set wkb = f.Books.open_(filepath, False, pParent.getNoMacrosExcel)
+    Set wkb = f.Books.open_(filePath, False, pParent.getNoMacrosExcel)
     Set project = f.Developer.getVbProject(wkb) ' ByName(filepath, pExcel)
     If project Is Nothing Then
-        message = f.Strings.Format(Msg.getText(ERROR_OPENING_VBA_PROJECT), filepath)
+        message = f.Strings.Format(Msg.getText(ERROR_OPENING_VBA_PROJECT), filePath)
         Call VBA.Err.Raise(1, , message)
     Else
         
