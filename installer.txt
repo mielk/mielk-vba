@@ -1,0 +1,102 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Updating Mediaplan macro to latest version</title>
+	<script type="text/javascript">window.resizeTo(500, 94);</script>
+
+	<HTA:APPLICATION
+	  APPLICATIONNAME="Updating Mediaplan macro to the latest version"
+	  ICON="https://mielk.pl/octopus_logo.ico"
+	  ID="mp_installer"
+	  MAXIMIZEBUTTON="NO"
+	  MINIMIZEBUTTON="NO"
+	  BORDER="thin"
+	  BORDERSTYLE="normal"
+	  INNERBORDER="no"
+	  SELECTION="no"
+	  VERSION="1.0"
+	  SINGLEINSTANCE="yes"
+	  SHOWINTASKBAR="yes"
+	  SCROLLFLAT="yes"
+	  SCROLL="no"/>
+
+	<style type="text/css">
+		html { 
+			width: 100%; 
+			height: 100%; 
+		}
+		body {
+			background-color: #fff;
+			margin: 0;
+			width: 100%;
+			height: 100%;
+		}
+		#progress {
+			width: 470px;
+			height: 32px;
+			margin: 6px;
+			border: 1px solid #ddd;
+		}
+		#progressCaption {
+			position: fixed;
+			width: 470px;
+			height: 32px;
+			margin: 0;
+			padding: 3px 0;
+			border: none;
+			text-align: center;
+			font-size: 22px;
+			font-color: #000;
+			font-family: 'Century Gothic'
+			line-height: 32px;
+		}
+		#progressBar {
+			position: fixed;
+			background-color: red;
+			width: 0px;
+			height: 34px;
+			margin: 0;
+			margin-top: -1px;
+			padding: 0;
+			border: none;
+			border-right: 1px solid #ddd;
+		}
+
+	</style>
+</head>
+
+<script language="VBScript">
+Option Explicit
+
+Sub Window_OnLoad
+	Dim posX, posY
+	posX = CInt( ( window.screen.width  - document.body.offsetWidth  ) / 2 )
+	posY = CInt( ( window.screen.height - document.body.offsetHeight ) / 2 )
+	If posX < 0 Then posX = 0
+	If posY < 0 Then posY = 0
+	window.moveTo posX, posY
+End Sub
+
+
+Sub updateProgress(value)
+	document.getElementById("progressBar").style.width = CInt(4.7 * value) & "px"
+	document.getElementById("progressCaption").innerHtml = value & "%"
+End Sub
+	
+
+window.setTimeout "run", 1000, "VBScript"
+
+
+Sub run()
+End Sub
+	
+
+</script>
+
+<body>
+	<div id="progress">
+		<div id="progressBar"></div>
+		<div id="progressCaption">0%</div>
+	</div>
+</body>
+</html>
