@@ -94,7 +94,7 @@ End Type
 Private Type SECURITY_DESCRIPTOR
         Revision As Byte
         Sbz1 As Byte
-        control As Long
+        Control As Long
         Owner As Long
         group As Long
         Sacl As ACL
@@ -996,10 +996,10 @@ Private Function GetSystemErrorMessageText(ErrorNumber As Long) As String
         Exit Function
     End If
 
-    ErrorText = VBA.left$(ErrorText, VBA.CLng(FormatMessageResult))
+    ErrorText = VBA.Left$(ErrorText, VBA.CLng(FormatMessageResult))
     If VBA.Len(ErrorText) >= 2 Then
-        If VBA.right$(ErrorText, 2) = vbCrLf Then
-            ErrorText = VBA.left$(ErrorText, Len(ErrorText) - 2)
+        If VBA.Right$(ErrorText, 2) = vbCrLf Then
+            ErrorText = VBA.Left$(ErrorText, Len(ErrorText) - 2)
         End If
     End If
     
@@ -1046,7 +1046,7 @@ Private Function trimToNull(text As String, Optional reverse As Boolean = False)
     End If
     
     If pos Then
-        trimToNull = VBA.left(text, pos - 1)
+        trimToNull = VBA.Left(text, pos - 1)
     Else
         trimToNull = text
     End If

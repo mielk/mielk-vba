@@ -135,7 +135,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -182,7 +182,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -223,7 +223,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -293,7 +293,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -352,7 +352,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), _
                                                                         KeyValue("dimension", dimension))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -405,7 +405,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -473,7 +473,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
                                                 KeyValue("allowDifferentIndexing", allowDifferentIndexing))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -505,7 +505,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
                                                 KeyValue("allowDifferentIndexing", allowDifferentIndexing))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -561,7 +561,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -622,7 +622,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("index", index), _
                                                     KeyValue("dimension", dimension), KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -701,7 +701,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
     '----------------------------------------------------------------------------------------------------------
 AssigningExceptionHandler:
@@ -710,7 +710,7 @@ AssigningExceptionHandler:
     errDescription = Exceptions.IllegalDataType.getDescription
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Sub
 
@@ -785,7 +785,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
             KeyValue("ignoreIndexingBase", ignoreIndexingBase), KeyValue("strictDataType", strictDataType))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -817,7 +817,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
                                                                 KeyValue("strictDataType", strictDataType))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -856,7 +856,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
                                                                 KeyValue("strictDataType", strictDataType))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -881,7 +881,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -966,7 +966,7 @@ ErrHandler:
             KeyValue("rowSeparator", rowSeparator), KeyValue("rowStartTag", rowStartTag), _
             KeyValue("rowEndTag", rowEndTag), KeyValue("skipHeader", skipHeader))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -1012,7 +1012,7 @@ ErrHandler:
             KeyValue("itemStartTag", itemStartTag), KeyValue("itemEndTag", itemEndTag), _
             KeyValue("skipHeader", skipHeader))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -1023,7 +1023,7 @@ Private Function arrayToString_2D(arr As Variant, stringifyMode As StringifyMode
     Const METHOD_NAME As String = "arrayToString_2D"
     '------------------------------------------------------------------------------------------------------
     Dim Rows() As String
-    Dim Row As Long
+    Dim row As Long
     Dim size As Long
     '------------------------------------------------------------------------------------------------------
 
@@ -1041,10 +1041,10 @@ Private Function arrayToString_2D(arr As Variant, stringifyMode As StringifyMode
     size = UBound(arr, 1) - LBound(arr, 1) + 1
     If size - VBA.IIf(skipHeader, 1, 0) > 0 Then
         ReDim Rows(LBound(arr, 1) + VBA.IIf(skipHeader, 1, 0) To UBound(arr, 1))
-        For Row = LBound(arr, 1) + VBA.IIf(skipHeader, 1, 0) To UBound(arr, 1)
-            Rows(Row) = rowStartTag & get2DArrayRowAsString(arr, stringifyMode, Row, _
+        For row = LBound(arr, 1) + VBA.IIf(skipHeader, 1, 0) To UBound(arr, 1)
+            Rows(row) = rowStartTag & get2DArrayRowAsString(arr, stringifyMode, row, _
                                                         colSeparator, colStartTag, colEndTag) & rowEndTag
-        Next Row
+        Next row
         arrayToString_2D = VBA.join(Rows, rowSeparator)
     End If
     
@@ -1062,11 +1062,11 @@ ErrHandler:
             KeyValue("rowSeparator", rowSeparator), KeyValue("rowStartTag", rowStartTag), _
             KeyValue("rowEndTag", rowEndTag), KeyValue("skipHeader", skipHeader))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
-Private Function get2DArrayRowAsString(arr As Variant, stringifyMode As StringifyModeEnum, Row As Long, _
+Private Function get2DArrayRowAsString(arr As Variant, stringifyMode As StringifyModeEnum, row As Long, _
                         itemsDelimiter As String, itemStartTag As String, itemEndTag As String) As String
     Const METHOD_NAME As String = "get2DArrayRowAsString"
     '------------------------------------------------------------------------------------------------------
@@ -1079,7 +1079,7 @@ Private Function get2DArrayRowAsString(arr As Variant, stringifyMode As Stringif
 
     ReDim items(LBound(arr, 2) To UBound(arr, 2))
     For column = LBound(arr, 2) To UBound(arr, 2)
-        itemText = f.strings.stringify(arr(Row, column), stringifyMode)
+        itemText = f.strings.stringify(arr(row, column), stringifyMode)
         items(column) = itemStartTag & itemText & itemEndTag
     Next column
     get2DArrayRowAsString = VBA.join(items, itemsDelimiter)
@@ -1096,7 +1096,7 @@ ErrHandler:
             KeyValue("stringifyMode", stringifyMode), KeyValue("itemsDelimiter", itemsDelimiter), _
             KeyValue("itemStartTag", itemStartTag), KeyValue("itemEndTag", itemEndTag))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -1143,7 +1143,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -1208,7 +1208,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -1247,7 +1247,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("sourceArr", sourceArr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
 End Function
 
@@ -1257,7 +1257,7 @@ Private Function convertTo2DArray_FromDictionary(value As Variant) As Variant
     Dim dict As Scripting.Dictionary
     Dim key As Variant
     Dim arr() As Variant
-    Dim counter As Long
+    Dim Counter As Long
     '------------------------------------------------------------------------------------------------------
 
     If Not DEV_MODE Then On Error GoTo ErrHandler
@@ -1269,9 +1269,9 @@ Private Function convertTo2DArray_FromDictionary(value As Variant) As Variant
     If f.dictionaries.isNonEmptyDictionary(dict) Then
         ReDim arr(1 To dict.count, 1 To 2)
         For Each key In dict.Keys
-            counter = counter + 1
-            Call f.Variables.assign(arr(counter, 1), key)
-            Call f.Variables.assign(arr(counter, 2), dict.item(key))
+            Counter = Counter + 1
+            Call f.Variables.assign(arr(Counter, 1), key)
+            Call f.Variables.assign(arr(Counter, 2), dict.item(key))
         Next key
     End If
 
@@ -1287,7 +1287,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
 End Function
 
@@ -1297,7 +1297,7 @@ Private Function convertTo2DArray_FromCollection(value As Variant) As Variant
     Dim col As Object
     Dim item As Variant
     Dim arr() As Variant
-    Dim counter As Long
+    Dim Counter As Long
     '------------------------------------------------------------------------------------------------------
     
     If Not DEV_MODE Then On Error GoTo ErrHandler
@@ -1309,8 +1309,8 @@ Private Function convertTo2DArray_FromCollection(value As Variant) As Variant
     If f.Collections.isNonEmptyCollection(col) Then
         ReDim arr(1 To col.count, 1 To 1)
         For Each item In col
-            counter = counter + 1
-            Call f.Variables.assign(arr(counter, 1), item)
+            Counter = Counter + 1
+            Call f.Variables.assign(arr(Counter, 1), item)
         Next item
     End If
 
@@ -1327,7 +1327,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
 End Function
 
@@ -1354,7 +1354,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
 End Function
 
@@ -1424,7 +1424,7 @@ ErrHandler:
                 KeyValue("strictDataType", strictDataType), KeyValue("isCaseSensitive", isCaseSensitive), _
                 KeyValue("trimIfValueIsString", trimIfValueIsString))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
 End Function
 
@@ -1489,7 +1489,7 @@ ErrHandler:
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -1521,7 +1521,7 @@ ErrHandler:
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
 End Function
 
@@ -1559,7 +1559,7 @@ ErrHandler:
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -1621,7 +1621,7 @@ ErrHandler:
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -1653,7 +1653,7 @@ ErrHandler:
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -1691,7 +1691,7 @@ ErrHandler:
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -1728,7 +1728,7 @@ ErrHandler:
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -1791,7 +1791,7 @@ ErrHandler:
                 KeyValue("startIndex", startIndex), KeyValue("endIndex", endIndex), _
                 KeyValue("absoluteIndex", absoluteIndex))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -1845,7 +1845,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
                 KeyValue("startIndex", startIndex), KeyValue("endIndex", endIndex))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -1890,7 +1890,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
                 KeyValue("startIndex", startIndex), KeyValue("endIndex", endIndex))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -1945,7 +1945,7 @@ Public Function slice2D_ByEndIndex(sourceArray As Variant, _
     Dim Rows As Long
     Dim columns As Long
     Dim i As Long
-    Dim Row As Long
+    Dim row As Long
     Dim j As Long
     Dim column As Long
     '------------------------------------------------------------------------------------------------------
@@ -1984,12 +1984,12 @@ Public Function slice2D_ByEndIndex(sourceArray As Variant, _
 
     ReDim arr(1 To Rows, 1 To columns)
     For i = 1 To Rows
-        Row = VBA.IIf(realEndRowIndex < realStartRowIndex, realStartRowIndex - i + 1, _
+        row = VBA.IIf(realEndRowIndex < realStartRowIndex, realStartRowIndex - i + 1, _
                                                                             realStartRowIndex + i - 1)
         For j = 1 To columns
             column = VBA.IIf(realEndColumnIndex < realStartColumnIndex, _
                                            realStartColumnIndex - j + 1, realStartColumnIndex + j - 1)
-            Call f.Variables.assign(arr(i, j), sourceArray(Row, column))
+            Call f.Variables.assign(arr(i, j), sourceArray(row, column))
         Next j
     Next i
 
@@ -2008,7 +2008,7 @@ ErrHandler:
                 KeyValue("startColumnIndex", startColumnIndex), _
                 KeyValue("endColumnIndex", endColumnIndex), KeyValue("absoluteIndex", absoluteIndex))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -2091,7 +2091,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
                         KeyValue("rowIndex", RowIndex), KeyValue("absoluteIndex", absoluteIndex))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -2177,7 +2177,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
                         KeyValue("columnIndex", columnIndex), KeyValue("absoluteIndex", absoluteIndex))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -2285,7 +2285,7 @@ ErrHandler:
                         KeyValue("isCaseSensitive", isCaseSensitive), _
                         KeyValue("trimWhenComparingStrings", trimWhenComparingStrings))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
 End Function
 
@@ -2742,7 +2742,9 @@ End Function
 
 Public Function fromRange(rng As Excel.Range, Optional ifPossibleTo1D As Boolean = True) As Variant
     Dim arr As Variant
+    Dim arrSheetIndices As Variant
     '------------------------------------------------------------------------------------------------------
+    
     If f.ranges.IsValid(rng) Then
         If rng.cells.count = 1 Then
             If ifPossibleTo1D Then
@@ -2760,6 +2762,7 @@ Public Function fromRange(rng As Excel.Range, Optional ifPossibleTo1D As Boolean
             fromRange = rng
         End If
     End If
+    
 End Function
 
 
@@ -2769,7 +2772,7 @@ Public Function fromParamArray(ParamArray items() As Variant) As Variant
     Dim isFirstItemArray As Boolean
     Dim isParamArray As Boolean
     Dim varItem As Variant
-    Dim counter As Long
+    Dim Counter As Long
     '------------------------------------------------------------------------------------------------------
     
     'Only one item should be passed to this function (array of values). However to allow
@@ -2782,12 +2785,12 @@ Public Function fromParamArray(ParamArray items() As Variant) As Variant
     If Not VBA.IsEmpty(arr) Then
     
         For Each varItem In arr
-            counter = counter + 1
+            Counter = Counter + 1
             If VBA.IsArray(varItem) Then isFirstItemArray = True
-            If counter > 1 Then Exit For
+            If Counter > 1 Then Exit For
         Next varItem
         
-        isParamArray = (counter = 1 And isFirstItemArray)
+        isParamArray = (Counter = 1 And isFirstItemArray)
         
         If isParamArray Then
             For Each varItem In items
@@ -2899,7 +2902,7 @@ Public Function flatArray(arr As Variant) As Variant
     '------------------------------------------------------------------------------------------------------
     Dim subArr As Variant
     Dim size As Long
-    Dim counter As Long
+    Dim Counter As Long
     '------------------------------------------------------------------------------------------------------
     
     If Not VBA.IsArray(arr) Then
@@ -2923,8 +2926,8 @@ Public Function flatArray(arr As Variant) As Variant
         ReDim result(1 To size)
         For Each subArr In col
             For i = LBound(subArr) To UBound(subArr)
-                counter = counter + 1
-                result(counter) = subArr(i)
+                Counter = Counter + 1
+                result(Counter) = subArr(i)
             Next i
         Next subArr
         
@@ -3322,7 +3325,7 @@ Private Sub populateArrayWithValuesFrom1DArray(ByRef sourceArray As Variant, ByR
 End Sub
 
 Private Sub populateArrayWithValuesFrom2DArray(ByRef sourceArray As Variant, ByRef destinationArray As Variant)
-    Dim Row As Long
+    Dim row As Long
     Dim column As Long
     Dim rowsIndexationDifference As Long
     Dim columnsIndexationDifference As Long
@@ -3331,12 +3334,12 @@ Private Sub populateArrayWithValuesFrom2DArray(ByRef sourceArray As Variant, ByR
     rowsIndexationDifference = LBound(destinationArray, 1) - LBound(sourceArray, 1)
     columnsIndexationDifference = LBound(destinationArray, 2) - LBound(sourceArray, 2)
 
-    For Row = LBound(sourceArray) To UBound(sourceArray)
+    For row = LBound(sourceArray) To UBound(sourceArray)
         For column = LBound(sourceArray, 2) To UBound(sourceArray, 2)
-            Call f.Variables.assign(destinationArray(Row + rowsIndexationDifference, column + columnsIndexationDifference), _
-                        sourceArray(Row, column))
+            Call f.Variables.assign(destinationArray(row + rowsIndexationDifference, column + columnsIndexationDifference), _
+                        sourceArray(row, column))
         Next column
-    Next Row
+    Next row
 End Sub
 
 Private Sub copyContentIntoStaticArray(ByRef sourceArray As Variant, ByRef destinationArray As Variant)

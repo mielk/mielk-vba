@@ -226,18 +226,18 @@ End Function
 
 Private Function mergeSort_1D(arr As Variant) As Variant ', column As Long, Optional ascending As Boolean = True) As Variant
     Dim mid As Long
-    Dim left As Variant
-    Dim right As Variant
-    Dim counter As Long:        counter = UBound(arr, 1) - LBound(arr, 1) + 1
+    Dim Left As Variant
+    Dim Right As Variant
+    Dim Counter As Long:        Counter = UBound(arr, 1) - LBound(arr, 1) + 1
     '------------------------------------------------------------------------------------------------------
     
-    If counter <= 1 Then
+    If Counter <= 1 Then
         mergeSort_1D = arr
     Else
-        mid = VBA.Int(counter / 2)
-        left = mergeSort_1D(f.arrays.slice(arr, LBound(arr, 1), mid, 1))
-        right = mergeSort_1D(f.arrays.slice(arr, LBound(arr, 1) + mid, counter - mid, 1))
-        mergeSort_1D = mergeArrays_1D(left, right)
+        mid = VBA.Int(Counter / 2)
+        Left = mergeSort_1D(f.arrays.slice(arr, LBound(arr, 1), mid, 1))
+        Right = mergeSort_1D(f.arrays.slice(arr, LBound(arr, 1) + mid, Counter - mid, 1))
+        mergeSort_1D = mergeArrays_1D(Left, Right)
     End If
     
 End Function
@@ -282,18 +282,18 @@ End Function
 
 Private Function mergeSort_2D(arr As Variant) As Variant ', column As Long, Optional ascending As Boolean = True) As Variant
     Dim mid As Long
-    Dim left As Variant
-    Dim right As Variant
-    Dim counter As Long:        counter = UBound(arr, 2) - LBound(arr, 2) + 1
+    Dim Left As Variant
+    Dim Right As Variant
+    Dim Counter As Long:        Counter = UBound(arr, 2) - LBound(arr, 2) + 1
     '------------------------------------------------------------------------------------------------------
     
-    If counter <= 1 Then
+    If Counter <= 1 Then
         mergeSort_2D = arr
     Else
-        mid = VBA.Int(counter / 2)
-        left = mergeSort_2D(f.arrays.slice(arr, LBound(arr, 2), mid, 2))
-        right = mergeSort_2D(f.arrays.slice(arr, LBound(arr, 2) + mid, counter - mid, 2))
-        mergeSort_2D = mergeArrays_2D(left, right)
+        mid = VBA.Int(Counter / 2)
+        Left = mergeSort_2D(f.arrays.slice(arr, LBound(arr, 2), mid, 2))
+        Right = mergeSort_2D(f.arrays.slice(arr, LBound(arr, 2) + mid, Counter - mid, 2))
+        mergeSort_2D = mergeArrays_2D(Left, Right)
     End If
     
 End Function
@@ -305,16 +305,17 @@ Private Function mergeArrays_2D(arr1 As Variant, arr2 As Variant) As Variant ', 
     Dim counter1 As Long:           counter1 = UBound(arr1, 2) - LBound(arr1, 2) + 1
     Dim counter2 As Long:           counter2 = UBound(arr2, 2) - LBound(arr2, 2) + 1
     Dim inserted As Long
-    Dim k As Long
+    Dim k As Long:
     '------------------------------------------------------------------------------------------------------
     
     ReDim result(LBound(arr2, 1) To UBound(arr2, 1), 1 To counter1 + counter2)
+    
     Do While (i <= counter1 And j <= counter2)
         inserted = inserted + 1
-        If (Not pOrderAscending And arr2(pSortColumn, j) > arr1(pSortColumn, i)) Or _
+        If ((Not pOrderAscending) And arr2(pSortColumn, j) > arr1(pSortColumn, i)) Or _
             (pOrderAscending And arr2(pSortColumn, j) < arr1(pSortColumn, i)) Then
             For k = LBound(arr2, 1) To UBound(arr2, 1)
-                Call f.Variables.assign(result(k, inserted), arr1(k, i))
+                Call f.Variables.assign(result(k, inserted), arr2(k, j))
             Next k
             j = j + 1
         Else

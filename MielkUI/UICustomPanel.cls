@@ -112,7 +112,7 @@ End Function
 
 Public Function addControl(value As Variant) As UICustomPanel
     Set addControl = Me
-    Call pControls.Add(value)
+    Call pControls.add(value)
 End Function
 
 Public Function setIsVisible(value As Boolean) As UICustomPanel
@@ -189,7 +189,7 @@ End Function
 
 
 Public Function getUiProperty(prop As UIProp) As Variant
-    If UI.Forms.isControlValid(pInnerFrame) Then
+    If UI.controls.isValid(pInnerFrame) Then
         With pInnerFrame
             Select Case prop.getId
                 Case UI.props.top.getId:                getUiProperty = .top
@@ -218,7 +218,7 @@ Public Sub render()
 End Sub
 
 Private Sub insertInnerFrame()
-    Set pInnerFrame = pParentFrame.controls.Add(CREATE_FRAME_ID)
+    Set pInnerFrame = pParentFrame.controls.add(CREATE_FRAME_ID)
     With pInnerFrame
         .borderStyle = fmBorderStyleNone
         .SpecialEffect = fmSpecialEffectFlat
@@ -240,7 +240,7 @@ End Sub
 
 Private Sub updateBorderVariable(ByRef borderLabel As MSForms.label, color As Long)
     If borderLabel Is Nothing Then
-        Set borderLabel = pInnerFrame.controls.Add(CREATE_LABEL_ID)
+        Set borderLabel = pInnerFrame.controls.add(CREATE_LABEL_ID)
     End If
     With borderLabel
         .borderStyle = fmBorderStyleNone
@@ -251,7 +251,7 @@ Private Sub updateBorderVariable(ByRef borderLabel As MSForms.label, color As Lo
 End Sub
 
 Private Sub updateBordersSizeAndPosition()
-    If UI.Forms.isControlValid(pTopBorder) Then
+    If UI.controls.isValid(pTopBorder) Then
         With pTopBorder
             .left = 0
             .top = PIXEL_SIZE
@@ -260,7 +260,7 @@ Private Sub updateBordersSizeAndPosition()
         End With
     End If
     
-    If UI.Forms.isControlValid(pBottomBorder) Then
+    If UI.controls.isValid(pBottomBorder) Then
         With pBottomBorder
             .left = 0
             .top = pParentFrame.InsideHeight - PIXEL_SIZE
@@ -341,7 +341,7 @@ Private Sub updateScrollBars()
 End Sub
 
 Private Sub updatePosition()
-    If UI.Forms.isControlValid(pInnerFrame) Then
+    If UI.controls.isValid(pInnerFrame) Then
         With pInnerFrame
             .left = pLeft
             .top = pTop
@@ -351,7 +351,7 @@ End Sub
 
 
 Public Sub updateVisibility()
-    If UI.Forms.isControlValid(pInnerFrame) Then
+    If UI.controls.isValid(pInnerFrame) Then
         If pInnerFrame.visible <> pIsVisible Then
             pInnerFrame.visible = pIsVisible
             RaiseEvent AfterVisibilityChange
@@ -440,7 +440,7 @@ Private Function IPanel_setWindow(value As WTemplate) As IPanel
 End Function
 
 Private Function IPanel_isVisible() As Boolean
-    If UI.Forms.isControlValid(pInnerFrame) Then
+    If UI.controls.isValid(pInnerFrame) Then
         IPanel_isVisible = pInnerFrame.visible
     End If
 End Function

@@ -38,6 +38,7 @@ Private Const DEFAULT_MATCH_REQUIRED As Boolean = False
 Private Const DEFAULT_MATCH_ENTRY As Long = MSForms.fmMatchEntryNone
 Private Const DEFAULT_TEXT_ALIGN As Variant = MSForms.fmTextAlignCenter
 Private Const DEFAULT_IS_REQUIRED As Boolean = True
+Private Const DEFAULT_IS_VISIBLE As Boolean = True
 '----------------------------------------------------------------------------------------------------------
 Private pFrame As MSForms.frame
 Private pListener As IListener
@@ -57,9 +58,6 @@ Private pItems As Scripting.Dictionary
 Private pStatus As Boolean
 Private pIsExpanded As Boolean
 Private pShiftPressed As Integer
-'[UI components] ------------------------------------------------------------------------------------------
-'Private pListener As IControlListener
-'Private pParent As Variant
 '[UI properties] ------------------------------------------------------------------------------------------
 Private pWidth As Single
 Private pHeight As Single
@@ -126,6 +124,7 @@ Private Sub initializeDefaultValues()
     pMatchRequired = DEFAULT_MATCH_REQUIRED
     pIsRequired = DEFAULT_IS_REQUIRED
     pTextAlignment = DEFAULT_TEXT_ALIGN
+    pVisible = DEFAULT_IS_VISIBLE
 End Sub
 
 
@@ -314,11 +313,13 @@ Public Function setValue(value As Variant) As UIComboBox
     Set setValue = Me
     key = getKeyForValue(value)
     
+    pEventsDisabled = True
     If Not F.Variables.isUndefined(key) Then
         pText = key
     Else
         pText = VBA.vbNullString
     End If
+    pEventsDisabled = False
 
     If pIsRendered Then Call updateComboBoxState
 
@@ -347,7 +348,7 @@ End Function
 
 '[GETTERS]
 Public Function isValid() As Boolean
-    isValid = UI.Forms.isControlValid(pBackgroundLabel)
+    isValid = UI.controls.isValid(pBackgroundLabel)
 End Function
 
 Public Function getTag() As String
@@ -359,37 +360,37 @@ End Function
 
 '[SIZE & POSITION]
 Public Function getLeft() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getLeft = pBackgroundLabel.left
     End If
 End Function
 
 Public Function getRight() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
-        getRight = UI.Forms.getRight(pBackgroundLabel)
+    If UI.controls.isValid(pBackgroundLabel) Then
+        getRight = UI.controls.getRight(pBackgroundLabel)
     End If
 End Function
 
 Public Function getTop() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getTop = pBackgroundLabel.top
     End If
 End Function
 
 Public Function getBottom() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
-        getBottom = UI.Forms.getBottom(pBackgroundLabel)
+    If UI.controls.isValid(pBackgroundLabel) Then
+        getBottom = UI.controls.getBottom(pBackgroundLabel)
     End If
 End Function
 
 Public Function getHeight() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getHeight = pBackgroundLabel.height
     End If
 End Function
 
 Public Function getWidth() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getWidth = pBackgroundLabel.width
     End If
 End Function
@@ -434,7 +435,7 @@ Public Function getInternalValidation() As MielkCore.ValidationObject
     Dim text As String
     '----------------------------------------------------------------------------------------------------------
     
-    If UI.Forms.isControlValid(pComboBox) Then
+    If UI.controls.isValid(pComboBox) Then
         text = pComboBox.value
         
         If VBA.Len(text) = 0 Then
@@ -454,8 +455,8 @@ Public Function getInternalValidation() As MielkCore.ValidationObject
     
 End Function
 
-Public Function isShiftPressed() As Integer
-    isShiftPressed = pShiftPressed
+Public Function getShiftPressed() As Integer
+    getShiftPressed = pShiftPressed
 End Function
 
 
@@ -484,7 +485,7 @@ Public Function render() As UIComboBox
 End Function
 
 Private Sub insertBackgroundLabel()
-    Set pBackgroundLabel = pFrame.controls.Add(CREATE_LABEL_ID)
+    Set pBackgroundLabel = pFrame.controls.add(CREATE_LABEL_ID)
     With pBackgroundLabel
         .BackStyle = pBackStyle
         .backColor = VBA.IIf(getStatus, pBackColor, pInvalidBackColor)
@@ -498,14 +499,14 @@ Private Sub insertBackgroundLabel()
 End Sub
 
 Private Sub insertComboBox()
-    Set pComboBox = pFrame.controls.Add(CREATE_COMBOBOX_ID)
+    Set pComboBox = pFrame.controls.add(CREATE_COMBOBOX_ID)
     With pComboBox
         .BackStyle = fmBackStyleTransparent
         .borderStyle = fmBorderStyleNone
         .SpecialEffect = fmSpecialEffectFlat
         .visible = pVisible
         .ControlTipText = pTooltip
-        Call updateTextAlignment
+        Call updateText
         Call updateFont
         Call updateTextAlignment
         Call updateComboBoxState
@@ -556,15 +557,15 @@ Public Function alignVertically(ctrl As MSForms.control) As UITextBox
     
     Set alignVertically = Me
     
-    If UI.Forms.isControlValid(ctrl) Then
+    If UI.controls.isValid(ctrl) Then
         offset = (ctrl.top + (ctrl.height - pHeight) / 2) - pTop
     End If
     
     If offset Then
-        If UI.Forms.isControlValid(pBackgroundLabel) Then
+        If UI.controls.isValid(pBackgroundLabel) Then
             pBackgroundLabel.top = UI.Normalize.position(pBackgroundLabel.top + offset)
         End If
-        If UI.Forms.isControlValid(pComboBox) Then
+        If UI.controls.isValid(pComboBox) Then
             pComboBox.top = UI.Normalize.position(pComboBox.top + offset)
         End If
     End If
@@ -608,7 +609,7 @@ End Function
 Private Sub updateText()
     If Not pEventsDisabled Then
         pEventsDisabled = True
-        If UI.Forms.isControlValid(pComboBox) Then
+        If UI.controls.isValid(pComboBox) Then
             With pComboBox
                 .value = VBA.IIf(pDisplayValuesInCapitalLetters, VBA.UCase$(pText), pText)
                 RaiseEvent AfterChange
@@ -696,6 +697,7 @@ Public Sub changeStatus(value As Boolean)
 End Sub
 
 Public Sub changeSelection(value As String, Optional skipIfNotAvailable As Boolean = False)
+    pEventsDisabled = True
     If Not skipIfNotAvailable Then
         pComboBox.text = value
     Else
@@ -703,6 +705,7 @@ Public Sub changeSelection(value As String, Optional skipIfNotAvailable As Boole
             pComboBox.text = value
         End If
     End If
+    pEventsDisabled = False
 End Sub
 
 
@@ -726,13 +729,13 @@ End Sub
 
 Private Sub arrangeControls()
     Call resizeControls
-    Call UI.Forms.locateControl(pBackgroundLabel, pLeft, pTop)
-    Call UI.Forms.locateControl(pComboBox, pLeft + (pWidth - pComboBox.width) / 2, pTop + (pHeight - pComboBox.height) / 2)
+    Call UI.controls.locate(pBackgroundLabel, pLeft, pTop)
+    Call UI.controls.locate(pComboBox, pLeft + (pWidth - pComboBox.width) / 2, pTop + (pHeight - pComboBox.height) / 2)
 End Sub
 
 Private Sub resizeControls()
     If pBackgroundLabel.height <> pHeight Or pBackgroundLabel.width <> pWidth Then
-        Call UI.Forms.resizeControl(pBackgroundLabel, pWidth, pHeight)
+        Call UI.controls.resize(pBackgroundLabel, pWidth, pHeight)
         Call resizeComboBox
     End If
 End Sub
@@ -832,20 +835,17 @@ End Sub
 
 '[EVENTS]
 Private Sub changeValue()
-
-    Stop
-'
-'    If pItems.Exists(pComboBox.text) Then
-'        If pText <> pComboBox.text Then
-'            Call setText(pComboBox.text)
-'            Call validateControls
-'            RaiseEvent AfterChange
-'            If Not pListener Is Nothing Then Call pListener.catchChangeEvent(Me)
-'        End If
-'        pShiftPressed = 0
-'    Else
-'        pComboBox.text = pText
-'    End If
+    If pItems.Exists(pComboBox.text) Then
+        If pText <> pComboBox.text Then
+            Call setText(pComboBox.text)
+            Call validateControls
+            RaiseEvent AfterChange
+            If Not pListener Is Nothing Then Call pListener.catchEvent(Me, Events.change.getName)
+        End If
+        pShiftPressed = 0
+    Else
+        pComboBox.text = pText
+    End If
 End Sub
 
 Private Sub dropdown()
@@ -859,7 +859,6 @@ Private Sub dropdown()
 End Sub
 
 Private Sub pComboBox_Change()
-Stop
     If Not pEventsDisabled Then Call changeValue
 End Sub
 
@@ -874,7 +873,6 @@ Stop
 End Sub
 
 Private Sub pComboBox_Click()
-Stop
     If Not pEventsDisabled Then Call dropdown
 End Sub
 
@@ -898,7 +896,6 @@ Private Sub pComboBox_KeyDown(ByVal keyCode As MSForms.ReturnInteger, ByVal shif
 End Sub
 
 Private Sub pComboBox_MouseDown(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
-Stop
     pShiftPressed = shift
     If Not pEventsDisabled Then Call dropdown
 End Sub
@@ -906,8 +903,8 @@ End Sub
 Private Function createEventPropertiesDict(keyCode As MSForms.ReturnInteger, shift As Integer) As Scripting.Dictionary
     Set createEventPropertiesDict = F.dictionaries.Create(False)
     With createEventPropertiesDict
-        Call .Add(props.keyCode.getName, keyCode)
-        Call .Add(props.shift.getName, shift)
+        Call .add(props.keyCode.getName, keyCode)
+        Call .add(props.shift.getName, shift)
     End With
 End Function
 

@@ -230,7 +230,7 @@ End Function
 
 '[State]
 Public Function isValid() As Boolean
-    isValid = UI.Forms.isControlValid(pBackgroundLabel)
+    isValid = UI.Controls.isValid(pBackgroundLabel)
 End Function
 
 Public Function isHidden() As Boolean
@@ -244,7 +244,7 @@ Public Function getLeft() As Single
 End Function
 
 Public Function getRight() As Single
-    getRight = UI.Forms.getRight(pBackgroundLabel)
+    getRight = UI.Controls.getRight(pBackgroundLabel)
 End Function
 
 Public Function getTop() As Single
@@ -254,11 +254,11 @@ End Function
 Public Function getBottom() As Single
     If Not pDetailsBackground Is Nothing Then
         If pDetailsBackground.Visible Then
-            getBottom = UI.Forms.getBottom(pDetailsBackground)
+            getBottom = UI.Controls.getBottom(pDetailsBackground)
         End If
     End If
     If getBottom = 0 Then
-        getBottom = UI.Forms.getBottom(pBackgroundLabel)
+        getBottom = UI.Controls.getBottom(pBackgroundLabel)
     End If
 End Function
 
@@ -532,9 +532,9 @@ Private Sub arrangeControls()
     
     On Error Resume Next
     Call resizeControls
-    Call UI.Forms.locateControl(pBackgroundLabel, pLeft, pTop)
-    Call UI.Forms.locateControl(pStatusIcon, pLeft + STATUS_ICON_LEFT_OFFSET, pTop + (pLineHeight - pStatusIcon.height) / 2)
-    Call UI.Forms.locateControl(pNameLabel, pLeft + NAME_LABEL_TO_ICON_OFFSET + STATUS_ICON_WIDTH + STATUS_ICON_LEFT_OFFSET, _
+    Call UI.Controls.locate(pBackgroundLabel, pLeft, pTop)
+    Call UI.Controls.locate(pStatusIcon, pLeft + STATUS_ICON_LEFT_OFFSET, pTop + (pLineHeight - pStatusIcon.height) / 2)
+    Call UI.Controls.locate(pNameLabel, pLeft + NAME_LABEL_TO_ICON_OFFSET + STATUS_ICON_WIDTH + STATUS_ICON_LEFT_OFFSET, _
                                         pTop + (pLineHeight - pNameLabel.height) / 2)
     
     Set buttons = F.Collections.Create(pExpandCollapseButton, pReprocessButton, pPreviewItemButton, pRemoveButton)
@@ -545,8 +545,8 @@ Private Sub arrangeControls()
     Next button
     
     If pIsExpanded Then
-        Call UI.Forms.locateControl(pDetailsBackground, pLeft, pTop + pLineHeight)
-        Call UI.Forms.locateControl(pDescriptionLabel, pLeft + STATUS_ICON_LEFT_OFFSET, pTop + pLineHeight)
+        Call UI.Controls.locate(pDetailsBackground, pLeft, pTop + pLineHeight)
+        Call UI.Controls.locate(pDescriptionLabel, pLeft + STATUS_ICON_LEFT_OFFSET, pTop + pLineHeight)
     End If
 
     '[To avoid bug with smaller font-size]
@@ -555,14 +555,14 @@ Private Sub arrangeControls()
 End Sub
 
 Private Sub locateFunctionButton(button As MSForms.label, ByRef left As Single, top As Single)
-    If UI.Forms.isControlValid(button) Then
+    If UI.Controls.isValid(button) Then
         If button.Picture Is Nothing Then
             button.Visible = False
         ElseIf button.Picture.width = 0 Then
             button.Visible = False
         Else
             button.Visible = True
-            Call UI.Forms.locateControl(button, left, top)
+            Call UI.Controls.locate(button, left, top)
             left = left - button.width - ICONS_SPACE
         End If
     End If
@@ -596,13 +596,13 @@ End Sub
 
 
 Private Sub resizeControls()
-    Call UI.Forms.resizeControl(pBackgroundLabel, getWidth, pLineHeight)
-    Call UI.Forms.resizeControl(pStatusIcon, STATUS_ICON_WIDTH, STATUS_ICON_HEIGHT)
+    Call UI.Controls.resize(pBackgroundLabel, getWidth, pLineHeight)
+    Call UI.Controls.resize(pStatusIcon, STATUS_ICON_WIDTH, STATUS_ICON_HEIGHT)
     Call resizeNameLabel
-    Call UI.Forms.resizeControl(pReprocessButton, EXPAND_ICON_WIDTH, EXPAND_ICON_HEIGHT)
-    Call UI.Forms.resizeControl(pPreviewItemButton, EXPAND_ICON_WIDTH, EXPAND_ICON_HEIGHT)
-    Call UI.Forms.resizeControl(pExpandCollapseButton, EXPAND_ICON_WIDTH, EXPAND_ICON_HEIGHT)
-    Call UI.Forms.resizeControl(pRemoveButton, EXPAND_ICON_WIDTH, EXPAND_ICON_HEIGHT)
+    Call UI.Controls.resize(pReprocessButton, EXPAND_ICON_WIDTH, EXPAND_ICON_HEIGHT)
+    Call UI.Controls.resize(pPreviewItemButton, EXPAND_ICON_WIDTH, EXPAND_ICON_HEIGHT)
+    Call UI.Controls.resize(pExpandCollapseButton, EXPAND_ICON_WIDTH, EXPAND_ICON_HEIGHT)
+    Call UI.Controls.resize(pRemoveButton, EXPAND_ICON_WIDTH, EXPAND_ICON_HEIGHT)
     If pIsExpanded Then Call resizeDetailsBackgroundSize
 End Sub
 
@@ -632,7 +632,7 @@ Private Sub resizeDetailsBackgroundSize()
         .AutoSize = False
         .width = getWidth - 2 * STATUS_ICON_LEFT_OFFSET
     End With
-    height = UI.Forms.getBottom(pDescriptionLabel) - pDetailsBackground.top + DESCRIPTION_BOTTOM_PADDING
+    height = UI.Controls.getBottom(pDescriptionLabel) - pDetailsBackground.top + DESCRIPTION_BOTTOM_PADDING
     With pDetailsBackground
         .height = height
         .width = getWidth
@@ -690,7 +690,7 @@ Private Sub updateDetailsDescription(message As String)
     '----------------------------------------------------------------------------------------------------------
     
     pDescription = message
-    If UI.Forms.isControlValid(pDescriptionLabel) Then
+    If UI.Controls.isValid(pDescriptionLabel) Then
         pDescriptionLabel.caption = pDescription
         pDetailsBackground.BackColor = getDetailsBackColorByStatus(pStatus)
     End If

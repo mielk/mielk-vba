@@ -2,6 +2,7 @@ Attribute VB_Name = "modConstDb"
 Option Explicit
 
 Private Const CLASS_NAME As String = "modConstDb"
+
 '[Objects signatures] -------------------------------------------------------------------------------------
 Public Const DEFAULT_ACCESS_PROVIDER As String = "Microsoft.ACE.OLEDB.12.0"
 Public Const ADODB_CONNECTION As String = "ADODB.Connection"
@@ -24,4 +25,6 @@ Public Const SQL_SELECT_RECORD As String = "SELECT * FROM {0} WHERE {1} = {2}"
 Public Const SQL_DELETE_ALL As String = "DELETE FROM {0}"
 Public Const SQL_DELETE As String = "DELETE FROM {0} WHERE {1} = {2}"
 Public Const SQL_DEACTIVATE As String = "UPDATE {0} SET " & FIELD_IS_ACTIVE & " = False WHERE {1} = {2}"
+'----------------------------------------------------------------------------------------------------------
+Public Const DB_NULL As String = "NULL"
 '----------------------------------------------------------------------------------------------------------

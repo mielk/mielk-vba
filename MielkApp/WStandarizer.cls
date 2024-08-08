@@ -244,9 +244,9 @@ Private Sub arrangeComponents()
         left = .getRight + pControlsSpace
     End With
     
-    Call UI.Forms.locateControl(pVerticalSeparator, left, top)
-    Call UI.Forms.resizeControl(pVerticalSeparator, PIXEL_SIZE, pListHeight)
-    left = UI.Forms.getRight(pVerticalSeparator) + pControlsSpace
+    Call UI.Controls.locate(pVerticalSeparator, left, top)
+    Call UI.Controls.resize(pVerticalSeparator, PIXEL_SIZE, pListHeight)
+    left = UI.Controls.getRight(pVerticalSeparator) + pControlsSpace
     
     With pStandardNamesList
         Call .move(left, top)
@@ -267,7 +267,7 @@ Private Sub arrangeComponents()
 
     If pWarningStatus Then
         '[Resize warning status again to adjust width]
-        Call UI.Forms.resizeControl(pWarningBackground, calculateWarningPanelWidth)
+        Call UI.Controls.resize(pWarningBackground, calculateWarningPanelWidth)
     End If
 
     Call pForm.arrangeComponents
@@ -279,9 +279,9 @@ Private Sub arrangeWarningControls(ByRef top As Single, ByRef left As Single)
     pWarningIcon.Visible = pWarningStatus
     pWarningMessage.Visible = pWarningStatus
     If pWarningStatus Then
-        Call UI.Forms.locateControl(pWarningBackground, left, top)
-        Call UI.Forms.resizeControl(pWarningBackground, pFrame.InsideWidth, WARNING_PANEL_HEIGHT)
-        Call UI.Forms.locateControl(pWarningIcon, left + pControlsSpace, calculateWarningIconTop)
+        Call UI.Controls.locate(pWarningBackground, left, top)
+        Call UI.Controls.resize(pWarningBackground, pFrame.InsideWidth, WARNING_PANEL_HEIGHT)
+        Call UI.Controls.locate(pWarningIcon, left + pControlsSpace, calculateWarningIconTop)
                 
         With pWarningMessage
             .caption = pParent.getWarningMessage
@@ -289,15 +289,15 @@ Private Sub arrangeWarningControls(ByRef top As Single, ByRef left As Single)
             .AutoSize = True
             .AutoSize = False
         End With
-        Call UI.Forms.locateControl(pWarningMessage, calculateWarningMessageLeft, calculateWarningMessageTop)
+        Call UI.Controls.locate(pWarningMessage, calculateWarningMessageLeft, calculateWarningMessageTop)
         
-        top = UI.Forms.getBottom(pWarningBackground) + pControlsSpace
+        top = UI.Controls.getBottom(pWarningBackground) + pControlsSpace
     End If
 
 End Sub
 
 Private Sub updateWarningMessage()
-    If UI.Forms.isControlValid(pWarningMessage) Then
+    If UI.Controls.isValid(pWarningMessage) Then
         pWarningMessage.caption = pParent.getWarningMessage
     End If
 End Sub
@@ -311,7 +311,7 @@ Private Function calculateWarningIconTop() As Single
 End Function
 
 Private Function calculateWarningMessageLeft() As Single
-    calculateWarningMessageLeft = UI.Forms.getRight(pWarningIcon) + 2 * pControlsSpace
+    calculateWarningMessageLeft = UI.Controls.getRight(pWarningIcon) + 2 * pControlsSpace
 End Function
 
 Private Function calculateWarningMessageTop() As Single

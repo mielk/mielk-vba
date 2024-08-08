@@ -281,7 +281,7 @@ End Sub
 
 Private Sub insertFrame()
     If pFrame Is Nothing Then
-        Set pFrame = pParentFrame.controls.Add(CREATE_FRAME_ID)
+        Set pFrame = pParentFrame.controls.add(CREATE_FRAME_ID)
         With pFrame
             .SpecialEffect = fmSpecialEffectFlat
             .borderStyle = fmBorderStyleNone
@@ -310,7 +310,7 @@ Private Sub insertLines()
             '[Lock if applies]
             If isItemFixed(key) Then Call line.setAsFixed(True)
             
-            Call pLines.Add(key, line)
+            Call pLines.add(key, line)
             
         Next key
     End If
@@ -349,7 +349,7 @@ End Sub
 
 Private Sub updateBorderVariable(ByRef borderLabel As MSForms.label, color As Long)
     If borderLabel Is Nothing Then
-        Set borderLabel = pFrame.controls.Add(CREATE_LABEL_ID)
+        Set borderLabel = pFrame.controls.add(CREATE_LABEL_ID)
         With borderLabel
             .borderStyle = fmBorderStyleNone
             .BackStyle = fmBackStyleOpaque
@@ -360,7 +360,7 @@ Private Sub updateBorderVariable(ByRef borderLabel As MSForms.label, color As Lo
 End Sub
 
 Private Sub updateBorderSizeAndPosition()
-    If UI.Forms.isControlValid(pTopBorder) Then
+    If UI.controls.isValid(pTopBorder) Then
         With pTopBorder
             .left = 0
             .top = PIXEL_SIZE
@@ -369,7 +369,7 @@ Private Sub updateBorderSizeAndPosition()
         End With
     End If
     
-    If UI.Forms.isControlValid(pBottomBorder) Then
+    If UI.controls.isValid(pBottomBorder) Then
         With pBottomBorder
             .left = 0
             .top = pFrame.InsideHeight - PIXEL_SIZE
@@ -402,8 +402,8 @@ Private Sub adjustSize()
             If height >= 0 Then .height = height
         End With
         
-        If UI.Forms.isControlValid(pTopBorder) Then pTopBorder.width = width
-        If UI.Forms.isControlValid(pBottomBorder) Then pBottomBorder.width = width
+        If UI.controls.isValid(pTopBorder) Then pTopBorder.width = width
+        If UI.controls.isValid(pBottomBorder) Then pBottomBorder.width = width
         
     End If
     
@@ -739,7 +739,7 @@ Private Function IPanel_setWindow(value As WTemplate) As IPanel
 End Function
 
 Private Function IPanel_isVisible() As Boolean
-    If UI.Forms.isControlValid(pFrame) Then
+    If UI.controls.isValid(pFrame) Then
         IPanel_isVisible = pFrame.visible
     End If
 End Function

@@ -30,6 +30,8 @@ Private Sub insertEnumOptions()
 
     '[Common - basic]
     Call addEnumOption("Alias", "Alias")
+    Call addEnumOption("Counter", "Counter")
+    Call addEnumOption(DEFAULT_TAG)
     Call addEnumOption("Id", "id")
     Call addEnumOption("Key", "key")
     Call addEnumOption("Name", "name")
@@ -87,6 +89,7 @@ Private Sub insertEnumOptions()
     '[Common - user forms]
     Call addEnumOption("Caption")
     Call addEnumOption("ContextMenu")
+    Call addEnumOption("Control")
     Call addEnumOption("Header", "header")
     Call addEnumOption("Layout")
     Call addEnumOption("WindowTitle")
@@ -94,13 +97,16 @@ Private Sub insertEnumOptions()
     '[Common - sheets & ranges]
     Call addEnumOption("Column")
     Call addEnumOption("ColumnIndex")
+    Call addEnumOption("ColumnSymbol")          'i.e. D - for column 4, AA - for column 27, etc.
     Call addEnumOption("Columns")
+    Call addEnumOption("Formula")
     Call addEnumOption("Range")
     Call addEnumOption("RangeName")
     Call addEnumOption("Row")
     Call addEnumOption("RowIndex")
     Call addEnumOption("Rows")
     Call addEnumOption("Shape")
+    Call addEnumOption("Shapes")
     Call addEnumOption("Sheet")
     Call addEnumOption("SheetName")
     
@@ -144,7 +150,7 @@ Private Sub addEnumOption(name As String, Optional ByVal dbField As String)
     '------------------------------------------------------------------------------------------------------
     
     If VBA.Len(dbField) = 0 Then dbField = name
-    Set enumProperty = f.Create.Prop(name, dbField)
+    Set enumProperty = f.Create.prop(name, dbField)
     
     Call f.dictionaries.addItem(pByNames, _
                                     enumProperty.getName, _
@@ -160,15 +166,15 @@ Public Function ByName(name As String) As enumProperty
     Set ByName = f.dictionaries.getObject(pByNames, name)
 End Function
 
-Public Function getProperty(ByVal Prop As Variant) As enumProperty
-    If VBA.IsArray(Prop) Then
+Public Function getProperty(ByVal prop As Variant) As enumProperty
+    If VBA.IsArray(prop) Then
         'not possible to get property
-    ElseIf Not VBA.IsObject(Prop) Then
-        Set getProperty = f.dictionaries.getObject(pByNames, Prop)
-    ElseIf Prop Is Nothing Then
+    ElseIf Not VBA.IsObject(prop) Then
+        Set getProperty = f.dictionaries.getObject(pByNames, prop)
+    ElseIf prop Is Nothing Then
         'Nothing should be returned
-    ElseIf TypeOf Prop Is enumProperty Then
-        Set getProperty = Prop
+    ElseIf TypeOf prop Is enumProperty Then
+        Set getProperty = prop
     End If
 End Function
 
@@ -177,6 +183,8 @@ End Function
 
 '[Common - basic]
 Public Function Alias() As enumProperty: Set Alias = ByName("Alias"): End Function
+Public Function Counter() As enumProperty: Set Counter = ByName("Counter"): End Function
+Public Function default() As enumProperty: Set default = ByName(DEFAULT_TAG): End Function
 Public Function id() As enumProperty: Set id = ByName("Id"): End Function
 Public Function key() As enumProperty: Set key = ByName("Key"): End Function
 Public Function name() As enumProperty: Set name = ByName("Name"): End Function
@@ -202,7 +210,7 @@ Public Function message() As enumProperty: Set message = ByName("Message"): End 
 Public Function Messages() As enumProperty: Set Messages = ByName("Messages"): End Function
 Public Function Method() As enumProperty: Set Method = ByName("Method"): End Function
 Public Function Parent() As enumProperty: Set Parent = ByName("Parent"): End Function
-Public Function Prop() As enumProperty: Set Prop = ByName("Prop"): End Function
+Public Function prop() As enumProperty: Set prop = ByName("Prop"): End Function
 Public Function regex() As enumProperty: Set regex = ByName("Regex"): End Function
 Public Function Required() As enumProperty: Set Required = ByName("Required"): End Function
 Public Function Validation() As enumProperty: Set Validation = ByName("Validation"): End Function
@@ -234,6 +242,7 @@ Public Function year() As enumProperty: Set year = ByName("Year"): End Function
 '[Common - user forms]
 Public Function caption() As enumProperty: Set caption = ByName("Caption"): End Function
 Public Function ContextMenu() As enumProperty: Set ContextMenu = ByName("ContextMenu"): End Function
+Public Function Control() As enumProperty: Set Control = ByName("Control"): End Function
 Public Function Header() As enumProperty: Set Header = ByName("Header"): End Function
 Public Function Layout() As enumProperty: Set Layout = ByName("Layout"): End Function
 Public Function windowTitle() As enumProperty: Set windowTitle = ByName("WindowTitle"): End Function
@@ -241,14 +250,17 @@ Public Function windowTitle() As enumProperty: Set windowTitle = ByName("WindowT
 '[Common - sheets & ranges]
 Public Function column() As enumProperty: Set column = ByName("Column"): End Function
 Public Function columnIndex() As enumProperty: Set columnIndex = ByName("columnIndex"): End Function
+Public Function ColumnSymbol() As enumProperty: Set ColumnSymbol = ByName("ColumnSymbol"): End Function
 Public Function columns() As enumProperty: Set columns = ByName("Columns"): End Function
+Public Function formula() As enumProperty: Set formula = ByName("Formula"): End Function
 Public Function Range() As enumProperty: Set Range = ByName("Range"): End Function
 Public Function RangeName() As enumProperty: Set RangeName = ByName("RangeName"): End Function
-Public Function Row() As enumProperty: Set Row = ByName("Row"): End Function
+Public Function row() As enumProperty: Set row = ByName("Row"): End Function
 Public Function RowIndex() As enumProperty: Set RowIndex = ByName("RowIndex"): End Function
 Public Function Rows() As enumProperty: Set Rows = ByName("Rows"): End Function
 
 Public Function shape() As enumProperty: Set shape = ByName("Shape"): End Function
+Public Function shapes() As enumProperty: Set shapes = ByName("Shapes"): End Function
 Public Function Sheet() As enumProperty: Set Sheet = ByName("Sheet"): End Function
 Public Function sheetName() As enumProperty: Set sheetName = ByName("SheetName"): End Function
 

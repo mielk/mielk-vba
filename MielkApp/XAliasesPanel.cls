@@ -196,7 +196,7 @@ Public Function setVisibility(value As Boolean) As XAliasesPanel
     Set setVisibility = Me
     pIsVisible = value
     
-    If UI.Forms.isControlValid(pInnerFrame) Then
+    If UI.Controls.isValid(pInnerFrame) Then
         pInnerFrame.Visible = pIsVisible
     End If
     
@@ -237,7 +237,7 @@ Public Function getIndex() As Long
 End Function
 
 Public Function getUiProperty(prop As UIProp) As Variant
-    If UI.Forms.isControlValid(pInnerFrame) Then
+    If UI.Controls.isValid(pInnerFrame) Then
         With pInnerFrame
             Select Case prop.getId
                 Case UI.props.top.getId:                getUiProperty = .top
@@ -368,8 +368,8 @@ Friend Sub arrangeControls()
     Dim right As Single
     '------------------------------------------------------------------------------------------------------
 
-    Call UI.Forms.locateControl(pTitleLabel, left, top)
-    top = UI.Forms.getBottom(pTitleLabel) + pVerticalPadding
+    Call UI.Controls.locate(pTitleLabel, left, top)
+    top = UI.Controls.getBottom(pTitleLabel) + pVerticalPadding
     
     If F.dictionaries.isNonEmptyDictionary(pLines) Then
         For Each key In pLines.Keys
@@ -462,7 +462,7 @@ Private Sub updateScrollBars()
 End Sub
 
 Private Sub updatePosition()
-    If UI.Forms.isControlValid(pInnerFrame) Then
+    If UI.Controls.isValid(pInnerFrame) Then
         With pInnerFrame
             .left = pLeft
             If pTop <> .top Then .top = pTop
@@ -624,8 +624,8 @@ End Function
 
 
 '[Implementation of IListener interface]
-Private Sub IListener_catchEvent(source As Variant, eventName As String, Optional properties As Scripting.IDictionary)
-    If source Is pAddAliasButton Then
+Private Sub IListener_catchEvent(src As Variant, ev As Variant, Optional props As Scripting.IDictionary)
+    If src Is pAddAliasButton Then
         Call handleAddingAlias
     End If
 End Sub

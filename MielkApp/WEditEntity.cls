@@ -309,6 +309,6 @@ End Sub
 
 
 '[Implementation of IListener interface]
-Private Sub IListener_catchEvent(source As Variant, eventName As String, Optional properties As Scripting.IDictionary)
+Private Sub IListener_catchEvent(src As Variant, ev As Variant, Optional props As Scripting.IDictionary)
     Stop
 End Sub

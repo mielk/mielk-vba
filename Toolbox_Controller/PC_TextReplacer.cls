@@ -178,7 +178,7 @@ Private Function getTextFilesToBeAdjusted() As VBA.Collection
 
 End Function
 
-Private Function adjustTextFile(filePath As String, replacements As Scripting.Dictionary) As ValidationObject
+Private Function adjustTextFile(filepath As String, replacements As Scripting.Dictionary) As ValidationObject
     Dim errNumber As Long, errDescription As String
     '------------------------------------------------------------------------------------------------------
     Dim stream As Scripting.TextStream
@@ -191,14 +191,14 @@ Private Function adjustTextFile(filePath As String, replacements As Scripting.Di
     '[Reading original content of the file] -------------------------------------------------|
     On Error Resume Next                                                                    '|
     Call VBA.Err.Clear                                                                      '|
-    Set stream = fso.OpenTextFile(filePath, ForReading)                                     '|
+    Set stream = fso.OpenTextFile(filepath, ForReading)                                     '|
     content = stream.ReadAll                                                                '|
     Call stream.Close                                                                       '|
                                                                                             '|
     errNumber = VBA.Err.Number: errDescription = VBA.Err.Description                        '|
     If errNumber Then                                                                       '|
         On Error GoTo errHandler                                                            '|
-        message = f.Strings.Format(Msg.getText(ERROR_READING_FROM_TEXT_FILE), filePath, _
+        message = f.Strings.Format(Msg.getText(ERROR_READING_FROM_TEXT_FILE), filepath, _
                                                                 errDescription, errNumber)  '|
         Call VBA.Err.Raise(errNumber, , errDescription)                                     '|
     End If                                                                                  '|
@@ -208,14 +208,14 @@ Private Function adjustTextFile(filePath As String, replacements As Scripting.Di
     On Error Resume Next                                                                    '|
     Call VBA.Err.Clear                                                                      '|
     content = f.Strings.replaceByDictionary(content, replacements)                          '|
-    Set stream = fso.OpenTextFile(filePath, ForWriting)                                     '|
+    Set stream = fso.OpenTextFile(filepath, ForWriting)                                     '|
     Call stream.WriteLine(content)                                                          '|
     Call stream.Close                                                                       '|
                                                                                             '|
     errNumber = VBA.Err.Number: errDescription = VBA.Err.Description                        '|
     If errNumber Then                                                                       '|
         On Error GoTo errHandler                                                            '|
-        message = f.Strings.Format(Msg.getText(ERROR_WRITING_TO_TEXT_FILE), filePath, _
+        message = f.Strings.Format(Msg.getText(ERROR_WRITING_TO_TEXT_FILE), filepath, _
                                                                 errDescription, errNumber)  '|
         Call VBA.Err.Raise(errNumber, , message)                                            '|
     End If                                                                                  '|

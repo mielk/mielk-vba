@@ -106,7 +106,7 @@ Public Function match(value As Variant) As Boolean
     ElseIf F.Variables.isContainer(value) Then
         Set col = F.Collections.createFrom(value)
         For Each item In value
-            Call col.Add(F.regex.getFirstGroupMatch(VBA.CStr(item), regex))
+            Call col.add(F.regex.getFirstGroupMatch(VBA.CStr(item), regex))
         Next item
         Set value = col
     Else

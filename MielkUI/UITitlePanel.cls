@@ -51,6 +51,8 @@ Private WithEvents pCloseButton As MSForms.label
 Attribute pCloseButton.VB_VarHelpID = -1
 Private WithEvents pHelpFileButton As MSForms.label
 Attribute pHelpFileButton.VB_VarHelpID = -1
+Private pImages As Scripting.Dictionary
+Private pActionIcons As Scripting.Dictionary
 '[UI properties] ------------------------------------------------------------------------------------------
 Private pIsVisible As Boolean
 Private pHeight As Single
@@ -68,6 +70,8 @@ Private pTitleBarFontColor As Long
 Private pTitleBarFontBold As Boolean
 Private pCloseButtonMargin As Single
 Private pCaption As String
+Private pImagesDefinitions As VBA.Collection
+Private pActionIconsDefinitions As VBA.Collection
 '[Events] -------------------------------------------------------------------------------------------------
 Event AfterClose()
 Event MoveModeOn(ByVal x As Single, ByVal Y As Single)
@@ -147,6 +151,24 @@ Public Function setBackColor(value As Long) As UITitlePanel
     Call updateBackColor
 End Function
 
+Public Function configure(properties As Scripting.Dictionary) As UITitlePanel
+    Set configure = Me
+    Call F.dictionaries.assignValueFromDictToVariable(properties, pIsVisible, "visible")
+    Call F.dictionaries.assignValueFromDictToVariable(properties, pHeight, "height")
+    Call F.dictionaries.assignValueFromDictToVariable(properties, pMoveEnabled, "moveEnabled")
+    Call F.dictionaries.assignValueFromDictToVariable(properties, pCloseEnabled, "closeEnabled")
+    Call F.dictionaries.assignValueFromDictToVariable(properties, pBackgroundColor, "backgroundColor")
+    Call F.dictionaries.assignValueFromDictToVariable(properties, pTitleBarFontFamily, "font.family")
+    Call F.dictionaries.assignValueFromDictToVariable(properties, pTitleBarFontSize, "font.size")
+    Call F.dictionaries.assignValueFromDictToVariable(properties, pTitleBarFontColor, "font.color")
+    Call F.dictionaries.assignValueFromDictToVariable(properties, pTitleBarFontBold, "font.bold")
+    Call F.dictionaries.assignValueFromDictToVariable(properties, pCaption, "caption")
+    Call F.dictionaries.assignValueFromDictToVariable(properties, pCaptionIndent, "captionIndent")
+    Call F.dictionaries.assignValueFromDictToVariable(properties, pCloseButtonMargin, "closeButtonMargin")
+    Call F.dictionaries.assignValueFromDictToVariable(properties, pImagesDefinitions, "images")
+    Call F.dictionaries.assignValueFromDictToVariable(properties, pActionIconsDefinitions, "actionIcons")
+End Function
+
 
 
 
@@ -156,7 +178,7 @@ Public Function isVisible() As Boolean
 End Function
 
 Public Function getBottom() As Single
-    If UI.Forms.isControlValid(pContainer) Then
+    If UI.controls.isValid(pContainer) Then
         With pContainer
             getBottom = .top + .height
         End With
@@ -171,15 +193,17 @@ End Function
 Public Function render() As UITitlePanel
     Call insertContainer
     Call insertTitleLabel
+    Call insertImages
     Call insertMoveLayer
     Call insertCloseButton
     Call insertDocumentationButton
+    Call insertActionIcons
 End Function
 
 
 Private Sub insertContainer()
     If pContainer Is Nothing Then
-        Set pContainer = pFrame.controls.Add(CREATE_FRAME_ID, FRAME_NAME, True)
+        Set pContainer = pFrame.controls.add(CREATE_FRAME_ID, FRAME_NAME, True)
     End If
     With pContainer
         .SpecialEffect = fmSpecialEffectFlat
@@ -195,10 +219,10 @@ End Sub
 
 Private Sub insertTitleLabel()
     If pCaptionLabel Is Nothing Then
-        Set pCaptionLabel = pContainer.controls.Add(CREATE_LABEL_ID, CAPTION_LABEL_NAME, True)
+        Set pCaptionLabel = pContainer.controls.add(CREATE_LABEL_ID, CAPTION_LABEL_NAME, True)
     End If
     With pCaptionLabel
-        .caption = getTranslatedContent
+        .caption = MsgService.getText(pCaption)
         With .font
             .name = pTitleBarFontFamily
             .Bold = pTitleBarFontBold
@@ -215,26 +239,18 @@ End Sub
 Private Sub centerTitleVertically()
     With pCaptionLabel
         .AutoSize = False
-        .width = pContainer.InsideWidth - 2 * pPadding
+        .width = F.Math.getMax(pContainer.InsideWidth - 2 * pPadding, 0)
         .AutoSize = True
         .height = .height + PIXEL_SIZE
         .top = (pContainer.InsideHeight - .height) / 2
-        .width = pContainer.InsideWidth - 2 * pPadding
+        .width = F.Math.getMax(pContainer.InsideWidth - 2 * pPadding, 0)
     End With
 End Sub
-
-Private Function getTranslatedContent() As String
-    If F.Strings.startsWith(pCaption, "#") Then
-        getTranslatedContent = MsgService.getText(VBA.Mid$(pCaption, 2))
-    Else
-        getTranslatedContent = pCaption
-    End If
-End Function
 
 
 Private Sub insertMoveLayer()
     If pMoveLayer Is Nothing Then
-        Set pMoveLayer = pContainer.Add(CREATE_LABEL_ID, MOVE_LAYER_NAME, True)
+        Set pMoveLayer = pContainer.add(CREATE_LABEL_ID, MOVE_LAYER_NAME, True)
     End If
     With pMoveLayer
         .BackStyle = fmBackStyleTransparent
@@ -252,7 +268,7 @@ End Sub
 Private Sub insertCloseButton()
 
     If pCloseButton Is Nothing Then
-        Set pCloseButton = pContainer.Add(CREATE_LABEL_ID, CLOSE_BUTTON_NAME, True)
+        Set pCloseButton = pContainer.add(CREATE_LABEL_ID, CLOSE_BUTTON_NAME, True)
     End If
     With pCloseButton
         .visible = pCloseEnabled
@@ -282,7 +298,7 @@ End Function
 
 Private Sub insertDocumentationButton()
     If pHelpFileButton Is Nothing Then
-        Set pHelpFileButton = pContainer.Add(CREATE_LABEL_ID, CLOSE_BUTTON_NAME, False)
+        Set pHelpFileButton = pContainer.add(CREATE_LABEL_ID, CLOSE_BUTTON_NAME, False)
     End If
     With pHelpFileButton
         .visible = pWindow.hasDocumentation
@@ -312,7 +328,7 @@ Private Function calculateDocumentationButtonLeft() As Single
     Dim left As Single
     '----------------------------------------------------------------------------------------------------------
     
-    If UI.Forms.isControlValid(pCloseButton) Then
+    If UI.controls.isValid(pCloseButton) Then
         left = pCloseButton.left
     Else
         left = pContainer.InsideWidth
@@ -325,9 +341,9 @@ Private Function calculateCaptionLabelWidth() As Single
     Dim left As Single
     '----------------------------------------------------------------------------------------------------------
     
-    If UI.Forms.isControlValid(pHelpFileButton) Then
+    If UI.controls.isValid(pHelpFileButton) Then
         calculateCaptionLabelWidth = pHelpFileButton.left - pCaptionLabel.left - pPadding
-    ElseIf UI.Forms.isControlValid(pCloseButton) Then
+    ElseIf UI.controls.isValid(pCloseButton) Then
         calculateCaptionLabelWidth = pCloseButton.left - pCaptionLabel.left - pPadding
     Else
         calculateCaptionLabelWidth = pContainer.InsideWidth - 2 * pPadding
@@ -337,9 +353,111 @@ End Function
 
 
 
+Private Sub insertImages()
+    Dim dto As Scripting.Dictionary
+    Dim name As String
+    Dim img As MSForms.label
+    Dim imageProps As Scripting.Dictionary
+    '----------------------------------------------------------------------------------------------------------
+    
+    Set pImages = F.dictionaries.Create(False)
+    If F.Collections.isNonEmptyCollection(pImagesDefinitions) Then
+        For Each dto In pImagesDefinitions
+            name = F.dictionaries.getItem(dto, props.name.getName)
+            Set img = insertImage(dto)
+            If Not img Is Nothing Then
+                Set imageProps = F.dictionaries.Clone(dto)
+                Call imageProps.add(props.control.getName, img)
+                Call pImages.add(name, imageProps)
+            End If
+        Next dto
+    End If
+    
+End Sub
+
+Private Function insertImage(dto As Scripting.Dictionary) As MSForms.label
+    Dim name As String:             name = "img"
+    Dim height As Single:           height = 15
+    Dim width As Single:            width = 15
+    '----------------------------------------------------------------------------------------------------------
+    
+    Call F.dictionaries.assignValueFromDictToVariable(dto, name, "name")
+    Call F.dictionaries.assignValueFromDictToVariable(dto, height, "size.height")
+    Call F.dictionaries.assignValueFromDictToVariable(dto, width, "size.width")
+    
+    Set insertImage = pContainer.controls.add(CREATE_LABEL_ID, name, True)
+    With insertImage
+        .BackStyle = fmBackStyleTransparent
+        .borderStyle = fmBorderStyleNone
+        .width = width
+        .height = height
+        On Error Resume Next
+        Set .picture = Icons.getIcon(name)
+        On Error GoTo 0
+    End With
+
+    Call UI.controls.locateByDictionary(insertImage, dto, pContainer, pPadding)
+
+End Function
+
+
+
+
+
+Private Sub insertActionIcons()
+    Dim dto As Scripting.Dictionary
+    Dim actionIcon As UIIcon
+    Dim name As String
+    Dim iconProps As Scripting.Dictionary
+    '----------------------------------------------------------------------------------------------------------
+    
+    Set pActionIcons = F.dictionaries.Create(False)
+    If F.Collections.isNonEmptyCollection(pActionIconsDefinitions) Then
+        For Each dto In pActionIconsDefinitions
+            name = F.dictionaries.getItem(dto, props.name.getName)
+            Set actionIcon = insertActionIcon(dto)
+            If Not actionIcon Is Nothing Then
+                Set iconProps = F.dictionaries.Clone(dto)
+                Call iconProps.add(props.control.getName, actionIcon)
+                Call pActionIcons.add(name, iconProps)
+            End If
+        Next dto
+    End If
+End Sub
+
+Private Function insertActionIcon(dto As Scripting.Dictionary) As UIIcon
+    Dim name As String:             name = "img"
+    Dim height As Single:           height = 15
+    Dim width As Single:            width = 15
+    Dim tag As String
+    '----------------------------------------------------------------------------------------------------------
+    
+    Call F.dictionaries.assignValueFromDictToVariable(dto, name, "name")
+    Call F.dictionaries.assignValueFromDictToVariable(dto, height, "size.height")
+    Call F.dictionaries.assignValueFromDictToVariable(dto, width, "size.width")
+    Call F.dictionaries.assignValueFromDictToVariable(dto, tag, "tag")
+    
+    Set insertActionIcon = UI.Create.UIIcon(pContainer)
+    With insertActionIcon
+        Call .setTag(tag)
+        Call .setPicture(Icons.getIcon(name))
+        Call .setListener(pWindow)
+        Call .setWidth(width)
+        Call .setHeight(height)
+        Call .render
+    End With
+    
+    Call UI.controls.locateByDictionary(insertActionIcon, dto, pContainer, pPadding)
+    
+End Function
+
+
+
+
+
 '[SIZE & POSITION]
 Private Sub updatePosition()
-    If UI.Forms.isControlValid(pContainer) Then
+    If UI.controls.isValid(pContainer) Then
         With pContainer
             .left = pLeft
             .top = pTop
@@ -348,28 +466,43 @@ Private Sub updatePosition()
 End Sub
 
 Private Sub updateSize()
-    If UI.Forms.isControlValid(pContainer) Then
-        pContainer.width = pWidth
+    If UI.controls.isValid(pContainer) Then
+        pContainer.width = F.Math.getMax(pWidth, 0)
         Call centerTitleVertically
-        pMoveLayer.width = pContainer.width
+        pMoveLayer.width = F.Math.getMax(pContainer.width, 0)
         pCloseButton.left = calculateCloseButtonLeft
         pHelpFileButton.left = calculateDocumentationButtonLeft
-        pCaptionLabel.width = calculateCaptionLabelWidth
+        pCaptionLabel.width = F.Math.getMax(calculateCaptionLabelWidth, 0)
+        Call locateControls(pImages)
+        Call locateControls(pActionIcons)
     End If
 End Sub
 
 Private Sub updateCaption()
-    If UI.Forms.isControlValid(pCaptionLabel) Then
-        pCaptionLabel.caption = getTranslatedContent
+    If UI.controls.isValid(pCaptionLabel) Then
+        pCaptionLabel.caption = MsgService.getText(pCaption)
     End If
 End Sub
 
 Private Sub updateBackColor()
-    If UI.Forms.isControlValid(pContainer) Then
+    If UI.controls.isValid(pContainer) Then
         pContainer.backColor = pBackgroundColor
     End If
 End Sub
 
+Private Sub locateControls(controlsDict As Scripting.Dictionary)
+    Dim varKey As Variant
+    Dim ctrl As Object
+    Dim properties As Scripting.Dictionary
+    '----------------------------------------------------------------------------------------------------------
+    For Each varKey In controlsDict.keys
+        Set properties = controlsDict.item(varKey)
+        Set ctrl = F.dictionaries.getObject(properties, props.control.getName)
+        If UI.controls.isValid(ctrl) Then
+            Call UI.controls.locateByDictionary(ctrl, properties, pContainer, pPadding)
+        End If
+    Next varKey
+End Sub
 
 
 

@@ -19,6 +19,7 @@ Private WithEvents pLabel As MSForms.label
 Attribute pLabel.VB_VarHelpID = -1
 '----------------------------------------------------------------------------------------------------------
 Private pUuid As String
+Private pTag As String
 Private pIsRendered As Boolean
 '----------------------------------------------------------------------------------------------------------
 Private pWidth As Single
@@ -72,10 +73,15 @@ Public Function setActionName(value As String) As UIIcon
     pActionName = value
 End Function
 
+Public Function setTag(value As String) As UIIcon
+    Set setTag = Me
+    pTag = value
+End Function
+
 Public Function setHeight(value As Single) As UIIcon
     Set setHeight = Me
     pHeight = value
-    If UI.Forms.isControlValid(pLabel) Then
+    If UI.controls.isValid(pLabel) Then
         pLabel.height = value
     End If
 End Function
@@ -83,7 +89,7 @@ End Function
 Public Function setWidth(value As Single) As UIIcon
     Set setWidth = Me
     pWidth = value
-    If UI.Forms.isControlValid(pLabel) Then
+    If UI.controls.isValid(pLabel) Then
         pLabel.width = value
     End If
 End Function
@@ -91,7 +97,7 @@ End Function
 Public Function setPicture(value As Variant) As UIIcon
     Set setPicture = Me
     Set pPicture = value
-    If UI.Forms.isControlValid(pLabel) Then
+    If UI.controls.isValid(pLabel) Then
         On Error Resume Next
         Set pLabel.picture = pPicture
     End If
@@ -100,7 +106,7 @@ End Function
 Public Function setTooltip(value As String) As UIIcon
     Set setTooltip = Me
     pTooltip = value
-    If UI.Forms.isControlValid(pLabel) Then
+    If UI.controls.isValid(pLabel) Then
         pLabel.ControlTipText = pTooltip
     End If
 End Function
@@ -160,38 +166,42 @@ Public Function getActionName() As String
     getActionName = pActionName
 End Function
 
+Public Function getTag() As String
+    getTag = pTag
+End Function
+
 Public Function getLeft() As Single
-    If UI.Forms.isControlValid(pLabel) Then
+    If UI.controls.isValid(pLabel) Then
         getLeft = pLabel.left
     End If
 End Function
 
 Public Function getTop() As Single
-    If UI.Forms.isControlValid(pLabel) Then
+    If UI.controls.isValid(pLabel) Then
         getTop = pLabel.top
     End If
 End Function
 
 Public Function getRight() As Single
-    If UI.Forms.isControlValid(pLabel) Then
+    If UI.controls.isValid(pLabel) Then
         getRight = pLabel.left + pLabel.width
     End If
 End Function
 
 Public Function getBottom() As Single
-    If UI.Forms.isControlValid(pLabel) Then
+    If UI.controls.isValid(pLabel) Then
         getBottom = pLabel.top + pLabel.height
     End If
 End Function
 
 Public Function getHeight() As Single
-    If UI.Forms.isControlValid(pLabel) Then
+    If UI.controls.isValid(pLabel) Then
         getHeight = pLabel.height
     End If
 End Function
 
 Public Function getWidth() As Single
-    If UI.Forms.isControlValid(pLabel) Then
+    If UI.controls.isValid(pLabel) Then
         getWidth = pLabel.width
     End If
 End Function
@@ -211,7 +221,7 @@ End Function
 Public Function render() As UIIcon
     Set render = Me
     If Not pIsRendered Then
-        Set pLabel = pFrame.controls.Add(CREATE_LABEL_ID)
+        Set pLabel = pFrame.controls.add(CREATE_LABEL_ID)
         With pLabel
             .height = pHeight
             .width = pWidth
@@ -273,12 +283,12 @@ Public Function alignVertically(ctrl As MSForms.control) As UIIcon
     
     Set alignVertically = Me
     
-    If UI.Forms.isControlValid(ctrl) Then
+    If UI.controls.isValid(ctrl) Then
         offset = (ctrl.top + (ctrl.height - pHeight) / 2) - pTop
     End If
     
     If offset Then
-        If UI.Forms.isControlValid(pLabel) Then
+        If UI.controls.isValid(pLabel) Then
             pLabel.top = pLabel.top + offset
             pTop = pLabel.top
         End If
@@ -292,13 +302,13 @@ End Function
 
 
 Private Sub updateVisibility()
-    If UI.Forms.isControlValid(pLabel) Then
+    If UI.controls.isValid(pLabel) Then
         pLabel.visible = (pVisible And pEnabled)
     End If
 End Sub
 
 Private Sub updateBorder()
-    If UI.Forms.isControlValid(pLabel) Then
+    If UI.controls.isValid(pLabel) Then
         With pLabel
             .borderColor = pBorderColor
             .borderStyle = VBA.IIf(pHasBorder, fmBorderStyleSingle, fmBorderStyleNone)
@@ -307,7 +317,7 @@ Private Sub updateBorder()
 End Sub
 
 Private Sub updateBackground()
-    If UI.Forms.isControlValid(pLabel) Then
+    If UI.controls.isValid(pLabel) Then
         With pLabel
             .BackStyle = VBA.IIf(pIsTransparent, fmBackStyleTransparent, fmBackStyleOpaque)
             .backColor = pBackColor

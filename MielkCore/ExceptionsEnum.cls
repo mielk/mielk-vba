@@ -139,6 +139,16 @@ End Sub
 
 
 
+Public Sub raiseCustomError(descriptionTag As String, Optional params As Variant)
+    Dim errDescription As String
+    '----------------------------------------------------------------------------------------------------------
+    errDescription = f.strings.format(MsgService.getText(descriptionTag), _
+                                      VBA.IIf(VBA.IsMissing(params), vbNullString, params))
+    Call VBA.err.raise(number:=CUSTOM_NUMBER, description:=errDescription)
+End Sub
+
+
+
 '[Quick access]
 Public Function IllegalDataType() As Exception: Set IllegalDataType = f.dictionaries.getObject(pExceptionsByNumber, ERR_VALUES_ILLEGAL_DATA_TYPE): End Function
 Public Function IllegalValue() As Exception: Set IllegalValue = f.dictionaries.getObject(pExceptionsByNumber, ERR_VALUES_ILLEGAL_VALUE): End Function

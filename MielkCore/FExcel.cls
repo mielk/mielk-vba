@@ -145,6 +145,25 @@ End Sub
 
 
 
+Public Function getActiveCell(Optional ByVal xls As Excel.Application) As Excel.Range
+    If xls Is Nothing Then Set xls = ThisWorkbook.Application
+    On Error Resume Next
+    Set getActiveCell = xls.ActiveCell
+End Function
+
+Public Sub activateCell(cell As Excel.Range)
+    Dim wks As Excel.Worksheet
+    '----------------------------------------------------------------------------------------------------------
+    If f.ranges.IsValid(cell) Then
+        Set wks = cell.Parent
+        Call wks.Activate
+        Call cell.Select
+    End If
+End Sub
+
+
+
+
 
 Public Sub freeze(ByRef state As ExcelState)
     Dim app As Excel.Application:                       Set app = Excel.Application
@@ -235,6 +254,9 @@ Public Function getDefaultExcelState(Optional Sheet As Excel.Worksheet, Optional
     
 End Function
 
+Public Function getExcelStateString(state As ExcelState) As String
+    getExcelStateString = "ExcelState"
+End Function
 
 Public Sub quitApp(Optional ByVal xls As Excel.Application)
     If xls Is Nothing Then Set xls = Excel.Application

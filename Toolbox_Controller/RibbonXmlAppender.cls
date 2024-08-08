@@ -27,7 +27,7 @@ Private Const ERR_APPENDING_CUSTOM_RIBBON As String = "CreatingNewProject.Errors
 '----------------------------------------------------------------------------------------------------------
 
 
-Public Sub append(filePath As String, xmlPath As String)
+Public Sub append(filepath As String, xmlPath As String)
     Dim xml As String
     Dim zipFile As Scripting.file
     Dim unzippedFiles As Scripting.folder
@@ -40,7 +40,7 @@ Public Sub append(filePath As String, xmlPath As String)
     
     xml = f.TextFiles.readTextFile(xmlPath)
     
-    Set zipFile = createZipFile(filePath)
+    Set zipFile = createZipFile(filepath)
     Set unzippedFiles = unzipFiles(zipFile.path)
     
     Call writeCustomUI_XML_ToFile(xml, _
@@ -49,7 +49,7 @@ Public Sub append(filePath As String, xmlPath As String)
     'Call updateRels(unzippedFiles.path, CUSTOM_UI_FILE_NAME)
     Set rezippedFile = rezipFiles(unzippedFiles.path, zipFile.path)
     
-    Call fso.CopyFile(rezippedFile.path, filePath, True)
+    Call fso.CopyFile(rezippedFile.path, filepath, True)
     
     Call f.files.DeleteFolder(f.files.getParentFolder(unzippedFiles.path))
     
@@ -67,17 +67,17 @@ errHandler:
        
 End Sub
 
-Private Function createZipFile(filePath As String) As Scripting.file
+Private Function createZipFile(filepath As String) As Scripting.file
     Dim fileName As String
     Dim fileExtension As String
     Dim folder As Scripting.folder
     Dim zipFilePath As String
     '------------------------------------------------------------------------------------------------------
     
-    fileName = f.files.GetFileName(filePath, True)
-    fileExtension = f.files.getFileExtension(filePath, True)
+    fileName = f.files.getFileName(filepath, True)
+    fileExtension = f.files.getFileExtension(filepath, True)
     
-    Set folder = createFolderWithFileCopy(filePath)
+    Set folder = createFolderWithFileCopy(filepath)
     zipFilePath = f.files.concatenatePath(folder.path, fileName)
     
     Set createZipFile = f.files.GetFile(zipFilePath)
@@ -85,26 +85,26 @@ Private Function createZipFile(filePath As String) As Scripting.file
     
 End Function
 
-Private Function createFolderWithFileCopy(filePath As String) As Scripting.folder
+Private Function createFolderWithFileCopy(filepath As String) As Scripting.folder
     Dim folderPath As String
     '------------------------------------------------------------------------------------------------------
     
-    folderPath = f.files.concatenatePath(f.files.getParentFolder(filePath), f.files.GetFileName(filePath, False))
+    folderPath = f.files.concatenatePath(f.files.getParentFolder(filepath), f.files.getFileName(filepath, False))
     
     Call f.files.DeleteFolder(folderPath)
     
     Set createFolderWithFileCopy = f.files.CreateFolder(folderPath)
-    Call fso.CopyFile(filePath, f.files.concatenatePath(folderPath, f.files.GetFileName(filePath)), True)
+    Call fso.CopyFile(filepath, f.files.concatenatePath(folderPath, f.files.getFileName(filepath)), True)
     
 End Function
 
-Private Function unzipFiles(filePath As String) As Scripting.folder
+Private Function unzipFiles(filepath As String) As Scripting.folder
     Dim sourceFilePath As String
     '------------------------------------------------------------------------------------------------------
     
     With f.files
-        Set unzipFiles = .CreateFolder(.concatenatePath(.getParentFolder(filePath), "Items"))
-        Call .unzip(filePath, unzipFiles.path)
+        Set unzipFiles = .CreateFolder(.concatenatePath(.getParentFolder(filepath), "Items"))
+        Call .unzip(filepath, unzipFiles.path)
     End With
     
 End Function

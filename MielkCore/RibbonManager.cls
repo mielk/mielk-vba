@@ -54,7 +54,6 @@ End Function
 Public Function setWorkbook(value As Excel.Workbook) As RibbonManager
     Set setWorkbook = Me
     Set pWorkbook = value
-    Call saveRibbonPointer
 End Function
 
 Public Function setJsonFilePath(value As String) As RibbonManager
@@ -104,13 +103,15 @@ Private Function getRibbon() As IRibbonUI
     #Else
         Dim ribbonPointer As Long
     #End If
+    Dim obj As Variant
     '------------------------------------------------------------------------------------------------------
     If pRibbon Is Nothing Then
         ribbonPointer = readRibbonPointer
         If ribbonPointer Then
+            
             On Error Resume Next
-            Call CopyMemory(getRibbon, ribbonPointer, 4)
-            Set pRibbon = getRibbon
+            'Call CopyMemory(obj, ribbonPointer, 4)
+            'Set pRibbon = obj ' getRibbon
             On Error GoTo 0
         End If
     End If

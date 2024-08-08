@@ -134,24 +134,24 @@ errHandler:
 End Sub
 
 
-Private Function replaceSingleFile(filePath As String) As ValidationObject
+Private Function replaceSingleFile(filepath As String) As ValidationObject
     Const SUCCESS_MESSAGE_PATTERN As String = VB_COMPONENT_FULL_NAME_PATTERN
     Const FAILURE_MESSAGE_PATTERN As String = ERROR_CONVERTING_COMPONENT
     Const GENERAL_FAILURE_MESSAGE_PATTERN As String = ERROR_CONVERTING_PROJECT
     '----------------------------------------------------------------------------------------------------------
     Dim wkb As Excel.Workbook
-    Dim project As vbide.VBProject
-    Dim component As vbide.VBComponent
+    Dim project As VBIDE.VBProject
+    Dim component As VBIDE.VBComponent
     Dim validation As ValidationObject
     Dim message As String
     '----------------------------------------------------------------------------------------------------------
     
     On Error GoTo errHandler
     
-    Set wkb = f.Books.open_(filePath, False, pParent.getNoMacrosExcel)
+    Set wkb = f.Books.open_(filepath, False, pParent.getNoMacrosExcel)
     Set project = f.Developer.getVbProject(wkb) ' ByName(filepath, pExcel)
     If project Is Nothing Then
-        message = f.Strings.Format(Msg.getText(ERROR_OPENING_VBA_PROJECT), filePath)
+        message = f.Strings.Format(Msg.getText(ERROR_OPENING_VBA_PROJECT), filepath)
         Call VBA.Err.Raise(1, , message)
     Else
         
@@ -198,7 +198,7 @@ errHandler:
 End Function
 
 
-Private Function renameProject(project As vbide.VBProject) As ValidationObject
+Private Function renameProject(project As VBIDE.VBProject) As ValidationObject
     Dim message As String
     Dim newName As String
     '------------------------------------------------------------------------------------------------------
@@ -224,11 +224,11 @@ errHandler:
 
 End Function
 
-Private Function convertComponent(component As vbide.VBComponent) As ValidationObject
+Private Function convertComponent(component As VBIDE.VBComponent) As ValidationObject
     Const ERROR_READING_MODULE_CONTENT As String = "CreatingNewProject.Errors.ReadingModuleContent"
     Dim errNumber As Long, errDescription As String
     '----------------------------------------------------------------------------------------------------------
-    Dim codeModule As vbide.codeModule
+    Dim codeModule As VBIDE.codeModule
     '----------------------------------------------------------------------------------------------------------
     Dim placeholders As Scripting.Dictionary
     Dim placeholder As String

@@ -285,7 +285,7 @@ Friend Function getKey() As Variant
 End Function
 
 Public Function isValid() As Boolean
-    isValid = UI.Forms.isControlValid(pBackgroundLabel)
+    isValid = UI.controls.isValid(pBackgroundLabel)
 End Function
 
 Public Function getLeft() As Single
@@ -293,7 +293,7 @@ Public Function getLeft() As Single
 End Function
 
 Public Function getRight() As Single
-    getRight = UI.Forms.getRight(pBackgroundLabel)
+    getRight = UI.controls.getRight(pBackgroundLabel)
 End Function
 
 Public Function getTop() As Single
@@ -301,7 +301,7 @@ Public Function getTop() As Single
 End Function
 
 Public Function getBottom() As Single
-    getBottom = UI.Forms.getBottom(pBackgroundLabel)
+    getBottom = UI.controls.getBottom(pBackgroundLabel)
 End Function
 
 Public Function getRectangle() As RECT
@@ -405,17 +405,17 @@ Private Function getLabelName(controlType As ControlTypeEnum) As String
 End Function
 
 Private Sub insertBackgroundLabel()
-    Set pBackgroundLabel = getCanvas.controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_Background), False)
+    Set pBackgroundLabel = getCanvas.controls.add(CREATE_LABEL_ID, getLabelName(ControlType_Background), False)
     Call refreshBackgroundLabel
 End Sub
 
 Private Sub insertActivenessBorder()
-    Set pActivenessBorder = getCanvas.controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_ActivenessBorder), False)
+    Set pActivenessBorder = getCanvas.controls.add(CREATE_LABEL_ID, getLabelName(ControlType_ActivenessBorder), False)
     Call refreshActivenessBorder
 End Sub
 
 Private Sub insertCaptionLabel()
-    Set pCaptionLabel = getCanvas.controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_Caption), False)
+    Set pCaptionLabel = getCanvas.controls.add(CREATE_LABEL_ID, getLabelName(ControlType_Caption), False)
     Call refreshCaptionLabel
     Call resizeCaptionLabel
 End Sub
@@ -423,8 +423,8 @@ End Sub
 Private Sub insertRemoveIcon()
 '    Stop 'xxx
     If pList.areItemsRemovable Then
-        Set pRemoveIcon = getCanvas.controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_RemoveIcon), False)
-        Call UI.Forms.resizeControl(pRemoveIcon, pIconSize, pIconSize)
+        Set pRemoveIcon = getCanvas.controls.add(CREATE_LABEL_ID, getLabelName(ControlType_RemoveIcon), False)
+        Call UI.controls.resize(pRemoveIcon, pIconSize, pIconSize)
         Call refreshRemoveIcon
     End If
 End Sub
@@ -432,16 +432,16 @@ End Sub
 Private Sub insertEditIcon()
 '    Stop 'xxx
     If pList.areItemsEditable Then
-        Set pEditIcon = getCanvas.controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_EditIcon), False)
-        Call UI.Forms.resizeControl(pEditIcon, pIconSize, pIconSize)
+        Set pEditIcon = getCanvas.controls.add(CREATE_LABEL_ID, getLabelName(ControlType_EditIcon), False)
+        Call UI.controls.resize(pEditIcon, pIconSize, pIconSize)
         Call refreshEditIcon
     End If
 End Sub
 
 Private Sub insertPreviewIcon()
     If pList.areItemsPreviewable Then
-        Set pPreviewIcon = getCanvas.controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_PreviewIcon), False)
-        Call UI.Forms.resizeControl(pPreviewIcon, pIconSize, pIconSize)
+        Set pPreviewIcon = getCanvas.controls.add(CREATE_LABEL_ID, getLabelName(ControlType_PreviewIcon), False)
+        Call UI.controls.resize(pPreviewIcon, pIconSize, pIconSize)
         Call refreshPreviewIcon
     End If
 End Sub
@@ -499,7 +499,7 @@ Private Sub resetCaptionLabel()
 End Sub
 
 Private Sub refreshRemoveIcon()
-    If UI.Forms.isControlValid(pRemoveIcon) Then
+    If UI.controls.isValid(pRemoveIcon) Then
         With pRemoveIcon
             .BackStyle = fmBackStyleTransparent
             .borderStyle = fmBorderStyleNone
@@ -512,7 +512,7 @@ Private Sub refreshRemoveIcon()
 End Sub
 
 Private Sub refreshEditIcon()
-    If UI.Forms.isControlValid(pEditIcon) Then
+    If UI.controls.isValid(pEditIcon) Then
         With pEditIcon
             .BackStyle = fmBackStyleTransparent
             .borderStyle = fmBorderStyleNone
@@ -525,7 +525,7 @@ Private Sub refreshEditIcon()
 End Sub
 
 Private Sub refreshPreviewIcon()
-    If UI.Forms.isControlValid(pPreviewIcon) Then
+    If UI.controls.isValid(pPreviewIcon) Then
         With pPreviewIcon
             .BackStyle = fmBackStyleTransparent
             .borderStyle = fmBorderStyleNone
@@ -540,9 +540,9 @@ End Sub
 Private Sub refreshViewAfterStateChange()
     pBackgroundLabel.backColor = getProperBackColor
     pCaptionLabel.ForeColor = getProperFontColor
-    If UI.Forms.isControlValid(pRemoveIcon) Then Set pRemoveIcon.picture = getProperRemoveIcon
-    If UI.Forms.isControlValid(pEditIcon) Then Set pEditIcon.picture = getProperEditIcon
-    If UI.Forms.isControlValid(pPreviewIcon) Then Set pPreviewIcon.picture = getProperPreviewIcon
+    If UI.controls.isValid(pRemoveIcon) Then Set pRemoveIcon.picture = getProperRemoveIcon
+    If UI.controls.isValid(pEditIcon) Then Set pEditIcon.picture = getProperEditIcon
+    If UI.controls.isValid(pPreviewIcon) Then Set pPreviewIcon.picture = getProperPreviewIcon
     Call updateActivenessBorder
 End Sub
 
@@ -624,10 +624,10 @@ Private Sub arrangeControls()
     Call moveControlsOutOfView
     Call updateVisibility
     Call resizeControls
-    Call UI.Forms.locateControl(pBackgroundLabel, -PIXEL_SIZE, pTop)
+    Call UI.controls.locate(pBackgroundLabel, -PIXEL_SIZE, pTop)
     With pBackgroundLabel
-        Call UI.Forms.locateControl(pActivenessBorder, .left + 3 * PIXEL_SIZE, .top + 2 * PIXEL_SIZE)
-        Call UI.Forms.resizeControl(pActivenessBorder, .width - 6 * PIXEL_SIZE, .height - 4 * PIXEL_SIZE)
+        Call UI.controls.locate(pActivenessBorder, .left + 3 * PIXEL_SIZE, .top + 2 * PIXEL_SIZE)
+        Call UI.controls.resize(pActivenessBorder, .width - 6 * PIXEL_SIZE, .height - 4 * PIXEL_SIZE)
     End With
     
     topCaption = pTop + (pBackgroundLabel.height - pCaptionLabel.height) / 2
@@ -637,9 +637,9 @@ Private Sub arrangeControls()
         For Each icon In VBA.Array(pRemoveIcon, pEditIcon, pPreviewIcon)
             Call locateIcon(icon, left, topButton)
         Next icon
-        Call UI.Forms.locateControl(pCaptionLabel, left + pPadding / 2, topCaption)
+        Call UI.controls.locate(pCaptionLabel, left + pPadding / 2, topCaption)
     Else
-        Call UI.Forms.locateControl(pCaptionLabel, left, topCaption)
+        Call UI.controls.locate(pCaptionLabel, left, topCaption)
         For Each icon In VBA.Array(pRemoveIcon, pEditIcon, pPreviewIcon)
             Call locateIcon(icon, left, topButton)
         Next icon
@@ -651,9 +651,9 @@ End Sub
 Private Sub locateIcon(icon As Variant, ByRef left As Single, ByVal top As Single)
     Dim label As MSForms.label
     '------------------------------------------------------------------------------------------------------
-    If UI.Forms.isControlValid(icon) Then
+    If UI.controls.isValid(icon) Then
         Set label = icon
-        Call UI.Forms.locateControl(label, left, top)
+        Call UI.controls.locate(label, left, top)
         left = left + pIconSize + pPadding / 2
     End If
 End Sub
@@ -671,33 +671,33 @@ End Sub
 
 Private Sub moveControlsOutOfView()
     On Error Resume Next
-    Call UI.Forms.locateControl(pBackgroundLabel, -1, -pHeight - 1)
-    Call UI.Forms.locateControl(pCaptionLabel, 0, -pHeight - 1)
-    Call UI.Forms.locateControl(pRemoveIcon, 0, -pHeight - 1)
-    Call UI.Forms.locateControl(pEditIcon, 0, -pHeight - 1)
-    Call UI.Forms.locateControl(pPreviewIcon, 0, -pHeight - 1)
+    Call UI.controls.locate(pBackgroundLabel, -1, -pHeight - 1)
+    Call UI.controls.locate(pCaptionLabel, 0, -pHeight - 1)
+    Call UI.controls.locate(pRemoveIcon, 0, -pHeight - 1)
+    Call UI.controls.locate(pEditIcon, 0, -pHeight - 1)
+    Call UI.controls.locate(pPreviewIcon, 0, -pHeight - 1)
 End Sub
 
 Private Function getRemoveIconLeftCoordinate() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
-        getRemoveIconLeftCoordinate = UI.Forms.getRight(pBackgroundLabel) - pIconSize - pPadding / 2 - VBA.IIf(pList.hasVerticalScrollBar, SCROLL_BAR_WIDTH, 0)
+    If UI.controls.isValid(pBackgroundLabel) Then
+        getRemoveIconLeftCoordinate = UI.controls.getRight(pBackgroundLabel) - pIconSize - pPadding / 2 - VBA.IIf(pList.hasVerticalScrollBar, SCROLL_BAR_WIDTH, 0)
     End If
 End Function
 
 Private Function getEditIconLeftCoordinate() As Single
-    If UI.Forms.isControlValid(pRemoveIcon) Then
+    If UI.controls.isValid(pRemoveIcon) Then
         getEditIconLeftCoordinate = pRemoveIcon.left - pIconSize - pPadding / 2
     Else
-        getEditIconLeftCoordinate = UI.Forms.getRight(pBackgroundLabel) - SCROLL_BAR_WIDTH - pIconSize - pPadding / 2
+        getEditIconLeftCoordinate = UI.controls.getRight(pBackgroundLabel) - SCROLL_BAR_WIDTH - pIconSize - pPadding / 2
     End If
 End Function
 
 Private Sub resizeControls()
-    Call UI.Forms.resizeControl(pBackgroundLabel, getCanvas.InsideWidth + 2, pHeight)
+    Call UI.controls.resize(pBackgroundLabel, getCanvas.InsideWidth + 2, pHeight)
     Call resizeCaptionLabel
-    Call UI.Forms.resizeControl(pRemoveIcon, pIconSize, pIconSize)
-    Call UI.Forms.resizeControl(pEditIcon, pIconSize, pIconSize)
-    Call UI.Forms.resizeControl(pPreviewIcon, pIconSize, pIconSize)
+    Call UI.controls.resize(pRemoveIcon, pIconSize, pIconSize)
+    Call UI.controls.resize(pEditIcon, pIconSize, pIconSize)
+    Call UI.controls.resize(pPreviewIcon, pIconSize, pIconSize)
 End Sub
 
 Private Sub resizeCaptionLabel()
@@ -714,9 +714,9 @@ Private Sub updateVisibility()
     pBackgroundLabel.visible = pVisible
     pCaptionLabel.visible = pVisible
     pActivenessBorder.visible = pVisible And pActive
-    If UI.Forms.isControlValid(pRemoveIcon) Then pRemoveIcon.visible = pVisible
-    If UI.Forms.isControlValid(pEditIcon) Then pEditIcon.visible = pVisible
-    If UI.Forms.isControlValid(pPreviewIcon) Then pPreviewIcon.visible = pVisible
+    If UI.controls.isValid(pRemoveIcon) Then pRemoveIcon.visible = pVisible
+    If UI.controls.isValid(pEditIcon) Then pEditIcon.visible = pVisible
+    If UI.controls.isValid(pPreviewIcon) Then pPreviewIcon.visible = pVisible
 End Sub
 
 Friend Sub applySpecialFormat()
@@ -750,7 +750,7 @@ Private Sub applyProperty(propName As String, value As Variant)
     Dim fontBold As Long
     '------------------------------------------------------------------------------------------------------
     
-    If UI.Forms.isControlValid(pCaptionLabel) Then
+    If UI.controls.isValid(pCaptionLabel) Then
         With pCaptionLabel
             Select Case VBA.LCase$(propName)
                 Case UI.props.fontColor.getLowerCaseName

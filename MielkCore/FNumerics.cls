@@ -311,7 +311,7 @@ End Function
 
 
 Public Function isNumber(value As Variant) As Boolean
-    Const REGEX_PATTERN As String = "^(-?\d+(?:\.|\,)\d+)$|^(-?\d+)$"
+    Const REGEX_PATTERN As String = "^-?\d+(?:[ '\u00A0]?\d{3})*(?:[\.,]\d+)?%?$"
     '------------------------------------------------------------------------------------------------------
     Static objRegex As Object
     '------------------------------------------------------------------------------------------------------
@@ -330,13 +330,33 @@ End Function
 
 
 Public Function toNumber(value As Variant) As Variant
-    Dim separator As String:            separator = f.System.getDecimalSeparator
+    Const CONVERT_PATTERN As String = "[^\d\.\,]"
+    Const IS_NEGATIVE_PATTERN As String = "^\s*-"
+    Const IS_PERCENT_PATTERN As String = "%\s*$"
     '------------------------------------------------------------------------------------------------------
+    Dim separator As String:            separator = f.System.getDecimalSeparator
+    Dim strValue As String
+    Dim digits As String
+    '------------------------------------------------------------------------------------------------------
+    
     If f.Variables.isUndefined(value) Then
         toNumber = 0
-    ElseIf f.Variables.isPrimitive(value) Then
-        toNumber = VBA.replace(VBA.replace(value, ".", separator), ",", separator) * 1
-    Else
+    ElseIf VBA.IsObject(value) Then
         toNumber = 0
+    ElseIf VBA.IsArray(value) Then
+        toNumber = 0
+    Else
+        strValue = VBA.CStr(value)
+        digits = f.regex.replace(strValue, CONVERT_PATTERN, VBA.vbNullString)
+        toNumber = VBA.replace(VBA.replace(digits, ".", separator), ",", separator) * 1
+        
+        If f.regex.checkIfMatch(strValue, IS_NEGATIVE_PATTERN) Then
+            toNumber = toNumber * (-1)
+        End If
+        
+        If f.regex.checkIfMatch(strValue, IS_PERCENT_PATTERN) Then
+            toNumber = toNumber / 100
+        End If
     End If
+    
 End Function

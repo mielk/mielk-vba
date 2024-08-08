@@ -14,7 +14,7 @@ Private Const CLASS_NAME As String = "FExcelNames"
 
 Public Function addValue(Parent As Variant, name As String, ByVal value As Variant) As Excel.name
     If Len(value) = 0 Then value = "_"
-    Call Parent.names.Add(name, value)
+    Set addValue = Parent.names.Add(name, value)
 End Function
 
 Public Function getValue(Parent As Object, name As String) As Variant

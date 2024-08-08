@@ -210,13 +210,13 @@ Private Function adjustSingleFileReferencesDictionary(references As VBA.Collecti
     
 End Function
 
-Private Function fixReferencesInFile(xls As Excel.Application, filePath As String, _
+Private Function fixReferencesInFile(xls As Excel.Application, filepath As String, _
                                             dictReferences As Scripting.Dictionary) As ValidationObject
     Const FAILURE_MESSAGE_PATTERN As String = "CreatingNewProject.Errors.FixingFileReferences"
     '------------------------------------------------------------------------------------------------------
     Dim wkb As Excel.Workbook
-    Dim project As vbide.VBProject
-    Dim ref As vbide.Reference
+    Dim project As VBIDE.VBProject
+    Dim ref As VBIDE.Reference
     Dim validation As ValidationObject
     Dim message As String
     '------------------------------------------------------------------------------------------------------
@@ -227,19 +227,19 @@ Private Function fixReferencesInFile(xls As Excel.Application, filePath As Strin
     '------------------------------------------------------------------------------------------------------
 
     '[Get config for this specific file (by file path). -----------------------------|
-    addInName = f.regex.getFirstGroupMatch(filePath, EXCEL_ADDIN_NAME_PATTERN)      '|
+    addInName = f.regex.getFirstGroupMatch(filepath, EXCEL_ADDIN_NAME_PATTERN)      '|
     Set configReferences = f.dictionaries.GetObject(dictReferences, addInName)      '|
     '--------------------------------------------------------------------------------|
     
     '[Open project and load references into dictionary ------------------------------|
     '(by file name, no extenstion).                                                 '|
-    Set wkb = f.Books.open_(filePath, False, xls)                                   '|
+    Set wkb = f.Books.open_(filepath, False, xls)                                   '|
     Set project = f.Developer.getVbProject(wkb)                                     '|
     Set projectReferences = getProjectReferencesDictionary(project)                 '|
     '--------------------------------------------------------------------------------|
 
     If project Is Nothing Then
-        message = f.Strings.Format(Msg.getText(ERROR_OPENING_VBA_PROJECT), filePath)
+        message = f.Strings.Format(Msg.getText(ERROR_OPENING_VBA_PROJECT), filepath)
         Call VBA.Err.Raise(1, , message)
     Else
         If f.dictionaries.isNonEmptyDictionary(configReferences) Then
@@ -268,13 +268,13 @@ ExitPoint:
 '----------------------------------------------------------------------------------------------------------
 errHandler:
     errNumber = VBA.Err.Number: errDescription = VBA.Err.Description
-    message = f.Strings.Format(Msg.getText(FAILURE_MESSAGE_PATTERN), filePath, errDescription, errNumber)
+    message = f.Strings.Format(Msg.getText(FAILURE_MESSAGE_PATTERN), filepath, errDescription, errNumber)
     Set fixReferencesInFile = f.create.ValidationObject(ItemProcessStatus_Error, message)
 
 End Function
 
-Private Function getProjectReferencesDictionary(project As vbide.VBProject) As Scripting.Dictionary
-    Dim ref As vbide.Reference
+Private Function getProjectReferencesDictionary(project As VBIDE.VBProject) As Scripting.Dictionary
+    Dim ref As VBIDE.Reference
     Dim refName As String
     Dim refPath As String
     '----------------------------------------------------------------------------------------------------------
@@ -291,13 +291,13 @@ Private Function getProjectReferencesDictionary(project As vbide.VBProject) As S
     
 End Function
 
-Private Function fixSingleReference(project As vbide.VBProject, name As String, _
+Private Function fixSingleReference(project As VBIDE.VBProject, name As String, _
                                         desiredPath As String, currentPath As String) As ValidationObject
     Const SUCCESS_MESSAGE_PATTERN As String = "{0}::{1} [{2}]"
     Const FAILURE_MESSAGE_PATTERN As String = "CreatingNewProject.Errors.FixingSingleReference"
     Dim errNumber As Long, errDescription As String
     '------------------------------------------------------------------------------------------------------
-    Dim ref As vbide.Reference
+    Dim ref As VBIDE.Reference
     Dim message As String
     Dim counter As Long
     '------------------------------------------------------------------------------------------------------
@@ -361,8 +361,8 @@ errHandler:
     
 End Function
 
-Private Function getReferenceByPath(project As vbide.VBProject, path As String) As vbide.Reference
-    Dim ref As vbide.Reference
+Private Function getReferenceByPath(project As VBIDE.VBProject, path As String) As VBIDE.Reference
+    Dim ref As VBIDE.Reference
     '------------------------------------------------------------------------------------------------------
     For Each ref In project.references
         If ref.FullPath = path Then

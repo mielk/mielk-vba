@@ -9,6 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
 Option Explicit
 
+Implements IListener
 Implements IGridParentWindow
 
 Private Type MoveCache
@@ -29,11 +30,13 @@ Private Const CANVAS_FRAME_NAME As String = "frmCanvas"
 Private Const BODY_FRAME_NAME As String = "frmBody"
 Private Const CONTENT_FRAME_NAME As String = "frmContent"
 Private Const VALIDATION_FRAME_NAME As String = "frmValidation"
+'[Config tags] --------------------------------------------------------------------------------------------
+Private Const TITLE_PANEL_TAG As String = "titlePanel"
 '----------------------------------------------------------------------------------------------------------
 Private Const WINDOW_PADDING As Single = 6
 Private Const DEFAULT_WIDTH As Single = 400
 Private Const DEFAULT_MIN_WIDTH As Single = 200
-Private Const DEFAULT_MAX_WIDTH As Single = 900
+Private Const DEFAULT_MAX_WIDTH As Single = 2560
 Private Const DEFAULT_MIN_HEIGHT As Single = 60
 Private Const DEFAULT_MAX_HEIGHT As Single = 600
 Private Const DEFAULT_CONTENT_HEIGHT As Single = 24
@@ -56,6 +59,7 @@ Private Const EXTRA_FRAME_DEFAULT_BACK_COLOR As Long = vbWhite
 Private Const EXTRA_FRAME_DEFAULT_BORDER_STYLE As Long = fmBorderStyleNone
 Private Const EXTRA_FRAME_DEFAULT_SCROLL_BARS As Long = fmScrollBarsVertical
 '[State] --------------------------------------------------------------------------------------------------
+Private pId As String
 Private pUuid As String
 Private pIsRendered As Boolean
 Private pIsCancelled As Boolean
@@ -78,6 +82,8 @@ Private WithEvents pButtonsPanel As UIButtonsPanel
 Attribute pButtonsPanel.VB_VarHelpID = -1
 Private pExtraFrames As Scripting.Dictionary
 '[UI properties] ------------------------------------------------------------------------------------------
+Private pProperties As Scripting.Dictionary
+Private pHasBorder As Boolean
 Private pBorderColor As Long
 Private pCaption As String
 Private pMinWidth As Single
@@ -124,6 +130,7 @@ End Sub
 Private Sub setDefaultValues()
     Set pForm = New ufTemplate
     pUuid = F.Crypto.createUUID
+    pHasBorder = True
     pBorderColor = MIELK_COLOR
     pMinWidth = DEFAULT_MIN_WIDTH
     pMaxWidth = DEFAULT_MAX_WIDTH
@@ -170,6 +177,11 @@ End Sub
 
 
 '[SETTERS]
+Public Function setId(value As String) As WTemplate
+    Set setId = Me
+    pId = value
+End Function
+
 Public Function setCaption(value As String) As WTemplate
     Set setCaption = Me
     pCaption = value
@@ -289,11 +301,34 @@ Public Function setHasOkButton(value As Boolean) As WTemplate
     pHasOkButton = value
 End Function
 
+Public Sub configure(properties As Scripting.Dictionary)
+    If F.dictionaries.isNonEmptyDictionary(properties) Then
+        
+        Set pProperties = properties
+        
+        '[Size and layout]
+        Call F.dictionaries.assignValueFromDictToVariable(properties, pMinWidth, "size.minWidth")
+        Call F.dictionaries.assignValueFromDictToVariable(properties, pMaxHeight, "size.maxHeight")
+        Call F.dictionaries.assignValueFromDictToVariable(properties, pContentFrameHorizontalMargin, "padding")
+        Call F.dictionaries.assignValueFromDictToVariable(properties, pContentFrameVerticalMargin, "padding")
+        
+        '[Borders]
+        Call F.dictionaries.assignValueFromDictToVariable(properties, pHasBorder, "border.visible")
+        Call F.dictionaries.assignValueFromDictToVariable(properties, pBorderColor, "border.color")
+        
+    End If
+End Sub
+
+
 
 
 
 
 '[GETTERS]
+Public Function getId() As String
+    getId = pId
+End Function
+
 Friend Function getForm() As ufTemplate
     Set getForm = pForm
 End Function
@@ -424,7 +459,7 @@ Private Function createBackgroundWindow() As WBackground
 End Function
 
 Private Sub insertCanvas()
-    Set pCanvas = pForm.controls.Add(CREATE_FRAME_ID, CANVAS_FRAME_NAME, True)
+    Set pCanvas = pForm.controls.add(CREATE_FRAME_ID, CANVAS_FRAME_NAME, True)
     With pCanvas
         .backColor = TRANSPARENCY_LAYER_COLOR
         .SpecialEffect = fmSpecialEffectFlat
@@ -437,7 +472,7 @@ Private Sub insertCanvas()
 End Sub
 
 Private Sub insertBody()
-    Set pBody = pCanvas.controls.Add(CREATE_FRAME_ID, BODY_FRAME_NAME, True)
+    Set pBody = pCanvas.controls.add(CREATE_FRAME_ID, BODY_FRAME_NAME, True)
     With pBody
         .backColor = vbWhite
         .SpecialEffect = fmSpecialEffectFlat
@@ -460,6 +495,7 @@ Private Sub insertTitlePanel()
             Call .setWidth(VBA.IIf(pHasTitleBar, DEFAULT_WIDTH, 0))
             Call .setBackColor(pBorderColor)
             Call .setCaption(pCaption)
+            Call .configure(F.dictionaries.getObject(pProperties, TITLE_PANEL_TAG))
             Call .render
         End With
     End If
@@ -467,7 +503,7 @@ End Sub
 
 
 Private Sub insertContentFrame()
-    Set pContentFrame = pBody.controls.Add(CREATE_FRAME_ID, CONTENT_FRAME_NAME, True)
+    Set pContentFrame = pBody.controls.add(CREATE_FRAME_ID, CONTENT_FRAME_NAME, True)
     With pContentFrame
         .backColor = vbWhite
         .borderStyle = fmBorderStyleNone
@@ -485,7 +521,7 @@ Private Sub insertExtraFrames()
     
     For Each key In pExtraFrames.keys
         Set props = pExtraFrames.item(key)
-        Set frame = pBody.controls.Add(CREATE_FRAME_ID, VBA.CStr(key), True)
+        Set frame = pBody.controls.add(CREATE_FRAME_ID, VBA.CStr(key), True)
         Call applyPropsForExtraFrame(frame, props)
         Set pExtraFrames.item(key) = frame
     Next key
@@ -510,7 +546,7 @@ Private Sub applyPropsForExtraFrame(frame As MSForms.frame, props As Scripting.D
     If F.dictionaries.isNonEmptyDictionary(props) Then
         For Each prop In propTypes
             If props.Exists(prop) Then
-                Call UI.Forms.setControlProperty(frame, UI.Cast.toProp(prop), props.item(prop))
+                Call UI.controls.setProperty(frame, UI.Cast.toProp(prop), props.item(prop))
             End If
         Next prop
     End If
@@ -534,7 +570,7 @@ End Sub
 
 Private Sub insertValidationPanel()
     If pHasValidationPanel Then
-        Set pValidationFrame = pCanvas.controls.Add(CREATE_FRAME_ID, VALIDATION_FRAME_NAME, True)
+        Set pValidationFrame = pCanvas.controls.add(CREATE_FRAME_ID, VALIDATION_FRAME_NAME, True)
         With pValidationFrame
             .backColor = TRANSPARENCY_LAYER_COLOR
             .borderStyle = fmBorderStyleNone
@@ -612,7 +648,7 @@ Public Sub arrangeComponents()
         Call pButtonsPanel.setIsVisible(pHasButtonsPanel)
         If pHasButtonsPanel Then
             With pButtonsPanel
-                Call .setTop(top)
+                Call .setTop(top - PIXEL_SIZE)
                 Call .setWidth(width)
                 top = .getBottom
             End With
@@ -641,6 +677,7 @@ End Sub
 
 Private Sub adjustContentFrameSize()
     Dim rightBottomPoint As Coordinate
+    Dim width As Single
     '----------------------------------------------------------------------------------------------------------
     
     rightBottomPoint = UI.Forms.calculateRightBottomPoint(pContentFrame)
@@ -660,7 +697,15 @@ Private Sub adjustContentFrameSize()
             .scrollTop = 0
         End If
         
-        .width = rightBottomPoint.x + pContentFrameHorizontalMargin + VBA.IIf(.ScrollBars >= fmScrollBarsVertical, SCROLL_BAR_WIDTH, 0)
+        width = rightBottomPoint.x + pContentFrameHorizontalMargin + VBA.IIf(.ScrollBars >= fmScrollBarsVertical, SCROLL_BAR_WIDTH, 0)
+        
+        If pMinWidth > 0 And width < pMinWidth Then
+            width = pMinWidth
+        ElseIf pMaxWidth > 0 And width > pMaxWidth Then
+            width = pMaxWidth
+        End If
+        
+        .width = width
         
     End With
      
@@ -685,7 +730,7 @@ Private Function getExtraFramesBottomRightPoint() As Coordinate
     With getExtraFramesBottomRightPoint
         For Each key In pExtraFrames.keys
             Set frame = pExtraFrames.item(key)
-            If UI.Forms.isControlValid(frame) Then
+            If UI.controls.isValid(frame) Then
                 width = frame.left + frame.width
                 height = frame.top + frame.height
                 If width > .x Then .x = width
@@ -701,7 +746,7 @@ Private Function getExtraFramesBottomRightPoint() As Coordinate
 End Function
 
 Private Sub updateValidationPanelWidth()
-    If UI.Forms.isControlValid(pValidationFrame) Then
+    If UI.controls.isValid(pValidationFrame) Then
         pValidationFrame.width = pValidationPanelWidth
     End If
 End Sub
@@ -893,8 +938,8 @@ Public Sub sendToBackground()
     Dim height As Single
     '----------------------------------------------------------------------------------------------------------
     
-    width = UI.Forms.getRight(pBody)
-    height = UI.Forms.getBottom(pBody)
+    width = UI.controls.getRight(pBody)
+    height = UI.controls.getBottom(pBody)
     
     If pBackgroundActive Then
         With pBackgroundWindow
@@ -985,4 +1030,14 @@ End Sub
 
 Private Sub IGridParentWindow_sendToBackground()
     Call sendToBackground
+End Sub
+
+
+
+
+
+'[Implementation of IListener interface]
+
+Private Sub IListener_catchEvent(src As Variant, ev As Variant, Optional properties As Scripting.IDictionary)
+    Stop
 End Sub

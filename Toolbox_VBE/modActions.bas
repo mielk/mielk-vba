@@ -20,3 +20,7 @@ End Sub
 Public Sub addClass()
     Call ClassGenerator.addClass
 End Sub
+
+Public Sub addSettersAndGetters()
+    Call ClassGenerator.addSettersAndGetters
+End Sub

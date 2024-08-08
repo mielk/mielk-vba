@@ -9,6 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
 Option Explicit
 
+Implements IItemSelector
 Implements IListener
 
 Private Const CLASS_NAME As String = "WSelectItem"
@@ -285,14 +286,14 @@ Private Sub insertSearchPanel()
     
     If pHasSearchPanel Then
         
-        Set pSearchIcon = frame.controls.Add(CREATE_LABEL_ID, SEARCH_ICON_NAME, True)
+        Set pSearchIcon = frame.controls.add(CREATE_LABEL_ID, SEARCH_ICON_NAME, True)
         With pSearchIcon
             .width = SEARCH_ICON_SIZE
             .height = SEARCH_ICON_SIZE
             Set .picture = Icons.icoSearch.picture
         End With
         
-        Set pSearchTextBox = frame.controls.Add(CREATE_TEXTBOX_ID, SEARCH_TEXTBOX_NAME, True)
+        Set pSearchTextBox = frame.controls.add(CREATE_TEXTBOX_ID, SEARCH_TEXTBOX_NAME, True)
         With pSearchTextBox
             .width = SEARCH_TEXTBOX_WIDTH
             .height = SEARCH_TEXTBOX_HEIGHT
@@ -303,7 +304,7 @@ Private Sub insertSearchPanel()
         End With
         
         If pHasTitlePanel Then
-            Set pSearchCancelButton = frame.controls.Add(CREATE_LABEL_ID, SEARCH_CANCEL_BUTTON_NAME, False)
+            Set pSearchCancelButton = frame.controls.add(CREATE_LABEL_ID, SEARCH_CANCEL_BUTTON_NAME, False)
             With pSearchCancelButton
                 .width = SEARCH_CANCEL_BUTTON_SIZE
                 .height = SEARCH_CANCEL_BUTTON_SIZE
@@ -399,7 +400,7 @@ Private Sub arrangeControls()
     If Not pSearchTextBox Is Nothing Then
         With pSearchTextBox
             .top = UI.Normalize.position(verticalMargin)
-            .left = UI.Normalize.position(UI.Forms.getRight(pSearchIcon) + SEARCH_CONTROLS_SPACE)
+            .left = UI.Normalize.position(UI.controls.getRight(pSearchIcon) + SEARCH_CONTROLS_SPACE)
             .width = calculateSearchTextBoxWidth
         End With
     End If
@@ -408,7 +409,7 @@ Private Sub arrangeControls()
         If Not pSearchCancelButton Is Nothing Then
             With pSearchCancelButton
                 .top = UI.Normalize.position(verticalMargin + (pSearchTextBox.height - .height) / 2)
-                .left = UI.Normalize.position(UI.Forms.getRight(pSearchTextBox) + SEARCH_CONTROLS_SPACE)
+                .left = UI.Normalize.position(UI.controls.getRight(pSearchTextBox) + SEARCH_CONTROLS_SPACE)
             End With
         End If
     End If
@@ -425,7 +426,7 @@ End Sub
 
 Private Function calculateListBoxTop() As Single
     If pHasSearchPanel Then
-        calculateListBoxTop = UI.Normalize.position(UI.Forms.getBottom(pSearchTextBox) + DEFAULT_VERTICAL_MARGIN)
+        calculateListBoxTop = UI.Normalize.position(UI.controls.getBottom(pSearchTextBox) + DEFAULT_VERTICAL_MARGIN)
     Else
         calculateListBoxTop = UI.Normalize.position(DEFAULT_VERTICAL_MARGIN)
     End If
@@ -452,7 +453,7 @@ Private Sub validate()
         If pMultiSelectAllowed Then
             Call F.Variables.assign(itemsSelected, .getSelectedValue)
             If F.Collections.isNonEmptyCollection(itemsSelected) Then
-                selectionCounter = itemsSelected.Count
+                selectionCounter = itemsSelected.count
             End If
             
             If pMinItemsSelected > 0 And selectionCounter < pMinItemsSelected Then
@@ -485,7 +486,6 @@ End Sub
 Private Sub setFocusOnList()
     Call pList.setFocus(False, True, False)
 End Sub
-
 
 
 
@@ -559,7 +559,7 @@ Private Function filterItems() As Scripting.Dictionary
     Set filterItems = F.dictionaries.Create(False)
     For Each key In pItems.keys
         If VBA.InStr(1, key, pSearchText, vbTextCompare) Then
-            Call filterItems.Add(key, pItems.item(key))
+            Call filterItems.add(key, pItems.item(key))
         End If
     Next key
     
@@ -611,8 +611,36 @@ End Sub
 
 '[Implementation of IListener interface]
 
-Private Sub IListener_catchEvent(Source As Variant, eventName As String, Optional properties As Scripting.IDictionary)
-    If Source Is pAddButton Then
+Private Sub IListener_catchEvent(src As Variant, ev As Variant, Optional properties As Scripting.IDictionary)
+    If src Is pAddButton Then
         Call handleAddingItem
     End If
+End Sub
+
+
+
+'[Implementation of IItemSelector interface]
+
+Private Function IItemSelector_getDetailsForId(id As Long) As Variant
+    Stop        '@@@tm24
+End Function
+
+Private Function IItemSelector_getDisplayValueForId(id As Long) As String
+    Stop        '@@@tm24
+End Function
+
+Private Function IItemSelector_getValue() As Variant
+    Stop        '@@@tm24
+End Function
+
+Private Function IItemSelector_isCancelledByUser() As Boolean
+    Stop        '@@@tm24
+End Function
+
+Private Sub IItemSelector_run()
+    Stop        '@@@tm24
+End Sub
+
+Private Sub IItemSelector_setCurrentSelection(value As Variant)
+    Stop        '@@@tm24
 End Sub

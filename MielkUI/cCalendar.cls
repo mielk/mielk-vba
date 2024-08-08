@@ -704,10 +704,10 @@ Public Sub AboutBox()
     MsgBox "Calendar Control Class" & vbLf & vbLf & "Autors:" & vbLf & " - r - Original Concept and Base Version" & vbLf & " - Kris - Spirit" & vbLf & " - Gabor - VBA Wizardry and New Features" & vbLf & vbLf & "The FrankensTeam"
 End Sub
 
-Public Sub Add(ByVal fForm As MSForms.UserForm)
+Public Sub add(ByVal fForm As MSForms.UserForm)
 
     Dim cFrame As MSForms.frame
-    Set cFrame = fForm.controls.Add("Forms.Frame.1")
+    Set cFrame = fForm.controls.add("Forms.Frame.1")
     
     With cFrame
         .width = IIf(sPWidth < 0, cDefaultWidth, sPWidth)
@@ -745,9 +745,9 @@ Public Sub Add_Calendar_into_Frame(ByVal cFrame As MSForms.frame)
     
     
     'Add this first, for proper taborder (Need TabStop.)
-    Set CLb = cFrame.controls.Add("Forms.Label.1")
-    Set CBxY = cFrame.controls.Add("Forms.ComboBox.1")
-    Set CBxM = cFrame.controls.Add("Forms.ComboBox.1")
+    Set CLb = cFrame.controls.add("Forms.Label.1")
+    Set CBxY = cFrame.controls.add("Forms.ComboBox.1")
+    Set CBxM = cFrame.controls.add("Forms.ComboBox.1")
     
     ReDim mLabelButtons(6)
     ReDim mDayButtons(41)
@@ -756,7 +756,7 @@ Public Sub Add_Calendar_into_Frame(ByVal cFrame As MSForms.frame)
     For i = 0 To 6
         Set mLabelButtons(i) = New cCalendar
         Set mLabelButtons(i).Main = Me
-        Set mLabelButtons(i).Obj_CmBl = cFrame.controls.Add("Forms.Label.1")
+        Set mLabelButtons(i).Obj_CmBl = cFrame.controls.add("Forms.Label.1")
         With mLabelButtons(i).Obj_CmBl
             .caption = w(((i + lPFirstDay - 1) Mod 7))
             .ForeColor = DayFontColor
@@ -778,20 +778,20 @@ Public Sub Add_Calendar_into_Frame(ByVal cFrame As MSForms.frame)
         Set mDayButtons(i) = New cCalendar
         Set mDayButtons(i).Main = Me
         
-        Set mDayButtons(i).Obj_CmBl = cFrame.controls.Add("Forms.Label.1")
+        Set mDayButtons(i).Obj_CmBl = cFrame.controls.add("Forms.Label.1")
         With mDayButtons(i).Obj_CmBl 'MAC Fix
             .TextAlign = fmTextAlignCenter
             .visible = Not bPMACFix
         End With
         
-        Set mDayButtons(i).Obj_CmBlNum = cFrame.controls.Add("Forms.Label.1")
+        Set mDayButtons(i).Obj_CmBlNum = cFrame.controls.add("Forms.Label.1")
         With mDayButtons(i).Obj_CmBlNum
             .TextAlign = fmTextAlignCenter
             .BackStyle = fmBackStyleTransparent
             .visible = Not bPMACFix
         End With
         
-        Set mDayButtons(i).Obj_Cmb = cFrame.controls.Add("Forms.CommandButton.1")
+        Set mDayButtons(i).Obj_Cmb = cFrame.controls.add("Forms.CommandButton.1")
         With mDayButtons(i).Obj_Cmb
             .BackStyle = fmBackStyleTransparent 'MAC Problem: No button transparency
         End With

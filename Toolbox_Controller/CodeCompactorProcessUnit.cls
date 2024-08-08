@@ -15,7 +15,7 @@ Private Const CLASS_NAME As String = "CodeCompactorProcessUnit"
 '----------------------------------------------------------------------------------------------------------
 Private pParent As CodeCompactor
 Private pProcessor As ItemsProcessor
-Private pfilepath As String
+Private pFilepath As String
 Private pStatus As ItemProcessStatusEnum
 Private pMessage As String
 '----------------------------------------------------------------------------------------------------------
@@ -35,13 +35,13 @@ End Function
 
 Public Function setFilePath(value As String) As CodeCompactorProcessUnit
     Set setFilePath = Me
-    pfilepath = value
+    pFilepath = value
 End Function
 
 
 '[Getters]
 Public Function getCaption() As String
-    getCaption = pfilepath
+    getCaption = pFilepath
 End Function
 
 Public Function getMessage() As String
@@ -71,7 +71,7 @@ Public Sub process()
     On Error GoTo errHandler
     
     Set xls = pParent.getExcel
-    Set wkb = xls.Workbooks.Open(pfilepath, , False)
+    Set wkb = xls.Workbooks.Open(pFilepath, , False)
     Set project = wkb.VBProject
     
     Call project.VBE.Windows.item(1).SetFocus
@@ -79,14 +79,14 @@ Public Sub process()
     If VBA.Len(password) Then Call setPasswordOnProject(project, password)
     
     startTime = VBA.Timer
-    initialTimestamp = getFileTimestamp(pfilepath)
-    Debug.Print pfilepath & " | Initial timestamp: " & initialTimestamp
+    initialTimestamp = getFileTimestamp(pFilepath)
+    Debug.Print pFilepath & " | Initial timestamp: " & initialTimestamp
     
     Call xls.SendKeys("^s")
     Call sleep(1000)
     
     Do
-        finalTimestamp = getFileTimestamp(pfilepath)
+        finalTimestamp = getFileTimestamp(pFilepath)
         If VBA.Timer - startTime > COMPILING_TIMEOUT Then
             Call VBA.Err.Raise(1, Description:="Timeout exceeded")
             Exit Do
@@ -118,7 +118,7 @@ End Sub
 
 
 
-Private Function getFileTimestamp(filePath As String) As Date
+Private Function getFileTimestamp(filepath As String) As Date
     Const TIMEOUT As Long = 10
     '------------------------------------------------------------------------------------------------------
     Dim f As Scripting.file
@@ -128,12 +128,12 @@ Private Function getFileTimestamp(filePath As String) As Date
     startTime = VBA.Timer
     Do Until getFileTimestamp > 0
         On Error Resume Next
-        Set f = fso.GetFile(filePath)
+        Set f = fso.GetFile(filepath)
         getFileTimestamp = f.DateLastModified
         On Error GoTo 0
         
         If VBA.Timer - startTime > TIMEOUT Then
-            Call VBA.Err.Raise(1, Description:="Error while trying to refer to file " & filePath)
+            Call VBA.Err.Raise(1, Description:="Error while trying to refer to file " & filepath)
         End If
     Loop
     

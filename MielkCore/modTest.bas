@@ -92,8 +92,8 @@ Private Function createFolder(path As String, removeIfExists)
 End Function
 
 Function clearPath(path)
-    If right(path, 1) = "\" Then
-        clearPath = left(path, Len(path) - 1)
+    If Right(path, 1) = "\" Then
+        clearPath = Left(path, Len(path) - 1)
     Else
         clearPath = path
     End If
@@ -157,3 +157,45 @@ Public Sub dictTest()
     Stop
     
 End Sub
+
+
+
+
+'[Opening in hidden window]
+'Private Function getRawSourceDataArray(wkb As Excel.Workbook)
+'    Dim wks As Excel.Worksheet
+'    Dim headerRow As Long
+'    Dim rng As Excel.Range
+'    '------------------------------------------------------------------------------------------------------
+'
+'    '[Get worksheet with data]
+'    Set wks = getProperSourceSheet(wkb)
+'    If Not f.sheets.IsValid(wks) Then GoTo SheetNotFoundException
+'
+'    '[Find header row if source has custom function for this purpose]
+'    headerRow = findHeaderRow(wks)
+'
+'    '[Validate worksheet obtained above]
+'    On Error GoTo SourceSheetValidationException
+'    Call validateSourceSheet(wks, headerRow)
+'    On Error GoTo 0
+'
+'    '[Get data array from the worksheet obtained above]
+'    Set rng = f.ranges.getNonEmptyRange(wks, True, True)
+'    Set rng = rng.offset(rowOffset:=headerRow - 1).Resize(rowsize:=rng.Rows.count - headerRow + 1)
+'    getRawSourceDataArray = filterRawData(rng)
+'
+''==========================================================================================================
+'ExitPoint:
+'    Exit Function
+'
+''----------------------------------------------------------------------------------------------------------
+'SheetNotFoundException:
+'    Stop
+'    GoTo ExitPoint
+'
+'SourceSheetValidationException:
+'    Call VBA.err.raise(number:=VBA.err.number, description:=VBA.err.description)
+'    GoTo ExitPoint
+'
+'End Function

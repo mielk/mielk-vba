@@ -113,7 +113,7 @@ Private Function getFrame() As MSForms.frame
 End Function
 
 Friend Function getRight() As Single
-    getRight = UI.Forms.getRight(pLabel)
+    getRight = UI.controls.getRight(pLabel)
 End Function
 
 Friend Function getKey() As String
@@ -155,7 +155,7 @@ Friend Sub render()
 End Sub
 
 Private Sub insertBackgroundLabel()
-    Set pBackground = getFrame.controls.Add(CREATE_LABEL_ID)
+    Set pBackground = getFrame.controls.add(CREATE_LABEL_ID)
     With pBackground
         .backColor = pBackgroundColor
         .BackStyle = fmBackStyleTransparent
@@ -171,7 +171,7 @@ Private Sub insertCheckBox()
     
     size = Icons.icoCheckedActive.width
     
-    Set pCheckBox = getFrame.controls.Add(CREATE_LABEL_ID)
+    Set pCheckBox = getFrame.controls.add(CREATE_LABEL_ID)
     With pCheckBox
         .BackStyle = fmBackStyleTransparent
         .caption = vbNullString
@@ -184,7 +184,7 @@ Private Sub insertCheckBox()
 End Sub
 
 Private Sub insertLabel()
-    Set pLabel = getFrame.controls.Add(CREATE_LABEL_ID)
+    Set pLabel = getFrame.controls.add(CREATE_LABEL_ID)
     With pLabel
         .BackStyle = fmBackStyleTransparent
         .caption = pKey
@@ -260,10 +260,10 @@ Private Sub arrangeControls()
     '------------------------------------------------------------------------------------------------------
     
     If pIsRendered Then
-        Call UI.Forms.locateControl(pBackground, pLeft, pTop)
-        Call UI.Forms.locateControl(pCheckBox, pLeft, pTop + (lineHeight - pCheckBox.height) / 2)
-        Call UI.Forms.locateControl(pLabel, _
-                            UI.Forms.getRight(pCheckBox) + pParent.getCheckboxValueSpace, _
+        Call UI.controls.locate(pBackground, pLeft, pTop)
+        Call UI.controls.locate(pCheckBox, pLeft, pTop + (lineHeight - pCheckBox.height) / 2)
+        Call UI.controls.locate(pLabel, _
+                            UI.controls.getRight(pCheckBox) + pParent.getCheckboxValueSpace, _
                             pTop + (lineHeight - pLabel.height) / 2)
     End If
     

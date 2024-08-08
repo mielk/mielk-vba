@@ -86,10 +86,10 @@ Public Function toUiTextBox(value As Variant) As UITextBox
     End If
 End Function
 
-Public Function toIControl(value As Variant) As IControl
+Public Function toIControl(value As Variant) As MielkUI.IControl
     If VBA.IsObject(value) Then
         If Not value Is Nothing Then
-            If TypeOf value Is IControl Then
+            If TypeOf value Is MielkUI.IControl Then
                 Set toIControl = value
             End If
         End If

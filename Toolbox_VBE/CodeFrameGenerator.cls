@@ -11,7 +11,7 @@ Option Explicit
 
 Private Const CLASS_NAME As String = "CodeFrameGenerator"
 '[Helper constants] ---------------------------------------------------------------------------------------
-Private Const FRAME_LENGTH As Long = 101
+Private Const FRAME_LENGTH As Long = 102
 '----------------------------------------------------------------------------------------------------------
 Private pSelection As ECodeSelection
 Private pDescription As String
@@ -59,12 +59,12 @@ Private Function convertCode(code As String) As String
         
         Set convertedLines = New VBA.Collection
         With convertedLines
-            Call .add(getStartLines)
+            Call .Add(getStartLines)
             For i = LBound(codeLines) To UBound(codeLines)
                 codeLine = codeLines(i)
-                Call .add(getConvertedCodeLine(codeLine))
+                Call .Add(getConvertedCodeLine(codeLine))
             Next i
-            Call .add(getBottomLine)
+            Call .Add(getBottomLine)
         End With
         
         convertCode = F.Collections.toString(convertedLines, , VBA.vbCrLf)
@@ -89,10 +89,10 @@ Private Function findStartIndex(codeLines() As String) As Long
         For i = LBound(codeLines) To UBound(codeLines)
             codeLine = codeLines(i)
             
-            If F.Regex.checkIfMatch(codeLine, IS_EMPTY_LINE_REGEX) Then
+            If F.regex.checkIfMatch(codeLine, IS_EMPTY_LINE_REGEX) Then
                 ' Empty line - skip it
             Else
-                spaces = F.Regex.getFirstGroupMatch(codeLine, LEFT_INDENT_REGEX)
+                spaces = F.regex.getFirstGroupMatch(codeLine, LEFT_INDENT_REGEX)
                 If isFirstLine Or VBA.Len(spaces) < findStartIndex Then
                     findStartIndex = VBA.Len(spaces)
                 End If
@@ -109,7 +109,7 @@ Private Function getStartLines() As String
     getStartLines = F.Strings.Format(SINGLE_LINE_PATTERN, _
                         VBA.String(pStartIndex, " "), _
                         pDescription, _
-                        VBA.String(FRAME_LENGTH - pStartIndex - VBA.Len(pDescription) - 5, "-"))
+                        VBA.String(F.Math.getMax(FRAME_LENGTH - pStartIndex - VBA.Len(pDescription) - 5, 0), "-"))
 End Function
 
 Private Function getConvertedCodeLine(text As String) As String
@@ -117,7 +117,7 @@ Private Function getConvertedCodeLine(text As String) As String
     '------------------------------------------------------------------------------------------------------
     getConvertedCodeLine = F.Strings.Format(LINE_PATTERN, _
                         text, _
-                        VBA.String(FRAME_LENGTH - VBA.Len(text) - 2, " "))
+                        VBA.String(F.Math.getMax(FRAME_LENGTH - VBA.Len(text) - 2, 0), " "))
 End Function
 
 Private Function getBottomLine() As String

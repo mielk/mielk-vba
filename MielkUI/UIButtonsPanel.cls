@@ -214,7 +214,7 @@ Public Sub addExtraButton(id As String, caption As String, Optional backgroundCo
     End With
     
     If pExtraButtons Is Nothing Then Set pExtraButtons = New VBA.Collection
-    Call pExtraButtons.Add(Button)
+    Call pExtraButtons.add(Button)
     Call arrangeButtons
     
 End Sub
@@ -224,7 +224,7 @@ End Sub
 
 '[GETTERS]
 Public Function getBottom() As Single
-    If UI.Forms.isControlValid(pContainer) Then
+    If UI.controls.isValid(pContainer) Then
         With pContainer
             getBottom = .top + .height
         End With
@@ -250,7 +250,7 @@ End Function
 
 Private Sub insertContainer()
     If pContainer Is Nothing Then
-        Set pContainer = pFrame.controls.Add(CREATE_FRAME_ID, FRAME_NAME, True)
+        Set pContainer = pFrame.controls.add(CREATE_FRAME_ID, FRAME_NAME, True)
     End If
     With pContainer
         .SpecialEffect = fmSpecialEffectFlat
@@ -265,7 +265,7 @@ End Sub
 
 Private Sub insertTopBorder()
     If pTopBorder Is Nothing Then
-        Set pTopBorder = pContainer.controls.Add(CREATE_LABEL_ID, TOP_BORDER_NAME, True)
+        Set pTopBorder = pContainer.controls.add(CREATE_LABEL_ID, TOP_BORDER_NAME, True)
         With pTopBorder
             .BackStyle = fmBackStyleOpaque
             .backColor = pBorderColor
@@ -319,7 +319,7 @@ Private Sub insertCancelButton()
 End Sub
 
 Private Sub insertUnsavedDataWarnings()
-    Set pUnsavedDataIcon = pContainer.controls.Add(CREATE_LABEL_ID, UNSAVED_DATA_ICON_NAME, False)
+    Set pUnsavedDataIcon = pContainer.controls.add(CREATE_LABEL_ID, UNSAVED_DATA_ICON_NAME, False)
     With pUnsavedDataIcon
         .width = UNSAVED_ICON_SIZE
         .height = UNSAVED_ICON_SIZE
@@ -328,7 +328,7 @@ Private Sub insertUnsavedDataWarnings()
         .borderStyle = fmBorderStyleNone
     End With
     
-    Set pUnsavedDataCaption = pContainer.controls.Add(CREATE_LABEL_ID, UNSAVED_DATA_CAPTION_NAME, False)
+    Set pUnsavedDataCaption = pContainer.controls.add(CREATE_LABEL_ID, UNSAVED_DATA_CAPTION_NAME, False)
     With pUnsavedDataCaption
         .BackStyle = fmBackStyleTransparent
         .borderStyle = fmBorderStyleNone
@@ -348,7 +348,7 @@ End Sub
 
 '[SIZE & POSITION]
 Private Sub updatePosition()
-    If UI.Forms.isControlValid(pContainer) Then
+    If UI.controls.isValid(pContainer) Then
         With pContainer
             .left = pLeft
             .top = F.Numerics.roundTo(VBA.CDbl(pTop), PIXEL_SIZE)
@@ -357,14 +357,14 @@ Private Sub updatePosition()
 End Sub
 
 Private Sub updateSize()
-    If UI.Forms.isControlValid(pContainer) Then
+    If UI.controls.isValid(pContainer) Then
         pContainer.width = pWidth
         Call arrangeButtons
     End If
 End Sub
 
 Private Sub updateButtonsVisibility()
-    If UI.Forms.isControlValid(pContainer) Then
+    If UI.controls.isValid(pContainer) Then
         If Not pOkButton Is Nothing Then Call pOkButton.setVisibility(pHasOkButton And pStatus)
         If Not pCancelButton Is Nothing Then Call pCancelButton.setVisibility(pHasCancelButton)
         Call arrangeButtons
@@ -427,7 +427,7 @@ End Sub
 
 
 Private Sub updateBackColor()
-    If UI.Forms.isControlValid(pContainer) Then
+    If UI.controls.isValid(pContainer) Then
         pContainer.backColor = pBackgroundColor
     End If
 End Sub
@@ -448,10 +448,10 @@ Private Sub updateVisibility()
 End Sub
 
 Private Sub updateUnsavedControlsVisibility()
-    If UI.Forms.isControlValid(pUnsavedDataIcon) Then
+    If UI.controls.isValid(pUnsavedDataIcon) Then
         pUnsavedDataIcon.visible = pHasUnsavedData
     End If
-    If UI.Forms.isControlValid(pUnsavedDataCaption) Then
+    If UI.controls.isValid(pUnsavedDataCaption) Then
         pUnsavedDataCaption.visible = pHasUnsavedData
     End If
 End Sub
@@ -489,10 +489,10 @@ End Sub
 
 
 '[Implementation of IListener interface]
-Private Sub IListener_catchEvent(Source As Variant, eventName As String, Optional properties As Scripting.IDictionary)
-    Dim Button As UIButton
+Private Sub IListener_catchEvent(src As Variant, ev As Variant, Optional properties As Scripting.IDictionary)
+    Dim btn As UIButton
     '------------------------------------------------------------------------------------------------------
-    Set Button = Source
-    Call pWindow.triggerCustomAction(Button.getTag)
+    Set btn = src
+    Call pWindow.triggerCustomAction(btn.getTag)
 End Sub
 

@@ -239,8 +239,8 @@ Private Sub render()
 End Sub
 
 Private Sub insertContainers()
-    If Not UI.Forms.isControlValid(pHeadersContainer) Then
-        Set pHeadersContainer = pFrame.controls.Add(CREATE_FRAME_ID, HEADER_FRAME_NAME)
+    If Not UI.controls.isValid(pHeadersContainer) Then
+        Set pHeadersContainer = pFrame.controls.add(CREATE_FRAME_ID, HEADER_FRAME_NAME)
         With pHeadersContainer
             .height = HEADER_LINE_HEIGHT
             .width = pFrame.InsideWidth
@@ -252,8 +252,8 @@ Private Sub insertContainers()
         End With
     End If
     
-    If Not UI.Forms.isControlValid(pRecordsContainer) Then
-        Set pRecordsContainer = pFrame.controls.Add(CREATE_FRAME_ID, RECORDS_FRAME_NAME)
+    If Not UI.controls.isValid(pRecordsContainer) Then
+        Set pRecordsContainer = pFrame.controls.add(CREATE_FRAME_ID, RECORDS_FRAME_NAME)
         With pRecordsContainer
             .height = pFrame.InsideHeight - HEADER_LINE_HEIGHT - FOOTER_PANEL_HEIGHT
             .width = pFrame.InsideWidth
@@ -264,8 +264,8 @@ Private Sub insertContainers()
         End With
     End If
     
-    If Not UI.Forms.isControlValid(pFooterContainer) Then
-        Set pFooterContainer = pFrame.controls.Add(CREATE_FRAME_ID, FOOTER_FRAME_NAME)
+    If Not UI.controls.isValid(pFooterContainer) Then
+        Set pFooterContainer = pFrame.controls.add(CREATE_FRAME_ID, FOOTER_FRAME_NAME)
         With pFooterContainer
             .height = FOOTER_PANEL_HEIGHT
             .width = pFrame.InsideWidth
@@ -307,7 +307,7 @@ Private Sub renderItemLines()
     Set pLines = F.dictionaries.Create(False)
     
     '[Item lines]
-    totalItems = pItems.Count
+    totalItems = pItems.count
     For Each item In pItems
         Call addLineForItem(item)
         counter = counter + 1
@@ -329,7 +329,7 @@ Public Sub insertVerticalLines()
 End Sub
 
 Public Sub arrangeComponents()
-    If UI.Forms.isControlValid(pHeadersContainer) Then
+    If UI.controls.isValid(pHeadersContainer) Then
         With pHeadersContainer
             .height = HEADER_LINE_HEIGHT
             .width = pFrame.InsideWidth
@@ -338,7 +338,7 @@ Public Sub arrangeComponents()
         End With
     End If
     
-    If UI.Forms.isControlValid(pRecordsContainer) Then
+    If UI.controls.isValid(pRecordsContainer) Then
         With pRecordsContainer
             .height = pFrame.InsideHeight - HEADER_LINE_HEIGHT - FOOTER_PANEL_HEIGHT
             .width = pFrame.InsideWidth
@@ -347,7 +347,7 @@ Public Sub arrangeComponents()
         End With
     End If
     
-    If UI.Forms.isControlValid(pFooterContainer) Then
+    If UI.controls.isValid(pFooterContainer) Then
         With pFooterContainer
             .height = FOOTER_PANEL_HEIGHT
             .width = pFrame.InsideWidth
@@ -473,7 +473,7 @@ Private Function getSortedItems() As Variant
     '------------------------------------------------------------------------------------------------------
     
     If F.dictionaries.isNonEmptyDictionary(pFiltered) Then
-        ReDim arr(1 To 2, 1 To pFiltered.Count)
+        ReDim arr(1 To 2, 1 To pFiltered.count)
         For Each key In pFiltered.keys
             i = i + 1
             Set item = pFiltered.item(key)
@@ -536,7 +536,7 @@ Private Sub adjustColumnWidths()
         End If
     Next key
     
-    availableWidth = (pRecordsContainer.InsideWidth - totalNotScalableWidth - (pColumns.Count - 1) * COLUMNS_SPACE) - 2 * HORIZONTAL_PADDING
+    availableWidth = (pRecordsContainer.InsideWidth - totalNotScalableWidth - (pColumns.count - 1) * COLUMNS_SPACE) - 2 * HORIZONTAL_PADDING
     factor = availableWidth / totalScalableWidth
     
     For Each key In pColumns.keys
@@ -651,7 +651,7 @@ Private Function modifyValueWithFilterRegex(value As Variant, regex As String) A
         Set col = F.Collections.createFrom(value)
         Set modifyValueWithFilterRegex = New VBA.Collection
         For Each item In col
-            Call modifyValueWithFilterRegex.Add(F.regex.getFirstGroupMatch(VBA.CStr(item), regex))
+            Call modifyValueWithFilterRegex.add(F.regex.getFirstGroupMatch(VBA.CStr(item), regex))
         Next item
     End If
     
@@ -770,7 +770,7 @@ Private Function getActiveFilters() As VBA.Collection
     Set getActiveFilters = New VBA.Collection
     For Each filter In pFilters
         If filter.isActive Then
-            Call getActiveFilters.Add(filter)
+            Call getActiveFilters.add(filter)
         End If
     Next filter
     
@@ -946,7 +946,7 @@ Private Sub updateAllItems()
 End Sub
 
 Public Sub addItem(item As IGridItem)
-    Call pItems.Add(item)
+    Call pItems.add(item)
     Call addLineForItem(item)
     Call updateFilteredCollection
     Call arrangeGrid
@@ -970,7 +970,7 @@ End Sub
 
 '[FOOTER PANEL]
 Private Sub renderFooter()
-    Set pFooterTopBorder = pFooterContainer.controls.Add(CREATE_LABEL_ID, FOOTER_BORDER_NAME, True)
+    Set pFooterTopBorder = pFooterContainer.controls.add(CREATE_LABEL_ID, FOOTER_BORDER_NAME, True)
     With pFooterTopBorder
         .width = pFooterContainer.InsideWidth
         .height = PIXEL_SIZE
@@ -982,7 +982,7 @@ Private Sub renderFooter()
     End With
     
     If pHasRecordsCounter Then
-        Set pRecordsCounterLabel = pFooterContainer.controls.Add(CREATE_LABEL_ID, SEARCH_ICON_NAME, True)
+        Set pRecordsCounterLabel = pFooterContainer.controls.add(CREATE_LABEL_ID, SEARCH_ICON_NAME, True)
         With pRecordsCounterLabel
             .font.name = RECORDS_COUNTER_FONT_NAME
             .font.size = RECORDS_COUNTER_FONT_SIZE
@@ -996,7 +996,7 @@ Private Sub renderFooter()
         Call updateRecordsCounter
     End If
     
-    Set pSearchIcon = pFooterContainer.controls.Add(CREATE_LABEL_ID, SEARCH_ICON_NAME, True)
+    Set pSearchIcon = pFooterContainer.controls.add(CREATE_LABEL_ID, SEARCH_ICON_NAME, True)
     With pSearchIcon
         .width = SEARCH_ICON_SIZE
         .height = SEARCH_ICON_SIZE
@@ -1004,7 +1004,7 @@ Private Sub renderFooter()
         Set .picture = Icons.icoSearch.picture
     End With
     
-    Set pSearchBox = pFooterContainer.controls.Add(CREATE_TEXTBOX_ID, SEARCH_TEXTBOX_NAME, True)
+    Set pSearchBox = pFooterContainer.controls.add(CREATE_TEXTBOX_ID, SEARCH_TEXTBOX_NAME, True)
     With pSearchBox
         .width = SEARCH_TEXTBOX_WIDTH
         .height = SEARCH_TEXTBOX_HEIGHT
@@ -1014,7 +1014,7 @@ Private Sub renderFooter()
         .font.size = SEARCH_TEXTBOX_FONT_SIZE
     End With
     
-    Set pSearchCancelButton = pFooterContainer.controls.Add(CREATE_LABEL_ID, SEARCH_CANCEL_BUTTON_NAME, False)
+    Set pSearchCancelButton = pFooterContainer.controls.add(CREATE_LABEL_ID, SEARCH_CANCEL_BUTTON_NAME, False)
     With pSearchCancelButton
         .BackStyle = fmBackStyleTransparent
         .width = SEARCH_CANCEL_BUTTON_SIZE
@@ -1024,7 +1024,7 @@ Private Sub renderFooter()
         Set .MouseIcon = Icons.getMousePointer
     End With
     
-    Set pChangeAllFiltersState = pFooterContainer.controls.Add(CREATE_LABEL_ID, CHANGE_FILTERS_STATE_BUTTON_NAME, True)
+    Set pChangeAllFiltersState = pFooterContainer.controls.add(CREATE_LABEL_ID, CHANGE_FILTERS_STATE_BUTTON_NAME, True)
     With pChangeAllFiltersState
         .BackStyle = fmBackStyleTransparent
         .width = SEARCH_CANCEL_BUTTON_SIZE
@@ -1035,7 +1035,7 @@ Private Sub renderFooter()
         .ControlTipText = MsgService.getText(TOOLTIP_DEACTIVATE_ALL_FILTERS)
     End With
     
-    Set pExportToExcelButton = pFooterContainer.controls.Add(CREATE_LABEL_ID, EXPORT_TO_EXCEL_BUTTON_NAME, True)
+    Set pExportToExcelButton = pFooterContainer.controls.add(CREATE_LABEL_ID, EXPORT_TO_EXCEL_BUTTON_NAME, True)
     With pExportToExcelButton
         .BackStyle = fmBackStyleTransparent
         .width = EXCEL_EXPORT_ICON_SIZE
@@ -1068,28 +1068,28 @@ Private Sub arrangeFooterComponents()
     
     '[Records counter]
     If pHasRecordsCounter Then
-        Call UI.Forms.locateControl(pRecordsCounterLabel, _
+        Call UI.controls.locate(pRecordsCounterLabel, _
                     FOOTER_CONTAINER_LEFT_PADDING, _
                     (panelHeight - pRecordsCounterLabel.height) / 2)
-        left = UI.Forms.getRight(pRecordsCounterLabel) + RECORDS_COUNTER_RIGHT_MARGIN
+        left = UI.controls.getRight(pRecordsCounterLabel) + RECORDS_COUNTER_RIGHT_MARGIN
     End If
                     
     '[Search controls]
-    Call UI.Forms.locateControl(pSearchIcon, left, (panelHeight - SEARCH_ICON_SIZE) / 2)
-    Call UI.Forms.locateControl(pSearchBox, _
-                    UI.Forms.getRight(pSearchIcon) + SEARCH_CONTROLS_SPACE, _
+    Call UI.controls.locate(pSearchIcon, left, (panelHeight - SEARCH_ICON_SIZE) / 2)
+    Call UI.controls.locate(pSearchBox, _
+                    UI.controls.getRight(pSearchIcon) + SEARCH_CONTROLS_SPACE, _
                     (panelHeight - SEARCH_TEXTBOX_HEIGHT) / 2)
-    Call UI.Forms.locateControl(pSearchCancelButton, _
-                    UI.Forms.getRight(pSearchBox) + SEARCH_CONTROLS_SPACE, _
+    Call UI.controls.locate(pSearchCancelButton, _
+                    UI.controls.getRight(pSearchBox) + SEARCH_CONTROLS_SPACE, _
                     (panelHeight - SEARCH_CANCEL_BUTTON_SIZE) / 2)
     
     '[Deactivate all filters]
-    Call UI.Forms.locateControl(pChangeAllFiltersState, _
-                    UI.Forms.getRight(pSearchCancelButton) + DEACTIVATE_FILTERS_BUTTON_RIGHT_MARGIN, _
+    Call UI.controls.locate(pChangeAllFiltersState, _
+                    UI.controls.getRight(pSearchCancelButton) + DEACTIVATE_FILTERS_BUTTON_RIGHT_MARGIN, _
                     (panelHeight - SEARCH_CANCEL_BUTTON_SIZE) / 2)
     
     '[Export to Excel]
-    Call UI.Forms.locateControl(pExportToExcelButton, _
+    Call UI.controls.locate(pExportToExcelButton, _
                     pFooterContainer.InsideWidth - EXCEL_EXPORT_ICON_SIZE - FOOTER_CONTAINER_LEFT_PADDING, _
                     (panelHeight - EXCEL_EXPORT_ICON_SIZE) / 2)
     
@@ -1125,8 +1125,8 @@ Private Sub updateRecordsCounter()
     '------------------------------------------------------------------------------------------------------
     If pHasRecordsCounter Then
         text = MsgService.getText(RECORDS_COUNTER_TAG)
-        text = F.Strings.format(text, pFiltered.Count, pItems.Count)
-        If UI.Forms.isControlValid(pRecordsCounterLabel) Then
+        text = F.Strings.format(text, pFiltered.count, pItems.count)
+        If UI.controls.isValid(pRecordsCounterLabel) Then
             pRecordsCounterLabel.caption = text
         End If
     End If
@@ -1175,7 +1175,7 @@ Public Sub exportToExcel()
         With xls
             .visible = False
             .SheetsInNewWorkbook = 1
-            Set wkb = .Workbooks.Add
+            Set wkb = .Workbooks.add
             Set wks = wkb.Worksheets(1)
             Set rng = F.Ranges.pasteData(arr, wks.Cells(1, 1), True)
             If F.Ranges.isValid(rng) Then
@@ -1207,7 +1207,7 @@ Private Function generateitemsArray(Optional includeHeaders As Boolean = True) A
         If F.arrays.isDefined(arrSortedItems) Then
             Set items = F.Collections.fromArray(F.arrays.getRow(arrSortedItems, 1, False))
             If F.Collections.isNonEmptyCollection(items) Then
-                ReDim arr(1 To exportableColumns.Count, VBA.IIf(includeHeaders, 0, 1) To items.Count)
+                ReDim arr(1 To exportableColumns.count, VBA.IIf(includeHeaders, 0, 1) To items.count)
                 
                 If includeHeaders Then
                     Call fillArrayWithHeaders(arr, exportableColumns)
@@ -1215,7 +1215,7 @@ Private Function generateitemsArray(Optional includeHeaders As Boolean = True) A
                 
                 For Each item In items
                     i = i + 1
-                    For j = 1 To exportableColumns.Count
+                    For j = 1 To exportableColumns.count
                         Set column = exportableColumns.item(j)
                         Call F.Variables.assign(value, item.getValue(column.getValuePropertyName))
                         
@@ -1233,7 +1233,7 @@ Private Function generateitemsArray(Optional includeHeaders As Boolean = True) A
             End If
             
         Else
-            ReDim arr(1 To exportableColumns.Count, 1 To 1)
+            ReDim arr(1 To exportableColumns.count, 1 To 1)
             If includeHeaders Then
                 Call fillArrayWithHeaders(arr, exportableColumns)
             End If
@@ -1250,7 +1250,7 @@ Public Sub fillArrayWithHeaders(ByRef arr As Variant, columns As VBA.Collection)
     Dim column As DColumn
     '------------------------------------------------------------------------------------------------------
     
-    For i = 1 To columns.Count
+    For i = 1 To columns.count
         Set column = columns.item(i)
         arr(i, LBound(arr, 2)) = column.getLabel
     Next i
@@ -1260,12 +1260,12 @@ End Sub
 
 
 Public Sub destroy()
-    If UI.Forms.isControlValid(pFrame) Then
+    If UI.controls.isValid(pFrame) Then
         With pFrame.controls
-            If UI.Forms.isControlValid(pHeadersContainer) Then
+            If UI.controls.isValid(pHeadersContainer) Then
                 Call .remove(pHeadersContainer.name)
             End If
-            If UI.Forms.isControlValid(pRecordsContainer) Then
+            If UI.controls.isValid(pRecordsContainer) Then
                 Call .remove(pRecordsContainer.name)
             End If
         End With

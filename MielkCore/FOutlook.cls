@@ -319,11 +319,11 @@ End Function
 
 
 Public Sub removeAttachmentsFromMail(mail As Object)
-    Dim counter As Long
+    Dim Counter As Long
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
-    counter = mail.attachments.count
-    For i = counter To 1 Step -1
+    Counter = mail.attachments.count
+    For i = Counter To 1 Step -1
         Call mail.attachments.Remove(i)
     Next i
 End Sub

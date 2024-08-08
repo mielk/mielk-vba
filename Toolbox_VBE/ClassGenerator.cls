@@ -25,7 +25,7 @@ Public Sub addClass()
     Set activeProject = Fn.getActiveProject
     className = VBA.InputBox(Msg.getText(CLASS_NAME_PROMPT))
     
-    Set newClass = activeProject.VBComponents.add(vbext_ct_ClassModule)
+    Set newClass = activeProject.VBComponents.Add(vbext_ct_ClassModule)
     With newClass
         .name = className
         Call F.Dev.overrideCodeModuleContent(.CodeModule, generateClassContent(className))
@@ -41,10 +41,10 @@ Private Function generateClassContent(className As String) As String
     Set lines = New VBA.Collection
     
     With lines
-        Call .add(VBA_OPTION_EXPLICIT)
-        Call .add(vbNullString)
-        Call .add(F.Strings.Format(CLASS_NAME_LINE_PATTERN, className))
-        Call .add(moduleLevelSeparatorLine)
+        Call .Add(VBA_OPTION_EXPLICIT)
+        Call .Add(vbNullString)
+        Call .Add(F.Strings.Format(CLASS_NAME_LINE_PATTERN, className))
+        Call .Add(moduleLevelSeparatorLine)
     End With
     
     generateClassContent = F.Collections.toString(lines, , VBA.vbCrLf)
@@ -60,3 +60,44 @@ Private Function methodLevelSeparatorLine() As String
     methodLevelSeparatorLine = VBA.String(METHOD_LEVEL_SEPARATOR_INDENT, " ") & "'" & _
                                VBA.String(METHOD_LEVEL_SEPARATOR_LENGTH, "-")
 End Function
+
+
+
+Public Sub addSettersAndGetters()
+    Const PROPERTY_REGEX As String = "^(Private|Static) p(\w+) As (\w*)$"
+    Const SETTER_PATTERN As String = "Public Function set{0}(value As {1}) As {2}\n\tSet set{0} = Me\n\tp{0} = value\nEnd Function\n"
+    Const GETTER_PATTERN As String = "Public Function get{0}() As {1}\n\tget{0} = p{0}\nEnd Function\n"
+    '------------------------------------------------------------------------------------------------------
+    Dim selection As ECodeSelection
+    Dim cm As VBIDE.CodeModule
+    Dim properties As VBA.Collection
+    Dim codeLines As VBA.Collection
+    Dim property As Variant
+    Dim code As String
+    '------------------------------------------------------------------------------------------------------
+    
+    Set selection = Fn.Create.currentCodeSelection
+    Set cm = selection.getCodeModule
+    Set properties = F.regex.getMatchArraysCollection(F.Developer.getCodeModuleContent(cm), PROPERTY_REGEX)
+    
+    Set codeLines = New VBA.Collection
+    
+    '[Add setters]
+    Call codeLines.Add(VBA.String(2, VBA.vbCrLf))
+    Call codeLines.Add("'[SETTERS]")
+    For Each property In properties
+        code = F.Strings.Format(SETTER_PATTERN, VBA.CStr(property(2)), VBA.CStr(property(3)), cm.parent.name)
+        Call codeLines.Add(code)
+    Next property
+    
+    '[Add getters]
+    Call codeLines.Add(VBA.String(1, VBA.vbCrLf))
+    Call codeLines.Add("'[GETTERS]")
+    For Each property In properties
+        code = F.Strings.Format(GETTER_PATTERN, VBA.CStr(property(2)), VBA.CStr(property(3)))
+        Call codeLines.Add(code)
+    Next property
+    
+    Call cm.InsertLines(cm.CountOfLines + 1, F.Collections.toString(codeLines, , VBA.vbCrLf))
+    
+End Sub

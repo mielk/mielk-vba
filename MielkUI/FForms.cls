@@ -75,22 +75,6 @@ End Sub
 End Function
 
 
-
-Public Sub setValidationLook(ctrl As MSForms.control, isValid As Boolean)
-    With ctrl
-        If isValid Then
-            .backColor = VALID_BACK_COLOR
-            .borderColor = VALID_BORDER_COLOR
-            .ForeColor = VALID_FONT_COLOR
-        Else
-            .backColor = INVALID_BACK_COLOR
-            .borderColor = INVALID_BORDER_COLOR
-            .ForeColor = INVALID_FONT_COLOR
-        End If
-    End With
-End Sub
-
-
 Public Function getTotalValidationStatus(validations As Scripting.Dictionary) As Boolean
     Dim key As Variant
     Dim validation As ValidationObject
@@ -107,46 +91,21 @@ Public Function getTotalValidationStatus(validations As Scripting.Dictionary) As
     
 End Function
 
-Public Function isControlValid(ctrl As Variant) As Boolean
-    Const BASE_NAME As String = "|"
-    '------------------------------------------------------------------------------------------------------
-    Dim name As String: name = BASE_NAME
-    Dim captionLength As Long: captionLength = -1
-    Dim parent As Object
-    '------------------------------------------------------------------------------------------------------
-    
-    On Error Resume Next
-    If VBA.IsObject(ctrl) Then
-        If Not ctrl Is Nothing Then
-            If TypeOf ctrl Is MSForms.control Then
-                name = ctrl.name
-                isControlValid = (name <> BASE_NAME)
-            ElseIf TypeOf ctrl Is MSForms.frame Then
-                captionLength = VBA.Len(ctrl.caption)
-                isControlValid = (captionLength >= 0)
-            ElseIf TypeOf ctrl Is MSForms.UserForm Then
-                captionLength = VBA.Len(ctrl.caption)
-                isControlValid = (captionLength >= 0)
-            End If
-        End If
-    End If
-    
-End Function
 
 Public Sub clearMsFrame(frm As MSForms.frame)
     Dim ctrl As MSForms.control
     Dim controlsCounter As Long
     '------------------------------------------------------------------------------------------------------
     
-    If UI.Forms.isControlValid(frm) Then
-        controlsCounter = frm.controls.Count
+    If UI.controls.isValid(frm) Then
+        controlsCounter = frm.controls.count
         Do While controlsCounter
             Set ctrl = frm.controls.item(0)
             Call frm.controls.remove(ctrl.name)
-            If frm.controls.Count = controlsCounter Then
+            If frm.controls.count = controlsCounter Then
                 Call VBA.Err.Raise(1, description:="Error when trying to remove control " & ctrl.name)
             Else
-                controlsCounter = frm.controls.Count
+                controlsCounter = frm.controls.count
             End If
         Loop
     End If
@@ -162,7 +121,7 @@ Public Sub removeControls(frame As MSForms.frame, ParamArray controls() As Varia
     For Each varControl In controls
         On Error Resume Next
         Set ctrl = varControl
-        If UI.Forms.isControlValid(ctrl) Then
+        If UI.controls.isValid(ctrl) Then
             Call frame.controls.remove(ctrl.name)
         End If
     Next varControl
@@ -170,18 +129,9 @@ Public Sub removeControls(frame As MSForms.frame, ParamArray controls() As Varia
 End Sub
 
 
-Public Function getRight(ctrl As MSForms.control) As Single
-    With ctrl
-        getRight = .left + .width
-    End With
-End Function
 
 
-Public Function getBottom(ctrl As MSForms.control) As Single
-    With ctrl
-        getBottom = .top + .height
-    End With
-End Function
+
 
 Public Sub offsetControls(x As Single, Y As Single, ParamArray controls() As Variant)
     Dim ctrl As Variant
@@ -199,7 +149,7 @@ Public Sub offsetControls(x As Single, Y As Single, ParamArray controls() As Var
             Call customControl.offset(x, Y)
         ElseIf TypeOf ctrl Is MSForms.control Then      '[MSForms.Control]
             Set msFormsControl = ctrl
-            If isControlValid(msFormsControl) Then
+            If UI.controls.isValid(msFormsControl) Then
                 With msFormsControl
                     .left = F.Numerics.roundTo(.left + x, PIXEL_SIZE)
                     .top = F.Numerics.roundTo(.top + Y, PIXEL_SIZE)
@@ -211,17 +161,17 @@ Public Sub offsetControls(x As Single, Y As Single, ParamArray controls() As Var
 End Sub
 
 
-Public Function calculateRightBottomPoint(frame As MSForms.frame, Optional onlyVisible As Boolean = True) As Coordinate
+Public Function calculateRightBottomPoint(container As Object, Optional onlyVisible As Boolean = True) As Coordinate
     Dim ctrl As MSForms.control
     Dim x As Single
     Dim Y As Single
     '------------------------------------------------------------------------------------------------------
     
-    For Each ctrl In frame.controls
-        If ctrl.parent Is frame Then
+    For Each ctrl In container.controls
+        If ctrl.parent Is container Then
             If onlyVisible = False Or ctrl.visible = True Then
-                x = getRight(ctrl)
-                Y = getBottom(ctrl)
+                x = UI.controls.getRight(ctrl)
+                Y = UI.controls.getBottom(ctrl)
                 
                 If x > calculateRightBottomPoint.x Then
                     calculateRightBottomPoint.x = x
@@ -236,65 +186,6 @@ Public Function calculateRightBottomPoint(frame As MSForms.frame, Optional onlyV
     Next ctrl
 
 End Function
-
-
-Public Sub fillListBox(listBox As MSForms.control, dict As Scripting.Dictionary)
-    Dim key As Variant
-    '------------------------------------------------------------------------------------------------------
-    
-    If Not listBox Is Nothing Then
-        If TypeOf listBox Is MSForms.listBox Or TypeOf listBox Is MSForms.comboBox Then
-            Call listBox.clear
-            For Each key In dict.keys
-                Call listBox.addItem(key)
-            Next key
-        End If
-    End If
-    
-End Sub
-
-
-Public Sub locateControl(ctrl As MSForms.control, Optional left As Variant, Optional top As Variant)
-    Const ADJ_OFFSET As Single = 0.083
-    '------------------------------------------------------------------------------------------------------
-    If isControlValid(ctrl) Then
-        If Not VBA.IsMissing(left) Then
-            ctrl.left = UI.Normalize.position(VBA.CDbl(left))
-        End If
-        If Not VBA.IsMissing(top) Then
-            ctrl.top = UI.Normalize.position(VBA.CDbl(top)) + ADJ_OFFSET
-        End If
-    End If
-End Sub
-
-
-Public Sub resizeControl(ctrl As MSForms.control, Optional width As Variant, Optional height As Variant)
-    If isControlValid(ctrl) Then
-        If Not VBA.IsMissing(width) Then
-            ctrl.width = UI.Normalize.size(VBA.CDbl(width))
-        End If
-        If Not VBA.IsMissing(height) Then
-            ctrl.height = UI.Normalize.size(VBA.CDbl(height))
-        End If
-    End If
-End Sub
-
-
-Public Sub copySizeAndPosition(destinationControl As MSForms.control, sourceControl As MSForms.control)
-    If Not isControlValid(destinationControl) Then
-        'skip
-    ElseIf Not isControlValid(sourceControl) Then
-        'skip
-    Else
-        With destinationControl
-            .width = sourceControl.width
-            .height = sourceControl.height
-            .top = sourceControl.top
-            .left = sourceControl.left
-        End With
-    End If
-End Sub
-
 
 Public Function getControl(frm As MSForms.frame, controlName As String) As MSForms.control
     On Error Resume Next
@@ -367,18 +258,6 @@ End Function
 
 
 
-Public Sub setControlProperty(ctrl As MSForms.control, propType As UIProp, propValue As Variant)
-    If isControlValid(ctrl) Then
-        On Error Resume Next
-        Select Case propType.getName
-            Case UI.props.backgroundColor.getName:          ctrl.backgroundColor = propValue
-            Case UI.props.borderStyle.getName:              ctrl.borderStyle = propValue
-            Case UI.props.ScrollBars.getName:               ctrl.ScrollBars = propValue
-        End Select
-    End If
-End Sub
-
-
 
 Public Sub printFrameControls(frame As MSForms.UserForm)
     Dim ctrl As MSForms.control
@@ -387,7 +266,7 @@ Public Sub printFrameControls(frame As MSForms.UserForm)
     If Not frame Is Nothing Then
         For Each ctrl In frame.controls
             description = ctrl.name & " | " & VBA.TypeName(ctrl) & " | Size: " & ctrl.width & "x" & ctrl.height & _
-                        " | Position: (" & ctrl.left & ", " & ctrl.top & ")"
+                        " | Position: (" & ctrl.left & ", " & ctrl.top & ") | Visible: " & ctrl.visible
             On Error Resume Next
             description = description & " | Text: " & ctrl.caption
             description = description & " | Value: " & ctrl.value
@@ -395,3 +274,161 @@ Public Sub printFrameControls(frame As MSForms.UserForm)
         Next ctrl
     End If
 End Sub
+
+
+
+
+
+
+'[EXTREME CONTROLS]
+Public Function getMostTopControl(container As Object, Optional onlyVisible As Boolean) As MSForms.control
+    Dim ctrl As MSForms.control
+    Dim top As Single
+    Dim minValue As Single
+    '-------------------------------------------------------------------------------
+    
+    For Each ctrl In container.controls
+        If Not onlyVisible Or ctrl.visible = True Then
+            top = ctrl.top
+            If top < minValue Then
+                Set getMostTopControl = ctrl
+                minValue = top
+            End If
+        End If
+    Next ctrl
+End Function
+
+
+Public Function getMostBottomControl(container As Object, Optional onlyVisible As Boolean) As MSForms.control
+    Dim ctrl As MSForms.control
+    Dim bottom As Single
+    Dim maxValue As Single
+    '-------------------------------------------------------------------------------
+    
+    For Each ctrl In container.controls
+        If Not onlyVisible Or ctrl.visible = True Then
+            bottom = UI.controls.getBottom(ctrl)
+            If bottom > maxValue Then
+                Set getMostBottomControl = ctrl
+                maxValue = bottom
+            End If
+        End If
+    Next ctrl
+End Function
+
+Public Function getMostLeftControl(container As Object, Optional onlyVisible As Boolean) As MSForms.control
+    Dim ctrl As MSForms.control
+    Dim left As Single
+    Dim minValue As Single
+    '-------------------------------------------------------------------------------
+    
+    For Each ctrl In container.controls
+        If Not onlyVisible Or ctrl.visible = True Then
+            left = ctrl.left
+            If left < minValue Then
+                Set getMostLeftControl = ctrl
+                minValue = left
+            End If
+        End If
+    Next ctrl
+End Function
+
+
+Public Function getMostRightControl(container As Object, Optional onlyVisible As Boolean) As MSForms.control
+    Dim ctrl As MSForms.control
+    Dim right As Single
+    Dim maxValue As Single
+    '-------------------------------------------------------------------------------
+    
+    For Each ctrl In container.controls
+        If Not onlyVisible Or ctrl.visible = True Then
+            right = UI.controls.getRight(ctrl)
+            If right > maxValue Then
+                Set getMostRightControl = ctrl
+                maxValue = right
+            End If
+        End If
+    Next ctrl
+End Function
+
+
+
+
+
+'[EXTREMA COORDINATES]
+Public Function getMostRightX(container As Object, Optional onlyVisible As Boolean) As Single
+    Dim ctrl As MSForms.control
+    Dim right As Single
+    '-------------------------------------------------------------------------------
+    For Each ctrl In container.controls
+        If Not onlyVisible Or ctrl.visible = True Then
+            right = UI.controls.getRight(ctrl)
+            If right > getMostRightX Then
+                getMostRightX = right
+            End If
+        End If
+    Next ctrl
+End Function
+
+Public Function getMostLeftX(container As Object, Optional onlyVisible As Boolean) As Single
+    Dim ctrl As MSForms.control
+    Dim left As Single
+    '-------------------------------------------------------------------------------
+    left = container.width
+    For Each ctrl In container.controls
+        If Not onlyVisible Or ctrl.visible = True Then
+            left = ctrl.left
+            If left < getMostLeftX Then getMostLeftX = left
+        End If
+    Next ctrl
+End Function
+
+Public Function getMostBottomY(container As Object, Optional onlyVisible As Boolean) As Single
+    Dim ctrl As MSForms.control
+    Dim bottom As Single
+    '-------------------------------------------------------------------------------
+    For Each ctrl In container.controls
+        If Not onlyVisible Or ctrl.visible = True Then
+            bottom = UI.controls.getBottom(ctrl)
+            If bottom > getMostBottomY Then getMostBottomY = bottom
+        End If
+    Next ctrl
+End Function
+
+Public Function getMostTopY(container As Object, Optional onlyVisible As Boolean) As Single
+    Dim ctrl As MSForms.control
+    Dim top As Single
+    '-------------------------------------------------------------------------------
+    top = container.height
+    For Each ctrl In container.controls
+        If Not onlyVisible Or ctrl.visible = True Then
+            top = UI.controls.getBottom(ctrl)
+            If top < getMostTopY Then getMostTopY = top
+        End If
+    Next ctrl
+End Function
+
+'
+'
+'Public Sub centerUserForm(form As MSForms.UserForm)
+'    Dim screenArea As area
+'    Dim left As Single
+'    Dim top As Single
+'    '----------------------------------------------------------------------------------------------------------
+'
+'    screenArea = F.Screen.getSize
+'
+'    '[Calculate left and top coordinate]
+'    With screenArea
+'        left = (.width - form.InsideWidth) / 2
+'        top = (.height - form.InsideHeight) / 2
+'    End With
+'
+'    '[Apply coordinates calculated above to this user form]
+'    With form
+'        .left = left
+'        .top = top
+'    End With
+'
+'
+'End Sub

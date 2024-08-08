@@ -162,14 +162,14 @@ End Sub
 Private Sub loadTexts(dict As Scripting.Dictionary, prefix As String)
     Dim varKey As Variant
     Dim Language As Language
-    Dim subDict As Scripting.Dictionary
+    Dim subdict As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
     
     If f.dictionaries.isNonEmptyDictionary(dict) Then
         For Each varKey In dict.Keys
-            Set subDict = f.cast.toDictionary(dict.item(varKey))
-            If Not subDict Is Nothing Then
-                If subDict.count Then
+            Set subdict = f.cast.toDictionary(dict.item(varKey))
+            If Not subdict Is Nothing Then
+                If subdict.count Then
                     Call loadTexts(dict.item(varKey), prefix & VBA.IIf(VBA.Len(prefix), ".", vbNullString) & varKey)
                 End If
             Else
@@ -192,13 +192,13 @@ Private Function createLanguage(key As String) As Language
     Call createLanguage.setKey(key)
 End Function
 
-Private Sub loadLanguageProperties(Language As Language, Props As Scripting.Dictionary)
+Private Sub loadLanguageProperties(Language As Language, props As Scripting.Dictionary)
     Dim name As Variant
     Dim isDefault As Variant
     '------------------------------------------------------------------------------------------------------
     
-    Call f.dictionaries.assignValueFromDictToVariable(Props, name, JSON_TAG_NAME)
-    Call f.dictionaries.assignValueFromDictToVariable(Props, isDefault, JSON_TAG_IS_DEFAULT)
+    Call f.dictionaries.assignValueFromDictToVariable(props, name, JSON_TAG_NAME)
+    Call f.dictionaries.assignValueFromDictToVariable(props, isDefault, JSON_TAG_IS_DEFAULT)
     
     With Language
         If Not VBA.IsEmpty(name) Then Call .setName(VBA.CStr(name))

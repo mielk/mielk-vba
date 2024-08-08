@@ -43,8 +43,18 @@ Public Function getName() As String
     getName = pName
 End Function
 
-Public Function getComponents() As Scripting.Dictionary
-    Set getComponents = pComponents
+Public Function countComponents() As Long
+    If F.dictionaries.isNonEmptyDictionary(pComponents) Then
+        countComponents = pComponents.Count
+    End If
+End Function
+
+Public Function getComponents() As VBA.Collection
+    Set getComponents = F.dictionaries.toCollection(pComponents)
+End Function
+
+Public Function getComponentsDict() As Scripting.Dictionary
+    Set getComponentsDict = F.dictionaries.Clone(pComponents)
 End Function
 
 Public Function getComponentByName(name As String) As VBIDE.VBComponent

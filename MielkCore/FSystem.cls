@@ -175,7 +175,7 @@ Public Function GetComputerName() As String
     sBuffer = VBA.String$(nLen, 0)
     nSize = apiGetComputerName(sBuffer, nLen)
     If nSize <> 0 Then
-       GetComputerName = VBA.left$(sBuffer, nLen)
+       GetComputerName = VBA.Left$(sBuffer, nLen)
     Else
        GetComputerName = vbNullString
     End If
@@ -289,7 +289,7 @@ Public Function getClipboardContentAsArray() As Variant
     '------------------------------------------------------------------------------------------------------
     
     clipboardContent = getClipboardContentAsString
-    If f.strings.endsWith(clipboardContent, VBA.vbCrLf) Then clipboardContent = VBA.left$(clipboardContent, VBA.Len(clipboardContent) - 2)
+    If f.strings.endsWith(clipboardContent, VBA.vbCrLf) Then clipboardContent = VBA.Left$(clipboardContent, VBA.Len(clipboardContent) - 2)
     arr = VBA.Split(clipboardContent, vbCrLf)
     
     If f.arrays.isDefined(arr) Then

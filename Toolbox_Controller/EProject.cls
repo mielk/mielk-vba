@@ -99,7 +99,7 @@ End Function
 
 Public Function getValue(propName As String) As Variant
     Select Case propName
-        Case props.ProjectName.getName:                     getValue = pName
+        Case props.projectName.getName:                     getValue = pName
         Case props.ProjectCodeName.getName:                 getValue = pCodeName
         Case Props_Project.ProjectCodeNameUCase.getName:    getValue = VBA.UCase$(pCodeName)
         Case Props_Project.ProjectLibFolderPath.getName:    getValue = pLibFolderPath

@@ -257,10 +257,10 @@ Public Function minHeight() As UIProp: Set minHeight = f.dictionaries.getObject(
 Public Function height() As UIProp: Set height = f.dictionaries.getObject(pPropsByAliases, PROP_HEIGHT): End Function
 Public Function maxHeight() As UIProp: Set maxHeight = f.dictionaries.getObject(pPropsByAliases, PROP_MAX_HEIGHT): End Function
 '[Position]
-Public Function top() As UIProp: Set top = f.dictionaries.getObject(pPropsByAliases, PROP_TOP): End Function
-Public Function right() As UIProp: Set right = f.dictionaries.getObject(pPropsByAliases, PROP_RIGHT): End Function
-Public Function bottom() As UIProp: Set bottom = f.dictionaries.getObject(pPropsByAliases, PROP_BOTTOM): End Function
-Public Function left() As UIProp: Set left = f.dictionaries.getObject(pPropsByAliases, PROP_LEFT): End Function
+Public Function Top() As UIProp: Set Top = f.dictionaries.getObject(pPropsByAliases, PROP_TOP): End Function
+Public Function Right() As UIProp: Set Right = f.dictionaries.getObject(pPropsByAliases, PROP_RIGHT): End Function
+Public Function Bottom() As UIProp: Set Bottom = f.dictionaries.getObject(pPropsByAliases, PROP_BOTTOM): End Function
+Public Function Left() As UIProp: Set Left = f.dictionaries.getObject(pPropsByAliases, PROP_LEFT): End Function
 '[Margins & paddings]
 Public Function Margin() As UIProp: Set Margin = f.dictionaries.getObject(pPropsByAliases, PROP_MARGIN): End Function
 Public Function MarginVertical() As UIProp: Set MarginVertical = f.dictionaries.getObject(pPropsByAliases, PROP_MARGIN_VERTICAL): End Function
@@ -281,7 +281,7 @@ Public Function BackgroundStyle() As UIProp: Set BackgroundStyle = f.dictionarie
 Public Function BackgroundColor() As UIProp: Set BackgroundColor = f.dictionaries.getObject(pPropsByAliases, PROP_BACKGROUND_COLOR): End Function
 '[Font]
 Public Function fontSize() As UIProp: Set fontSize = f.dictionaries.getObject(pPropsByAliases, PROP_FONT_SIZE): End Function
-Public Function FontColor() As UIProp: Set FontColor = f.dictionaries.getObject(pPropsByAliases, PROP_FONT_COLOR): End Function
+Public Function fontColor() As UIProp: Set fontColor = f.dictionaries.getObject(pPropsByAliases, PROP_FONT_COLOR): End Function
 Public Function FontFamily() As UIProp: Set FontFamily = f.dictionaries.getObject(pPropsByAliases, PROP_FONT_FAMILY): End Function
 Public Function FontBold() As UIProp: Set FontBold = f.dictionaries.getObject(pPropsByAliases, PROP_FONT_BOLD): End Function
 Public Function FontItalic() As UIProp: Set FontItalic = f.dictionaries.getObject(pPropsByAliases, PROP_FONT_ITALIC): End Function

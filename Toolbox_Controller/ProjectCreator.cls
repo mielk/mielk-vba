@@ -193,7 +193,7 @@ Private Function getStatusViewDictionary() As Scripting.Dictionary
                         ItemProcessStatus_Warning, _
                         ItemProcessStatus_Error)
                         
-    Set getStatusViewDictionary = ItemsProcessor.getDefaultCategories(categories, False, False, False)
+    Set getStatusViewDictionary = ItemsProcessor.getDefaultCategories(categories)
     
 End Function
 

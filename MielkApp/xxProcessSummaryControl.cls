@@ -177,7 +177,7 @@ End Function
 
 '[State]
 Public Function isValid() As Boolean
-    isValid = UI.Forms.isControlValid(pBackgroundLabel)
+    isValid = UI.Controls.isValid(pBackgroundLabel)
 End Function
 
 
@@ -187,7 +187,7 @@ Public Function getLeft() As Single
 End Function
 
 Public Function getRight() As Single
-    getRight = UI.Forms.getRight(pBackgroundLabel)
+    getRight = UI.Controls.getRight(pBackgroundLabel)
 End Function
 
 Public Function getTop() As Single
@@ -195,7 +195,7 @@ Public Function getTop() As Single
 End Function
 
 Public Function getBottom() As Single
-    getBottom = UI.Forms.getBottom(pBackgroundLabel)
+    getBottom = UI.Controls.getBottom(pBackgroundLabel)
 End Function
 
 
@@ -306,14 +306,14 @@ End Sub
 Private Sub arrangeControls()
     On Error Resume Next
     Call resizeControls
-    Call UI.Forms.locateControl(pBackgroundLabel, pLeft, pTop)
-    Call UI.Forms.locateControl(pStatusIcon, pLeft + STATUS_ICON_LEFT_OFFSET, pTop + STATUS_ICON_TOP_OFFSET + 0 * PIXEL_SIZE)
-    Call UI.Forms.locateControl(pNameLabel, UI.Forms.getRight(pStatusIcon) + NAME_LABEL_TO_ICON_OFFSET, _
+    Call UI.Controls.locate(pBackgroundLabel, pLeft, pTop)
+    Call UI.Controls.locate(pStatusIcon, pLeft + STATUS_ICON_LEFT_OFFSET, pTop + STATUS_ICON_TOP_OFFSET + 0 * PIXEL_SIZE)
+    Call UI.Controls.locate(pNameLabel, UI.Controls.getRight(pStatusIcon) + NAME_LABEL_TO_ICON_OFFSET, _
                                         pTop + (pLineHeight - pNameLabel.height) / 2)
 End Sub
 
 Private Sub resizeControls()
-    Call UI.Forms.resizeControl(pBackgroundLabel, getWidth, pLineHeight)
+    Call UI.Controls.resize(pBackgroundLabel, getWidth, pLineHeight)
     Call resizeColorLabel
     Call resizeNameLabel
 End Sub
@@ -322,7 +322,7 @@ Private Sub resizeColorLabel()
     Dim size As Single
     '----------------------------------------------------------------------------------------------------------
     size = pLineHeight - 2 * STATUS_ICON_TOP_OFFSET - 2 * PIXEL_SIZE
-    Call UI.Forms.resizeControl(pStatusIcon, size, size)
+    Call UI.Controls.resize(pStatusIcon, size, size)
 End Sub
 
 Private Sub resizeNameLabel()

@@ -22,7 +22,7 @@ Public Function commandBarPopup(parent As Office.CommandBar, caption As String) 
     Do
         Set commandBarPopup = getCommandBarControlByCaption(parent, CUSTOM_MENU_CAPTION)
         If commandBarPopup Is Nothing Then
-            Set commandBarPopup = parent.Controls.add(Office.msoControlPopup, , , 1)
+            Set commandBarPopup = parent.Controls.Add(Office.msoControlPopup, , , 1)
         End If
         
         attempt = attempt + 1

@@ -117,7 +117,7 @@ Private Function getCellGroupsByFormula(Optional ByVal filters As Scripting.Dict
                 For j = LBound(formulas, 2) To UBound(formulas, 2)
                     formula = formulas(i, j)
                     
-                    If VBA.left$(formula, 1) <> "=" Then
+                    If VBA.Left$(formula, 1) <> "=" Then
                         ' not formula, skip this cell
                     ElseIf isFormulaMatchedWithFilters(formula, adjustedFilters) Then
                         formula = getFormulaShortNotation(formula, adjustedFilters)

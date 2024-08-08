@@ -95,7 +95,7 @@ Public Function getSelection() As VBA.Collection
         If node.Checked Then
             Set item = F.dictionaries.getObject(items, key)
             If Not item Is Nothing Then
-                Call getSelection.Add(item)
+                Call getSelection.add(item)
             End If
         End If
     Next key
@@ -141,7 +141,7 @@ Private Sub insertFrame()
     '----------------------------------------------------------------------------------------------------------
     
     Set frame = pForm.getContentFrame
-    Set pFrame = frame.controls.Add(CREATE_FRAME_ID, "frmTreeView", True)
+    Set pFrame = frame.controls.add(CREATE_FRAME_ID, "frmTreeView", True)
     With pFrame
         .SpecialEffect = fmSpecialEffectFlat
         .caption = vbNullString

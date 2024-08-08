@@ -21,7 +21,7 @@ Public Function getAllPlaceholders() As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
     If instance Is Nothing Then
         Set instance = f.dictionaries.createWithItems(True, _
-                                        KeyValue(PROJECT_NAME_PLACEHOLDER, props.ProjectName), _
+                                        KeyValue(PROJECT_NAME_PLACEHOLDER, props.projectName), _
                                         KeyValue(PROJECT_CODE_NAME_PLACEHOLDER, props.ProjectCodeName), _
                                         KeyValue(PROJECT_LIB_FOLDER_PLACEHOLDER, Props_Project.ProjectLibFolderPath), _
                                         KeyValue(PROJECT_TOOL_FOLDER_PLACEHOLDER, Props_Project.ProjectToolFolderPath), _

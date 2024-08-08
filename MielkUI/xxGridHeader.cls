@@ -137,7 +137,7 @@ Public Function getColumn() As DColumn
 End Function
 
 Public Function getRight() As Single
-    getRight = UI.Forms.getRight(pBackgroundLabel)
+    getRight = UI.controls.getRight(pBackgroundLabel)
 End Function
 
 Private Function getProperFilterPicture() As Object
@@ -179,7 +179,7 @@ Public Sub render()
 End Sub
 
 Private Sub insertBackgroundLabel()
-    Set pBackgroundLabel = pFrame.controls.Add(CREATE_LABEL_ID)
+    Set pBackgroundLabel = pFrame.controls.add(CREATE_LABEL_ID)
     With pBackgroundLabel
         .BackStyle = fmBackStyleTransparent
         .borderStyle = fmBorderStyleNone
@@ -189,7 +189,7 @@ Private Sub insertBackgroundLabel()
 End Sub
 
 Private Sub insertCaptionLabel()
-    Set pCaptionLabel = pFrame.controls.Add(CREATE_LABEL_ID)
+    Set pCaptionLabel = pFrame.controls.add(CREATE_LABEL_ID)
     With pCaptionLabel
         .BackStyle = fmBackStyleTransparent
         .TextAlign = fmTextAlignLeft
@@ -240,7 +240,7 @@ Private Sub arrangeLayout()
     If pColumn.hasFilter Then
         If Not pFilterIcon Is Nothing Then
             With pFilterIcon
-                Call .Move(UI.Forms.getRight(pCaptionLabel) + FILTER_LEFT_MARGIN, (pFrame.InsideHeight - .getControl.height) / 2)
+                Call .Move(UI.controls.getRight(pCaptionLabel) + FILTER_LEFT_MARGIN, (pFrame.InsideHeight - .getControl.height) / 2)
                 Call .alignVertically(pBackgroundLabel)
             End With
         End If
@@ -278,16 +278,16 @@ Public Function offset(Optional x As Single, Optional Y As Single) As xxGridHead
 End Function
 
 Private Sub updateSize()
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         pBackgroundLabel.width = pWidth
     End If
-    If UI.Forms.isControlValid(pCaptionLabel) Then
+    If UI.controls.isValid(pCaptionLabel) Then
         pCaptionLabel.width = pWidth
     End If
 End Sub
 
 Private Sub updateCaption()
-    If UI.Forms.isControlValid(pCaptionLabel) Then
+    If UI.controls.isValid(pCaptionLabel) Then
         With pCaptionLabel
             .caption = getCaption
             With .font
@@ -342,7 +342,7 @@ Public Sub appendSortIcon(ctrl As MSForms.label)
     
     With ctrl
         If pFilterIcon Is Nothing Then
-            left = UI.Forms.getRight(pCaptionLabel)
+            left = UI.controls.getRight(pCaptionLabel)
         Else
             left = pFilterIcon.getRight + SORT_ICON_LEFT_MARGIN
         End If
@@ -431,10 +431,10 @@ End Sub
 
 
 '[Implementation of IListener]
-Private Sub IListener_catchEvent(Source As Variant, eventName As String, Optional properties As Scripting.IDictionary)
-    If Source Is pFilterIcon Then
-        If eventName = UI.Events.MouseUp.getName Then
-            Call handleFilterIconMouseUpEvent(Source, properties)
+Private Sub IListener_catchEvent(src As Variant, ev As Variant, Optional properties As Scripting.IDictionary)
+    If src Is pFilterIcon Then
+        If ev = UI.Events.MouseUp.getName Then
+            Call handleFilterIconMouseUpEvent(src, props)
         End If
     End If
 End Sub

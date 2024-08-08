@@ -93,7 +93,7 @@ Private Function getFrame() As MSForms.frame
 End Function
 
 Public Function getRight() As Single
-    getRight = UI.Forms.getRight(pNameBox)
+    getRight = UI.Controls.getRight(pNameBox)
 End Function
 
 Public Function getParent() As XSubitemsPanel
@@ -160,11 +160,11 @@ Public Sub arrangeControls()
     '------------------------------------------------------------------------------------------------------
     
     If pIsRendered Then
-        Call UI.Forms.locateControl(pDeleteIcon, pLeft, pTop + (lineHeight - pDeleteIcon.height) / 2)
-        Call UI.Forms.locateControl(pNameBox, _
-                            UI.Forms.getRight(pDeleteIcon) + DEFAULT_BUTTON_RIGHT_MARGIN, _
+        Call UI.Controls.locate(pDeleteIcon, pLeft, pTop + (lineHeight - pDeleteIcon.height) / 2)
+        Call UI.Controls.locate(pNameBox, _
+                            UI.Controls.getRight(pDeleteIcon) + DEFAULT_BUTTON_RIGHT_MARGIN, _
                             pTop + (lineHeight - pNameBox.height) / 2)
-        Call UI.Forms.resizeControl(pNameBox, pParent.getWidth - pNameBox.left - pParent.getHorizontalPadding)
+        Call UI.Controls.resize(pNameBox, pParent.getWidth - pNameBox.left - pParent.getHorizontalPadding)
     End If
     
 End Sub
@@ -181,7 +181,7 @@ Private Sub destroyControls()
     '------------------------------------------------------------------------------------------------------
     
     Set frame = getFrame
-    If UI.Forms.isControlValid(frame) Then
+    If UI.Controls.isValid(frame) Then
         With frame.Controls
             On Error Resume Next
             Call .Remove(pDeleteIcon.name)

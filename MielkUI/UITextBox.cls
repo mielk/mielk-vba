@@ -183,37 +183,37 @@ Public Function getValue() As String
 End Function
 
 Public Function getLeft() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getLeft = pBackgroundLabel.left
     End If
 End Function
 
 Public Function getRight() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getRight = pBackgroundLabel.left + pBackgroundLabel.width
     End If
 End Function
 
 Public Function getTop() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getTop = pBackgroundLabel.top
     End If
 End Function
 
 Public Function getBottom() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getBottom = pBackgroundLabel.top + pBackgroundLabel.height
     End If
 End Function
 
 Public Function getHeight() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getHeight = pBackgroundLabel.height
     End If
 End Function
 
 Public Function getWidth() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getWidth = pBackgroundLabel.width
     End If
 End Function
@@ -242,7 +242,7 @@ Public Function render() As UITextBox
 End Function
 
 Private Sub insertBackgroundLabel()
-    Set pBackgroundLabel = pFrame.controls.Add(CREATE_LABEL_ID)
+    Set pBackgroundLabel = pFrame.controls.add(CREATE_LABEL_ID)
     With pBackgroundLabel
         .height = pHeight
         .width = pWidth
@@ -254,7 +254,7 @@ Private Sub insertBackgroundLabel()
 End Sub
 
 Private Sub insertTextBox()
-    Set pTextBox = pFrame.controls.Add(CREATE_TEXTBOX_ID)
+    Set pTextBox = pFrame.controls.add(CREATE_TEXTBOX_ID)
     With pTextBox
         .SpecialEffect = fmSpecialEffectFlat
         .BackStyle = fmBackStyleTransparent
@@ -310,15 +310,15 @@ Public Function alignVertically(ctrl As MSForms.control) As UITextBox
     
     Set alignVertically = Me
     
-    If UI.Forms.isControlValid(ctrl) Then
+    If UI.controls.isValid(ctrl) Then
         offset = (ctrl.top + (ctrl.height - pHeight) / 2) - pTop
     End If
     
     If offset Then
-        If UI.Forms.isControlValid(pBackgroundLabel) Then
+        If UI.controls.isValid(pBackgroundLabel) Then
             pBackgroundLabel.top = UI.Normalize.position(pBackgroundLabel.top + offset)
         End If
-        If UI.Forms.isControlValid(pTextBox) Then
+        If UI.controls.isValid(pTextBox) Then
             pTextBox.top = UI.Normalize.position(pTextBox.top + offset)
         End If
     End If
@@ -352,7 +352,7 @@ End Sub
 Private Sub updateValue()
     If Not pEventsDisabled Then
         pEventsDisabled = True
-        If UI.Forms.isControlValid(pTextBox) Then
+        If UI.controls.isValid(pTextBox) Then
             With pTextBox
                 .value = pValue
                 With .font

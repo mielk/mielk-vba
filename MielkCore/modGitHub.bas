@@ -156,3 +156,26 @@ Private Function clearContent(content As String) As String
     '------------------------------------------------------------------------------------------------------
     clearContent = f.regex.replace(content, REGEX_PATTERN, vbNullString)
 End Function
+
+
+
+
+Public Sub adjustContextMenu()
+    Const FILE_NAME As String = "toolbox-vbe.xlam"
+    '------------------------------------------------------------------------------------------------------
+    Dim addIn As Excel.addIn
+    Dim toolboxVbeFile As Excel.Workbook
+    '------------------------------------------------------------------------------------------------------
+    
+    For Each addIn In Excel.Application.AddIns2
+        If addIn.name = FILE_NAME Then
+            Set toolboxVbeFile = Application.Workbooks(addIn.name)
+            Exit For
+        End If
+    Next addIn
+    
+    If Not toolboxVbeFile Is Nothing Then
+        Call Excel.run(f.Reflection.getFunctionFullName("adjustContextMenu", toolboxVbeFile))
+    End If
+    
+End Sub

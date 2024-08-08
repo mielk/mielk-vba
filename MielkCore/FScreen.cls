@@ -57,8 +57,8 @@ Public Function getSize() As area
     With getSize
         .width = GetSystemMetrics(SM_CXSCREEN) * PIXEL_SIZE
         .height = GetSystemMetrics(SM_CYSCREEN) * PIXEL_SIZE
-        .left = GetSystemMetrics(SM_XVIRTUALSCREEN) * PIXEL_SIZE
-        .top = GetSystemMetrics(SM_YVIRTUALSCREEN) * PIXEL_SIZE
+        .Left = GetSystemMetrics(SM_XVIRTUALSCREEN) * PIXEL_SIZE
+        .Top = GetSystemMetrics(SM_YVIRTUALSCREEN) * PIXEL_SIZE
     End With
 End Function
 
@@ -73,8 +73,53 @@ End Function
 
 
 
-Public Function getActiveMonitorWorkingArea() As area
+'Public Function getActiveMonitorWorkingArea() As area
+'#If VBA7 And Win64 Then
+'    Dim monitorHandle As LongPtr
+'#Else
+'    Dim monitorHandle As Long
+'#End If
+'    Dim cursorPosition As POINTAPI
+'    Dim info As MONITORINFOEX
+'    '------------------------------------------------------------------------------------------------------
+'
+'    Call GetCursorPos(cursorPosition)
+'
+'#If VBA7 And Win64 Then
+''    Dim Monitor As Monitor
+''
+''    Call reloadMonitorsInfo
+''
+''    If f.Collections.isNonEmptyCollection(pMonitors) Then
+''        For Each Monitor In pMonitors
+''            If Monitor.isPointInMonitor(cursorPosition) Then
+''                monitorHandle = Monitor.getHandle
+''                'getActiveMonitorWorkingArea = monitor.getWorkingArea
+''            End If
+''        Next Monitor
+''    End If
+'    'monitorHandle = MonitorFromPoint(cursorPosition, MONITOR_DEFAULTTONEAREST)
+'#Else
+'    'monitorHandle = MonitorFromPoint(cursorPosition, MONITOR_DEFAULTTONEAREST)
+'#End If
+'
+'    info.cbSize = Len(info)
+'    If GetMonitorInfo(monitorHandle, info) = False Then
+'        Call VBA.err.raise(1, description:="Error when trying to read monitor info")
+'    End If
+'
+'    With info.rcWork
+'        getActiveMonitorWorkingArea.Left = .Left * PIXEL_SIZE
+'        getActiveMonitorWorkingArea.Top = .Top * PIXEL_SIZE
+'        getActiveMonitorWorkingArea.width = (.Right - .Left) * PIXEL_SIZE
+'        getActiveMonitorWorkingArea.height = (.Bottom - .Top) * PIXEL_SIZE
+'    End With
+'
+'End Function
 
+
+
+Public Function getActiveMonitorWorkingArea() As area
 #If VBA7 And Win64 Then
     Dim monitorHandle As LongPtr
 #Else
@@ -82,9 +127,12 @@ Public Function getActiveMonitorWorkingArea() As area
 #End If
     Dim cursorPosition As POINTAPI
     Dim info As MONITORINFOEX
+    'Dim nMonitors As Integer
     '------------------------------------------------------------------------------------------------------
     
     Call GetCursorPos(cursorPosition)
+    
+    'nMonitors = GetSystemMetrics(SM_CMONITORS)
     
 #If VBA7 And Win64 Then
 '    Dim Monitor As Monitor
@@ -99,21 +147,23 @@ Public Function getActiveMonitorWorkingArea() As area
 '            End If
 '        Next Monitor
 '    End If
-    'monitorHandle = MonitorFromPoint(cursorPosition, MONITOR_DEFAULTTONEAREST)
+    
 #Else
     'monitorHandle = MonitorFromPoint(cursorPosition, MONITOR_DEFAULTTONEAREST)
 #End If
 
+    monitorHandle = getMonitorFromPoint(cursorPosition, MONITOR_DEFAULTTONEAREST)
+    
     info.cbSize = Len(info)
-    If getMonitorInfo(monitorHandle, info) = False Then
-        'Call VBA.err.raise(1, description:="Error when trying to read monitor info")
+    If GetMonitorInfo(monitorHandle, info) = False Then
+        Call VBA.err.raise(1, description:="Error when trying to read monitor info")
     End If
     
     With info.rcWork
-        getActiveMonitorWorkingArea.left = .left * PIXEL_SIZE
-        getActiveMonitorWorkingArea.top = .top * PIXEL_SIZE
-        getActiveMonitorWorkingArea.width = (.right - .left) * PIXEL_SIZE
-        getActiveMonitorWorkingArea.height = (.bottom - .top) * PIXEL_SIZE
+        getActiveMonitorWorkingArea.Left = .Left * PIXEL_SIZE
+        getActiveMonitorWorkingArea.Top = .Top * PIXEL_SIZE
+        getActiveMonitorWorkingArea.width = (.Right - .Left) * PIXEL_SIZE
+        getActiveMonitorWorkingArea.height = (.Bottom - .Top) * PIXEL_SIZE
     End With
 
 End Function
@@ -127,7 +177,7 @@ Public Function getDpiScaling() As Coordinate
 
     If GetDpiForMonitor(MonitorFromWindow(Excel.Application.hWnd, MONITOR_DEFAULTTONEAREST), MDT_DEFAULT, dpiX, dpiY) = S_OK Then
         With getDpiScaling
-            .x = dpiX / DPI_BASE_SETTING
+            .X = dpiX / DPI_BASE_SETTING
             .Y = dpiY / DPI_BASE_SETTING
         End With
     Else
@@ -142,7 +192,7 @@ Public Function getCursorPosition() As Coordinate
     
     Call GetCursorPos(coordinates)
     With getCursorPosition
-        .x = coordinates.x
+        .X = coordinates.X
         .Y = coordinates.Y
     End With
     

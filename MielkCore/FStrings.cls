@@ -68,14 +68,14 @@ Public Function startsWith(text As String, prefix As String, Optional isCaseSens
     Dim length As Long
     '------------------------------------------------------------------------------------------------------
     length = VBA.Len(prefix)
-    startsWith = compareStrings(VBA.left$(text, length), prefix, isCaseSensitive)
+    startsWith = compareStrings(VBA.Left$(text, length), prefix, isCaseSensitive)
 End Function
 
 Public Function endsWith(text As String, substr As String, Optional isCaseSensitive As Boolean = False) As Boolean
     Dim length As Long
     '------------------------------------------------------------------------------------------------------
     length = VBA.Len(substr)
-    endsWith = compareStrings(VBA.right$(text, length), substr, isCaseSensitive)
+    endsWith = compareStrings(VBA.Right$(text, length), substr, isCaseSensitive)
 End Function
 
 Public Function removeSubstrings(baseString As String, substrings As Variant) As String
@@ -438,7 +438,7 @@ Private Function stringifyNotContainerObject(value As Object, stringifyMode As S
 
 '==========================================================================================================
 ExitPoint:
-    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------
@@ -724,7 +724,7 @@ Public Function onlyDigits(ByVal text As Variant, _
                     End If
                 ElseIf Not bHasComa And (sChar = COMA Or sChar = DOT) Then
                     If VBA.Len(onlyDigits) Then
-                        If VBA.right$(onlyDigits, 1) <> MINUS Then
+                        If VBA.Right$(onlyDigits, 1) <> MINUS Then
                             onlyDigits = onlyDigits & Application.DecimalSeparator
                             bHasComa = True
                         End If
@@ -763,7 +763,11 @@ Public Function isDigit(ByVal char As String) As Boolean
     isDigit = (iAsciiCode >= 48 And iAsciiCode <= 57)
 End Function
 
-
+Public Function isInUpperCase(value As String) As Boolean
+    Const REGEX_PATTERN As String = "^[^a-z]*$"
+    '------------------------------------------------------------------------------------------------------
+    isInUpperCase = f.regex.checkIfMatch(value, REGEX_PATTERN, False)
+End Function
 
 
 
@@ -972,8 +976,8 @@ End Function
 Public Function cutFromEnd(baseText As String, textToCut As String, Optional caseSensitive As Boolean = False) As String
     If VBA.Len(textToCut) = 0 Or VBA.Len(baseText) = 0 Then
         cutFromEnd = baseText
-    ElseIf f.strings.compareStrings(VBA.right$(baseText, VBA.Len(textToCut)), textToCut, caseSensitive) Then
-        cutFromEnd = VBA.left$(baseText, VBA.Len(baseText) - VBA.Len(textToCut))
+    ElseIf f.strings.compareStrings(VBA.Right$(baseText, VBA.Len(textToCut)), textToCut, caseSensitive) Then
+        cutFromEnd = VBA.Left$(baseText, VBA.Len(baseText) - VBA.Len(textToCut))
     Else
         cutFromEnd = baseText
     End If
@@ -1128,7 +1132,7 @@ End Function
 
 
 Public Function toSentenceCase(value As String) As String
-    toSentenceCase = VBA.UCase(VBA.left(value, 1)) & VBA.mid(value, 2)
+    toSentenceCase = VBA.UCase(VBA.Left(value, 1)) & VBA.mid(value, 2)
 End Function
 
 Public Function toCamelCase(value As String) As String
@@ -1141,7 +1145,7 @@ Public Function toCamelCase(value As String) As String
     If f.arrays.isDefined(words) Then
         For i = LBound(words) + 1 To UBound(words)
             word = words(i)
-            words(i) = VBA.UCase(VBA.left(word, 1)) & VBA.mid(word, 2)
+            words(i) = VBA.UCase(VBA.Left(word, 1)) & VBA.mid(word, 2)
         Next i
         toCamelCase = VBA.join(words, "")
     End If
@@ -1311,7 +1315,7 @@ Public Function convertLetterCasing(text As String, casing As LetterCasingEnum) 
         Case LetterCasing_Upper:            convertLetterCasing = VBA.UCase(text)
         Case LetterCasing_Sentence:         convertLetterCasing = toSentenceCase(text)
         Case LetterCasing_Camel:            convertLetterCasing = toCamelCase(text)
-        Case LetterCasing_StartWithLower:   convertLetterCasing = VBA.LCase(VBA.left(text, 1)) & VBA.mid(text, 2)
+        Case LetterCasing_StartWithLower:   convertLetterCasing = VBA.LCase(VBA.Left(text, 1)) & VBA.mid(text, 2)
     End Select
 End Function
 

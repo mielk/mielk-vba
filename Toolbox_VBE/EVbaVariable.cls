@@ -50,17 +50,17 @@ Public Function setPassMode(value As Variant) As EVbaVariable
     pPassMode = getParamPassModeFromName(VBA.CStr(value))
 End Function
 
-Public Function setIsArray(value As Boolean) As EVbaVariable
+Public Function setIsArray(value As Variant) As EVbaVariable
     Set setIsArray = Me
     pIsArray = F.Strings.compareStrings(value, VBA_ARRAY_BRACKETS)
 End Function
 
-Public Function setIsParamArray(value As Boolean) As EVbaVariable
+Public Function setIsParamArray(value As Variant) As EVbaVariable
     Set setIsParamArray = Me
     pIsParamArray = F.Strings.compareStrings(value, VBA_PARAM_ARRAY)
 End Function
 
-Public Function setDataType(value As String) As EVbaVariable
+Public Function setDataType(value As Variant) As EVbaVariable
     Set setDataType = Me
     pDataType = value
 End Function
@@ -132,6 +132,15 @@ Public Function getArraySize() As String
     getArraySize = pArraySize
 End Function
 
+Public Function isConst() As Boolean
+    isConst = (pVarType = VarType_Const)
+End Function
+
+Public Function isNotConst() As Boolean
+    isNotConst = (pVarType <> VarType_Const)
+End Function
+
 'Public Function getValue()
 '
 'End Function
+

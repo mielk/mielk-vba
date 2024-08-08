@@ -100,7 +100,7 @@ End Function
 
 '[GETTERS]
 Public Function getBottom() As Single
-    If UI.Forms.isControlValid(pBackground) Then
+    If UI.controls.isValid(pBackground) Then
         getBottom = pBackground.top + pBackground.height
     End If
 End Function
@@ -130,7 +130,7 @@ Public Sub render()
         Set columns = pManager.getColumnsCollection
         For Each column In columns
             Set ctrl = insertControl(column)
-            Call pControls.Add(column, ctrl)
+            Call pControls.add(column, ctrl)
         Next column
         
         Call relocateControls
@@ -144,7 +144,7 @@ Public Sub render()
 End Sub
 
 Private Sub insertBackground()
-    Set pBackground = pFrame.controls.Add(CREATE_LABEL_ID)
+    Set pBackground = pFrame.controls.add(CREATE_LABEL_ID)
     With pBackground
         .BackStyle = fmBackStyleTransparent
         .borderStyle = fmBorderStyleNone
@@ -156,7 +156,7 @@ End Sub
 
 
 Private Sub insertBorderLine()
-    Set pBorderLine = pFrame.controls.Add(CREATE_LABEL_ID)
+    Set pBorderLine = pFrame.controls.add(CREATE_LABEL_ID)
     With pBorderLine
         .BackStyle = fmBackStyleOpaque
         .backColor = BORDER_COLOR
@@ -319,7 +319,7 @@ Private Sub updateVisibility()
 End Sub
 
 Private Sub updateBorderVisibility()
-    If UI.Forms.isControlValid(pBorderLine) Then
+    If UI.controls.isValid(pBorderLine) Then
         pBorderLine.visible = (pVisibility And pHasBorder)
     End If
 End Sub
@@ -417,11 +417,11 @@ End Sub
 
 '[Implementation of IListener interface]
 
-Private Sub IListener_catchEvent(Source As Variant, eventName As String, Optional properties As Scripting.IDictionary)
-    If TypeOf Source Is UIIcon Then
-        Call handleButtonClick(UI.Cast.toUiIcon(Source))
-    ElseIf TypeOf Source Is UILabel Then
-        Call handleLabelClick(UI.Cast.toUiLabel(Source))
+Private Sub IListener_catchEvent(src As Variant, ev As Variant, Optional properties As Scripting.IDictionary)
+    If TypeOf src Is UIIcon Then
+        Call handleButtonClick(UI.Cast.toUiIcon(src))
+    ElseIf TypeOf src Is UILabel Then
+        Call handleLabelClick(UI.Cast.toUiLabel(src))
     End If
 End Sub
 

@@ -76,9 +76,9 @@ End Function
 Public Function getJsonDict() As Scripting.Dictionary
     Set getJsonDict = F.dictionaries.Create(False)
     With getJsonDict
-        Call .add(META_TAG_NAME, getName)
-        Call .add(META_TAG_DECLARATIONS, pModuleDeclarations)
-        Call .add(META_TAG_METHODS, getMethodsJsonDict)
+        Call .Add(META_TAG_NAME, getName)
+        Call .Add(META_TAG_DECLARATIONS, pModuleDeclarations)
+        Call .Add(META_TAG_METHODS, getMethodsJsonDict)
     End With
 End Function
 
@@ -89,7 +89,7 @@ Private Function getMethodsJsonDict() As Scripting.Dictionary
     Set getMethodsJsonDict = F.dictionaries.Create(False)
     For Each key In pMethods.Keys
         Set method = pMethods.item(key)
-        Call getMethodsJsonDict.add(key, method.getJsonDict)
+        Call getMethodsJsonDict.Add(key, method.getJsonDict)
     Next key
 End Function
 
@@ -151,7 +151,7 @@ Private Sub loadMethods()
                     End If
                 Loop
             Else
-                Call pMethods.add(.getKey, method)
+                Call pMethods.Add(.getKey, method)
                 line = .getLastLineIndex
             End If
         End With
@@ -178,7 +178,7 @@ Private Function createMethodsDictionary(dict As Scripting.Dictionary) As Script
             Set method = New EVbaMethod
             Stop
             'Call method.loadFromDict(subdict)
-            Call createMethodsDictionary.add(key, method)
+            Call createMethodsDictionary.Add(key, method)
         Next key
     End If
 End Function
@@ -197,6 +197,71 @@ Public Function toString() As String
     
 End Function
 
+
+
+
 Public Function compare(module As EVbaModule) As ValidationObject
     Stop
 End Function
+
+
+
+
+Public Function appendErrorHandling(entryPoints As Scripting.Dictionary) As Scripting.Dictionary
+    Const ERR_HANDLING_ALREADY_EXIST As String = "Error handling skipped - already existed"
+    Const ERR_HANDLING_INTERFACE_METHOD As String = "Error handling skipped - interface method"
+    Const ERR_HANDLING_SIMPLE_METHOD As String = "Error handling skipped - simple method"
+    Const ERR_HANDLING_ANNOTATION As String = "Error handling skipped - annotation"
+    Const ERR_HANDLING_APPENDED As String = "Error handling appended"
+    Const ERR_HANDLING_ONE_LINER As String = "Error handling skipped - one line method"
+    '------------------------------------------------------------------------------------------------------
+    Dim methods As VBA.Collection
+    Dim method As EVbaMethod
+    Dim methodFullName As String
+    Dim isEntryPoint As Boolean
+    '------------------------------------------------------------------------------------------------------
+    Dim methodBodyWithErrHandling As String
+    '------------------------------------------------------------------------------------------------------
+    
+    On Error GoTo errHandler
+    
+    Set appendErrorHandling = F.dictionaries.Create(False)
+    
+    Set methods = F.Collections.Sort( _
+                            F.dictionaries.toCollection(pMethods), _
+                            False, _
+                            "$.getLastLineIndex")
+    
+    For Each method In methods
+        methodFullName = pName & "." & method.getName
+        isEntryPoint = F.dictionaries.hasKey(entryPoints, methodFullName)
+        
+        If method.isOneLiner Then
+            Call F.dictionaries.addItem(appendErrorHandling, method.getName, ERR_HANDLING_ONE_LINER)
+        ElseIf method.hasAnyErrorHandling Then
+            Call F.dictionaries.addItem(appendErrorHandling, method.getName, ERR_HANDLING_ALREADY_EXIST)
+        ElseIf method.isInterfaceMethod Then
+            Call F.dictionaries.addItem(appendErrorHandling, method.getName, ERR_HANDLING_INTERFACE_METHOD)
+        ElseIf method.isSimpleMethod Then
+            Call F.dictionaries.addItem(appendErrorHandling, method.getName, ERR_HANDLING_SIMPLE_METHOD)
+        ElseIf method.hasNoErrorHandlingAnnotation Then
+            Call F.dictionaries.addItem(appendErrorHandling, method.getName, ERR_HANDLING_ANNOTATION)
+        Else
+
+            methodBodyWithErrHandling = method.getBodyWithErrorHandlingAppended(isEntryPoint)
+            Call method.replaceWithNewVersion(methodBodyWithErrHandling)
+            
+            Call F.dictionaries.addItem(appendErrorHandling, method.getName, ERR_HANDLING_APPENDED)
+        End If
+        
+    Next method
+    
+ExitPoint:
+    Exit Function
+
+errHandler:
+    Stop
+    
+End Function
+
+

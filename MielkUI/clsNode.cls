@@ -402,10 +402,10 @@ Public Property Let key(ByVal sKey As String)
     If bIsInMainCol Then
         With tree.Nodes
             .remove i
-            If i <= .Count Then
-                .Add Me, sKey, i
+            If i <= .count Then
+                .add Me, sKey, i
             Else
-                .Add Me
+                .add Me
             End If
         End With
     Else
@@ -451,7 +451,7 @@ Public Property Get NextNode() As clsNode    ' can't name this proc 'Next' in VB
                 Exit For
             End If
         Next
-        If .childNodes.Count > i Then
+        If .childNodes.count > i Then
             Set NextNode = .childNodes(i + 1)
         End If
     End With
@@ -516,7 +516,7 @@ Public Function sort(Optional ByVal ndOrder As ndSortOrder = ndAscending, _
 
     On Error GoTo errExit
     lStart = 1
-    lLast = childNodes.Count    ' error if no childnodes to sort
+    lLast = childNodes.count    ' error if no childnodes to sort
 
     If lLast = 1 Then
         ' nothing to sort
@@ -544,7 +544,7 @@ Public Function sort(Optional ByVal ndOrder As ndSortOrder = ndAscending, _
 
     If bIsUnSorted Then
         For i = lStart To lLast
-            colNodes.Add childNodes(idx(i))
+            colNodes.add childNodes(idx(i))
         Next
         Set childNodes = colNodes
         sort = True
@@ -567,21 +567,21 @@ Public Function AddChild(Optional sKey As String, _
     With moTree.Nodes
 
         If Len(sKey) Then
-100         .Add cChild, sKey
+100         .add cChild, sKey
 101
             cChild.key = sKey
         Else
-            .Add cChild
+            .add cChild
         End If
 
-        cChild.index = .Count
+        cChild.index = .count
     End With
 
     If mcolChildNodes Is Nothing Then
         Set mcolChildNodes = New Collection
     End If
 
-    mcolChildNodes.Add cChild
+    mcolChildNodes.add cChild
 
     With cChild
         If Not IsMissing(vImageMain) Then
@@ -691,7 +691,7 @@ Public Function GetChild(vKey As Variant) As clsNode
     ElseIf Not mcolChildNodes Is Nothing Then
         lIdx = vKey
         If lIdx = -1 Then
-            lIdx = mcolChildNodes.Count
+            lIdx = mcolChildNodes.count
         End If
         If lIdx > 0 Then
             Set GetChild = mcolChildNodes(lIdx)
@@ -818,9 +818,9 @@ Friend Sub CheckTriStateParent()
         Next
         If alChecked(1) Then
             alChecked(1) = 1
-        ElseIf alChecked(-1) = childNodes.Count Then
+        ElseIf alChecked(-1) = childNodes.count Then
             alChecked(1) = -1
-        ElseIf alChecked(0) = childNodes.Count Then
+        ElseIf alChecked(0) = childNodes.count Then
             alChecked(1) = 0
         Else
             alChecked(1) = 1
@@ -931,8 +931,8 @@ Dim wd As Single, ht As Single
     If bEnterEdit Then
 
         If moEditBox Is Nothing Then
-            Set moEditBox = moTree.TreeControl.controls.Add("forms.textbox.1", "EditBox")
-            Set moLabSizer = moTree.TreeControl.Add("forms.Label.1", "LabSizer")
+            Set moEditBox = moTree.TreeControl.controls.add("forms.textbox.1", "EditBox")
+            Set moLabSizer = moTree.TreeControl.add("forms.Label.1", "LabSizer")
             moLabSizer.left = moTree.TreeControl.left
             moLabSizer.top = moTree.TreeControl.top - 12
             moLabSizer.WordWrap = False
@@ -993,7 +993,7 @@ Dim cTmp As clsNode
     On Error GoTo errH
 
     If bReverse Then
-        For i = mcolChildNodes.Count To 1 Step -1
+        For i = mcolChildNodes.count To 1 Step -1
             Set cTmp = mcolChildNodes(i)
             If mcolChildNodes(i) Is cNode Then
                 mcolChildNodes.remove i
@@ -1012,7 +1012,7 @@ Dim cTmp As clsNode
         Next
     End If
     
-    If mcolChildNodes.Count = 0 Then
+    If mcolChildNodes.count = 0 Then
         Set mcolChildNodes = Nothing
         Me.Expanded = False
     End If
@@ -1663,14 +1663,14 @@ End Sub
 'End Function
 '
 'Public Function isVisible() As Boolean
-'    If UI.Forms.isControlValid(mctlControl) Then
+'    If UI.Controls.isValid(mctlControl) Then
 '        isVisible = mctlControl.visible
 '    End If
 'End Function
 '
 'Public Function getBottomY() As Single
-'    If UI.Forms.isControlValid(mctlControl) Then
-'        getBottomY = UI.Forms.getBottom(mctlControl)
+'    If UI.Controls.isValid(mctlControl) Then
+'        getBottomY = UI.Controls.getBottom(mctlControl)
 '    End If
 'End Function
 
@@ -1687,7 +1687,7 @@ End Function
 Public Function setSpecialActions(dtos As VBA.Collection) As clsNode
     Set setSpecialActions = Me
     Set pSpecialActionDtos = dtos
-    If UI.Forms.isControlValid(mctlControl) Then
+    If UI.controls.isValid(mctlControl) Then
         Call addHoverBackground
         Call addSpecialButtons(pSpecialActionDtos)
     End If
@@ -1717,11 +1717,11 @@ Private Sub addSpecialButtons(buttonDtos As VBA.Collection)
                             alignVertically(mctlControl)
                             
                 left = Button.getRight + 0 ' BUTTONS_SPACE
-                Call pSpecialButtons.Add(Button)
+                Call pSpecialButtons.add(Button)
         Next dto
     End If
     
-    If UI.Forms.isControlValid(pHoverBackground) Then
+    If UI.controls.isValid(pHoverBackground) Then
         pHoverBackground.width = left - pHoverBackground.left
     End If
     
@@ -1729,7 +1729,7 @@ End Sub
 
 Private Sub addHoverBackground()
     If pHoverBackground Is Nothing Then
-        Set pHoverBackground = pTreeView.TreeControl.controls.Add(CREATE_LABEL_ID, visible:=False)
+        Set pHoverBackground = pTreeView.TreeControl.controls.add(CREATE_LABEL_ID, visible:=False)
         With pHoverBackground
             .width = mctlControl.width + 2 * MOVE_LAYER_MARGIN
             .height = mctlControl.height + 2 * MOVE_LAYER_MARGIN
@@ -1750,10 +1750,12 @@ Public Sub updateSpecialButtons()
 End Sub
 
 Public Sub setHoveredStatus(value As Boolean)
-    If Not pTreeView.isInDragDropMode Then
-        pCurrentHover = value
-        Call showHideSpecialButtons(value)
-        Call createMoveLabel(True)
+    If Not pTreeView Is Nothing Then
+        If Not pTreeView.isInDragDropMode Then
+            pCurrentHover = value
+            Call showHideSpecialButtons(value)
+            Call createMoveLabel(True)
+        End If
     End If
 End Sub
 
@@ -1783,7 +1785,7 @@ Public Function getObject() As ITreeViewItem
 End Function
 
 Public Function getRightX() As Single
-    If UI.Forms.isControlValid(mctlControl) Then
+    If UI.controls.isValid(mctlControl) Then
         getRightX = mctlControl.left + mctlControl.width
     End If
 End Function
@@ -1805,12 +1807,14 @@ Private Sub removeCustomControls()
 End Sub
 
 Private Sub destroyMoveLabels()
+    On Error Resume Next
     Call UI.Forms.removeControls(pTreeView.TreeControl, pMoveLabel, pMoveCaptionLabel)
     Set pMoveLabel = Nothing
     Set pMoveCaptionLabel = Nothing
 End Sub
 
 Private Sub destroyDropLabels()
+    On Error Resume Next
     Call UI.Forms.removeControls(pTreeView.TreeControl, pDropLabel, pDropCaptionLabel)
     Set pDropLabel = Nothing
     Set pDropCaptionLabel = Nothing
@@ -1835,10 +1839,10 @@ End Sub
 Private Sub createMoveLabel(Optional reset As Boolean = False)
     If reset Then Call destroyMoveLabels
     If pMoveLabel Is Nothing Then
-        Set pMoveLabel = moTree.TreeControl.controls.Add(CREATE_LABEL_ID, visible:=False)
+        Set pMoveLabel = moTree.TreeControl.controls.add(CREATE_LABEL_ID, visible:=False)
     End If
     If pMoveCaptionLabel Is Nothing Then
-        Set pMoveCaptionLabel = moTree.TreeControl.controls.Add(CREATE_LABEL_ID, visible:=False)
+        Set pMoveCaptionLabel = moTree.TreeControl.controls.add(CREATE_LABEL_ID, visible:=False)
     End If
     Call showHideMoveLabel(False)
 End Sub
@@ -1846,10 +1850,10 @@ End Sub
 Private Sub createDropLabel(Optional reset As Boolean = False)
     If reset Then Call destroyDropLabels
     If pDropLabel Is Nothing Then
-        Set pDropLabel = moTree.TreeControl.controls.Add(CREATE_LABEL_ID, visible:=False)
+        Set pDropLabel = moTree.TreeControl.controls.add(CREATE_LABEL_ID, visible:=False)
     End If
     If pDropCaptionLabel Is Nothing Then
-        Set pDropCaptionLabel = moTree.TreeControl.controls.Add(CREATE_LABEL_ID, visible:=False)
+        Set pDropCaptionLabel = moTree.TreeControl.controls.add(CREATE_LABEL_ID, visible:=False)
     End If
     Call showHideDropLabel(False)
 End Sub
@@ -1878,7 +1882,7 @@ Public Sub quitDragMode()
 End Sub
 
 Public Sub showEventsLayer(value As Boolean)
-    If UI.Forms.isControlValid(pHoverBackground) Then
+    If UI.controls.isValid(pHoverBackground) Then
         pHoverBackground.visible = value
     End If
 End Sub
@@ -1960,8 +1964,8 @@ End Sub
 
 
 '[Implementation of IListener]
-Private Sub IListener_catchEvent(Source As Variant, eventName As String, Optional properties As Scripting.IDictionary)
-    Call moTree.NodeEventRouter(Me, Source.getActionName, tvClick)
+Private Sub IListener_catchEvent(src As Variant, ev As Variant, Optional properties As Scripting.IDictionary)
+    Call moTree.NodeEventRouter(Me, src.getActionName, tvClick)
 End Sub
 
 Public Sub updatePosition(x As Single, Y As Single)
@@ -2043,3 +2047,25 @@ Public Sub locateSpecialButtons()
         Next img
     End If
 End Sub
+
+
+
+Public Function getLeafs() As Scripting.Dictionary
+    Dim childNodes As VBA.Collection
+    Dim child As clsNode
+    Dim key As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set getLeafs = F.dictionaries.Create(False)
+    Set childNodes = Me.childNodes
+    
+    If F.Collections.isNonEmptyCollection(childNodes) Then
+        For Each child In childNodes
+            Call F.dictionaries.appendDictionary(getLeafs, child.getLeafs)
+        Next child
+    Else
+        If F.Numerics.IsNumber(Me.key) Then key = F.Numerics.toNumber(Me.key) Else key = Me.key
+        Call getLeafs.add(key, Me.Checked)
+    End If
+    
+End Function

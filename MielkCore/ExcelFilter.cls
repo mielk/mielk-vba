@@ -35,7 +35,7 @@ End Function
 
 Public Sub readFromSheet(Optional wks As Excel.Worksheet)
     Dim filter As Excel.filter
-    Dim counter As Long
+    Dim Counter As Long
     '------------------------------------------------------------------------------------------------------
     
     If Not wks Is Nothing Then Set pSheet = wks
@@ -52,9 +52,9 @@ Public Sub readFromSheet(Optional wks As Excel.Worksheet)
                     Set pRange = .Range
                     Set pFilters = f.dictionaries.Create(False)
                     For Each filter In .filters
-                        counter = counter + 1
+                        Counter = Counter + 1
                         If filter.On Then
-                            Call pFilters.Add(counter, getFilterPropsDictionary(filter, counter))
+                            Call pFilters.Add(Counter, getFilterPropsDictionary(filter, Counter))
                         End If
                     Next filter
                 End With
@@ -150,7 +150,7 @@ Private Function getCriteriaValueFromSheet(filter As Excel.filter, index As Long
         Set dict = f.dictionaries.Create(False)
         If f.ranges.IsValid(visibleCells) Then
             For Each cell In visibleCells
-                If cell.Row <> rng.Row Then
+                If cell.row <> rng.row Then
                     isDateValue = VBA.IIf(isDateValue, isDateValue, VBA.IsDate(cell.value))
                     If Not dict.exists(cell.value2) Then
                         Call dict.Add(cell.value2, vbNullString)

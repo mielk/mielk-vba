@@ -199,9 +199,9 @@ Public Function fromYYYYMMDDString(ByVal value As String) As Date
     Dim years As Long
     '------------------------------------------------------------------------------------------------------
     If VBA.Len(value) = 8 Then
-        years = VBA.left$(value, 4)
+        years = VBA.Left$(value, 4)
         months = VBA.mid$(value, 5, 2)
-        days = VBA.right$(value, 2)
+        days = VBA.Right$(value, 2)
         fromYYYYMMDDString = VBA.DateSerial(years, months, days)
     End If
 End Function
@@ -213,9 +213,9 @@ Private Function fromDDMMYYYYString(ByVal value As String) As Date
     '-----------------------------------------------------------------------------------------------------
     value = f.strings.onlyDigits(value, False)
     If VBA.Len(value) = 8 Then
-        days = VBA.left$(value, 2)
+        days = VBA.Left$(value, 2)
         months = VBA.mid$(value, 3, 2)
-        years = VBA.right$(value, 4)
+        years = VBA.Right$(value, 4)
         fromDDMMYYYYString = VBA.DateSerial(years, months, days)
     End If
 End Function
@@ -227,9 +227,9 @@ Private Function fromDDMMYYString(ByVal value As String) As Date
     '-----------------------------------------------------------------------------------------------------
     value = f.strings.onlyDigits(value, False)
     If VBA.Len(value) = 6 Then
-        days = VBA.left$(value, 2)
+        days = VBA.Left$(value, 2)
         months = VBA.mid$(value, 3, 2)
-        years = 2000 + VBA.right$(value, 2)
+        years = 2000 + VBA.Right$(value, 2)
         fromDDMMYYString = VBA.DateSerial(years, months, days)
     End If
 End Function
@@ -309,7 +309,7 @@ Public Function fromIso8601(dateString As String) As Date
     Dim second As Integer
     '------------------------------------------------------------------------------------------------------
 
-    year = VBA.left$(dateString, 4) * 1
+    year = VBA.Left$(dateString, 4) * 1
     month = VBA.mid$(dateString, 6, 2) * 1
     day = VBA.mid$(dateString, 9, 2) * 1
     hour = VBA.mid$(dateString, 12, 2) * 1
@@ -452,7 +452,7 @@ Public Function convertIso8601ToDate(dateString As String) As Date
     Dim second As Integer
     '------------------------------------------------------------------------------------------------------
 
-    year = VBA.left$(dateString, 4) * 1
+    year = VBA.Left$(dateString, 4) * 1
     month = VBA.mid$(dateString, 6, 2) * 1
     day = VBA.mid$(dateString, 9, 2) * 1
     hour = VBA.mid$(dateString, 12, 2) * 1

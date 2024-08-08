@@ -55,30 +55,9 @@ Public Function filterComponentByName(componentName As String) As Boolean
     If dict Is Nothing Then
         Set dict = F.dictionaries.Create(False)
         With dict
-            Call .add("FBooks", 0)
-            Call .add("FCast", 0)
-            Call .add("fcollections", 0)
-            Call .add("fcolors", 0)
-            Call .add("fconstructors", 0)
-            Call .add("fcontextmenu", 0)
-            Call .add("fcryptography", 0)
-            Call .add("fdates", 0)
-            Call .add("fdevelopers", 0)
-            Call .add("fdictionaries", 0)
-            Call .add("fexcel", 0)
-            Call .add("fexcelnames", 0)
-            Call .add("ffiles", 0)
-            Call .add("fjson", 0)
-            Call .add("fnumerics", 0)
-            Call .add("fobjects", 0)
-            Call .add("franges", 0)
-            Call .add("freflection", 0)
-            Call .add("fregex", 0)
-            Call .add("fscreen", 0)
-            Call .add("fsheets", 0)
-            Call .add("fstrings", 0)
-            Call .add("fsystem", 0)
-            Call .add("ftextfile", 0)
+            'List of VB components to be processed.
+            'If left empty, all components are processed.
+'            Call .Add("FBooks", 0)
         End With
     End If
     

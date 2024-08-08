@@ -16,7 +16,7 @@ Private Const TO_SINGLE_LINERS_REPLACE_PATTERN As String = "_[\n\s\t]*"
 
 
 Public Function convertToSingleLiners(body As String)
-    convertToSingleLiners = F.Regex.Replace(body, TO_SINGLE_LINERS_REPLACE_PATTERN, " ")
+    convertToSingleLiners = F.regex.Replace(body, TO_SINGLE_LINERS_REPLACE_PATTERN, " ")
 End Function
 
 Public Function countDeclarationLines(body As String) As Long
@@ -62,7 +62,7 @@ Public Function findMethodScope(body As String) As ScopeTypeEnum
     '------------------------------------------------------------------------------------------------------
     Dim scopeTypeName As String
     '------------------------------------------------------------------------------------------------------
-    scopeTypeName = F.Regex.getFirstGroupMatch(body, REGEX_PATTERN)
+    scopeTypeName = F.regex.getFirstGroupMatch(body, REGEX_PATTERN)
     findMethodScope = getScopeTypeFromName(scopeTypeName)
 End Function
 
@@ -71,7 +71,7 @@ Public Function findMethodType(body As String) As MethodTypeEnum
     '------------------------------------------------------------------------------------------------------
     Dim methodTypeName As String
     '------------------------------------------------------------------------------------------------------
-    methodTypeName = F.Regex.getFirstGroupMatch(body, REGEX_PATTERN)
+    methodTypeName = F.regex.getFirstGroupMatch(body, REGEX_PATTERN)
     findMethodType = getMethodTypeFromName(methodTypeName)
 End Function
 
@@ -86,20 +86,20 @@ Public Function getMethodInputParamsDtos(body As String) As VBA.Collection
     
     Set getMethodInputParamsDtos = New VBA.Collection
     
-    Set col = F.Regex.getMatchArraysCollection(body, REGEX_PATTERN)
+    Set col = F.regex.getMatchArraysCollection(body, REGEX_PATTERN)
     If F.Collections.isNonEmptyCollection(col) Then
         For Each arr In col
             Set dto = F.dictionaries.Create(False)
             With dto
-                Call .add(Props_Vbe.IsOptional.getName, arr(LBound(arr)))
-                Call .add(Props_Vbe.IsParamArray.getName, arr(LBound(arr)))
-                Call .add(Props_Vbe.PassMode.getName, arr(LBound(arr) + 1))
-                Call .add(Props.name.getName, arr(LBound(arr) + 2))
-                Call .add(Props_Vbe.IsArray.getName, arr(LBound(arr) + 3))
-                Call .add(Props_Vbe.DataType.getName, arr(LBound(arr) + 4))
-                Call .add(Props_Vbe.DefaultValue.getName, arr(LBound(arr) + 5))
+                Call .Add(Props_Vbe.IsOptional.getName, arr(LBound(arr)))
+                Call .Add(Props_Vbe.IsParamArray.getName, arr(LBound(arr)))
+                Call .Add(Props_Vbe.PassMode.getName, arr(LBound(arr) + 1))
+                Call .Add(Props.name.getName, arr(LBound(arr) + 2))
+                Call .Add(Props_Vbe.IsArray.getName, arr(LBound(arr) + 3))
+                Call .Add(Props_Vbe.DataType.getName, arr(LBound(arr) + 4))
+                Call .Add(Props_Vbe.DefaultValue.getName, arr(LBound(arr) + 5))
             End With
-            Call getMethodInputParamsDtos.add(dto)
+            Call getMethodInputParamsDtos.Add(dto)
         Next arr
     End If
     
@@ -108,7 +108,7 @@ End Function
 Public Function findMethodReturnedType(body As String) As String
     Const REGEX_PATTERN As String = "\) As ([\w\.]+(?:\(\)|))(?:|\s*'.*)$"
     '------------------------------------------------------------------------------------------------------
-    findMethodReturnedType = F.Regex.getFirstGroupMatch(body, REGEX_PATTERN)
+    findMethodReturnedType = F.regex.getFirstGroupMatch(body, REGEX_PATTERN)
 End Function
 
 Public Function getVariablesDtos(body As String) As VBA.Collection
@@ -146,19 +146,19 @@ Public Function getVariablesDtosFromCodeLine(codeLine As String) As VBA.Collecti
     
     variableType = getVariableType(codeLine)
     If variableType > VarType_Unknown Then
-        Set col = F.Regex.getMatchArraysCollection(removeAfterColonPart(codeLine), VARIABLES_REGEX_PATTERN)
+        Set col = F.regex.getMatchArraysCollection(removeAfterColonPart(codeLine), VARIABLES_REGEX_PATTERN)
         If F.Collections.isNonEmptyCollection(col) Then
             For Each arr In col
                 Set dto = F.dictionaries.Create(False)
                 With dto
-                    Call .add(Props.name.getDbField, arr(LBound(arr)))
-                    Call .add(Props_Vbe.variableType.getDbField, variableType)
-                    Call .add(Props_Vbe.IsArray.getDbField, arr(LBound(arr) + 1))
-                    Call .add(Props_Vbe.ArraySize.getDbField, arr(LBound(arr) + 1))
-                    Call .add(Props_Vbe.DataType.getDbField, arr(LBound(arr) + 2))
-                    Call .add(Props_Vbe.DefaultValue.getDbField, arr(LBound(arr) + 3))
+                    Call .Add(Props.name.getDbField, arr(LBound(arr)))
+                    Call .Add(Props_Vbe.variableType.getDbField, variableType)
+                    Call .Add(Props_Vbe.IsArray.getDbField, arr(LBound(arr) + 1))
+                    Call .Add(Props_Vbe.ArraySize.getDbField, arr(LBound(arr) + 1))
+                    Call .Add(Props_Vbe.DataType.getDbField, arr(LBound(arr) + 2))
+                    Call .Add(Props_Vbe.DefaultValue.getDbField, arr(LBound(arr) + 3))
                 End With
-                Call getVariablesDtosFromCodeLine.add(dto)
+                Call getVariablesDtosFromCodeLine.Add(dto)
             Next arr
         End If
     End If
@@ -170,7 +170,7 @@ Public Function getVariableType(ByVal codeLine As String) As VarTypeEnum
     '------------------------------------------------------------------------------------------------------
     Dim keyword As String
     '------------------------------------------------------------------------------------------------------
-    keyword = VBA.Trim$(F.Regex.getFirstGroupMatch(codeLine, REGEX_PATTERN))
+    keyword = VBA.Trim$(F.regex.getFirstGroupMatch(codeLine, REGEX_PATTERN))
     getVariableType = getVarTypeFromName(keyword)
 End Function
 

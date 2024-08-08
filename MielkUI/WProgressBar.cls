@@ -214,7 +214,7 @@ End Sub
 
 Private Sub insertCaptionLabel()
     If pCaptionLabel Is Nothing Then
-        Set pCaptionLabel = pFrame.controls.Add(CREATE_LABEL_ID)
+        Set pCaptionLabel = pFrame.controls.add(CREATE_LABEL_ID)
     End If
     With pCaptionLabel
         .BackStyle = fmBackStyleTransparent
@@ -231,7 +231,7 @@ Private Sub insertProgressBarControls()
 
     '[Progress border]
     If pProgressBorderLabel Is Nothing Then
-        Set pProgressBorderLabel = pFrame.controls.Add(CREATE_LABEL_ID)
+        Set pProgressBorderLabel = pFrame.controls.add(CREATE_LABEL_ID)
     End If
     With pProgressBorderLabel
         .BackStyle = fmBackStyleOpaque
@@ -244,7 +244,7 @@ Private Sub insertProgressBarControls()
     
     '[Progress bar fill]
     If pProgressBarFillLabel Is Nothing Then
-        Set pProgressBarFillLabel = pFrame.controls.Add(CREATE_LABEL_ID)
+        Set pProgressBarFillLabel = pFrame.controls.add(CREATE_LABEL_ID)
     End If
     With pProgressBarFillLabel
         .BackStyle = fmBackStyleOpaque
@@ -255,7 +255,7 @@ Private Sub insertProgressBarControls()
     
     '[Progress value label]
     If pProgressValueLabel Is Nothing Then
-        Set pProgressValueLabel = pFrame.controls.Add(CREATE_LABEL_ID)
+        Set pProgressValueLabel = pFrame.controls.add(CREATE_LABEL_ID)
     End If
     With pProgressValueLabel
         .BackStyle = fmBackStyleTransparent
@@ -285,7 +285,7 @@ Private Sub arrangeLayout()
     
     With pProgressBorderLabel
         .width = pBarWidth
-        .top = UI.Forms.getBottom(pCaptionLabel) + pPadding
+        .top = UI.controls.getBottom(pCaptionLabel) + pPadding
         .left = pPadding
     End With
     
@@ -336,7 +336,7 @@ Public Sub openSubProcess(ByVal initialProgress As Double, ByVal finalProgress A
     '------------------------------------------------------------------------------------------------------
     
     If F.Collections.isNonEmptyCollection(pLevels) Then
-        Set currentLevel = pLevels.item(pLevels.Count)
+        Set currentLevel = pLevels.item(pLevels.count)
     Else
         Set currentLevel = F.Create.Limit(0, 1)
     End If
@@ -346,7 +346,7 @@ Public Sub openSubProcess(ByVal initialProgress As Double, ByVal finalProgress A
         realStart = .getLow + initialProgress * limitRange
         realEnd = .getLow + finalProgress * limitRange
     End With
-    Call pLevels.Add(F.Create.Limit(realStart, realEnd))
+    Call pLevels.add(F.Create.Limit(realStart, realEnd))
     
     '[Update progress]
     pProgress = realStart
@@ -360,11 +360,11 @@ Public Sub closeCurrentSubProcess(Optional ByRef progress As Single)
     '------------------------------------------------------------------------------------------------------
     
     If F.Collections.isNonEmptyCollection(pLevels) Then
-        Set currentProcess = pLevels.item(pLevels.Count)
+        Set currentProcess = pLevels.item(pLevels.count)
         pProgress = currentProcess.getHigh
         progress = calculateCurrentProcessProgress
         Call updateProgress
-        Call pLevels.remove(pLevels.Count)
+        Call pLevels.remove(pLevels.count)
     End If
 
 End Sub
@@ -373,9 +373,9 @@ Private Function calculateCurrentProcessProgress() As Double
     Dim parentalProcess As Limit
     Dim currentProcess As Limit
     '------------------------------------------------------------------------------------------------------
-    Set currentProcess = pLevels.item(pLevels.Count)
-    If pLevels.Count > 1 Then
-        Set parentalProcess = pLevels.item(pLevels.Count - 1)
+    Set currentProcess = pLevels.item(pLevels.count)
+    If pLevels.count > 1 Then
+        Set parentalProcess = pLevels.item(pLevels.count - 1)
         calculateCurrentProcessProgress = (currentProcess.getHigh - parentalProcess.getLow) / parentalProcess.getRange
     Else
         calculateCurrentProcessProgress = currentProcess.getHigh
@@ -388,9 +388,9 @@ Public Sub moveToSiblingProcess(ByVal offset As Double)
     '------------------------------------------------------------------------------------------------------
     
     If F.Collections.isNonEmptyCollection(pLevels) Then
-        Set currentProcess = pLevels.item(pLevels.Count)
-        If pLevels.Count > 1 Then
-            Set parentProcess = pLevels.item(pLevels.Count - 1)
+        Set currentProcess = pLevels.item(pLevels.count)
+        If pLevels.count > 1 Then
+            Set parentProcess = pLevels.item(pLevels.count - 1)
         Else
             Set parentProcess = F.Create.Limit(0, 1)
         End If
@@ -419,7 +419,7 @@ Private Function calculateRealProgress(ByVal value As Double) As Double
     
     '[Adjust progress value to current sub-process]
     If F.Collections.isNonEmptyCollection(pLevels) Then
-        Set currentProcessBounds = pLevels.item(pLevels.Count)
+        Set currentProcessBounds = pLevels.item(pLevels.count)
     Else
         Set currentProcessBounds = F.Create.Limit(0, 1)
     End If

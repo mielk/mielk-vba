@@ -36,7 +36,7 @@ Public Sub closeParentWorkbook(wks As Excel.Worksheet, Optional saveChanges As B
     End If
 End Sub
 
-Public Function getNonEmptyRegion(wks As Excel.Worksheet) As Variant
+Public Function getNonEmptyRegion(wks As Excel.Worksheet) As Excel.Range
     Dim firstRow As Long
     Dim firstColumn As Long
     Dim lastRow As Long
@@ -50,7 +50,7 @@ Public Function getNonEmptyRegion(wks As Excel.Worksheet) As Variant
 
     If lastRow > 0 And lastColumn > 0 Then
         With wks
-            getNonEmptyRegion = .Range(.cells(firstRow, firstColumn), .cells(lastRow, lastColumn))
+            Set getNonEmptyRegion = .Range(.cells(firstRow, firstColumn), .cells(lastRow, lastColumn))
         End With
     End If
 
@@ -234,7 +234,7 @@ Public Function getUniqueName(wkb As Excel.Workbook, name As String) As String
             '(the maximum length is defined by constant MAX_LENGTH).
             intCharsCounter = VBA.Len(getUniqueName)
             If intCharsCounter > MAX_LENGTH Then
-                getUniqueName = VBA.left$(strTempName, _
+                getUniqueName = VBA.Left$(strTempName, _
                    VBA.Len(strTempName) - intCharsCounter + MAX_LENGTH) & "_" & intIterator
             End If
             
@@ -261,7 +261,7 @@ Public Function getLegalSheetName(name As String) As String
 
     Select Case VBA.Len(getLegalSheetName)
         Case Is > 31
-            getLegalSheetName = VBA.left$(getLegalSheetName, 31)
+            getLegalSheetName = VBA.Left$(getLegalSheetName, 31)
         Case 0
             getLegalSheetName = "_"
     End Select
@@ -295,7 +295,7 @@ End Function
 '[Shapes]
 Public Function getShape(wks As Excel.Worksheet, shapeName As String) As Excel.shape
     On Error Resume Next
-    Set getShape = wks.Shapes(shapeName)
+    Set getShape = wks.shapes(shapeName)
 End Function
 
 Public Sub removeShape(wks As Excel.Worksheet, shapeName As String)
@@ -307,14 +307,14 @@ Public Sub removeShape(wks As Excel.Worksheet, shapeName As String)
     End If
 End Sub
 
-Public Sub removeShapesByCell(wks As Excel.Worksheet, Optional Row As Long, Optional column As Long)
+Public Sub removeShapesByCell(wks As Excel.Worksheet, Optional row As Long, Optional column As Long)
     Dim shp As Excel.shape
     Dim cell As Excel.Range
     '------------------------------------------------------------------------------------------------------
     If f.sheets.IsValid(wks) Then
-        For Each shp In wks.Shapes
+        For Each shp In wks.shapes
             Set cell = shp.TopLeftCell
-            If Row > 0 And cell.Row <> Row Then
+            If row > 0 And cell.row <> row Then
             ElseIf column > 0 And cell.column <> column Then
             Else
                 Call shp.delete

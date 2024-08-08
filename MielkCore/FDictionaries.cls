@@ -185,7 +185,7 @@ Public Sub assignValueFromDictToVariable(ByVal dict As Scripting.Dictionary, ByR
 
     If f.arrays.isDefined(arrTags) Then
         For i = LBound(arrTags) To UBound(arrTags)
-            Call f.Variables.assign(value, getPropValue(dict, VBA.trim$(arrTags(i)), conversionFunction))
+            Call f.Variables.assign(value, getValueForCombinedKey(dict, VBA.trim$(arrTags(i)), conversionFunction))
             If Not VBA.IsEmpty(value) Then
                 Call f.Variables.assign(variable, value)
                 Exit For
@@ -195,7 +195,33 @@ Public Sub assignValueFromDictToVariable(ByVal dict As Scripting.Dictionary, ByR
 
 End Sub
 
-Public Function getPropValue(ByVal dict As Scripting.Dictionary, tag As String, Optional conversionFunction As String) As Variant
+Public Function getObjectForCombinedKey(ByVal dict As Scripting.Dictionary, tag As String, Optional conversionFunction As String) As Variant
+    Dim value As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Call f.Variables.assign(value, getValueForCombinedKey(dict, tag, conversionFunction))
+    If VBA.IsObject(value) Then
+        Set getObjectForCombinedKey = value
+    Else
+        Set getObjectForCombinedKey = Nothing
+    End If
+    
+End Function
+
+Public Function getItemForCombinedKey(ByVal dict As Scripting.Dictionary, tag As String, Optional conversionFunction As String) As Variant
+    Dim value As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Call f.Variables.assign(value, getValueForCombinedKey(dict, tag, conversionFunction))
+    If VBA.IsObject(value) Then
+        getItemForCombinedKey = Empty
+    Else
+        getItemForCombinedKey = value
+    End If
+    
+End Function
+
+Private Function getValueForCombinedKey(ByVal dict As Scripting.Dictionary, tag As String, Optional conversionFunction As String) As Variant
     Dim arrTags As Variant
     Dim i As Long
     Dim value As Variant
@@ -211,10 +237,10 @@ Public Function getPropValue(ByVal dict As Scripting.Dictionary, tag As String, 
                         If i = UBound(arrTags) Then
                             If VBA.Len(conversionFunction) Then
                                 On Error GoTo ConversionException
-                                Call f.Variables.assign(getPropValue, Application.run(conversionFunction, .item(arrTags(i))))
+                                Call f.Variables.assign(getValueForCombinedKey, Application.run(conversionFunction, .item(arrTags(i))))
                                 If Not DEV_MODE Then On Error GoTo ErrHandler
                             Else
-                                Call f.Variables.assign(getPropValue, .item(arrTags(i)))
+                                Call f.Variables.assign(getValueForCombinedKey, .item(arrTags(i)))
                             End If
                         Else
                             Set dict = .item(arrTags(i))
@@ -370,7 +396,7 @@ Private Function toString_getEntriesArray(dict As Object, part As DictPartEnum, 
                                         ByVal closeWrapper As String) As String()
     Dim varKey As Variant
     Dim values() As String
-    Dim counter As Long
+    Dim Counter As Long
     '------------------------------------------------------------------------------------------------------
 
     If dict.count > 0 Then
@@ -382,8 +408,8 @@ Private Function toString_getEntriesArray(dict As Object, part As DictPartEnum, 
 
         ReDim values(1 To dict.count)
         For Each varKey In dict.Keys
-            counter = counter + 1
-            values(counter) = openWrapper & _
+            Counter = Counter + 1
+            values(Counter) = openWrapper & _
                                 getItemText(dict, varKey, part, stringifyMode, keyItemDelimiter) & _
                                 closeWrapper
         Next varKey
@@ -611,7 +637,7 @@ Public Function merge(masterDict As Scripting.Dictionary, appendedDict As Script
                         Optional deepMerge As Boolean = True, _
                         Optional duplicateBehaviour As DuplicateBehaviourEnum = duplicateBehaviour_Override) As Scripting.Dictionary
     Dim key As Variant
-    Dim subDict As Scripting.Dictionary
+    Dim subdict As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
     
     If Not masterDict Is Nothing Then
@@ -625,8 +651,8 @@ Public Function merge(masterDict As Scripting.Dictionary, appendedDict As Script
             If Not merge.exists(key) Then
                 Call merge.Add(key, appendedDict.item(key))
             ElseIf f.dictionaries.isDictionary(merge.item(key)) And f.dictionaries.isDictionary(appendedDict.item(key)) Then
-                Set subDict = merge(merge.item(key), appendedDict.item(key), deepMerge, duplicateBehaviour)
-                Set merge.item(key) = subDict
+                Set subdict = merge(merge.item(key), appendedDict.item(key), deepMerge, duplicateBehaviour)
+                Set merge.item(key) = subdict
             Else
                 Call f.dictionaries.addItem(merge, key, appendedDict.item(key), duplicateBehaviour)
             End If
@@ -687,23 +713,35 @@ End Function
 
 Public Function changeKeys(dict As Scripting.Dictionary, functionName As String, _
                             Optional functionInvoker As Object, Optional functionParams As Scripting.Dictionary, _
-                            Optional duplicateBehaviour As DuplicateBehaviourEnum = duplicateBehaviour_Skip) As Scripting.Dictionary
+                            Optional duplicateBehaviour As DuplicateBehaviourEnum = duplicateBehaviour_Skip, _
+                            Optional useValueAsBaseForConvertion As Boolean = True) As Scripting.Dictionary
     Dim key As Variant
     Dim newKey As Variant
+    Dim valueToBeConverted As Variant
     '------------------------------------------------------------------------------------------------------
     
     Set changeKeys = f.dictionaries.Create(dict.CompareMode = BinaryCompare)
     For Each key In dict.Keys
         If Not VBA.IsEmpty(key) Then
+            Call f.Variables.assign(valueToBeConverted, VBA.IIf(useValueAsBaseForConvertion, dict.item(key), key))
             Call f.Variables.assign(newKey, _
-                    f.Reflection.modifyValue(dict.item(key), functionName, functionInvoker, functionParams))
+                    f.Reflection.modifyValue(valueToBeConverted, functionName, functionInvoker, functionParams))
             Call f.dictionaries.addItem(changeKeys, newKey, dict.item(key), duplicateBehaviour)
         End If
     Next key
     
 End Function
 
-
+Public Function repeatKeyAsValue(dict As Scripting.Dictionary) As Scripting.Dictionary
+    Dim key As Variant
+    '------------------------------------------------------------------------------------------------------
+    Set repeatKeyAsValue = f.dictionaries.Create(False)
+    If f.dictionaries.isNonEmptyDictionary(dict) Then
+        For Each key In dict.Keys
+            Call f.dictionaries.addItem(repeatKeyAsValue, key, key)
+        Next key
+    End If
+End Function
 
 
 
@@ -875,6 +913,36 @@ Public Function hasAllKeys(checkedDict As Scripting.Dictionary, comparedDict As 
     
 End Function
 
+Public Function hasCombinedKey(dict As Scripting.Dictionary, key As String) As Boolean
+    Dim keyParts As Variant
+    Dim subdict As Scripting.Dictionary
+    Dim i As Long
+    Dim part As String
+    '------------------------------------------------------------------------------------------------------
+    
+    If Not dict Is Nothing Then
+        keyParts = VBA.Split(key, PROPERTIES_SEPARATOR)
+        Set subdict = dict
+        
+        For i = LBound(keyParts) To UBound(keyParts)
+            part = keyParts(i)
+            If Not subdict.exists(part) Then
+                hasCombinedKey = False
+                Exit For
+            ElseIf i = UBound(keyParts) Then
+                hasCombinedKey = True
+                Exit For
+            ElseIf TypeOf subdict.item(part) Is Scripting.Dictionary Then
+                Set subdict = subdict.item(part)
+            Else
+                hasCombinedKey = False
+                Exit For
+            End If
+        Next i
+    
+    End If
+    
+End Function
 
 
 
@@ -909,7 +977,7 @@ Public Function flatDictionary(dict As Scripting.Dictionary, Optional keyPrefix 
     Dim item As Variant
     '------------------------------------------------------------------------------------------------------
     Dim resultDict As Scripting.Dictionary
-    Dim subDict As Scripting.Dictionary
+    Dim subdict As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
     
     Set resultDict = f.dictionaries.Create(False)
@@ -918,8 +986,8 @@ Public Function flatDictionary(dict As Scripting.Dictionary, Optional keyPrefix 
         For Each key In dict.Keys
             Call f.Variables.assign(item, dict.item(key))
             If f.dictionaries.isDictionary(item) Then
-                Set subDict = f.cast.toDictionary(item)
-                Call appendDictionary(resultDict, flatDictionary(subDict, keyPrefix & key & delimiter, delimiter))
+                Set subdict = f.cast.toDictionary(item)
+                Call appendDictionary(resultDict, flatDictionary(subdict, keyPrefix & key & delimiter, delimiter))
             Else
                 Call resultDict.Add(keyPrefix & key, item)
             End If
@@ -1338,3 +1406,51 @@ Public Function swapKeyWithValue(dict As Scripting.Dictionary, _
         Next key
     End If
 End Function
+
+
+Public Function getValuesSum(dict As Scripting.Dictionary) As Long
+    Dim key As Variant
+    Dim value As Variant
+    '------------------------------------------------------------------------------------------------------
+    If Not dict Is Nothing Then
+        For Each key In dict.Keys
+            value = dict.item(key)
+            If f.Math.isNumeric(value) Then
+                getValuesSum = getValuesSum + f.Math.toNumber(value)
+            End If
+        Next key
+    End If
+End Function
+
+
+Public Sub addItemForCombinedKey(dict As Scripting.Dictionary, tag As String, value As Variant)
+    Dim subdict As Scripting.Dictionary
+    Dim arrTags As Variant
+    Dim i As Long
+    '------------------------------------------------------------------------------------------------------
+    
+    arrTags = VBA.Split(tag, ".")
+    
+    If f.dictionaries.isNonEmptyDictionary(dict) Then
+        Set subdict = dict
+        If f.arrays.isDefined(arrTags) Then
+            For i = LBound(arrTags) To UBound(arrTags)
+                If i = UBound(arrTags) Then
+                    Call f.dictionaries.addItem(subdict, arrTags(i), value, duplicateBehaviour_Override)
+                ElseIf subdict.exists(arrTags(i)) Then
+                    Set subdict = subdict.item(arrTags(i))
+                Else
+                    Exit For
+                End If
+            Next i
+        End If
+    End If
+    
+'==========================================================================================================
+ExitPoint:
+    Exit Sub
+
+'----------------------------------------------------------------------------------------------------------
+ErrHandler:
+    
+End Sub

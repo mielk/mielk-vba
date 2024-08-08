@@ -60,8 +60,9 @@ Private Sub action_toolbox(ByVal control As IRibbonControl)
         Select Case control.ID
             '[Code]
             Case "button.code.createNewProject":                        Call Toolbox.createNewProject(getSheetsDictionary)
-            Case "button.code.compactFiles":                            Call CodeCompactor.run
-            Case "button.code.compareCode":                             Call CodeComparisonManager.run
+            Case "button.code.compactFiles":                            Call CodeCompactor.Run
+            Case "button.code.compareCode":                             Call CodeComparisonManager.Run
+            Case "button.code.addErrorHandling":                        Call ErrorHandlingManager.Run
             '[Access]
             Case "button.access.printDbStructure":                      Stop
             Case "button.access.compareDatabases":                      Stop

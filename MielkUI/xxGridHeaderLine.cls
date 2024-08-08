@@ -88,7 +88,7 @@ End Function
 
 '[GETTERS]
 Public Function getBottom() As Single
-    If UI.Forms.isControlValid(pBackground) Then
+    If UI.controls.isValid(pBackground) Then
         getBottom = pBackground.top + pBackground.height
     End If
 End Function
@@ -120,7 +120,7 @@ Public Sub render()
         Set columns = pManager.getColumnsCollection
         For Each column In columns
             Set header = insertHeader(column, left)
-            Call pHeaders.Add(column.getName, header)
+            Call pHeaders.add(column.getName, header)
         Next column
         
         pIsRendered = True
@@ -132,7 +132,7 @@ End Sub
 
 
 Private Sub insertBackground()
-    Set pBackground = pFrame.controls.Add(CREATE_LABEL_ID, BACKGROUND_LABEL_NAME)
+    Set pBackground = pFrame.controls.add(CREATE_LABEL_ID, BACKGROUND_LABEL_NAME)
     With pBackground
         .BackStyle = fmBackStyleTransparent
         .borderStyle = fmBorderStyleNone
@@ -144,7 +144,7 @@ Private Sub insertBackground()
 End Sub
 
 Private Sub insertBottomBorder()
-    Set pBottomBorder = pFrame.controls.Add(CREATE_LABEL_ID, BOTTOM_BORDER_LABEL_NAME, True)
+    Set pBottomBorder = pFrame.controls.add(CREATE_LABEL_ID, BOTTOM_BORDER_LABEL_NAME, True)
     With pBottomBorder
         .BackStyle = fmBackStyleOpaque
         .backColor = BORDER_COLOR
@@ -155,7 +155,7 @@ Private Sub insertBottomBorder()
 End Sub
 
 Private Sub insertSortLabel()
-    Set pSortIcon = pFrame.controls.Add(CREATE_LABEL_ID, SORT_ICON_LABEL_NAME, False)
+    Set pSortIcon = pFrame.controls.add(CREATE_LABEL_ID, SORT_ICON_LABEL_NAME, False)
     With pSortIcon
         .BackStyle = fmBackStyleTransparent
         .borderStyle = fmBorderStyleNone
@@ -269,14 +269,14 @@ End Function
 
 
 '[Implementation of IListener interface]
-Private Sub IListener_catchEvent(Source As Variant, eventName As String, Optional properties As Scripting.IDictionary)
-    If eventName = ACTION_SORT Then
-        Call handleSortTrigger(Source)
-    ElseIf eventName = ACTION_FILTER_ON Then
-        Call handleFilterOnTrigger(Source)
-    ElseIf eventName = ACTION_FILTER_OFF Then
-        Call handleFilterOffTrigger(Source)
-    ElseIf eventName = "exportToExcel" Then
+Private Sub IListener_catchEvent(src As Variant, ev As Variant, Optional properties As Scripting.IDictionary)
+    If ev = ACTION_SORT Then
+        Call handleSortTrigger(src)
+    ElseIf ev = ACTION_FILTER_ON Then
+        Call handleFilterOnTrigger(src)
+    ElseIf ev = ACTION_FILTER_OFF Then
+        Call handleFilterOffTrigger(src)
+    ElseIf ev = "exportToExcel" Then
         Call pManager.exportToExcel
     End If
 End Sub

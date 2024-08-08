@@ -30,7 +30,7 @@ Public Sub addItem(submenuCaption As String, itemCaption As String, _
     
     Set menu = Excel.Application.VBE.CommandBars(CODE_WINDOW_NAME)
     Set subMenu = Fn.Create.commandBarPopup(menu, CUSTOM_MENU_CAPTION)
-    Set barItem = subMenu.Controls.add(msoControlButton)
+    Set barItem = subMenu.Controls.Add(msoControlButton)
     
     With subMenu
         .caption = submenuCaption
@@ -45,7 +45,7 @@ Public Sub addItem(submenuCaption As String, itemCaption As String, _
     End With
     
     Set item.pControl = Application.VBE.Events.CommandBarEvents(barItem)
-    Call pActiveMenuItems.add(item)
+    Call pActiveMenuItems.Add(item)
     
 End Sub
 

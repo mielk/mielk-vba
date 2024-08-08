@@ -741,7 +741,7 @@ Private Function json_Encode(ByVal json_Text As Variant) As String
             json_Char = "\t"
         Case 0 To 31, 127 To 65535
             ' Non-ascii characters -> convert to 4-digit hex
-            json_Char = "\u" & VBA.right$("0000" & VBA.Hex$(json_AscCode), 4)
+            json_Char = "\u" & VBA.Right$("0000" & VBA.Hex$(json_AscCode), 4)
         End Select
 
         json_BufferAppend json_Buffer, json_Char, json_BufferPosition, json_BufferLength
@@ -869,7 +869,7 @@ End Sub
 
 Private Function json_BufferToString(ByRef json_Buffer As String, ByVal json_BufferPosition As Long) As String
     If json_BufferPosition > 0 Then
-        json_BufferToString = VBA.left$(json_Buffer, json_BufferPosition)
+        json_BufferToString = VBA.Left$(json_Buffer, json_BufferPosition)
     End If
 End Function
 
@@ -990,8 +990,8 @@ Public Function ParseIso(utc_IsoString As String) As Date
 
             If utc_OffsetIndex > 0 Then
                 utc_HasOffset = True
-                utc_TimeParts = VBA.Split(VBA.left$(utc_Parts(1), utc_OffsetIndex - 1), ":")
-                utc_OffsetParts = VBA.Split(VBA.right$(utc_Parts(1), Len(utc_Parts(1)) - utc_OffsetIndex), ":")
+                utc_TimeParts = VBA.Split(VBA.Left$(utc_Parts(1), utc_OffsetIndex - 1), ":")
+                utc_OffsetParts = VBA.Split(VBA.Right$(utc_Parts(1), Len(utc_Parts(1)) - utc_OffsetIndex), ":")
 
                 Select Case UBound(utc_OffsetParts)
                 Case 0
@@ -1108,7 +1108,7 @@ Private Function utc_ExecuteInShell(utc_ShellCommand As String) As utc_ShellResu
         utc_Chunk = VBA.Space$(50)
         utc_Read = CLng(utc_fread(utc_Chunk, 1, Len(utc_Chunk) - 1, utc_File))
         If utc_Read > 0 Then
-            utc_Chunk = VBA.left$(utc_Chunk, CLng(utc_Read))
+            utc_Chunk = VBA.Left$(utc_Chunk, CLng(utc_Read))
             utc_ExecuteInShell.utc_Output = utc_ExecuteInShell.utc_Output & utc_Chunk
         End If
     Loop
@@ -1142,8 +1142,8 @@ End Function
 Public Function getJsonStringFromFile(filepath As String, Optional ignoreErrors As Boolean = True) As String
     If f.files.fileExists(filepath) Then
         getJsonStringFromFile = f.TextFiles.readTextFile(filepath)
-        If VBA.left$(getJsonStringFromFile, 1) = "{" Then
-        ElseIf VBA.left$(getJsonStringFromFile, 1) = "[" Then
+        If VBA.Left$(getJsonStringFromFile, 1) = "{" Then
+        ElseIf VBA.Left$(getJsonStringFromFile, 1) = "[" Then
         Else
             getJsonStringFromFile = VBA.mid$(getJsonStringFromFile, 2)
         End If

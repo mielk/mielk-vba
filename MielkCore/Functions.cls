@@ -16,6 +16,7 @@ Private pBooks As FBooks
 Private pCast As FCast
 Private pCollections As FCollections
 Private pColors As FColors
+Private pConfig As FConfig
 Private pConstructors As FConstructors
 Private pContextMenu As FContextMenu
 Private pCrypto As FCryptography
@@ -56,6 +57,7 @@ Private Sub Class_Initialize()
     Set pCollections = New FCollections
     Set pContextMenu = New FContextMenu
     Set pColors = New FColors
+    Set pConfig = New FConfig
     Set pConstructors = New FConstructors
     Set pCrypto = New FCryptography
     Set pDates = New FDates
@@ -101,6 +103,10 @@ End Function
 
 Public Function Collections() As FCollections
     Set Collections = pCollections
+End Function
+
+Public Function Config() As FConfig
+    Set Config = pConfig
 End Function
 
 Public Function ContextMenu() As FContextMenu

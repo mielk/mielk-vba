@@ -294,7 +294,7 @@ Public Property Let CheckBoxes(Optional bTriState As Boolean, ByVal bCheckboxes 
 
     If Not TreeControl Is Nothing Then
 
-        If TreeControl.controls.Count And (bOrig <> mbCheckboxes Or bOrigTriState <> mbTriState) Then
+        If TreeControl.controls.count And (bOrig <> mbCheckboxes Or bOrigTriState <> mbTriState) Then
             ' Checkboxes added changed after start-up so update the treeview
             mbRedesign = True
             Refresh
@@ -328,7 +328,7 @@ Public Sub ImageAdd(pic As StdPicture, sName As String) ' PT
         Set mcolIcons = New Collection
         mbGotIcons = True
     End If
-    mcolIcons.Add pic, sName ' error if sName is not a unique key
+    mcolIcons.add pic, sName ' error if sName is not a unique key
     Exit Sub
 errH:
     Err.Raise Err.Number, "ImageAdd", "Error in ImageAdd" & vbNewLine & Err.description
@@ -356,12 +356,12 @@ Public Property Set Images(objImages As Object)
             'For Each obj In objImages.Object.Controls
 
 200         For Each obj In objImages.controls
-                mcolIcons.Add obj.picture, obj.name
+                mcolIcons.add obj.picture, obj.name
             Next
     End If
 
     ' Flag we have a valid collection of images
-    mbGotIcons = mcolIcons.Count >= 1
+    mbGotIcons = mcolIcons.count >= 1
     
     Exit Property
 errH:
@@ -409,7 +409,7 @@ Public Property Let Indentation(sngIndent As Single)
 
     If Not TreeControl Is Nothing And Not (sngOld = msngIndent) Then
         ' changed after start-up so update the treeview
-        If TreeControl.controls.Count Then
+        If TreeControl.controls.count Then
             Set cNode = Me.ActiveNode
             Refresh
             If Not cNode Is Nothing Then
@@ -544,7 +544,7 @@ Public Property Let NodeHeight(ByVal sngNodeHeight As Single)
     #End If
     If mbRootButton Then msngRootLine = msngIndent
     If Not TreeControl Is Nothing And Not (sngOld = msngNodeHeight) Then
-        If TreeControl.controls.Count Then
+        If TreeControl.controls.count Then
             Set cNode = Me.ActiveNode
             Refresh
             If Not cNode Is Nothing Then
@@ -600,7 +600,7 @@ Public Property Let ShowExpanders(bShowExpanders As Boolean)
     mbShowExpanders = bShowExpanders
     
     If Not TreeControl Is Nothing Then
-        If TreeControl.controls.Count Then
+        If TreeControl.controls.count Then
             Refresh
         End If
     End If
@@ -618,7 +618,7 @@ Dim bOrig As Boolean
     mbShowLines = bShowLines
 
     If Not TreeControl Is Nothing Then
-        If TreeControl.controls.Count Then
+        If TreeControl.controls.count Then
             If bOrig <> mbShowLines Then
                 ' ShowLines added after start-up so update the treeview
                 Refresh
@@ -890,10 +890,10 @@ Public Function NodeAdd(Optional vRelative, _
     Set cNode = New clsNode
 
     If Len(sKey) Then
-100     mcolNodes.Add cNode, sKey
+100     mcolNodes.add cNode, sKey
 101
     Else
-        mcolNodes.Add cNode
+        mcolNodes.add cNode
     End If
 
     If cParent.childNodes Is Nothing Then
@@ -901,8 +901,8 @@ Public Function NodeAdd(Optional vRelative, _
     End If
 
     With cParent.childNodes
-        If .Count = 0 Then
-            .Add cNode
+        If .count = 0 Then
+            .add cNode
         Else
             i = 0
             If vRelationship = tvNext Or vRelationship = tvPrevious Then
@@ -914,11 +914,11 @@ Public Function NodeAdd(Optional vRelative, _
                 Next
             End If
             Select Case vRelationship
-            Case tvFirst: .Add cNode, , 1
-            Case tvLast: .Add cNode, After:=.Count
-            Case tvNext: .Add cNode, After:=i
-            Case tvPrevious: .Add cNode, Before:=i
-            Case tvChild: .Add cNode
+            Case tvFirst: .add cNode, , 1
+            Case tvLast: .add cNode, After:=.count
+            Case tvNext: .add cNode, After:=i
+            Case tvPrevious: .add cNode, Before:=i
+            Case tvChild: .add cNode
             End Select
         End If
     End With
@@ -928,7 +928,7 @@ Public Function NodeAdd(Optional vRelative, _
         .caption = CStr(vCaption)
         .ImageMain = vImageMain
         .ImageExpanded = vImageExpanded
-        .index = mcolNodes.Count
+        .index = mcolNodes.count
         
         Set .parentNode = cParent
         Set .tree = Me
@@ -1001,7 +1001,7 @@ Public Sub NodeRemove(cNode As clsNode)
     If mlNodesCreated Then
         If Not cNodeAbove Is Nothing Then
             Set Me.ActiveNode = cNodeAbove
-        ElseIf mcolNodes.Count Then
+        ElseIf mcolNodes.count Then
             Set Me.ActiveNode = mcolNodes(1)
         End If
     Else
@@ -1029,7 +1029,7 @@ Public Sub NodesClear()
 
     If Not TreeControl Is Nothing Then
         With TreeControl
-            For i = TreeControl.controls.Count - 1 To 0 Step -1
+            For i = TreeControl.controls.count - 1 To 0 Step -1
                 TreeControl.controls.remove i
             Next
             .ScrollBars = fmScrollBarsNone
@@ -1082,7 +1082,7 @@ Public Sub Refresh()
         Erase msngMaxWidths
         Exit Sub
         
-    ElseIf Me.TreeControl.controls.Count = 0 Then
+    ElseIf Me.TreeControl.controls.count = 0 Then
         ' display the treeview for first time
         bInit = True
     Else
@@ -1354,9 +1354,9 @@ Dim cLastChild As clsNode
 
         If cNode.Expanded Then
             If Not cNode.childNodes Is Nothing Then
-                Set cLastChild = cNode.childNodes(cNode.childNodes.Count)
+                Set cLastChild = cNode.childNodes(cNode.childNodes.count)
                 If Not NodeIsVisible(cLastChild, lngViewable) Then
-                    If lngViewable > cNode.childNodes.Count Then
+                    If lngViewable > cNode.childNodes.count Then
                         ScrollToView cLastChild, Top1Bottom2:=2
                     Else
                         ScrollToView cNode, Top1Bottom2:=1
@@ -1476,20 +1476,20 @@ Private Function AddNodeToCol(colNodes As Collection, cAddNode As clsNode, bTree
         On Error GoTo 0    ' error returns to caller
 
         If IsMissing(vBefore) And IsMissing(vAfter) Then
-            colNodes.Add cAddNode, sKey
+            colNodes.add cAddNode, sKey
         ElseIf IsMissing(vAfter) Then
-            colNodes.Add cAddNode, sKey, Val(vBefore)
+            colNodes.add cAddNode, sKey, Val(vBefore)
         Else
-            colNodes.Add cAddNode, sKey, , Val(vAfter)
+            colNodes.add cAddNode, sKey, , Val(vAfter)
         End If
 
     Else    ' no key
         If IsMissing(vBefore) And IsMissing(vAfter) Then
-            colNodes.Add cAddNode
+            colNodes.add cAddNode
         ElseIf IsMissing(vAfter) Then
-            colNodes.Add cAddNode, , Val(vBefore)
+            colNodes.add cAddNode, , Val(vBefore)
         Else
-            colNodes.Add cAddNode, , , Val(vAfter)
+            colNodes.add cAddNode, , , Val(vAfter)
         End If
     End If
     
@@ -1523,7 +1523,7 @@ Dim sngTickCnt As Single
         #End If
     #End If
 
-    bInit = TreeControl.Count = 0
+    bInit = TreeControl.count = 0
 
     'TODO find equivalent for cancel key in Access & Word
     #If HostProject = "Access" Then
@@ -1543,7 +1543,7 @@ Dim sngTickCnt As Single
         ReDim msngMaxWidths(0 To 7)
     End If
 
-    If mcolNodes.Count - mlNodesCreated > 400 Then
+    If mcolNodes.count - mlNodesCreated > 400 Then
         ' creating many controls might take a while
         'HourGlassCursor bApply:=True
         Application.Cursor = xlWait
@@ -1609,7 +1609,7 @@ Dim sngTickCnt As Single
             If cRoot.control Is Nothing Then
                 mlNodesCreated = mlNodesCreated + 1
                 'Add the rootnode to the tree
-                Set cRoot.control = TreeControl.controls.Add("Forms.label.1", "Node" & mlNodesDeleted + mlNodesCreated, False)
+                Set cRoot.control = TreeControl.controls.add("Forms.label.1", "Node" & mlNodesDeleted + mlNodesCreated, False)
                 With cRoot.control
 
                     If Not mbFullWidth And mbGotIcons Then
@@ -1702,7 +1702,7 @@ Dim sngTickCnt As Single
             ' horizontal line
             If mbRootButton And mbShowLines Then
                 If cRoot.HLine Is Nothing Then
-                    Set cRoot.HLine = TreeControl.controls.Add("Forms.label.1", "HLine" & cRoot.control.name, False)
+                    Set cRoot.HLine = TreeControl.controls.add("Forms.label.1", "HLine" & cRoot.control.name, False)
                     With cRoot.HLine
                         .top = msngTopHV + mlVisCount * msngNodeHeight
                         .left = mcLineLeft
@@ -1728,7 +1728,7 @@ Dim sngTickCnt As Single
             ' Checkbox
             If CheckBoxes Then
                 If cRoot.Checkbox Is Nothing Then
-                    Set cRoot.Checkbox = TreeControl.controls.Add("Forms.label.1", "CheckBox" & cRoot.control.name, False)
+                    Set cRoot.Checkbox = TreeControl.controls.add("Forms.label.1", "CheckBox" & cRoot.control.name, False)
                     With cRoot.Checkbox
                         .left = mcTLpad + msngRootLine
                         .top = msngTopChk + mlVisCount * msngNodeHeight
@@ -1774,7 +1774,7 @@ Dim sngTickCnt As Single
             If mbFullWidth And mbGotIcons Then
                 If cRoot.hasIcon(vIconKey) Then
                     If cRoot.icon Is Nothing Then
-                        Set cRoot.icon = TreeControl.controls.Add("Forms.Image.1", "Icon" & cRoot.control.name, False)
+                        Set cRoot.icon = TreeControl.controls.add("Forms.Image.1", "Icon" & cRoot.control.name, False)
                         With cRoot.icon
                             .BackStyle = fmBackStyleTransparent
                             .borderStyle = fmBorderStyleNone
@@ -1814,10 +1814,10 @@ Dim sngTickCnt As Single
 
         'Vertical line for multiple roots
         If mbRootButton And mbShowLines Then
-            If moRootHolder.childNodes.Count > 1 Then
+            If moRootHolder.childNodes.count > 1 Then
 
                 If moRootHolder.VLine Is Nothing Then
-                    Set moRootHolder.VLine = TreeControl.controls.Add("forms.label.1", "VLine_Roots")
+                    Set moRootHolder.VLine = TreeControl.controls.add("forms.label.1", "VLine_Roots")
                     With moRootHolder.VLine
                         .ZOrder 1
                         .width = mcPtPxl
@@ -1871,10 +1871,10 @@ Dim sngTickCnt As Single
         #End If
 
         sCap = "Seconds: " & format(sngTickCnt, "0.00") & _
-               "    Nodes: " & mcolNodes.Count & _
+               "    Nodes: " & mcolNodes.count & _
                "  created: " & mlNodesCreated & _
                "  visible: " & mlVisCount & _
-               "    Total controls: " & TreeControl.controls.Count
+               "    Total controls: " & TreeControl.controls.count
 
         #If HostProject = "Access" Then
             If Not moForm Is Nothing Then
@@ -1965,7 +1965,7 @@ Private Sub BuildTree(cNode As clsNode, ByVal lLevel As Long, Optional lMaxLevel
         'Expand/collapse button box (not needed if we use icons are used for expanders)
         If Not mbExpanderImage Then
             If cNode.ExpanderBox Is Nothing Then
-                Set cNode.ExpanderBox = TreeControl.controls.Add("Forms.label.1", "ExpBox" & cNode.control.name, False)
+                Set cNode.ExpanderBox = TreeControl.controls.add("Forms.label.1", "ExpBox" & cNode.control.name, False)
                 With cNode.ExpanderBox
                     .top = (mlVisCount - 1) * NodeHeight + msngTopExpB
                     .left = mcTLpad * 2 + (lLevel - 2) * msngIndent + msngRootLine
@@ -1987,7 +1987,7 @@ Private Sub BuildTree(cNode As clsNode, ByVal lLevel As Long, Optional lMaxLevel
 
         'Expand/collapse button text (or icon)
         If cNode.Expander Is Nothing Then
-            Set cNode.Expander = TreeControl.controls.Add("Forms.label.1", "ExpText" & cNode.control.name, False)
+            Set cNode.Expander = TreeControl.controls.add("Forms.label.1", "ExpText" & cNode.control.name, False)
             With cNode.Expander
                 .left = mcTLpad * 2 + (lLevel - 2) * msngIndent + msngRootLine
                 .top = (mlVisCount - 1) * NodeHeight + msngTopExpT
@@ -2037,7 +2037,7 @@ Private Sub BuildTree(cNode As clsNode, ByVal lLevel As Long, Optional lMaxLevel
         'Vertical line
         If mbShowLines Then
             If cNode.VLine Is Nothing Then
-                Set cNode.VLine = TreeControl.controls.Add("Forms.label.1", "VLine" & cNode.control.name, False)
+                Set cNode.VLine = TreeControl.controls.add("Forms.label.1", "VLine" & cNode.control.name, False)
                 lVLineTopIdx = mlVisCount
                 With cNode.VLine
                     .ZOrder 1
@@ -2114,7 +2114,7 @@ Private Sub BuildNodeControls(cNode As clsNode, ByVal lLevel As Long)
     'Horizontal line
     If mbShowLines Then
         If cNode.HLine Is Nothing Then
-            Set cNode.HLine = TreeControl.controls.Add("Forms.label.1", "HLine" & sName, False)
+            Set cNode.HLine = TreeControl.controls.add("Forms.label.1", "HLine" & sName, False)
             With cNode.HLine
                 .left = mcLineLeft + msngRootLine + msngIndent * (lLevel - 1)
                 .top = msngTopHV + mlVisCount * NodeHeight
@@ -2143,7 +2143,7 @@ Private Sub BuildNodeControls(cNode As clsNode, ByVal lLevel As Long)
     ' Checkbox
     If CheckBoxes Then
         If cNode.Checkbox Is Nothing Then
-            Set cNode.Checkbox = TreeControl.controls.Add("Forms.label.1", "CheckBox" & sName, False)
+            Set cNode.Checkbox = TreeControl.controls.add("Forms.label.1", "CheckBox" & sName, False)
             With cNode.Checkbox
                 .left = mcTLpad + msngRootLine + msngIndent * lLevel
                 .top = mlVisCount * NodeHeight + msngTopChk
@@ -2189,7 +2189,7 @@ Private Sub BuildNodeControls(cNode As clsNode, ByVal lLevel As Long)
         If cNode.hasIcon(vKey) Then
             sngIconPad = mcIconPad
             If cNode.icon Is Nothing Then
-                Set cNode.icon = TreeControl.controls.Add("Forms.Image.1", "Icon" & sName, False)
+                Set cNode.icon = TreeControl.controls.add("Forms.Image.1", "Icon" & sName, False)
                 With cNode.icon
                     .borderStyle = fmBorderStyleNone
                     .left = mcTLpad + msngRootLine + msngIndent * lLevel + msngChkBoxPad
@@ -2219,7 +2219,7 @@ Private Sub BuildNodeControls(cNode As clsNode, ByVal lLevel As Long)
     'The node itself
     If cNode.control Is Nothing Then
         
-        Set cNode.control = TreeControl.controls.Add("Forms.label.1", sName, False)
+        Set cNode.control = TreeControl.controls.add("Forms.label.1", sName, False)
         With cNode.control
             .WordWrap = False
             .AutoSize = True
@@ -2354,7 +2354,7 @@ Private Sub Clone(cParent As clsNode, cNode As clsNode, Optional vBefore, Option
     
     AddNodeToCol mcolNodes, cClone, bTreeCol:=True
 
-    cClone.index = Nodes.Count
+    cClone.index = Nodes.count
     
     mbTriState = bTriStateOrig
     If mbTriState Then
@@ -2726,7 +2726,7 @@ Private Sub TreeControl_KeyDown(ByVal keyCode As MSForms.ReturnInteger, ByVal sh
         RaiseEvent KeyDown(ActiveNode, keyCode, shift)
     Else
         If Not mcolNodes Is Nothing Then
-            If mcolNodes.Count Then
+            If mcolNodes.count Then
                 Set ActiveNode = mcolNodes(1)
             End If
         End If
@@ -2807,7 +2807,7 @@ Private Sub TreeControl_KeyUp(ByVal keyCode As MSForms.ReturnInteger, ByVal shif
         End Select
     Else
         If Not mcolNodes Is Nothing Then
-            If mcolNodes.Count Then
+            If mcolNodes.count Then
                 Set ActiveNode = mcolNodes(1)
             End If
         End If
@@ -2971,3 +2971,22 @@ End Sub
 'Public Sub triggerSelectionChangeEvent(node As clsNode)
 '    RaiseEvent AfterSelectionChange(node)
 'End Sub
+
+
+Public Function getLeafs() As Scripting.Dictionary
+    Dim node As clsNode
+    '------------------------------------------------------------------------------------------------------
+    Set getLeafs = F.dictionaries.Create(False)
+    For Each node In Me.Nodes
+        Call F.dictionaries.appendDictionary(getLeafs, node.getLeafs)
+    Next node
+End Function
+
+
+Public Sub CheckAllNodes()
+    Dim node As clsNode
+    '------------------------------------------------------------------------------------------------------
+    For Each node In Me.Nodes
+        node.Checked = True
+    Next node
+End Sub

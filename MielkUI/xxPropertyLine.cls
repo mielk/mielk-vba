@@ -129,7 +129,7 @@ Public Function setItemsList(value As Scripting.Dictionary) As xxPropertyLine
     Set setItemsList = Me
     Call F.dictionaries.addItem(pDictDefinition, TAG_ITEMS, value)
     
-    Call UI.Forms.fillListBox(pComboBox, getItems)
+    Call UI.controls.fillListBox(pComboBox, getItems)
     pComboBox.value = getComboBoxDefaultValue
     
 End Function
@@ -153,10 +153,10 @@ Private Function getValidationFrame() As MSForms.frame
 End Function
 
 Public Function getRight() As Single
-    If UI.Forms.isControlValid(pActionButton) Then
-        getRight = UI.Forms.getRight(pActionButton)
-    ElseIf UI.Forms.isControlValid(pValueControl) Then
-        getRight = UI.Forms.getRight(pValueControl)
+    If UI.controls.isValid(pActionButton) Then
+        getRight = UI.controls.getRight(pActionButton)
+    ElseIf UI.controls.isValid(pValueControl) Then
+        getRight = UI.controls.getRight(pValueControl)
     End If
 End Function
 
@@ -261,7 +261,7 @@ Public Function getValidationLabel() As UIValidationLabel
 End Function
 
 Public Function getTop() As Single
-    If UI.Forms.isControlValid(pLabel) Then
+    If UI.controls.isValid(pLabel) Then
         getTop = pLabel.top
     Else
         getTop = pTop
@@ -288,7 +288,7 @@ Public Sub render()
 End Sub
     
 Private Sub insertLabel()
-    Set pLabel = getFrame.controls.Add(CREATE_LABEL_ID)
+    Set pLabel = getFrame.controls.add(CREATE_LABEL_ID)
     With pLabel
         .BackStyle = fmBackStyleTransparent
         .caption = getLabelCaption
@@ -316,7 +316,7 @@ Private Sub insertValueControl()
 End Sub
 
 Private Sub insertCheckBox()
-    Set pCheckBox = getFrame.controls.Add(CREATE_CHECKBOX_ID)
+    Set pCheckBox = getFrame.controls.add(CREATE_CHECKBOX_ID)
     With pCheckBox
         .AutoSize = True
         .width = .height
@@ -327,7 +327,7 @@ Private Sub insertCheckBox()
 End Sub
 
 Private Sub insertComboBox()
-    Set pComboBox = getFrame.controls.Add(CREATE_COMBOBOX_ID)
+    Set pComboBox = getFrame.controls.add(CREATE_COMBOBOX_ID)
     With pComboBox
         .borderStyle = fmBorderStyleSingle
         .width = pParent.getValueWidth
@@ -337,7 +337,7 @@ Private Sub insertComboBox()
             .size = pFontSize
             .Bold = VBA.IIf(pFontBold, 1, False)
         End With
-        Call UI.Forms.fillListBox(pComboBox, getItems)
+        Call UI.controls.fillListBox(pComboBox, getItems)
         pComboBox.value = getComboBoxDefaultValue
     End With
     
@@ -364,7 +364,7 @@ Private Function getComboBoxDefaultValue() As String
 End Function
 
 Private Sub insertTextBox()
-    Set pTextBox = getFrame.controls.Add(CREATE_TEXTBOX_ID)
+    Set pTextBox = getFrame.controls.add(CREATE_TEXTBOX_ID)
     With pTextBox
         .borderStyle = fmBorderStyleSingle
         .width = pParent.getValueWidth
@@ -384,7 +384,7 @@ Private Sub insertTextBox()
 End Sub
 
 Private Sub insertLabelWithActionButton()
-    Set pTextBox = getFrame.controls.Add(CREATE_TEXTBOX_ID)
+    Set pTextBox = getFrame.controls.add(CREATE_TEXTBOX_ID)
     With pTextBox
         .borderStyle = fmBorderStyleSingle
         .width = pParent.getValueWidth - DEFAULT_BUTTON_WIDTH - DEFAULT_BUTTON_LEFT_MARGIN
@@ -398,7 +398,7 @@ Private Sub insertLabelWithActionButton()
         .value = VBA.format(getValue, getNumberFormat)
     End With
     
-    Set pActionButton = getFrame.controls.Add(CREATE_LABEL_ID)
+    Set pActionButton = getFrame.controls.add(CREATE_LABEL_ID)
     With pActionButton
         .width = DEFAULT_BUTTON_WIDTH
         .height = DEFAULT_BUTTON_HEIGHT
@@ -417,7 +417,7 @@ Private Sub updateValueControlView()
     Dim status As Variant:          status = getStatus
     '------------------------------------------------------------------------------------------------------
     
-    If UI.Forms.isControlValid(pValueControl) Then
+    If UI.controls.isValid(pValueControl) Then
         If TypeOf pValueControl Is MSForms.textBox Or TypeOf pValueControl Is MSForms.comboBox Then
             With pValueControl
                 .backColor = getBackColorByStatus(status)
@@ -465,7 +465,7 @@ End Function
 
 
 Public Sub updateDisplayValue()
-    If UI.Forms.isControlValid(pValueControl) Then
+    If UI.controls.isValid(pValueControl) Then
         If pValueControl Is pComboBox Then
             pComboBox.value = getComboBoxDefaultValue
         Else
@@ -483,7 +483,7 @@ Private Sub insertValidationLabel()
     Dim width As Single
     '------------------------------------------------------------------------------------------------------
     
-    If UI.Forms.isControlValid(pValueControl) Then
+    If UI.controls.isValid(pValueControl) Then
         Set window = pParent.getWindow
         Set pValidationLabel = window.insertValidationLabel(pUuid)
         
@@ -507,13 +507,13 @@ Public Sub arrangeControls()
     '------------------------------------------------------------------------------------------------------
     
     If pIsRendered Then
-        Call UI.Forms.locateControl(pLabel, pLeft, pTop + (lineHeight - pLabel.height) / 2)
-        Call UI.Forms.locateControl(pValueControl, _
-                            UI.Forms.getRight(pLabel) + pParent.getLabelValueSpace, _
+        Call UI.controls.locate(pLabel, pLeft, pTop + (lineHeight - pLabel.height) / 2)
+        Call UI.controls.locate(pValueControl, _
+                            UI.controls.getRight(pLabel) + pParent.getLabelValueSpace, _
                             pTop + (lineHeight - pValueControl.height) / 2)
-        If UI.Forms.isControlValid(pActionButton) Then
-            Call UI.Forms.locateControl(pActionButton, _
-                            UI.Forms.getRight(pValueControl) + DEFAULT_BUTTON_LEFT_MARGIN, _
+        If UI.controls.isValid(pActionButton) Then
+            Call UI.controls.locate(pActionButton, _
+                            UI.controls.getRight(pValueControl) + DEFAULT_BUTTON_LEFT_MARGIN, _
                             pTop + (lineHeight - pActionButton.height) / 2)
         End If
         

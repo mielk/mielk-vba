@@ -27,7 +27,6 @@ Public Function convertAlignTextToEnum(value As String, Optional form As Boolean
 End Function
 
 
-
 '[RANGE BORDERS]
 Public Function convertBorderIndexNameToEnum(value As String) As XlBordersIndex
     Select Case VBA.LCase$(value)

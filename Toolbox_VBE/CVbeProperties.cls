@@ -78,7 +78,7 @@ End Function
 
 
 '[INTELLISENSE]
-Public Function IsConst() As enumProperty: Set IsConst = ByName("IsConst"): End Function
+Public Function isConst() As enumProperty: Set isConst = ByName("IsConst"): End Function
 Public Function variableType() As enumProperty: Set variableType = ByName("VariableType"): End Function
 Public Function IsOptional() As enumProperty: Set IsOptional = ByName("IsOptional"): End Function
 Public Function PassMode() As enumProperty: Set PassMode = ByName("PassMode"): End Function

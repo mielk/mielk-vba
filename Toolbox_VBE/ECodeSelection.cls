@@ -62,6 +62,12 @@ Public Function getComponent() As VBIDE.VBComponent
     Set getComponent = pComponent
 End Function
 
+Public Function getCodeModule() As VBIDE.CodeModule
+    If Not pComponent Is Nothing Then
+        Set getCodeModule = pComponent.CodeModule
+    End If
+End Function
+
 Public Function getStartRow() As Long
     getStartRow = pStartRow
 End Function
@@ -114,6 +120,7 @@ Public Sub replaceWithGivenCode(code As String)
         End If
         Call .ReplaceLine(pStartRow, code)
     End With
+    
 End Sub
 
 Public Sub insertCode(code As String)

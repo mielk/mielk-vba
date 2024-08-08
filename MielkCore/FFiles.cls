@@ -101,7 +101,7 @@ Public Function getFileFolderPath(ByVal filepath As String, Optional removeEndSl
     Else
         slashPosition = VBA.InStr(1, VBA.StrReverse(filepath), "\")
         If slashPosition Then
-            getFileFolderPath = VBA.left$(filepath, VBA.Len(filepath) - slashPosition + 1)
+            getFileFolderPath = VBA.Left$(filepath, VBA.Len(filepath) - slashPosition + 1)
         End If
     End If
 End Function
@@ -110,7 +110,7 @@ Public Function hasWritePermission(folderPath As String) As Boolean
     Dim textFileUrl As String
     '------------------------------------------------------------------------------------------------------
     
-    textFileUrl = f.files.uniqueFilePath(folderPath & VBA.IIf(VBA.right$(folderPath, 1) = "\", vbNullString, "\") & _
+    textFileUrl = f.files.uniqueFilePath(folderPath & VBA.IIf(VBA.Right$(folderPath, 1) = "\", vbNullString, "\") & _
                         f.System.getWindowsUserName & "_test_____fY7JqjsOg7.text")
     With fso
         On Error Resume Next
@@ -168,7 +168,7 @@ Public Function uniqueFilePath(filepath As String) As String
         If .fileExists(filepath) Then
                                                                                                         
             strParentFolder = .GetParentFolderName(filepath)
-            If Not VBA.right$(strParentFolder, 1) = "\" Then strParentFolder = strParentFolder & "\"
+            If Not VBA.Right$(strParentFolder, 1) = "\" Then strParentFolder = strParentFolder & "\"
             strFileName = .GetBaseName(filepath)
             strFileExtension = "." & .GetExtensionName(filepath)
                                                                                                         
@@ -240,11 +240,11 @@ Public Function concatenatePath(ParamArray pathParts() As Variant) As String
                 isNetworkPath = f.strings.startsWith(strPathPart, NETWORK_PATH_PREFIX)
             End If
             
-            Do While VBA.right$(strPathPart, 1) = "\"
-                strPathPart = VBA.left$(strPathPart, VBA.Len(strPathPart) - 1)
+            Do While VBA.Right$(strPathPart, 1) = "\"
+                strPathPart = VBA.Left$(strPathPart, VBA.Len(strPathPart) - 1)
             Loop
             
-            Do While VBA.left$(strPathPart, 1) = "\"
+            Do While VBA.Left$(strPathPart, 1) = "\"
                 strPathPart = VBA.mid$(strPathPart, 2)
             Loop
             
@@ -375,7 +375,7 @@ End Function
 
 '[SELECTING FILES & FOLDER]
 Public Function selectFiles(Optional defaultPath As String, Optional title As String = "Select files", _
-                            Optional fileType As Variant = EXCEL_FILES) As VBA.Collection
+                            Optional fileType As Variant = FILES_PATTERN_EXCEL) As VBA.Collection
     Dim selection As Variant
     '------------------------------------------------------------------------------------------------------
     selection = selectFile___(defaultPath, title, fileType, True)
@@ -387,7 +387,7 @@ Public Function selectFiles(Optional defaultPath As String, Optional title As St
 End Function
 
 Public Function selectFile(Optional defaultPath As String, Optional title As String = "Select file", _
-                           Optional fileType As Variant = EXCEL_FILES) As String
+                           Optional fileType As Variant = FILES_PATTERN_EXCEL) As String
     Dim selection As Variant
     '------------------------------------------------------------------------------------------------------
     selection = selectFile___(defaultPath, title, fileType, False)
@@ -397,9 +397,9 @@ Public Function selectFile(Optional defaultPath As String, Optional title As Str
 End Function
 
 Private Function selectFile___(Optional defaultPath As String, Optional title As String = "Select file(s)", _
-                           Optional fileType As Variant = EXCEL_FILES, _
+                           Optional fileType As Variant = FILES_PATTERN_EXCEL, _
                            Optional multiSelect As Boolean = True) As Variant()
-    Dim drive As String * 1:                drive = VBA.left(defaultPath, 1)
+    Dim drive As String * 1:                drive = VBA.Left(defaultPath, 1)
     Dim selection As Variant
     Dim emptyArray() As Variant
     '------------------------------------------------------------------------------------------------------
@@ -504,7 +504,7 @@ Public Function isProperPath(path As String) As Boolean
     
     If isProperPath Then
         tempPath = VBA.mid$(tempPath, VBA.IIf(f.strings.startsWith(tempPath, "\\"), 3, 4))
-        If f.strings.endsWith(tempPath, "\") Then tempPath = VBA.left$(tempPath, VBA.Len(tempPath) - 1)
+        If f.strings.endsWith(tempPath, "\") Then tempPath = VBA.Left$(tempPath, VBA.Len(tempPath) - 1)
         
         pathParts = VBA.Split(tempPath, "\")
         If f.arrays.isDefined(pathParts) Then
@@ -553,7 +553,7 @@ Public Function isFolderWriteable(folderPath As String) As Boolean
     If objFSO.folderExists(folderPath) Then
                                                                                                         
         strTempFile = folderPath
-        If Not VBA.right$(folderPath, 1) = "\" Then strTempFile = strTempFile & "\"
+        If Not VBA.Right$(folderPath, 1) = "\" Then strTempFile = strTempFile & "\"
         strTempFile = uniqueFilePath(strTempFile & TEMP_FILE_NAME)
                                                                                                         
         On Error Resume Next
@@ -594,7 +594,7 @@ Public Function isSubfoldersAddingAllowed(folderPath As String) As Boolean
     If objFSO.folderExists(folderPath) Then
                                                                                                         
         strTempFolder = folderPath
-        If Not VBA.right$(folderPath, 1) = "\" Then strTempFolder = strTempFolder & "\"
+        If Not VBA.Right$(folderPath, 1) = "\" Then strTempFolder = strTempFolder & "\"
         strTempFolder = uniqueFolderName(strTempFolder & SUBFOLDER_NAME)
                                                                                                         
         On Error Resume Next
@@ -637,7 +637,7 @@ Public Function uniqueFolderName(folderName As String) As String
         If .folderExists(folderName) Then
                                                                                                         
             strParentFolder = .GetParentFolderName(folderName)
-            If Not VBA.right$(strParentFolder, 1) = "\" Then strParentFolder = strParentFolder & "\"
+            If Not VBA.Right$(strParentFolder, 1) = "\" Then strParentFolder = strParentFolder & "\"
             strFolderName = .GetBaseName(folderName)
                                                                                                         
             Do
@@ -927,4 +927,13 @@ Public Function getSubfolders(parentFolderPath As String) As VBA.Collection
         Next subfolder
     End If
     
+End Function
+
+
+
+Public Function getSelectPatternForFileTypeCode(fileTypeCode As String) As String
+    Select Case VBA.LCase$(fileTypeCode)
+        Case VBA.LCase$(FILE_TYPE_CODE_CSV):        getSelectPatternForFileTypeCode = FILES_PATTERN_CSV
+        Case VBA.LCase$(FILE_TYPE_CODE_EXCEL):      getSelectPatternForFileTypeCode = FILES_PATTERN_EXCEL
+    End Select
 End Function

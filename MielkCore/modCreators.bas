@@ -84,11 +84,11 @@ Public Function Exceptions() As ExceptionsEnum
     Set Exceptions = instance
 End Function
 
-Public Function Props() As CommonProperties
+Public Function props() As CommonProperties
     Static instance As CommonProperties
     '------------------------------------------------------------------------------------------------------
     If instance Is Nothing Then Set instance = New CommonProperties
-    Set Props = instance
+    Set props = instance
 End Function
 
 Public Function UIProps() As UIPropsEnum

@@ -27,8 +27,9 @@ Public Sub exportModulesFromOpenFiles()
     
     For Each addIn In Excel.Application.AddIns2
         If VBA.InStr(1, addIn.FullName, BUILD_IN_ADDINS_FOLDER) = 0 Then
-            Set wkb = Application.Workbooks(addIn.name)
+            Set wkb = Excel.Application.Workbooks(addIn.name)
             Call F.Developer.exportModules(wkb, DESTINATION_FOLDER)
+            Debug.Print addIn.FullName
         End If
     Next addIn
 

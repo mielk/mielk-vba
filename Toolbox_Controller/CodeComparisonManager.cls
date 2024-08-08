@@ -44,9 +44,9 @@ End Sub
 
 
 Private Sub selectFiles()
-    pBaseFilePath = f.files.selectFile(pBaseFilePath, Msg.getText(SELECT_BASE_FILE_CAPTION), EXCEL_MACRO_FILES)
+    pBaseFilePath = f.files.selectFile(pBaseFilePath, Msg.getText(SELECT_BASE_FILE_CAPTION), FILES_PATTERN_EXCEL_MACRO)
     If VBA.Len(pBaseFilePath) Then
-        pCompareFilePath = f.files.selectFile(pCompareFilePath, Msg.getText(SELECT_COMPARE_FILE_CAPTION), EXCEL_MACRO_FILES)
+        pCompareFilePath = f.files.selectFile(pCompareFilePath, Msg.getText(SELECT_COMPARE_FILE_CAPTION), FILES_PATTERN_EXCEL_MACRO)
     End If
 End Sub
 

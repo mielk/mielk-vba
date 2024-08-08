@@ -12,6 +12,7 @@ Option Explicit
 Private Const CLASS_NAME As String = "UI"
 '[Functions] ----------------------------------------------------------------------------------------------
 Private pCast As FCast
+Private pControls As FControls
 Private pCreate As FConstructors
 Private pDialogs As FDialogs
 Private pForms As FForms
@@ -25,6 +26,7 @@ Private pProps As UIPropsEnum
 
 Private Sub Class_Initialize()
     Set pCast = New FCast
+    Set pControls = New FControls
     Set pCreate = New FConstructors
     Set pDialogs = New FDialogs
     Set pForms = New FForms
@@ -38,6 +40,10 @@ End Sub
 
 Public Function Cast() As FCast
     Set Cast = pCast
+End Function
+
+Public Function controls() As FControls
+    Set controls = pControls
 End Function
 
 Public Function Create() As FConstructors

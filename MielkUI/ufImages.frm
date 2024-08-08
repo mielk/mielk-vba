@@ -17,6 +17,22 @@ Option Explicit
 
 Private Const CLASS_NAME As String = "ufImages"
 
+
+
+
+Public Function getIcon(tag As String) As Variant
+    Dim ctrl As MSForms.control
+    '------------------------------------------------------------------------------------------------------
+    For Each ctrl In Me.controls
+        If ctrl.name = tag Then
+            Call F.Variables.assign(getIcon, ctrl.picture)
+            Exit For
+        End If
+    Next ctrl
+End Function
+
+
+
 '[Icons]
 Public Function getAddIcon() As Variant
     Set getAddIcon = Me.icoAdd.picture
@@ -38,12 +54,16 @@ Public Function getQuestionMarkIcon() As Variant
     Set getQuestionMarkIcon = Me.icoQuestionMark.picture
 End Function
 
-Public Function getSuccessIcon() As Variant
-    Set getSuccessIcon = Me.icoSuccess.picture
+Public Function getSuccessIcon(Optional large As Boolean = False) As Variant
+    If large Then
+        Set getSuccessIcon = Me.icoSuccessLarge.picture
+    Else
+        Set getSuccessIcon = Me.icoSuccess.picture
+    End If
 End Function
 
 Public Function getWarningIcon() As Variant
-    Set getWarningIcon = Me.icoWarning.picture
+    Set getWarningIcon = Me.icoWarningSmall.picture
 End Function
 
 Public Function getWarningOrangeRedIcon() As Variant
@@ -58,8 +78,12 @@ Public Function getExclamationInCircle() As Variant
     Set getExclamationInCircle = Me.icoExclamationInCircle.picture
 End Function
 
-Public Function getErrorIcon() As Variant
-    Set getErrorIcon = Me.icoFail.picture
+Public Function getErrorIcon(Optional large As Boolean = False) As Variant
+    If large Then
+        Set getErrorIcon = Me.icoFailLarge.picture
+    Else
+        Set getErrorIcon = Me.icoFail.picture
+    End If
 End Function
 
 Public Function getCollapseSuccessIcon() As Variant

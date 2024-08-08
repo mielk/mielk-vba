@@ -49,6 +49,13 @@ Public Function CodeComparisonManager() As CodeComparisonManager
     Set CodeComparisonManager = instance
 End Function
 
+Public Function ErrorHandlingManager() As ErrorHandlingManager
+    Static instance As ErrorHandlingManager
+    '------------------------------------------------------------------------------------------------------
+    If instance Is Nothing Then Set instance = New ErrorHandlingManager
+    Set ErrorHandlingManager = instance
+End Function
+
 Public Function CodeComparisonPrinter() As CodeComparisonPrinter
     Static instance As CodeComparisonPrinter
     '------------------------------------------------------------------------------------------------------

@@ -7,6 +7,7 @@ Private Const MENU_CAPTION_ADD_ERROR_HANDLING As String = "VBE.Actions.AddErrorH
 Private Const MENU_CAPTION_CREATE_FRAMED_SECTION As String = "VBE.Actions.CreateFramedSection.label"
 Private Const MENU_CAPTION_ADD_SEPARATOR_LINE As String = "VBE.Actions.AddSeparatorLine.label"
 Private Const MENU_CAPTION_ADD_CLASS As String = "VBE.Actions.AddClass.label"
+Private Const MENU_CAPTION_ADD_SETTERS_AND_GETTERS As String = "VBE.Actions.AddSettersAndGetters.label"
 '----------------------------------------------------------------------------------------------------------
 
 Public Sub test()
@@ -20,7 +21,6 @@ Public Sub adjustContextMenu()
         Call .addItem(CUSTOM_MENU_CAPTION, Msg.getText(MENU_CAPTION_ADD_SEPARATOR_LINE), "addSeparatorLine", 130)
         'Call .addItem(CUSTOM_MENU_CAPTION, Msg.getText(MENU_CAPTION_ADD_ERROR_HANDLING), "addErrorHandlingToCurrentMethod", 348)
         Call .addItem(CUSTOM_MENU_CAPTION, Msg.getText(MENU_CAPTION_ADD_CLASS), "addClass", 137)
+        Call .addItem(CUSTOM_MENU_CAPTION, Msg.getText(MENU_CAPTION_ADD_SETTERS_AND_GETTERS), "addSettersAndGetters", 2104)
     End With
 End Sub
-
-

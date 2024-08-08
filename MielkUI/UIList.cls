@@ -123,7 +123,7 @@ Private pActionButtonsToLeft As Boolean
 Event AfterChange()
 Event AfterDoubleClick()
 Event AfterEditItemClick(item As Variant, ByRef newCaption As String)
-Event AfterRemoveItemClick(item As Variant, ByRef confirmed As Boolean)
+Event AfterRemoveItemClick(item As Variant, ByRef Confirmed As Boolean)
 Event AfterPreviewChanged(key As Variant, item As Variant, index As Long)
 Event GiveFocusToTopControl()
 '----------------------------------------------------------------------------------------------------------
@@ -388,7 +388,7 @@ End Function
 
 '[GETTERS]
 Public Function isValid() As Boolean
-    isValid = UI.Forms.isControlValid(pFrame)
+    isValid = UI.controls.isValid(pFrame)
 End Function
 
 Public Function getLeft() As Single
@@ -397,9 +397,9 @@ End Function
 
 Public Function getRight() As Single
     If showMassSelectionButtons Then
-        getRight = UI.Forms.getRight(pSelectAllButton)
+        getRight = UI.controls.getRight(pSelectAllButton)
     Else
-        getRight = UI.Forms.getRight(pFrame)
+        getRight = UI.controls.getRight(pFrame)
     End If
 End Function
 
@@ -412,7 +412,7 @@ Public Function getTop() As Single
 End Function
 
 Public Function getBottom() As Single
-    getBottom = UI.Forms.getBottom(pFrame)
+    getBottom = UI.controls.getBottom(pFrame)
 End Function
 
 Public Function getWidth() As Single
@@ -421,7 +421,7 @@ End Function
 
 Public Function getHeight() As Single
     If pHasHeaderRow Then
-        getHeight = UI.Forms.getBottom(pFrame) - pHeadersFrame.top
+        getHeight = UI.controls.getBottom(pFrame) - pHeadersFrame.top
     Else
         getHeight = pFrame.InsideHeight
     End If
@@ -548,18 +548,18 @@ End Function
 
 Private Sub insertHeadersPanel()
     If pHasHeaderRow Then
-        Set pHeadersFrame = pParent.controls.Add(CREATE_FRAME_ID, getLabelName(ControlType_Frame), True)
+        Set pHeadersFrame = pParent.controls.add(CREATE_FRAME_ID, getLabelName(ControlType_Frame), True)
         Call refreshHeadersPanel
     End If
 End Sub
 
 Private Sub insertFrame()
-    Set pFrame = pParent.controls.Add(CREATE_FRAME_ID, getLabelName(ControlType_Frame), True)
+    Set pFrame = pParent.controls.add(CREATE_FRAME_ID, getLabelName(ControlType_Frame), True)
     Call refreshFrameView
 End Sub
 
 Private Sub insertFocusTextBox()
-    Set pFocusTextbox = pFrame.controls.Add(CREATE_TEXTBOX_ID, getLabelName(ControlType_FocusTextBox), True)
+    Set pFocusTextbox = pFrame.controls.add(CREATE_TEXTBOX_ID, getLabelName(ControlType_FocusTextBox), True)
     Call refreshFocusTextBox
 End Sub
 
@@ -568,8 +568,8 @@ Private Sub insertSelectingLabels()
     Const UNSELECT_ALL_TOOLTIP As String = "UiList.Buttons.UnselectAllTooltip"
     '----------------------------------------------------------------------------------------------------------
     If showMassSelectionButtons Then
-        Set pSelectAllButton = pParent.controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_SelectAll), True)
-        Set pDeselectAllButton = pParent.controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_DeselectAll), True)
+        Set pSelectAllButton = pParent.controls.add(CREATE_LABEL_ID, getLabelName(ControlType_SelectAll), True)
+        Set pDeselectAllButton = pParent.controls.add(CREATE_LABEL_ID, getLabelName(ControlType_DeselectAll), True)
         Call refreshMassSelectionButton(pSelectAllButton, pSelectAllButtonColor, MsgService.getText(SELECT_ALL_TOOLTIP))
         Call refreshMassSelectionButton(pDeselectAllButton, pDeselectAllButtonColor, MsgService.getText(UNSELECT_ALL_TOOLTIP))
     End If
@@ -630,28 +630,28 @@ End Sub
 Private Sub arrangeControls()
     Call resizeControls
     If pHasHeaderRow Then
-        Call UI.Forms.locateControl(pHeadersFrame, pLeft, pTop)
-        Call UI.Forms.locateControl(pFrame, pLeft, UI.Forms.getBottom(pHeadersFrame) + pSpaceBetweenHeaderAndList)
+        Call UI.controls.locate(pHeadersFrame, pLeft, pTop)
+        Call UI.controls.locate(pFrame, pLeft, UI.controls.getBottom(pHeadersFrame) + pSpaceBetweenHeaderAndList)
     Else
-        Call UI.Forms.locateControl(pFrame, pLeft, pTop)
+        Call UI.controls.locate(pFrame, pLeft, pTop)
     End If
     If showMassSelectionButtons Then
-        Call UI.Forms.locateControl(pSelectAllButton, UI.Forms.getRight(pFrame) + pMassSelectionButtonSize / 2, pFrame.top + pMassSelectionButtonSize / 2)
-        Call UI.Forms.locateControl(pDeselectAllButton, pSelectAllButton.left, UI.Forms.getBottom(pSelectAllButton) + pMassSelectionButtonSize / 2)
+        Call UI.controls.locate(pSelectAllButton, UI.controls.getRight(pFrame) + pMassSelectionButtonSize / 2, pFrame.top + pMassSelectionButtonSize / 2)
+        Call UI.controls.locate(pDeselectAllButton, pSelectAllButton.left, UI.controls.getBottom(pSelectAllButton) + pMassSelectionButtonSize / 2)
     End If
 End Sub
 
 Private Sub resizeControls()
     If pHasHeaderRow Then
-        Call UI.Forms.resizeControl(pHeadersFrame, pWidth, pHeaderHeight)
-        Call UI.Forms.resizeControl(pFrame, pWidth, pHeight - pHeaderHeight - pSpaceBetweenHeaderAndList)
+        Call UI.controls.resize(pHeadersFrame, pWidth, pHeaderHeight)
+        Call UI.controls.resize(pFrame, pWidth, pHeight - pHeaderHeight - pSpaceBetweenHeaderAndList)
     Else
-        Call UI.Forms.resizeControl(pFrame, pWidth, pFrame.InsideHeight)
+        Call UI.controls.resize(pFrame, pWidth, pFrame.InsideHeight)
     End If
-    Call UI.Forms.resizeControl(pFocusTextbox, 1, pFrame.ScrollHeight)
+    Call UI.controls.resize(pFocusTextbox, 1, pFrame.ScrollHeight)
     If showMassSelectionButtons Then
-        Call UI.Forms.resizeControl(pSelectAllButton, pMassSelectionButtonSize, pMassSelectionButtonSize)
-        Call UI.Forms.resizeControl(pDeselectAllButton, pMassSelectionButtonSize, pMassSelectionButtonSize)
+        Call UI.controls.resize(pSelectAllButton, pMassSelectionButtonSize, pMassSelectionButtonSize)
+        Call UI.controls.resize(pDeselectAllButton, pMassSelectionButtonSize, pMassSelectionButtonSize)
     End If
 End Sub
 
@@ -664,7 +664,7 @@ Private Sub renderLines()
     Dim line As UIListLine
     '------------------------------------------------------------------------------------------------------
     
-    linesCounter = F.Math.getMin(pItems.Count, pMaxItemsPerPage)
+    linesCounter = F.Math.getMin(pItems.count, pMaxItemsPerPage)
     If linesCounter Then
         currentLinesCounter = F.arrays.getSize(pLines)
         
@@ -753,7 +753,7 @@ Private Sub sortItems(Optional ascending As Boolean = True)
     For Each key In pFiltered.keys
         If Not VBA.IsEmpty(key) Then
             If isConstKey(key) Then
-                Call constItems.Add(key)
+                Call constItems.add(key)
             Else
                 Call F.dictionaries.addItem(sortableItems, getItemCaption(key), key)
             End If
@@ -794,7 +794,7 @@ Private Sub updateLinesItems(Optional pageIndex As Long = 1)
     For i = 1 To lastIndex
         Set line = pLines(i)
         index = i + pagesOffset
-        If index <= pFiltered.Count Then
+        If index <= pFiltered.count Then
             key = pSortedKeys(index)
             With line
                 Call .setVisibility(True)
@@ -845,7 +845,7 @@ Private Function getItemCaption(key As Variant) As String
 End Function
 
 Private Function countPages() As Long
-    countPages = VBA.Int(pFiltered.Count / pMaxItemsPerPage) + VBA.IIf(pFiltered.Count Mod pMaxItemsPerPage > 0, 1, 0)
+    countPages = VBA.Int(pFiltered.count / pMaxItemsPerPage) + VBA.IIf(pFiltered.count Mod pMaxItemsPerPage > 0, 1, 0)
 End Function
 
 Private Sub showHideScrollBar(lastIndex As Long)
@@ -908,7 +908,7 @@ Public Sub renderHeaders()
                 Call .setTotalPages(countPages)
                 Call .render
             End With
-            Call pHeaderDefinitions.Add(pHeaderLine)
+            Call pHeaderDefinitions.add(pHeaderLine)
         Next headerDefinition
     End If
     
@@ -1180,12 +1180,12 @@ Public Sub setFocus(Optional selectFirstItem As Boolean = False, _
                     Optional previewFirstItem As Boolean = False)
     Dim line As UIListLine
     '--------------------------------------------------------------------------------------------------
-    If UI.Forms.isControlValid(pFocusTextbox) Then
+    If UI.controls.isValid(pFocusTextbox) Then
         On Error Resume Next
         Call pFocusTextbox.setFocus
     End If
     pFrame.borderColor = pFocusBorderColor
-    If pFiltered.Count > 0 Then
+    If pFiltered.count > 0 Then
         Set line = getFirstVisibleLine
         If selectFirstItem Then Call changeSelection(line)
         If activateFirstItem Then Call updateActiveLine(line)
@@ -1228,13 +1228,13 @@ Friend Sub editItem(line As UIListLine)
 End Sub
 
 Friend Sub removeItem(line As UIListLine)
-    Dim confirmed As Boolean
+    Dim Confirmed As Boolean
     '--------------------------------------------------------------------------------------------------
     
     Stop
     
-    RaiseEvent AfterRemoveItemClick(line.getItem, confirmed)
-    If confirmed Then
+    RaiseEvent AfterRemoveItemClick(line.getItem, Confirmed)
+    If Confirmed Then
         Stop
 '
 '        '[Deselect]
@@ -1313,7 +1313,7 @@ Public Function getSelectedIndex() As Variant
     For Each key In pSelection.keys
         Set line = F.dictionaries.getObject(pLinesByKey, key)
         If Not line Is Nothing Then
-            Call col.Add(line.getIndex)
+            Call col.add(line.getIndex)
         End If
     Next key
     
@@ -1392,10 +1392,10 @@ Private Sub pFocusTextbox_KeyDown(ByVal keyCode As MSForms.ReturnInteger, ByVal 
             Call changeActiveRow(getVisibleRowsCounter - 1)
             keyCode = 0
         Case vbKeyHome                  'Home
-            Call changeActiveRow(-pFiltered.Count)
+            Call changeActiveRow(-pFiltered.count)
             keyCode = 0
         Case vbKeyEnd                   'End
-            Call changeActiveRow(pFiltered.Count)
+            Call changeActiveRow(pFiltered.count)
             keyCode = 0
         Case vbKeySpace
             Call changeSelection(pActiveLine)

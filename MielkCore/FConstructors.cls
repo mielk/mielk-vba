@@ -12,9 +12,9 @@ Option Explicit
 Private Const CLASS_NAME As String = "FConstructors"
 '----------------------------------------------------------------------------------------------------------
 
-Public Function Prop(name As String, Optional dbField As String) As enumProperty
-    Set Prop = New enumProperty
-    With Prop
+Public Function prop(name As String, Optional dbField As String) As enumProperty
+    Set prop = New enumProperty
+    With prop
         Call .setName(name)
         Call .setDbField(dbField)
     End With
@@ -51,9 +51,9 @@ Public Function DoubleDictionary() As DoubleDictionary
     Set DoubleDictionary = New DoubleDictionary
 End Function
 
-Public Function Coordinate(x As Single, Y As Single) As Coordinate
+Public Function Coordinate(X As Single, Y As Single) As Coordinate
     With Coordinate
-        .x = x
+        .X = X
         .Y = Y
     End With
 End Function

@@ -147,7 +147,7 @@ Private Function toStringifedArray(col As VBA.Collection, stringifyMode As Strin
     Dim varItem As Variant
     Dim itemText As String
     Dim values() As String
-    Dim counter As Long
+    Dim Counter As Long
     '------------------------------------------------------------------------------------------------------
     
     If col.count > 0 Then
@@ -155,13 +155,13 @@ Private Function toStringifedArray(col As VBA.Collection, stringifyMode As Strin
         ReDim values(1 To col.count)
         
         For Each varItem In col
-            counter = counter + 1
+            Counter = Counter + 1
             If VBA.Len(callbackMethod) Then
                 itemText = f.Reflection.modifyValue(varItem, callbackMethod, callbackInvoker, callbackParams)
             Else
                 itemText = f.strings.stringify(varItem, stringifyMode)
             End If
-            values(counter) = itemText
+            values(Counter) = itemText
         Next varItem
         
         toStringifedArray = values
@@ -173,14 +173,14 @@ End Function
 Private Function convertStringCollectionToArray(col As VBA.Collection) As String()
     Dim varItem As Variant
     Dim values() As String
-    Dim counter As Long
+    Dim Counter As Long
     '------------------------------------------------------------------------------------------------------
     
     If col.count > 0 Then
         ReDim values(1 To col.count)
         For Each varItem In col
-            counter = counter + 1
-            values(counter) = varItem
+            Counter = Counter + 1
+            values(Counter) = varItem
         Next varItem
         convertStringCollectionToArray = values
     End If
@@ -856,6 +856,22 @@ Public Function getMaxValue(col As VBA.Collection) As Variant
     End If
 End Function
 
+Public Function getMinValue(col As VBA.Collection) As Variant
+    Dim initialized As Boolean
+    Dim item As Variant
+    '------------------------------------------------------------------------------------------------------
+    If Not col Is Nothing Then
+        For Each item In col
+            If Not initialized Then
+                getMinValue = item
+                initialized = True
+            ElseIf item < getMinValue Then
+                getMinValue = item
+            End If
+        Next item
+    End If
+End Function
+
 
 Public Function fromString(value As String, Optional separator As String = ",") As VBA.Collection
     Dim arr As Variant
@@ -886,3 +902,35 @@ Public Sub append(baseCollection As VBA.Collection, appendedCollection As VBA.Co
         Next item
     End If
 End Sub
+
+
+Public Function createCollectionOfIntegers(startNumber As Long, endNumber As Long, Optional step As Long = 1) As VBA.Collection
+    Dim i As Long
+    '------------------------------------------------------------------------------------------------------
+    
+    Set createCollectionOfIntegers = New VBA.Collection
+    For i = startNumber To endNumber Step step
+        Call createCollectionOfIntegers.Add(i)
+    Next i
+ 
+End Function
+
+
+Public Function sum(col As VBA.Collection, modifyMethod As String, _
+                        Optional modifyMethodInvoker As Object, _
+                        Optional modifyMethodParams As Scripting.Dictionary) As Double
+    Dim item As Variant
+    Dim value As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    If isNonEmptyCollection(col) Then
+        For Each item In col
+            value = f.Reflection.modifyValue(item, modifyMethod, modifyMethodInvoker, modifyMethodParams)
+            If VBA.isNumeric(value) Then
+                sum = sum + value
+            End If
+        Next item
+    End If
+    
+End Function
+

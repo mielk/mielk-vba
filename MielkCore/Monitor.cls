@@ -34,11 +34,11 @@ Private pBottom As Long
     pHandle = value
 End Function
 
-Public Function setBounds(top As Long, right As Long, bottom As Long, left As Long)
-    pTop = top
-    pRight = right
-    pBottom = bottom
-    pLeft = left
+Public Function setBounds(Top As Long, Right As Long, Bottom As Long, Left As Long)
+    pTop = Top
+    pRight = Right
+    pBottom = Bottom
+    pLeft = Left
 End Function
 
 
@@ -55,9 +55,9 @@ End Function
 End Function
 
 Public Function isPointInMonitor(pt As POINTAPI) As Boolean
-    If pt.x < pLeft Then
+    If pt.X < pLeft Then
         isPointInMonitor = False
-    ElseIf pt.x > pRight Then
+    ElseIf pt.X > pRight Then
         isPointInMonitor = False
 '    ElseIf pt.y < pTop Then
 '        isPointInMonitor = False
@@ -70,8 +70,8 @@ End Function
 
 Public Function getWorkingArea() As area
     With getWorkingArea
-        .top = pTop
-        .left = pLeft
+        .Top = pTop
+        .Left = pLeft
         .width = pRight - pLeft
         .height = pBottom - pTop
     End With

@@ -320,13 +320,13 @@ End Function
 
 Private Sub insertBackgroundLabel()
     If pBackgroundLabel Is Nothing Then
-        Set pBackgroundLabel = pFrame.controls.Add(CREATE_LABEL_ID)
+        Set pBackgroundLabel = pFrame.controls.add(CREATE_LABEL_ID)
     End If
 End Sub
 
 Private Sub insertCaptionLabel()
     If pCaptionLabel Is Nothing Then
-        Set pCaptionLabel = pFrame.controls.Add(CREATE_LABEL_ID)
+        Set pCaptionLabel = pFrame.controls.add(CREATE_LABEL_ID)
     End If
     With pCaptionLabel
         .BackStyle = fmBackStyleTransparent
@@ -337,7 +337,7 @@ End Sub
 
 Private Sub insertPictureLabel()
     If pPictureLabel Is Nothing Then
-        Set pPictureLabel = pFrame.controls.Add(CREATE_LABEL_ID)
+        Set pPictureLabel = pFrame.controls.add(CREATE_LABEL_ID)
         With pPictureLabel
             .BackStyle = fmBackStyleTransparent
             .borderStyle = fmBorderStyleNone
@@ -347,7 +347,7 @@ End Sub
 
 Private Sub insertEventsLayer()
     If pEventsLayerLabel Is Nothing Then
-        Set pEventsLayerLabel = pFrame.controls.Add(CREATE_LABEL_ID)
+        Set pEventsLayerLabel = pFrame.controls.add(CREATE_LABEL_ID)
     End If
     With pEventsLayerLabel
         .BackStyle = fmBackStyleTransparent
@@ -392,7 +392,7 @@ Public Function alignVertically(ctrl As MSForms.control) As UIButton
     
     Set alignVertically = Me
     
-    If UI.Forms.isControlValid(ctrl) Then
+    If UI.controls.isValid(ctrl) Then
         yOffset = (ctrl.top + (ctrl.height - pHeight) / 2) - pTop
         If yOffset Then Call offset(Y:=yOffset)
     End If
@@ -454,7 +454,7 @@ Private Sub arrangeLayout()
         End With
         
         '[Events layer]
-        Call UI.Forms.copySizeAndPosition(pEventsLayerLabel, pBackgroundLabel)
+        Call UI.controls.copySizeAndPosition(pEventsLayerLabel, pBackgroundLabel)
         
     End If
     

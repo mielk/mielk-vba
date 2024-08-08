@@ -24,14 +24,14 @@ Public Function getNonEmptyRange(wks As Excel.Worksheet, _
     Dim lastRow As Long
     Dim firstCol As Long
     Dim lastCol As Long
-    Dim Row As Long
+    Dim row As Long
     Dim col As Long
     Dim i As Long
     Dim arr As Variant
     '------------------------------------------------------------------------------------------------------
     
     On Error Resume Next
-    wks.AutoFilterMode = False
+    'wks.AutoFilterMode = False
     
 '[Doesn't work if sheet is protected]
 '    Set lastCell = wks.Cells.SpecialCells(xlCellTypeLastCell)
@@ -58,20 +58,20 @@ Public Function getNonEmptyRange(wks As Excel.Worksheet, _
         If startFromFirstRow Then
             firstRow = 1
         Else
-            For Row = 1 To lastRow
-                If Not VBA.IsEmpty(arr(Row, lastCol)) Then
-                    firstRow = Row
+            For row = 1 To lastRow
+                If Not VBA.IsEmpty(arr(row, lastCol)) Then
+                    firstRow = row
                     Exit For
                 End If
-                col = wks.cells(Row, lastCol).End(xlToLeft).column
+                col = wks.cells(row, lastCol).End(xlToLeft).column
                 If col > 1 Then
-                    firstRow = Row
+                    firstRow = row
                     Exit For
-                ElseIf Not VBA.IsEmpty(wks.cells(Row, col)) Then
-                    firstRow = Row
+                ElseIf Not VBA.IsEmpty(wks.cells(row, col)) Then
+                    firstRow = row
                     Exit For
                 End If
-            Next Row
+            Next row
         End If
         
         If startFromFirstColumn Then
@@ -82,11 +82,11 @@ Public Function getNonEmptyRange(wks As Excel.Worksheet, _
                     firstCol = col
                     Exit For
                 End If
-                Row = wks.cells(lastRow, col).End(xlUp).Row
-                If Row > 1 Then
+                row = wks.cells(lastRow, col).End(xlUp).row
+                If row > 1 Then
                     firstCol = col
                     Exit For
-                ElseIf Not VBA.IsEmpty(wks.cells(Row, col)) Then
+                ElseIf Not VBA.IsEmpty(wks.cells(row, col)) Then
                     firstCol = col
                     Exit For
                 End If
@@ -113,7 +113,7 @@ End Function
 
 Private Sub yieldBounds(rng As Excel.Range, ByRef firstRow As Long, ByRef firstCol As Long, ByRef lastRow As Long, ByRef lastCol As Long)
     Dim subrng As Excel.Range
-    Dim Row As Long
+    Dim row As Long
     Dim col As Long
     '------------------------------------------------------------------------------------------------------
     
@@ -122,8 +122,8 @@ Private Sub yieldBounds(rng As Excel.Range, ByRef firstRow As Long, ByRef firstC
         'First row
         For Each subrng In rng.Areas
             If firstRow = 1 Then Exit For
-            Row = subrng.Row
-            If Row < firstRow Then firstRow = Row
+            row = subrng.row
+            If row < firstRow Then firstRow = row
         Next subrng
         
         'First column
@@ -135,8 +135,8 @@ Private Sub yieldBounds(rng As Excel.Range, ByRef firstRow As Long, ByRef firstC
         
         'Last row
         For Each subrng In rng.Areas
-            Row = subrng.Row + subrng.Rows.count - 1
-            If Row > lastRow Then lastRow = Row
+            row = subrng.row + subrng.Rows.count - 1
+            If row > lastRow Then lastRow = row
         Next subrng
         
         'Last column
@@ -301,7 +301,7 @@ Public Function findRowByLabel(wks As Excel.Worksheet, label As String) As Long
     '------------------------------------------------------------------------------------------------------
     With wks
         Set cell = .cells.Find(what:=label, After:=.cells(1, 1), lookAt:=xlWhole, lookIn:=xlFormulas, searchOrder:=xlByRows, searchDirection:=xlNext, matchCase:=False)
-        If Not cell Is Nothing Then findRowByLabel = cell.Row
+        If Not cell Is Nothing Then findRowByLabel = cell.row
     End With
 End Function
 
@@ -367,7 +367,7 @@ Public Function IsValid(rng As Excel.Range) As Boolean
     Dim lngRangeRow As Long
     '------------------------------------------------------------------------------------------------------
     On Error Resume Next
-    lngRangeRow = rng.Row
+    lngRangeRow = rng.row
     If lngRangeRow > 0 Then IsValid = True
 End Function
 
@@ -401,7 +401,7 @@ Public Function pasteData(data As Variant, initRange As Excel.Range, Optional tr
         
         Set wks = .Parent
         
-        If wks.ProtectContents Then
+        If wks.ProtectContents And Not VBA.IsMissing(sheetPassword) Then
             protected = True
             Call wks.Unprotect(sheetPassword)
         End If
@@ -415,9 +415,9 @@ Public Function pasteData(data As Variant, initRange As Excel.Range, Optional tr
         
         If transponeData Then arr = f.arrays.transposeArray(arr)
                                                                                                         
-        firstRow = .Row
+        firstRow = .row
         firstCol = .column
-        lastRow = .Row + f.arrays.getSize(arr, 1) - 1
+        lastRow = .row + f.arrays.getSize(arr, 1) - 1
         lastCol = .column + f.arrays.getSize(arr, 2) - 1
                                                                                                         
     End With
@@ -445,12 +445,12 @@ End Function
 Public Function getCellAddress(cell As Excel.Range, Optional rowLocked As Boolean = True, Optional columnLocked As Boolean = True)
     Dim defaultAddress As String
     Dim columnIndex As String
-    Dim Row As Long
+    Dim row As Long
     '------------------------------------------------------------------------------------------------------
     defaultAddress = cell.address
     columnIndex = f.strings.substring(defaultAddress, "$", "$")
-    Row = VBA.CLng(f.strings.substring(defaultAddress, columnIndex & "$", vbNullString))
-    getCellAddress = VBA.IIf(columnLocked, "$", vbNullString) & columnIndex & VBA.IIf(rowLocked, "$", vbNullString) & Row
+    row = VBA.CLng(f.strings.substring(defaultAddress, columnIndex & "$", vbNullString))
+    getCellAddress = VBA.IIf(columnLocked, "$", vbNullString) & columnIndex & VBA.IIf(rowLocked, "$", vbNullString) & row
 End Function
 
 Public Sub clearFormatConditions(rng As Excel.Range)
@@ -988,11 +988,11 @@ Public Function getNextEmptyCell(cell As Excel.Range, direction As Long) As Exce
         End If
         
         isHorizontalSearch = (direction = xlToRight Or direction = xlToLeft)
-        firstIndex = VBA.IIf(isHorizontalSearch, cell.column, cell.Row)
+        firstIndex = VBA.IIf(isHorizontalSearch, cell.column, cell.row)
         
         For i = firstIndex To lastIndex Step stepSize
             If isHorizontalSearch Then
-                Set rng = wks.cells(cell.Row, i)
+                Set rng = wks.cells(cell.row, i)
             Else
                 Set rng = wks.cells(i, cell.column)
             End If
@@ -1065,7 +1065,7 @@ Public Function getRangeLastRow(rng As Excel.Range) As Long
     If f.ranges.IsValid(rng) Then
         For Each subrng In rng.Areas
             With subrng
-                lastRow = .column + .columns.count - 1
+                lastRow = .row + .Rows.count - 1
                 If lastRow > getRangeLastRow Then getRangeLastRow = lastRow
             End With
         Next subrng
@@ -1190,7 +1190,7 @@ Public Function applyFormatCondition(rng As Excel.Range, formatProps As Scriptin
     Dim stopIfTrue As Boolean
     Dim formula As Variant
     Dim backColor As Variant
-    Dim FontColor As Variant
+    Dim fontColor As Variant
     Dim fontSize As Variant
     Dim FontBold As Variant
     '------------------------------------------------------------------------------------------------------
@@ -1204,7 +1204,7 @@ Public Function applyFormatCondition(rng As Excel.Range, formatProps As Scriptin
         Call f.dictionaries.assignValueFromDictToVariable(formatProps, stopIfTrue, "stopIfTrue")
         Call f.dictionaries.assignValueFromDictToVariable(formatProps, formula, "formula")
         Call f.dictionaries.assignValueFromDictToVariable(formatProps, backColor, "interior.color")
-        Call f.dictionaries.assignValueFromDictToVariable(formatProps, FontColor, "font.color")
+        Call f.dictionaries.assignValueFromDictToVariable(formatProps, fontColor, "font.color")
         Call f.dictionaries.assignValueFromDictToVariable(formatProps, fontSize, "font.size")
         Call f.dictionaries.assignValueFromDictToVariable(formatProps, FontBold, "font.bold")
         
@@ -1214,7 +1214,7 @@ Public Function applyFormatCondition(rng As Excel.Range, formatProps As Scriptin
             If setFirstPriority Then Call .setFirstPriority
             .stopIfTrue = stopIfTrue
             If Not VBA.IsEmpty(backColor) Then .Interior.color = backColor
-            If Not VBA.IsEmpty(FontColor) Then .Font.color = FontColor
+            If Not VBA.IsEmpty(fontColor) Then .Font.color = fontColor
             If Not VBA.IsEmpty(FontBold) Then .Font.Bold = FontBold
             If Not VBA.IsEmpty(fontSize) Then .Font.size = fontSize
         End With
@@ -1223,10 +1223,28 @@ Public Function applyFormatCondition(rng As Excel.Range, formatProps As Scriptin
     
 End Function
 
+Public Function applyExpressionFormatCondition(rng As Excel.Range, formula As String, _
+                                                    backColor As Long, Optional fontColor As Long, _
+                                                    Optional stopIfTrue As Boolean = False) As Excel.FormatCondition
+    Set applyExpressionFormatCondition = rng.FormatConditions.Add(Type:=xlExpression, Formula1:=formula)
+    With applyExpressionFormatCondition
+        Call .setFirstPriority
+        With .Interior
+            .PatternColorIndex = xlAutomatic
+            .color = backColor
+            .TintAndShade = 0
+        End With
+        If fontColor Then .Font.color = fontColor
+        .stopIfTrue = stopIfTrue
+    End With
+End Function
+
+
+
 Public Sub applyFormatFromDictionary(rng As Excel.Range, properties As Scripting.Dictionary)
     Dim dict As Scripting.Dictionary
     Dim key As Variant
-    Dim Prop As UIProp
+    Dim prop As UIProp
     Dim dictBorders As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
     
@@ -1234,14 +1252,14 @@ Public Sub applyFormatFromDictionary(rng As Excel.Range, properties As Scripting
         Set dict = f.dictionaries.flatDictionary(properties)
         If f.dictionaries.isNonEmptyDictionary(dict) Then
             For Each key In dict.Keys
-                Set Prop = UIProps.getPropByAlias(VBA.CStr(key))
-                If Prop Is Nothing Then
+                Set prop = UIProps.getPropByAlias(VBA.CStr(key))
+                If prop Is Nothing Then
                     'skip
-                ElseIf VBA.InStr(1, Prop.getName, "borders.") Then
+                ElseIf VBA.InStr(1, prop.getName, "borders.") Then
                     Stop
                     'borders are set in the separate submethod
                 Else
-                    Call applyFormatForSingleProperty(rng, Prop, Prop.getConvertedValue(dict.item(key)))
+                    Call applyFormatForSingleProperty(rng, prop, prop.getConvertedValue(dict.item(key)))
                 End If
             Next key
         End If
@@ -1303,16 +1321,16 @@ Private Function getBordersDefinitionsFromDict(dict As Scripting.Dictionary) As 
     
 End Function
 
-Public Sub applyFormatForSingleProperty(rng As Excel.Range, Prop As UIProp, value As Variant)
+Public Sub applyFormatForSingleProperty(rng As Excel.Range, prop As UIProp, value As Variant)
     
-    Select Case Prop.getId
+    Select Case prop.getId
         Case UIProps.width.getId:                       rng.EntireColumn.ColumnWidth = value
         Case UIProps.height.getId:                      rng.EntireRow.RowHeight = value
         Case UIProps.minWidth.getId:                    rng.EntireColumn.ColumnWidth = f.Math.getMax(value, rng.EntireColumn.ColumnWidth)
         Case UIProps.minHeight.getId:                   rng.EntireRow.RowHeight = f.Math.getMax(value, rng.EntireRow.RowHeight)
         Case UIProps.BackgroundColor.getId:             rng.Interior.color = value
         Case UIProps.fontSize.getId:                    rng.Font.size = value
-        Case UIProps.FontColor.getId:                   rng.Font.color = value
+        Case UIProps.fontColor.getId:                   rng.Font.color = value
         Case UIProps.FontFamily.getId:                  rng.Font.name = value
         Case UIProps.FontBold.getId:                    rng.Font.Bold = value
         Case UIProps.FontItalic.getId:                  rng.Font.Italic = value
@@ -1485,9 +1503,9 @@ Public Function haveCommonParts(rng1 As Excel.Range, rng2 As Excel.Range) As Boo
         haveCommonParts = False
     ElseIf Not rng1.Parent Is rng2.Parent Then
         haveCommonParts = False
-    ElseIf rng1.Row >= rng2.Row + rng2.Rows.count Then
+    ElseIf rng1.row >= rng2.row + rng2.Rows.count Then
         haveCommonParts = False
-    ElseIf rng2.Row >= rng1.Row + rng1.Rows.count Then
+    ElseIf rng2.row >= rng1.row + rng1.Rows.count Then
         haveCommonParts = False
     ElseIf rng1.column >= rng2.column + rng2.columns.count Then
         haveCommonParts = False
@@ -1518,21 +1536,21 @@ End Function
 
 
 
-Public Function findRowByTop(Sheet As Excel.Worksheet, top As Single) As Long
+Public Function findRowByTop(Sheet As Excel.Worksheet, Top As Single) As Long
     Dim i As Long
     Dim rowBottom As Single
     '------------------------------------------------------------------------------------------------------
     
     If Not f.sheets.IsValid(Sheet) Then
         findRowByTop = -1
-    ElseIf top < 0 Then
+    ElseIf Top < 0 Then
         findRowByTop = 0
     Else
         For i = 1 To Sheet.Rows.count
             With Sheet.Rows(i)
-                rowBottom = .top + .height
+                rowBottom = .Top + .height
             End With
-            If rowBottom >= top Then
+            If rowBottom >= Top Then
                 findRowByTop = i
                 Exit For
             End If
@@ -1569,8 +1587,8 @@ Public Function getRangeSizeAndPosition(rng As Excel.Range) As area
         End If
         
         With getRangeSizeAndPosition
-            .left = rng.left
-            .top = rng.top
+            .Left = rng.Left
+            .Top = rng.Top
             .height = height
             .width = width
         End With
@@ -1719,7 +1737,7 @@ Public Sub autoFitColumnsWithoutShrinking(rng As Excel.Range)
     
 End Sub
 
-Public Sub autoFitRowsWithoutShrinking(rng As Excel.Range)
+Public Sub autoFitRowsWithoutShrinking(rng As Excel.Range, Optional maxHeight As Single)
     Dim heights As Variant
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
@@ -1736,7 +1754,9 @@ Public Sub autoFitRowsWithoutShrinking(rng As Excel.Range)
     On Error GoTo 0
     
     For i = LBound(heights) To UBound(heights)
-        If rng.Rows(i).RowHeight < heights(i) Then
+        If rng.Rows(i).RowHeight > maxHeight Then
+            rng.Rows(i).RowHeight = maxHeight
+        ElseIf rng.Rows(i).RowHeight < heights(i) Then
             rng.Rows(i).RowHeight = heights(i)
         End If
     Next i
@@ -1828,7 +1848,7 @@ End Function
 Private Function createAddressesDictionary(rng As Excel.Range) As Scripting.Dictionary
     Dim wks As Excel.Worksheet
     Dim rngArea As Excel.Range
-    Dim Row As Long
+    Dim row As Long
     Dim col As Long
     Dim lastRow As Long
     Dim lastCol As Long
@@ -1842,13 +1862,73 @@ Private Function createAddressesDictionary(rng As Excel.Range) As Scripting.Dict
     For Each rngArea In rng.Areas
         lastRow = f.ranges.getRangeLastRow(rngArea)
         lastCol = f.ranges.getRangeLastColumn(rngArea)
-        For Row = rngArea.Row To lastRow
+        For row = rngArea.row To lastRow
             For col = rngArea.column To lastCol
-                coordinates = Row & ";" & col
-                Call f.dictionaries.addItem(createAddressesDictionary, coordinates, wks.cells(Row, col))
+                coordinates = row & ";" & col
+                Call f.dictionaries.addItem(createAddressesDictionary, coordinates, wks.cells(row, col))
             Next col
-        Next Row
+        Next row
     Next rngArea
     
     
 End Function
+
+
+Public Sub ungroup(rng As Excel.Range)
+    On Error Resume Next
+    Call rng.ungroup
+End Sub
+
+
+Public Function getRangeCell(rng As Excel.Range, row As Long, column As Long) As Excel.Range
+    If f.ranges.IsValid(rng) Then
+        If Not f.Math.isInRange(row, 1, rng.Rows.count) Then
+            ' row out of scope
+        ElseIf Not f.Math.isInRange(column, 1, rng.columns.count) Then
+            ' column out of scope
+        Else
+            Set getRangeCell = rng.cells(row, column)
+        End If
+    End If
+End Function
+
+
+
+Public Sub copyFormulas(rngSource As Excel.Range, rngDestination As Excel.Range)
+    Dim cell As Excel.Range
+    Dim formula As String
+    Dim isArrayFormula As Boolean
+    Dim Counter As Long
+    '------------------------------------------------------------------------------------------------------
+    Dim subrng As Excel.Range
+    Dim subCell As Excel.Range
+    '------------------------------------------------------------------------------------------------------
+    
+    If Not f.ranges.IsValid(rngSource) Then
+        ' invalid source range
+    ElseIf Not f.ranges.IsValid(rngDestination) Then
+        ' invalid destination range
+    Else
+        For Each cell In rngSource.Resize(1).cells
+            Counter = Counter + 1
+            formula = cell.FormulaR1C1
+            isArrayFormula = cell.HasArray
+            
+            If f.Math.isInRange(Counter, 1, rngDestination.columns.count) Then
+                Set subrng = rngDestination.columns(Counter)
+                
+                If isArrayFormula Then
+                    For Each subCell In subrng.cells
+                        subCell.FormulaArray = formula
+                    Next subCell
+                Else
+                    subrng.FormulaR1C1 = formula
+                End If
+                
+            End If
+            
+        Next cell
+    
+    End If
+    
+End Sub

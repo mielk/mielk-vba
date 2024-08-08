@@ -196,7 +196,7 @@ Private Function convertUTF8ToUni(data() As Byte) As String
     convertUTF8ToUni = VBA.String$(nc, VBA.Chr(0))
     ret = MultiByteToWideChar(CP_UTF8, 0, VBA.VarPtr(data(LBound(data))), _
                                     size, VBA.StrPtr(convertUTF8ToUni), nc)
-    convertUTF8ToUni = VBA.left$(convertUTF8ToUni, ret)
+    convertUTF8ToUni = VBA.Left$(convertUTF8ToUni, ret)
 
 End Function
 
@@ -224,7 +224,8 @@ End Function
 
 Public Function getCsvContentAsArray(filepath As String, _
                                      Optional delimiter As String = ",", _
-                                     Optional customAdjustments As Scripting.Dictionary) As Variant
+                                     Optional customAdjustments As Scripting.Dictionary, _
+                                     Optional useUnicodeReadingMethod As Boolean = True) As Variant
     Dim content As String
     Dim lines() As String
     Dim text As String
@@ -244,7 +245,11 @@ Public Function getCsvContentAsArray(filepath As String, _
     Dim adjustment As String
     '----------------------------------------------------------------------------------------------------------------------
     
-    content = f.strings.cutFromEnd(readTextFile(filepath), VBA.vbCrLf)
+    If useUnicodeReadingMethod Then
+        content = f.strings.cutFromEnd(readTextFile(filepath), VBA.vbCrLf)
+    Else
+        content = f.strings.cutFromEnd(readTextFile2(filepath), VBA.vbCrLf)
+    End If
     
     If f.dictionaries.isNonEmptyDictionary(customAdjustments) Then
         For Each key In customAdjustments.Keys
@@ -262,7 +267,7 @@ Public Function getCsvContentAsArray(filepath As String, _
     
     '[Adjust CSV content - replace all separator characters with other character;
     ' leave only separator characters used inside strings in quotes]
-    content = readTextFile(filepath)
+    'content = readTextFile(filepath)
     content = f.regex.replace(content, TRIM_FILE_REGEX, vbNullString, multiline:=False)
     content = f.regex.replace(content, VBA.Chr(13) & VBA.Chr(10), VBA.Chr(10))
     

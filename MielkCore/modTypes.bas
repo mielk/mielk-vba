@@ -5,13 +5,13 @@ Private Const CLASS_NAME As String = "modTypes"
     '----------------------------------------------------------------------------------------------------------
 
 Public Type Coordinate
-    x As Single
+    X As Single
     Y As Single
 End Type
 
 Public Type area
-    left As Single
-    top As Single
+    Left As Single
+    Top As Single
     width As Single
     height As Single
 End Type
@@ -52,6 +52,6 @@ End Function
 Public Function areaToString(area As area) As String
     With area
         areaToString = .width & "x" & .height & _
-                        " | x: " & .left & ", y: " & .top
+                        " | x: " & .Left & ", y: " & .Top
     End With
 End Function

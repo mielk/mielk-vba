@@ -230,7 +230,7 @@ End Function
 
 '[GETTERS]
 Public Function isValid() As Boolean
-    isValid = UI.Forms.isControlValid(pContainerFrame)
+    isValid = UI.Controls.isValid(pContainerFrame)
 End Function
 
 
@@ -240,7 +240,7 @@ Public Function getLeft() As Single
 End Function
 
 Public Function getRight() As Single
-    getRight = UI.Forms.getRight(pContainerFrame)
+    getRight = UI.Controls.getRight(pContainerFrame)
 End Function
 
 Public Function getTop() As Single
@@ -248,7 +248,7 @@ Public Function getTop() As Single
 End Function
 
 Public Function getBottom() As Single
-    getBottom = UI.Forms.getBottom(pContainerFrame)
+    getBottom = UI.Controls.getBottom(pContainerFrame)
 End Function
 
 
@@ -348,12 +348,12 @@ Private Sub arrangeControls()
     On Error Resume Next
     Call resizeControls
     'Call locateControl(pBottomBorder, 0, 0)
-    Call UI.Forms.locateControl(pContainerFrame, pLeft, pTop)
+    Call UI.Controls.locate(pContainerFrame, pLeft, pTop)
 End Sub
 
 Private Sub resizeControls()
     Call resizeContainerFrame
-    Call UI.Forms.resizeControl(pBottomBorder, pWidth, 1)
+    Call UI.Controls.resize(pBottomBorder, pWidth, 1)
 End Sub
 
 Private Sub resizeContainerFrame()

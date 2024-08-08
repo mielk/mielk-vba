@@ -140,7 +140,7 @@ Public Function getMatchArray(text As String, pattern As String, _
     Dim match As Object                 'IMatch2
     '------------------------------------------------------------------------------------------------------
     Dim arr As Variant
-    Dim counter As Long
+    Dim Counter As Long
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
     
@@ -158,10 +158,10 @@ Public Function getMatchArray(text As String, pattern As String, _
     
     If matches.count Then
         For Each match In matches
-            counter = match.SubMatches.count
-            If counter Then
-                ReDim arr(1 To counter)
-                For i = 0 To counter - 1
+            Counter = match.SubMatches.count
+            If Counter Then
+                ReDim arr(1 To Counter)
+                For i = 0 To Counter - 1
                     arr(i + 1) = match.SubMatches(i)
                 Next i
                 getMatchArray = arr
@@ -185,7 +185,7 @@ Public Function getMatchArraysCollection(text As String, pattern As String, _
     Dim match As Object                 'IMatch2
     '------------------------------------------------------------------------------------------------------
     Dim arr As Variant
-    Dim counter As Long
+    Dim Counter As Long
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
     
@@ -205,10 +205,10 @@ Public Function getMatchArraysCollection(text As String, pattern As String, _
     
     If matches.count Then
         For Each match In matches
-            counter = match.SubMatches.count
-            If counter Then
-                ReDim arr(1 To counter)
-                For i = 0 To counter - 1
+            Counter = match.SubMatches.count
+            If Counter Then
+                ReDim arr(1 To Counter)
+                For i = 0 To Counter - 1
                     arr(i + 1) = match.SubMatches(i)
                 Next i
                 Call getMatchArraysCollection.Add(arr)

@@ -11,6 +11,8 @@ Option Explicit
 
 Private Const CLASS_NAME As String = "enumProperty"
 '----------------------------------------------------------------------------------------------------------
+Private Const TRANSLATION_PREFIX As String = "props."
+'----------------------------------------------------------------------------------------------------------
 Private pName As String
 Private pDbField As String
 '----------------------------------------------------------------------------------------------------------
@@ -45,6 +47,10 @@ End Function
 
 Public Function getTag() As String
     getTag = "[" & pName & "]"
+End Function
+
+Public Function getDisplayedValue() As String
+    getDisplayedValue = MsgService.getText(TRANSLATION_PREFIX + pName)
 End Function
 
 Public Function toString() As String

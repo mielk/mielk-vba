@@ -166,37 +166,37 @@ Public Function getCaption() As String
 End Function
 
 Public Function getLeft() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getLeft = pBackgroundLabel.left
     End If
 End Function
 
 Public Function getRight() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getRight = pBackgroundLabel.left + pBackgroundLabel.width
     End If
 End Function
 
 Public Function getTop() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getTop = pBackgroundLabel.top
     End If
 End Function
 
 Public Function getBottom() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getBottom = pBackgroundLabel.top + pBackgroundLabel.height
     End If
 End Function
 
 Public Function getHeight() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getHeight = pBackgroundLabel.height
     End If
 End Function
 
 Public Function getWidth() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getWidth = pBackgroundLabel.width
     End If
 End Function
@@ -228,7 +228,7 @@ Public Function render() As UILabel
 End Function
 
 Private Sub insertBackgroundLabel()
-    Set pBackgroundLabel = pFrame.controls.Add(CREATE_LABEL_ID)
+    Set pBackgroundLabel = pFrame.controls.add(CREATE_LABEL_ID)
     With pBackgroundLabel
         .height = pHeight
         .width = pWidth
@@ -240,7 +240,7 @@ Private Sub insertBackgroundLabel()
 End Sub
 
 Private Sub insertCaptionLabel()
-    Set pCaptionLabel = pFrame.controls.Add(CREATE_LABEL_ID)
+    Set pCaptionLabel = pFrame.controls.add(CREATE_LABEL_ID)
     With pCaptionLabel
         .height = pHeight
         .width = pWidth
@@ -290,15 +290,15 @@ Public Function alignVertically(ctrl As MSForms.control) As UILabel
     
     Set alignVertically = Me
     
-    If UI.Forms.isControlValid(ctrl) Then
+    If UI.controls.isValid(ctrl) Then
         offset = (ctrl.top + (ctrl.height - pHeight) / 2) - pTop
     End If
     
     If offset Then
-        If UI.Forms.isControlValid(pBackgroundLabel) Then
+        If UI.controls.isValid(pBackgroundLabel) Then
             pBackgroundLabel.top = UI.Normalize.position(pBackgroundLabel.top + offset)
         End If
-        If UI.Forms.isControlValid(pCaptionLabel) Then
+        If UI.controls.isValid(pCaptionLabel) Then
             pCaptionLabel.top = UI.Normalize.position(pCaptionLabel.top + offset)
         End If
     End If
@@ -337,7 +337,7 @@ Private Sub updateSize()
 End Sub
 
 Private Sub updateCaption()
-    If UI.Forms.isControlValid(pCaptionLabel) Then
+    If UI.controls.isValid(pCaptionLabel) Then
         With pCaptionLabel
             .caption = VBA.format(pCaption, pNumberFormat)
             '.WordWrap = (VBA.Instr(1, .caption, vba.vbcrlf) > 0)

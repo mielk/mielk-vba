@@ -182,37 +182,37 @@ End Function
 '[GETTERS]
 
 Public Function getLeft() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getLeft = pBackgroundLabel.left
     End If
 End Function
 
 Public Function getRight() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getRight = pBackgroundLabel.left + pBackgroundLabel.width
     End If
 End Function
 
 Public Function getTop() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getTop = pBackgroundLabel.top
     End If
 End Function
 
 Public Function getBottom() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getBottom = pBackgroundLabel.top + pBackgroundLabel.height
     End If
 End Function
 
 Public Function getHeight() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getHeight = pBackgroundLabel.height
     End If
 End Function
 
 Public Function getWidth() As Single
-    If UI.Forms.isControlValid(pBackgroundLabel) Then
+    If UI.controls.isValid(pBackgroundLabel) Then
         getWidth = pBackgroundLabel.width
     End If
 End Function
@@ -236,7 +236,7 @@ End Function
 Public Function render() As UIValidationLabel
     Set render = Me
     If Not pIsRendered Then
-        If UI.Forms.isControlValid(pFrame) Then
+        If UI.controls.isValid(pFrame) Then
             Call insertErrorBackground
             Call insertErrorCaptionLabel
             Call updateView
@@ -248,7 +248,7 @@ Public Function render() As UIValidationLabel
 End Function
 
 Private Sub insertErrorBackground()
-    Set pBackgroundLabel = pFrame.controls.Add(CREATE_LABEL_ID, visible:=False)
+    Set pBackgroundLabel = pFrame.controls.add(CREATE_LABEL_ID, visible:=False)
     With pBackgroundLabel
         .BackStyle = fmBackStyleOpaque
         .backColor = pErrorBackColor
@@ -259,7 +259,7 @@ Private Sub insertErrorBackground()
 End Sub
 
 Private Sub insertErrorCaptionLabel()
-    Set pCaptionLabel = pFrame.controls.Add(CREATE_LABEL_ID, visible:=False)
+    Set pCaptionLabel = pFrame.controls.add(CREATE_LABEL_ID, visible:=False)
     With pCaptionLabel
         .BackStyle = fmBackStyleTransparent
         .borderStyle = fmBorderStyleNone

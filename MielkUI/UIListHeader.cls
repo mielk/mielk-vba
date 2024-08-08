@@ -147,7 +147,7 @@ Public Function getLeft() As Single
 End Function
 
 Public Function getRight() As Single
-    getRight = UI.Forms.getRight(pBackgroundLabel)
+    getRight = UI.controls.getRight(pBackgroundLabel)
 End Function
 
 Public Function getTop() As Single
@@ -155,7 +155,7 @@ Public Function getTop() As Single
 End Function
 
 Public Function getBottom() As Single
-    getBottom = UI.Forms.getBottom(pBackgroundLabel)
+    getBottom = UI.controls.getBottom(pBackgroundLabel)
 End Function
 
 Public Function getWidth() As Single
@@ -230,12 +230,12 @@ Private Function getLabelName(controlType As ControlTypeEnum) As String
 End Function
 
 Private Sub insertBackgroundLabel()
-    Set pBackgroundLabel = getFrame.controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_Background), True)
+    Set pBackgroundLabel = getFrame.controls.add(CREATE_LABEL_ID, getLabelName(ControlType_Background), True)
     Call refreshBackgroundLabel
 End Sub
 
 Private Sub insertCaptionLabel()
-    Set pCaptionLabel = getFrame.controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_Caption), True)
+    Set pCaptionLabel = getFrame.controls.add(CREATE_LABEL_ID, getLabelName(ControlType_Caption), True)
     Call refreshCaptionLabel
 End Sub
 
@@ -243,12 +243,12 @@ Private Sub insertPaginationLabels()
     Dim frame As MSForms.frame:                     Set frame = getFrame
     '----------------------------------------------------------------------------------------------------------
     
-    Set pToFirstButton = frame.controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_ToFirst), True)
-    Set pToPreviousButton = frame.controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_ToPrevious), True)
+    Set pToFirstButton = frame.controls.add(CREATE_LABEL_ID, getLabelName(ControlType_ToFirst), True)
+    Set pToPreviousButton = frame.controls.add(CREATE_LABEL_ID, getLabelName(ControlType_ToPrevious), True)
     'Set pCurrentPage = frame.controls.Add(CREATE_TEXTBOX_ID, getLabelName(ControlType_CurrentPage), False)
-    Set pPaginationStatus = frame.controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_TotalPages), True)
-    Set pToNextButton = frame.controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_ToNext), True)
-    Set pToLastButton = frame.controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_ToLast), True)
+    Set pPaginationStatus = frame.controls.add(CREATE_LABEL_ID, getLabelName(ControlType_TotalPages), True)
+    Set pToNextButton = frame.controls.add(CREATE_LABEL_ID, getLabelName(ControlType_ToNext), True)
+    Set pToLastButton = frame.controls.add(CREATE_LABEL_ID, getLabelName(ControlType_ToLast), True)
     
     Call formatPaginationButton(pToFirstButton, UI.Icons.getArrowDoubleLeft)
     Call formatPaginationButton(pToPreviousButton, UI.Icons.getArrowLeft)
@@ -318,8 +318,8 @@ End Sub
 
 Private Sub arrangeControls()
     Call resizeControls
-    Call UI.Forms.locateControl(pBackgroundLabel, pLeft, 0)
-    Call UI.Forms.locateControl(pCaptionLabel, pLeft + pParent.getPadding, (pBackgroundLabel.height - pCaptionLabel.height) / 2)
+    Call UI.controls.locate(pBackgroundLabel, pLeft, 0)
+    Call UI.controls.locate(pCaptionLabel, pLeft + pParent.getPadding, (pBackgroundLabel.height - pCaptionLabel.height) / 2)
     Call updatePaginationControlsLayout
 End Sub
 
@@ -336,14 +336,14 @@ Private Sub updatePaginationControlsLayout()
     Else
         Call updatePaginationVisibility(True)
         Call updatePaginationStatusCaption
-        buttonTop = UI.Forms.getBottom(pBackgroundLabel) - pPaginationStatus.height + (pPaginationStatus.height - PAGINATION_BUTTON_SIZE) / 2
+        buttonTop = UI.controls.getBottom(pBackgroundLabel) - pPaginationStatus.height + (pPaginationStatus.height - PAGINATION_BUTTON_SIZE) / 2
         
-        Call UI.Forms.locateControl(pToLastButton, pBackgroundLabel.width - PAGINATION_BUTTON_SIZE, buttonTop)
-        Call UI.Forms.locateControl(pToNextButton, pToLastButton.left - PAGINATION_CONTROLS_SPACE - PAGINATION_BUTTON_SIZE, buttonTop)
-        Call UI.Forms.locateControl(pPaginationStatus, pToNextButton.left - PAGINATION_CONTROLS_SPACE - pPaginationStatus.width, _
-                                                        UI.Forms.getBottom(pBackgroundLabel) - pPaginationStatus.height)
-        Call UI.Forms.locateControl(pToPreviousButton, pPaginationStatus.left - PAGINATION_CONTROLS_SPACE - PAGINATION_BUTTON_SIZE, buttonTop)
-        Call UI.Forms.locateControl(pToFirstButton, pToPreviousButton.left - PAGINATION_CONTROLS_SPACE - PAGINATION_BUTTON_SIZE, buttonTop)
+        Call UI.controls.locate(pToLastButton, pBackgroundLabel.width - PAGINATION_BUTTON_SIZE, buttonTop)
+        Call UI.controls.locate(pToNextButton, pToLastButton.left - PAGINATION_CONTROLS_SPACE - PAGINATION_BUTTON_SIZE, buttonTop)
+        Call UI.controls.locate(pPaginationStatus, pToNextButton.left - PAGINATION_CONTROLS_SPACE - pPaginationStatus.width, _
+                                                        UI.controls.getBottom(pBackgroundLabel) - pPaginationStatus.height)
+        Call UI.controls.locate(pToPreviousButton, pPaginationStatus.left - PAGINATION_CONTROLS_SPACE - PAGINATION_BUTTON_SIZE, buttonTop)
+        Call UI.controls.locate(pToFirstButton, pToPreviousButton.left - PAGINATION_CONTROLS_SPACE - PAGINATION_BUTTON_SIZE, buttonTop)
         
         '[Adjust visibility]
         On Error Resume Next
@@ -373,7 +373,7 @@ Private Sub updatePaginationStatusCaption()
 End Sub
 
 Private Sub resizeControls()
-    Call UI.Forms.resizeControl(pBackgroundLabel, pWidth, getFrame.InsideHeight)
+    Call UI.controls.resize(pBackgroundLabel, pWidth, getFrame.InsideHeight)
     Call resizeCaptionLabel
 End Sub
 

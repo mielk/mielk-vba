@@ -211,25 +211,25 @@ End Function
 
 '[XML]
 Private Sub createXmlFile()
-    Dim filePath As String
+    Dim filepath As String
     Dim template As String
     Dim content As String
     '------------------------------------------------------------------------------------------------------
     Dim stream As Scripting.TextStream
     '------------------------------------------------------------------------------------------------------
     
-    filePath = f.files.concatenatePath( _
+    filepath = f.files.concatenatePath( _
                                     pParent.getProject.getFolderPath, _
                                     Paths.FolderNameResources, _
                                     Paths.FolderNameRibbon, _
                                     RIBBON_XML_FILE_NAME)
-    template = f.TextFiles.readTextFile(filePath)
+    template = f.TextFiles.readTextFile(filepath)
     content = f.Strings.Format(template, pRibbonTabControl.getXml)
                                     
     '[Writing modified content to the original text file] -----------------------------------|
     On Error Resume Next                                                                    '|
     Call VBA.Err.Clear                                                                      '|
-    Set stream = fso.OpenTextFile(filePath, ForWriting)                                     '|
+    Set stream = fso.OpenTextFile(filepath, ForWriting)                                     '|
     Call stream.WriteLine(content)                                                          '|
     Call stream.Close                                                                       '|
     '----------------------------------------------------------------------------------------|
@@ -238,13 +238,13 @@ Private Sub createXmlFile()
 '==========================================================================================================
 ExitPoint:
     Dim errNumber As Long, errDescription As String
-    Call pSuccessful.Add(filePath)
+    Call pSuccessful.Add(filepath)
     Exit Sub
     
 '----------------------------------------------------------------------------------------------------------
 errHandler:
     errNumber = Err.Number: errDescription = Err.Description
-    Call pErrors.Add(f.Strings.Format(Msg.getText(ERR_CREATING_XML_FILE), filePath, errDescription, errNumber))
+    Call pErrors.Add(f.Strings.Format(Msg.getText(ERR_CREATING_XML_FILE), filepath, errDescription, errNumber))
         
 End Sub
 
@@ -253,25 +253,25 @@ End Sub
 
 '[JSON]
 Private Sub createJsonFile()
-    Dim filePath As String
+    Dim filepath As String
     Dim json As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
     
     On Error GoTo errHandler
     
-    filePath = f.files.concatenatePath(pParent.getProject.getFolderPath, _
+    filepath = f.files.concatenatePath(pParent.getProject.getFolderPath, _
                                             Paths.FolderNameResources, _
                                             Paths.FolderNameRibbon, _
                                             "ribbon.json")
                                             
-    Set json = f.json.getJsonObjectFromFile(filePath)
+    Set json = f.json.getJsonObjectFromFile(filepath)
     Call f.dictionaries.AddItem(json, Props_Project.controls.getName, getRibbonDefinitionsDictionary)
-    Call f.TextFiles.printToTextFile(f.json.ConvertToJson(json, VBA.vbTab), filePath, True)
+    Call f.TextFiles.printToTextFile(f.json.ConvertToJson(json, VBA.vbTab), filepath, True)
 
 '==========================================================================================================
 ExitPoint:
     Dim errNumber As Long, errDescription As String
-    Call pSuccessful.Add(filePath)
+    Call pSuccessful.Add(filepath)
     Exit Sub
     
 '----------------------------------------------------------------------------------------------------------
@@ -323,25 +323,25 @@ End Function
 
 '[MSG JSON FILES]
 Private Sub createMsgFile()
-    Dim filePath As String
+    Dim filepath As String
     Dim json As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
     
     On Error GoTo errHandler
     
-    filePath = f.files.concatenatePath(pParent.getProject.getFolderPath, _
+    filepath = f.files.concatenatePath(pParent.getProject.getFolderPath, _
                                             Paths.FolderNameResources, _
                                             Paths.FolderNameMsgs, _
                                             Paths.FolderNameProject, _
                                             "ribbon.json")
     Set json = getRibbonMessageDefinitions
 
-    Call f.TextFiles.printToTextFile(f.json.ConvertToJson(json, VBA.vbTab), filePath, True)
+    Call f.TextFiles.printToTextFile(f.json.ConvertToJson(json, VBA.vbTab), filepath, True)
 
 '==========================================================================================================
 ExitPoint:
     Dim errNumber As Long, errDescription As String
-    Call pSuccessful.Add(filePath)
+    Call pSuccessful.Add(filepath)
     Exit Sub
     
 '----------------------------------------------------------------------------------------------------------
@@ -409,13 +409,13 @@ Private Sub insertXmlIntoFile()
     Const FILE_PATH As String = "D:\vba-tests\apps\Testowa aplikacja\test-view.xlsm"
     Const XML_PATH As String = "D:\vba-tests\apps\Testowa aplikacja\resources\ribbon\ribbon.xml"
     '-----------------------------------------------------------------------------------------------
-    Dim filePath As String
+    Dim filepath As String
     Dim xmlPath As String
     Dim appender As RibbonXmlAppender
     '-----------------------------------------------------------------------------------------------
     
     With pParent.getProject
-        filePath = .getViewFilePath
+        filepath = .getViewFilePath
         xmlPath = f.files.concatenatePath(.getFolderPath, _
                                             Paths.FolderNameResources, _
                                             Paths.FolderNameRibbon, _
@@ -423,7 +423,7 @@ Private Sub insertXmlIntoFile()
     End With
     
     Set appender = New RibbonXmlAppender
-    Call appender.append(filePath, xmlPath)
+    Call appender.append(filepath, xmlPath)
     
 End Sub
 

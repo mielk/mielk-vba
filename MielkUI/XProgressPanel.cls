@@ -363,7 +363,7 @@ End Function
 
 '[GETTERS]
 Public Function isValid() As Boolean
-    isValid = UI.Forms.isControlValid(pContainerFrame)
+    isValid = UI.controls.isValid(pContainerFrame)
 End Function
 
 Public Function hasDetailsProgressBar() As Boolean
@@ -376,7 +376,7 @@ Public Function getLeft() As Single
 End Function
 
 Public Function getRight() As Single
-    getRight = UI.Forms.getRight(pContainerFrame)
+    getRight = UI.controls.getRight(pContainerFrame)
 End Function
 
 Public Function getTop() As Single
@@ -384,7 +384,7 @@ Public Function getTop() As Single
 End Function
 
 Public Function getBottom() As Single
-    getBottom = UI.Forms.getBottom(pContainerFrame)
+    getBottom = UI.controls.getBottom(pContainerFrame)
 End Function
 
 
@@ -521,27 +521,27 @@ Private Sub insertDetailProgressBar()
 End Sub
 
 Private Function insertProgressBarHeaderLabel(ctrlType As ControlTypeEnum, caption As String) As MSForms.label
-    Set insertProgressBarHeaderLabel = pContainerFrame.controls.Add(CREATE_LABEL_ID, getLabelName(ctrlType), True)
+    Set insertProgressBarHeaderLabel = pContainerFrame.controls.add(CREATE_LABEL_ID, getLabelName(ctrlType), True)
     Call refreshProgressBarHeaderLabel(ctrlType, caption)
 End Function
 
 Private Function insertProgressBarFrameLabel(ctrlType As ControlTypeEnum) As MSForms.label
-    Set insertProgressBarFrameLabel = pContainerFrame.controls.Add(CREATE_LABEL_ID, getLabelName(ctrlType), True)
+    Set insertProgressBarFrameLabel = pContainerFrame.controls.add(CREATE_LABEL_ID, getLabelName(ctrlType), True)
     Call refreshProgressBarFrameLabel(ctrlType)
 End Function
 
 Private Function insertProgressBarProgressLabel(ctrlType As ControlTypeEnum) As MSForms.label
-    Set insertProgressBarProgressLabel = pContainerFrame.controls.Add(CREATE_LABEL_ID, getLabelName(ctrlType), True)
+    Set insertProgressBarProgressLabel = pContainerFrame.controls.add(CREATE_LABEL_ID, getLabelName(ctrlType), True)
     Call refreshProgressBarProgressLabel(ctrlType)
 End Function
 
 Private Function insertProgressBarCaptionLabel(ctrlType As ControlTypeEnum) As MSForms.label
-    Set insertProgressBarCaptionLabel = pContainerFrame.controls.Add(CREATE_LABEL_ID, getLabelName(ctrlType), True)
+    Set insertProgressBarCaptionLabel = pContainerFrame.controls.add(CREATE_LABEL_ID, getLabelName(ctrlType), True)
     Call refreshProgressBarCaptionLabel(ctrlType)
 End Function
 
 Private Sub insertBottomBorder()
-    Set pBottomBorder = pContainerFrame.controls.Add(CREATE_LABEL_ID, getLabelName(ControlType_BottomBorder), True)
+    Set pBottomBorder = pContainerFrame.controls.add(CREATE_LABEL_ID, getLabelName(ControlType_BottomBorder), True)
     Call refreshBottomBorder
 End Sub
 
@@ -632,35 +632,35 @@ Private Sub arrangeControls()
     
     Call resizeControls
     
-    Call UI.Forms.locateControl(pMainProgressBarHeaderLabel, pInsidePadding, pTopPadding)
-    top = UI.Forms.getBottom(pMainProgressBarHeaderLabel) + pInsidePadding
-    Call UI.Forms.locateControl(pMainProgressBarFrameLabel, pInsidePadding, top)
-    Call UI.Forms.locateControl(pMainProgressBarProgressLabel, pInsidePadding, top)
-    Call UI.Forms.locateControl(pMainProgressBarCaptionLabel, pInsidePadding, pMainProgressBarFrameLabel.top + (pProgressBarHeight - pMainProgressBarCaptionLabel.height) / 2)
+    Call UI.controls.locate(pMainProgressBarHeaderLabel, pInsidePadding, pTopPadding)
+    top = UI.controls.getBottom(pMainProgressBarHeaderLabel) + pInsidePadding
+    Call UI.controls.locate(pMainProgressBarFrameLabel, pInsidePadding, top)
+    Call UI.controls.locate(pMainProgressBarProgressLabel, pInsidePadding, top)
+    Call UI.controls.locate(pMainProgressBarCaptionLabel, pInsidePadding, pMainProgressBarFrameLabel.top + (pProgressBarHeight - pMainProgressBarCaptionLabel.height) / 2)
     
-    Call UI.Forms.locateControl(pDetailProgressBarHeaderLabel, pInsidePadding, UI.Forms.getBottom(pMainProgressBarFrameLabel) + pInsidePadding)
-    top = UI.Forms.getBottom(pDetailProgressBarHeaderLabel) + pInsidePadding
-    Call UI.Forms.locateControl(pDetailProgressBarFrameLabel, pInsidePadding, top)
-    Call UI.Forms.locateControl(pDetailProgressBarProgressLabel, pInsidePadding, top)
-    Call UI.Forms.locateControl(pDetailProgressBarCaptionLabel, pInsidePadding, pDetailProgressBarFrameLabel.top + (pProgressBarHeight - pDetailProgressBarCaptionLabel.height) / 2)
+    Call UI.controls.locate(pDetailProgressBarHeaderLabel, pInsidePadding, UI.controls.getBottom(pMainProgressBarFrameLabel) + pInsidePadding)
+    top = UI.controls.getBottom(pDetailProgressBarHeaderLabel) + pInsidePadding
+    Call UI.controls.locate(pDetailProgressBarFrameLabel, pInsidePadding, top)
+    Call UI.controls.locate(pDetailProgressBarProgressLabel, pInsidePadding, top)
+    Call UI.controls.locate(pDetailProgressBarCaptionLabel, pInsidePadding, pDetailProgressBarFrameLabel.top + (pProgressBarHeight - pDetailProgressBarCaptionLabel.height) / 2)
     
-    Call UI.Forms.locateControl(pBottomBorder, 0, UI.Forms.getBottom(pDetailProgressBarFrameLabel) + pBottomPadding)
-    Call UI.Forms.locateControl(pContainerFrame, pLeft, pTop)
+    Call UI.controls.locate(pBottomBorder, 0, UI.controls.getBottom(pDetailProgressBarFrameLabel) + pBottomPadding)
+    Call UI.controls.locate(pContainerFrame, pLeft, pTop)
     Call autoSizeBackgroundFrame
     
 End Sub
 
 Private Sub resizeControls()
-    Call UI.Forms.resizeControl(pContainerFrame, pWidth, 100)
-    Call UI.Forms.resizeControl(pMainProgressBarHeaderLabel, pWidth - 2 * pInsidePadding, pHeaderLabelHeight)
-    Call UI.Forms.resizeControl(pDetailProgressBarHeaderLabel, pWidth - 2 * pInsidePadding, pHeaderLabelHeight)
-    Call UI.Forms.resizeControl(pMainProgressBarFrameLabel, pWidth - 2 * pInsidePadding, pProgressBarHeight)
-    Call UI.Forms.resizeControl(pDetailProgressBarFrameLabel, pWidth - 2 * pInsidePadding, pProgressBarHeight)
-    Call UI.Forms.resizeControl(pMainProgressBarProgressLabel, getMainProgressBarWidth, pProgressBarHeight)
-    Call UI.Forms.resizeControl(pDetailProgressBarProgressLabel, getDetailProgressBarWidth, pProgressBarHeight)
+    Call UI.controls.resize(pContainerFrame, pWidth, 100)
+    Call UI.controls.resize(pMainProgressBarHeaderLabel, pWidth - 2 * pInsidePadding, pHeaderLabelHeight)
+    Call UI.controls.resize(pDetailProgressBarHeaderLabel, pWidth - 2 * pInsidePadding, pHeaderLabelHeight)
+    Call UI.controls.resize(pMainProgressBarFrameLabel, pWidth - 2 * pInsidePadding, pProgressBarHeight)
+    Call UI.controls.resize(pDetailProgressBarFrameLabel, pWidth - 2 * pInsidePadding, pProgressBarHeight)
+    Call UI.controls.resize(pMainProgressBarProgressLabel, getMainProgressBarWidth, pProgressBarHeight)
+    Call UI.controls.resize(pDetailProgressBarProgressLabel, getDetailProgressBarWidth, pProgressBarHeight)
     Call resizeProgressCaptionLabel(pMainProgressBarCaptionLabel)
     Call resizeProgressCaptionLabel(pDetailProgressBarCaptionLabel)
-    Call UI.Forms.resizeControl(pBottomBorder, pWidth, 1)
+    Call UI.controls.resize(pBottomBorder, pWidth, 1)
 End Sub
 
 Private Sub resizeProgressCaptionLabel(ctrl As MSForms.control)
