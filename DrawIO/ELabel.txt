@@ -1,0 +1,254 @@
+Option Explicit
+
+Implements IComponent
+
+Private Const CLASS_NAME As String = "ELabel"
+'----------------------------------------------------------------------------------------------------------
+Private pParent As Element
+'----------------------------------------------------------------------------------------------------------
+Private pX As Variant
+Private pY As Variant
+Private pWidth As Variant
+Private pHeight As Variant
+'----------------------------------------------------------------------------------------------------------
+Private pRounded As Variant
+Private pWhiteSpace As Variant
+Private pHtml As Variant
+Private pFillColor As Variant
+Private pStrokeColor As Variant
+Private pGradientColor As Variant
+Private pFillStyle As Variant
+Private pOpacity As Variant
+Private pFontStyle As Variant
+Private pVerticalAlign As Variant
+Private pAlign As Variant
+Private pFontSize As Variant
+Private pFontFamily As Variant
+Private pSpacingTop As Variant
+Private pSpacingRight As Variant
+Private pSpacingBottom As Variant
+Private pSpacingLeft As Variant
+'----------------------------------------------------------------------------------------------------------
+
+
+
+
+'[SETTERS]
+Public Sub setParent(value As Element)
+    Set pParent = value
+End Sub
+
+
+'[API]
+Private Sub loadDetails(properties As Scripting.Dictionary, bodyElements As VBA.Collection)
+    Call parseStyle(properties)
+    Call parseBody(bodyElements)
+End Sub
+
+Private Sub parseStyle(properties As Scripting.Dictionary)
+    Dim styles As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    
+    Set styles = F.dictionaries.GetObject(properties, PROP_STYLE)
+    
+    pRounded = F.dictionaries.GetItem(styles, PROP_ROUNDED)
+    pWhiteSpace = F.dictionaries.GetItem(styles, PROP_WHITE_SPACE)
+    pHtml = F.dictionaries.GetItem(styles, PROP_HTML)
+    pFillColor = F.dictionaries.GetItem(styles, PROP_FILL_COLOR)
+    pStrokeColor = F.dictionaries.GetItem(styles, PROP_STROKE_COLOR)
+    pGradientColor = F.dictionaries.GetItem(styles, PROP_GRADIENT_COLOR)
+    pFillStyle = F.dictionaries.GetItem(styles, PROP_FILL_STYLE)
+    pOpacity = F.dictionaries.GetItem(styles, PROP_OPACITY)
+    pFontStyle = F.dictionaries.GetItem(styles, PROP_FONT_STYLE)
+    pVerticalAlign = F.dictionaries.GetItem(styles, PROP_VERTICAL_ALIGN)
+    pAlign = F.dictionaries.GetItem(styles, PROP_ALIGN)
+    pFontSize = F.dictionaries.GetItem(styles, PROP_FONT_SIZE)
+    pFontFamily = F.dictionaries.GetItem(styles, PROP_FONT_FAMILY)
+    pSpacingTop = F.dictionaries.GetItem(styles, PROP_SPACING_TOP)
+    pSpacingRight = F.dictionaries.GetItem(styles, PROP_SPACING_RIGHT)
+    pSpacingBottom = F.dictionaries.GetItem(styles, PROP_SPACING_BOTTOM)
+    pSpacingLeft = F.dictionaries.GetItem(styles, PROP_SPACING_LEFT)
+
+
+    'Remove all properties assigned above and check if there is something left
+    Call F.dictionaries.RemoveItem(styles, PROP_ROUNDED)
+    Call F.dictionaries.RemoveItem(styles, PROP_WHITE_SPACE)
+    Call F.dictionaries.RemoveItem(styles, PROP_HTML)
+    Call F.dictionaries.RemoveItem(styles, PROP_FILL_COLOR)
+    Call F.dictionaries.RemoveItem(styles, PROP_STROKE_COLOR)
+    Call F.dictionaries.RemoveItem(styles, PROP_GRADIENT_COLOR)
+    Call F.dictionaries.RemoveItem(styles, PROP_FILL_STYLE)
+    Call F.dictionaries.RemoveItem(styles, PROP_OPACITY)
+    Call F.dictionaries.RemoveItem(styles, PROP_FONT_STYLE)
+    Call F.dictionaries.RemoveItem(styles, PROP_VERTICAL_ALIGN)
+    Call F.dictionaries.RemoveItem(styles, PROP_ALIGN)
+    Call F.dictionaries.RemoveItem(styles, PROP_FONT_SIZE)
+    Call F.dictionaries.RemoveItem(styles, PROP_FONT_FAMILY)
+    Call F.dictionaries.RemoveItem(styles, PROP_SPACING_TOP)
+    Call F.dictionaries.RemoveItem(styles, PROP_SPACING_RIGHT)
+    Call F.dictionaries.RemoveItem(styles, PROP_SPACING_BOTTOM)
+    Call F.dictionaries.RemoveItem(styles, PROP_SPACING_LEFT)
+
+    If styles.Count > 0 Then Stop
+
+End Sub
+
+Private Sub parseBody(elements As VBA.Collection)
+    Dim dto As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    
+    Set dto = F.Collections.getFirstItem(elements)
+    If Not dto Is Nothing Then
+        pX = F.dictionaries.GetItem(dto, PROP_X)
+        pY = F.dictionaries.GetItem(dto, PROP_Y)
+        pWidth = F.dictionaries.GetItem(dto, PROP_WIDTH)
+        pHeight = F.dictionaries.GetItem(dto, PROP_HEIGHT)
+    End If
+
+End Sub
+
+Private Sub appendDetailsToArray(arr As Variant)
+    arr(COL_X) = pX
+    arr(COL_Y) = pY
+    arr(COL_WIDTH) = pWidth
+    arr(COL_HEIGHT) = pHeight
+    arr(COL_ROUNDED) = pRounded
+    arr(COL_WHITE_SPACE) = pWhiteSpace
+    arr(COL_BACKGROUND_COLOR) = pFillColor
+    arr(COL_BACKGROUND_STYLE) = pFillStyle
+    arr(COL_STROKE_COLOR) = pStrokeColor
+    arr(COL_GRADIENT_COLOR) = pGradientColor
+    arr(COL_OPACITY) = pOpacity
+    arr(COL_FONT_SIZE) = pFontSize
+    arr(COL_FONT_STYLE) = pFontStyle
+    arr(COL_FONT_FAMILY) = pFontFamily
+    arr(COL_VERTICAL_ALIGN) = pVerticalAlign
+    arr(COL_ALIGN) = pAlign
+    arr(COL_SPACING_TOP) = pSpacingTop
+    arr(COL_SPACING_RIGHT) = pSpacingRight
+    arr(COL_SPACING_BOTTOM) = pSpacingBottom
+    arr(COL_SPACING_LEFT) = pSpacingLeft
+End Sub
+
+Private Sub loadPropertiesFromArray(arr As Variant, row As Long)
+    pX = arr(row, COL_X)
+    pY = arr(row, COL_Y)
+    pWidth = arr(row, COL_WIDTH)
+    pHeight = arr(row, COL_HEIGHT)
+    pRounded = arr(row, COL_ROUNDED)
+    pWhiteSpace = arr(row, COL_WHITE_SPACE)
+    pFillColor = arr(row, COL_BACKGROUND_COLOR)
+    pFillStyle = arr(row, COL_BACKGROUND_STYLE)
+    pStrokeColor = arr(row, COL_STROKE_COLOR)
+    pGradientColor = arr(row, COL_GRADIENT_COLOR)
+    pOpacity = arr(row, COL_OPACITY)
+    pFontSize = arr(row, COL_FONT_SIZE)
+    pFontStyle = arr(row, COL_FONT_STYLE)
+    pFontFamily = arr(row, COL_FONT_FAMILY)
+    pVerticalAlign = arr(row, COL_VERTICAL_ALIGN)
+    pAlign = arr(row, COL_ALIGN)
+    pSpacingTop = arr(row, COL_SPACING_TOP)
+    pSpacingRight = arr(row, COL_SPACING_RIGHT)
+    pSpacingBottom = arr(row, COL_SPACING_BOTTOM)
+    pSpacingLeft = arr(row, COL_SPACING_LEFT)
+End Sub
+
+
+
+Private Sub appendPropertiesToDictionary(dict As Scripting.Dictionary)
+    Call F.dictionaries.AddItem(dict, PROP_STYLE, createStylesDictionary)
+End Sub
+
+Private Function createStylesDictionary() As String
+    Dim dict As Scripting.Dictionary
+    Dim key As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set dict = F.dictionaries.Create(False)
+    With dict
+        Call .Add(PROP_ROUNDED, pRounded)
+        Call .Add(PROP_WHITE_SPACE, pWhiteSpace)
+        Call .Add(PROP_HTML, 1)
+        Call .Add(PROP_FILL_COLOR, pFillColor)
+        Call .Add(PROP_STROKE_COLOR, pStrokeColor)
+        Call .Add(PROP_GRADIENT_COLOR, pGradientColor)
+        Call .Add(PROP_FILL_STYLE, pFillStyle)
+        Call .Add(PROP_OPACITY, pOpacity)
+        Call .Add(PROP_FONT_STYLE, pFontStyle)
+        Call .Add(PROP_VERTICAL_ALIGN, pVerticalAlign)
+        Call .Add(PROP_ALIGN, pAlign)
+        Call .Add(PROP_FONT_SIZE, pFontSize)
+        Call .Add(PROP_FONT_FAMILY, pFontFamily)
+        Call .Add(PROP_SPACING_TOP, VBA.Replace(pSpacingTop, ",", "."))
+        Call .Add(PROP_SPACING_RIGHT, VBA.Replace(pSpacingRight, ",", "."))
+        Call .Add(PROP_SPACING_BOTTOM, VBA.Replace(pSpacingBottom, ",", "."))
+        Call .Add(PROP_SPACING_LEFT, VBA.Replace(pSpacingLeft, ",", "."))
+    End With
+    
+    For Each key In dict.Keys
+        If VBA.IsEmpty(dict.Item(key)) Then
+            Call F.dictionaries.removeKey(dict, key)
+        ElseIf VBA.Len(dict.Item(key)) = 0 Then
+            Call F.dictionaries.removeKey(dict, key)
+        End If
+    Next key
+    
+    createStylesDictionary = F.dictionaries.toString(dict, itemsDelimiter:=";", keyItemDelimiter:="=") & ";"
+    
+End Function
+
+Private Function getBodyXml() As String
+    Const XML_PATTERN As String = "<mxGeometry {0} />"
+    '------------------------------------------------------------------------------------------------------
+    Dim dict As Scripting.Dictionary
+    Dim key As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set dict = F.dictionaries.Create(False)
+    With dict
+        Call .Add(PROP_X, VBA.Replace(pX, ",", "."))
+        Call .Add(PROP_Y, VBA.Replace(pY, ",", "."))
+        Call .Add(PROP_WIDTH, VBA.Replace(pWidth, ",", "."))
+        Call .Add(PROP_HEIGHT, VBA.Replace(pHeight, ",", "."))
+        Call .Add(PROP_AS, PROP_GEOMETRY)
+    End With
+    
+    For Each key In dict.Keys
+        If VBA.IsEmpty(dict.Item(key)) Then
+            Call F.dictionaries.removeKey(dict, key)
+        ElseIf VBA.Len(dict.Item(key)) = 0 Then
+            Call F.dictionaries.removeKey(dict, key)
+        End If
+    Next key
+    
+    getBodyXml = F.Strings.Format(XML_PATTERN, F.dictionaries.toString(dict, , , " ", "=""", , """"))
+    
+End Function
+
+
+
+'[Implementation of IComponent]
+Private Sub IComponent_loadDetails(properties As Scripting.Dictionary, bodyElements As VBA.Collection)
+    Call loadDetails(properties, bodyElements)
+End Sub
+
+Private Sub IComponent_loadPropertiesFromArray(arr As Variant, row As Long)
+    Call loadPropertiesFromArray(arr, row)
+End Sub
+
+Private Sub IComponent_setParent(value As Element)
+    Call setParent(value)
+End Sub
+
+Private Sub IComponent_appendDetailsToArray(arr As Variant)
+    Call appendDetailsToArray(arr)
+End Sub
+
+Private Sub IComponent_appendPropertiesToDictionary(dict As Scripting.IDictionary)
+    Call appendPropertiesToDictionary(dict)
+End Sub
+
+Private Function IComponent_getBodyXml() As String
+    IComponent_getBodyXml = getBodyXml
+End Function
+

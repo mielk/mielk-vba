@@ -1,0 +1,75 @@
+Option Explicit
+
+Private Const CLASS_NAME As String = "XmlGenerator"
+'----------------------------------------------------------------------------------------------------------
+Private pElements As Scripting.Dictionary
+'----------------------------------------------------------------------------------------------------------
+
+Public Sub run()
+    Call readStructureFromSheet
+    Call generateXml
+End Sub
+
+
+
+Private Sub readStructureFromSheet()
+    Dim arr As Variant
+    Dim i As Long
+    Dim el As Element
+    '------------------------------------------------------------------------------------------------------
+    
+    Set pElements = F.dictionaries.Create(False)
+    
+    arr = getRawDataFromStructureSheet
+    If F.arrays.isDefined(arr) Then
+        For i = LBound(arr) To UBound(arr)
+            Set el = createElementFromArrayRow(arr, i)
+            Call F.dictionaries.AddItem(pElements, el.getId, el)
+        Next i
+    End If
+    
+End Sub
+
+
+Private Function getRawDataFromStructureSheet() As Variant
+    Dim lastRow As Long
+    Dim lastCol As Long
+    Dim rngStyle As Excel.Range
+    Dim rng As Excel.Range
+    '------------------------------------------------------------------------------------------------------
+    
+    lastRow = F.Ranges.getLastNonEmptyRow(wksStructure)
+    lastCol = F.Ranges.getLastNonEmptyColumn(wksStructure)
+    
+    Set rngStyle = F.Sheets.getNamedRange(wksStructure, RANGE_NAME_STYLE)
+    Set rng = rngStyle.Resize(lastRow - rngStyle.row + 1, lastCol)
+    getRawDataFromStructureSheet = F.arrays.fromRange(rng, False)
+
+End Function
+
+Private Function createElementFromArrayRow(arr As Variant, row As Long) As Element
+    Set createElementFromArrayRow = New Element
+    Call createElementFromArrayRow.loadPropertiesFromArray(arr, row)
+End Function
+
+
+
+
+
+Private Sub generateXml()
+    Dim pattern As String
+    Dim elements As VBA.Collection
+    Dim xml As String
+    Dim filePath As String
+    '------------------------------------------------------------------------------------------------------
+    
+    pattern = getPatternFromConfigSheet(XML_FILE_PATTERN)
+    Set elements = F.dictionaries.toCollection(pElements)
+    
+    Set elements = F.Collections.Map(elements, "$.toXml")
+    
+    xml = F.Strings.Format(pattern, F.Collections.toString(elements, , VBA.vbCrLf))
+    filePath = F.Files.concatenatePath(Excel.ThisWorkbook.Path, XML_OUTPUT_FILE)
+    Call F.TextFiles.printToTextFile(xml, filePath, True)
+    
+End Sub

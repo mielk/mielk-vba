@@ -1,0 +1,22 @@
+Option Explicit
+
+Private Const CLASS_NAME As String = "modXml"
+'----------------------------------------------------------------------------------------------------------
+
+Public Sub readFromXml()
+    Dim xmlFilePath As String
+    Dim content As String
+    '------------------------------------------------------------------------------------------------------
+    
+    xmlFilePath = F.Files.concatenatePath(Excel.ThisWorkbook.Path, XML_INPUT_FILE)
+    content = F.TextFiles.readTextFile(xmlFilePath)
+    Call XmlParser.parse(content)
+    Call XmlStructurePrinter.printToSheet(XmlParser.getElements)
+    
+End Sub
+
+
+
+Public Sub convertToXml()
+    Call XmlGenerator.run
+End Sub

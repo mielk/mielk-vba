@@ -1,0 +1,191 @@
+Option Explicit
+
+Implements IComponent
+
+Private Const CLASS_NAME As String = "EImage"
+'----------------------------------------------------------------------------------------------------------
+Private pParent As Element
+'----------------------------------------------------------------------------------------------------------
+Private pX As Variant
+Private pY As Variant
+Private pWidth As Variant
+Private pHeight As Variant
+'----------------------------------------------------------------------------------------------------------
+Private pVerticalAlign As Variant
+Private pVerticalLabelPosition As Variant
+Private pLabelBackgroundColor As Variant
+Private pAspect As Variant
+Private pImageAspect As Variant
+Private pImage As Variant
+'----------------------------------------------------------------------------------------------------------
+
+
+
+
+'[SETTERS]
+Public Sub setParent(value As Element)
+    Set pParent = value
+End Sub
+
+
+'[API]
+Private Sub loadDetails(properties As Scripting.Dictionary, bodyElements As VBA.Collection)
+    Call parseStyle(properties)
+    Call parseBody(bodyElements)
+End Sub
+
+Private Sub parseStyle(properties As Scripting.Dictionary)
+    Dim styles As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    
+    Set styles = F.dictionaries.GetObject(properties, PROP_STYLE)
+    
+    pVerticalAlign = F.dictionaries.GetItem(styles, PROP_VERTICAL_ALIGN)
+    pVerticalLabelPosition = F.dictionaries.GetItem(styles, PROP_VERTICAL_LABEL_POSITION)
+    pLabelBackgroundColor = F.dictionaries.GetItem(styles, PROP_LABEL_BACKGROUND_COLOR)
+    pAspect = F.dictionaries.GetItem(styles, PROP_ASPECT)
+    pImageAspect = F.dictionaries.GetItem(styles, PROP_IMAGE_ASPECT)
+    pImage = F.dictionaries.GetItem(styles, PROP_IMAGE)
+
+    'Remove all properties assigned above and check if there is something left
+    Call F.dictionaries.RemoveItem(styles, PROP_SHAPE)
+    Call F.dictionaries.RemoveItem(styles, PROP_VERTICAL_ALIGN)
+    Call F.dictionaries.RemoveItem(styles, PROP_VERTICAL_LABEL_POSITION)
+    Call F.dictionaries.RemoveItem(styles, PROP_LABEL_BACKGROUND_COLOR)
+    Call F.dictionaries.RemoveItem(styles, PROP_ASPECT)
+    Call F.dictionaries.RemoveItem(styles, PROP_IMAGE_ASPECT)
+    Call F.dictionaries.RemoveItem(styles, PROP_IMAGE)
+
+    If styles.Count > 0 Then Stop
+
+End Sub
+
+Private Sub parseBody(elements As VBA.Collection)
+    Dim dto As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    
+    Set dto = F.Collections.getFirstItem(elements)
+    If Not dto Is Nothing Then
+        pX = F.dictionaries.GetItem(dto, PROP_X)
+        pY = F.dictionaries.GetItem(dto, PROP_Y)
+        pWidth = F.dictionaries.GetItem(dto, PROP_WIDTH)
+        pHeight = F.dictionaries.GetItem(dto, PROP_HEIGHT)
+    End If
+
+End Sub
+
+Private Sub appendDetailsToArray(arr As Variant)
+    arr(COL_X) = pX
+    arr(COL_Y) = pY
+    arr(COL_WIDTH) = pWidth
+    arr(COL_HEIGHT) = pHeight
+    arr(COL_VERTICAL_ALIGN) = pVerticalAlign
+    arr(COL_VERTICAL_LABEL_POSITION) = pVerticalLabelPosition
+    arr(COL_LABEL_BACKGROUND_COLOR) = pLabelBackgroundColor
+    arr(COL_ASPECT) = pAspect
+    arr(COL_IMAGE_ASPECT) = pImageAspect
+    arr(COL_IMAGE) = pImage
+End Sub
+
+Private Sub loadPropertiesFromArray(arr As Variant, row As Long)
+    pX = arr(row, COL_X)
+    pY = arr(row, COL_Y)
+    pWidth = arr(row, COL_WIDTH)
+    pHeight = arr(row, COL_HEIGHT)
+    pVerticalAlign = arr(row, COL_VERTICAL_ALIGN)
+    pVerticalLabelPosition = arr(row, COL_VERTICAL_LABEL_POSITION)
+    pLabelBackgroundColor = arr(row, COL_LABEL_BACKGROUND_COLOR)
+    pAspect = arr(row, COL_ASPECT)
+    pImageAspect = arr(row, COL_IMAGE_ASPECT)
+    pImage = arr(row, COL_IMAGE)
+End Sub
+
+
+Private Sub appendPropertiesToDictionary(dict As Scripting.Dictionary)
+    Call F.dictionaries.AddItem(dict, PROP_STYLE, createStylesDictionary)
+End Sub
+
+Private Function createStylesDictionary() As String
+    Dim dict As Scripting.Dictionary
+    Dim key As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set dict = F.dictionaries.Create(False)
+    With dict
+        Call .Add(PROP_SHAPE, "image")
+        Call .Add(PROP_VERTICAL_ALIGN, pVerticalAlign)
+        Call .Add(PROP_VERTICAL_LABEL_POSITION, pVerticalLabelPosition)
+        Call .Add(PROP_LABEL_BACKGROUND_COLOR, pLabelBackgroundColor)
+        Call .Add(PROP_ASPECT, pAspect)
+        Call .Add(PROP_IMAGE_ASPECT, VBA.Replace(pImageAspect, ",", "."))
+        Call .Add(PROP_IMAGE, pImage)
+    End With
+    
+    For Each key In dict.Keys
+        If VBA.IsEmpty(dict.Item(key)) Then
+            Call F.dictionaries.removeKey(dict, key)
+        ElseIf VBA.Len(dict.Item(key)) = 0 Then
+            Call F.dictionaries.removeKey(dict, key)
+        End If
+    Next key
+    
+    createStylesDictionary = F.dictionaries.toString(dict, itemsDelimiter:=";", keyItemDelimiter:="=") & ";"
+    
+End Function
+
+Private Function getBodyXml() As String
+    Const XML_PATTERN As String = "<mxGeometry {0} />"
+    '------------------------------------------------------------------------------------------------------
+    Dim dict As Scripting.Dictionary
+    Dim key As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set dict = F.dictionaries.Create(False)
+    With dict
+        Call .Add(PROP_X, VBA.Replace(pX, ",", "."))
+        Call .Add(PROP_Y, VBA.Replace(pY, ",", "."))
+        Call .Add(PROP_WIDTH, VBA.Replace(pWidth, ",", "."))
+        Call .Add(PROP_HEIGHT, VBA.Replace(pHeight, ",", "."))
+        Call .Add(PROP_AS, PROP_GEOMETRY)
+    End With
+    
+    For Each key In dict.Keys
+        If VBA.IsEmpty(dict.Item(key)) Then
+            Call F.dictionaries.removeKey(dict, key)
+        ElseIf VBA.Len(dict.Item(key)) = 0 Then
+            Call F.dictionaries.removeKey(dict, key)
+        End If
+    Next key
+    
+    getBodyXml = F.Strings.Format(XML_PATTERN, F.dictionaries.toString(dict, , , " ", "=""", , """"))
+    
+End Function
+
+
+
+
+'[Implementation of IComponent]
+Private Sub IComponent_loadDetails(properties As Scripting.Dictionary, bodyElements As VBA.Collection)
+    Call loadDetails(properties, bodyElements)
+End Sub
+
+Private Sub IComponent_loadPropertiesFromArray(arr As Variant, row As Long)
+    Call loadPropertiesFromArray(arr, row)
+End Sub
+
+Private Sub IComponent_setParent(value As Element)
+    Call setParent(value)
+End Sub
+
+Private Sub IComponent_appendDetailsToArray(arr As Variant)
+    Call appendDetailsToArray(arr)
+End Sub
+
+Private Sub IComponent_appendPropertiesToDictionary(dict As Scripting.IDictionary)
+    Call appendPropertiesToDictionary(dict)
+End Sub
+
+Private Function IComponent_getBodyXml() As String
+    IComponent_getBodyXml = getBodyXml
+End Function
+

@@ -1,0 +1,8 @@
+							line ends		size										line style			background						font					align						label				image			line start							line end							line cross		start point		end point		line points									
+Type	Id	parent	value	collapsed	vertex	connectable	source	target	x	y	width	height	relative	start size	alt X	alt Y	alt width	alt height	rounded	dashed	curved	background color	background style	swimlane background color	gradient color	stroke color	opacity	font size	font style	font family	white space	text opacity	align	vertical align	spacing top	spacing right	spacing bottom	spacing left	label position	vertical label position	label background color	label border color	aspect	image aspect	image	start arrow	start fill	start X	start Y	start DX	start DY	start perimeter	end arrow	end fill	end X	end Y	end DX	end DY	end perimeter	jump style	jump size	start point X	start point Y	end point X	end point Y	X1	Y1	X2	Y2	X3	Y3	X4	Y4	X5	Y5
+
+
+=IF(VLOOKUP(B$8;PROPERTIES;MATCH($A9;OFFSET(PROPERTIES;0;0;1);0);0)=0;1;0)
+
+rng_style		=structure!$9:$9
+properties		=OFFSET(properties!$A$1;0;0;COUNTA(properties!$A:$A)+1;COUNTA(properties!$1:$1)+1)

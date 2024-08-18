@@ -1,0 +1,44 @@
+Option Explicit
+
+Private Const CLASS_NAME As String = "XmlStructurePrinter"
+'----------------------------------------------------------------------------------------------------------
+
+
+
+Public Sub printToSheet(elements As VBA.Collection)
+    Dim el As Element
+    Dim row As Long
+    Dim rngStyle As Excel.Range
+    Dim rng As Excel.Range
+    Dim lastRow As Long
+    '------------------------------------------------------------------------------------------------------
+    
+    Set rngStyle = F.Sheets.getNamedRange(wksStructure, RANGE_NAME_STYLE)
+    If Not rngStyle Is Nothing Then
+        
+        row = rngStyle.row
+
+        Set rng = rngStyle.Resize(elements.Count)
+        Call rngStyle.Copy
+        Call rng.PasteSpecial(xlPasteFormats)
+        rng.RowHeight = 18
+    
+        '[Remove redundant rows]
+        With wksStructure
+            lastRow = .Cells(.Rows.Count, 1).End(xlUp).row
+            If lastRow > rng.row + rng.Rows.Count Then
+                Set rng = .Range(rng.Offset(rng.Rows.Count).Resize(1, 1), .Cells(lastRow, 1))
+                Call rng.EntireRow.Clear
+            End If
+        End With
+        
+        For Each el In elements
+            If el.isTopLevel Then
+                Call el.printToSheet(row)
+            End If
+        Next el
+
+    End If
+
+End Sub
+

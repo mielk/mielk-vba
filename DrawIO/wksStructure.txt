@@ -1,0 +1,11 @@
+
+Private Sub Worksheet_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean)
+    If Target.Column <> 2 Then
+    ElseIf Target.row = 2 Then
+        Call readFromXml
+        Cancel = True
+    ElseIf Target.row = 4 Then
+        Call convertToXml
+        Cancel = True
+    End If
+End Sub

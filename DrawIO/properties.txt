@@ -1,0 +1,76 @@
+	container	group	label	image	line
+Id	1	1	1	1	1
+parent	1	1	1	1	1
+value	1	1	1	1	1
+collapsed	1	0	0	0	0
+vertex	1	1	1	1	1
+connectable	0	1	0	0	0
+source	0	0	0	0	1
+target	0	0	0	0	1
+x	1	1	1	1	1
+y	1	1	1	1	1
+width	1	1	1	1	1
+height	1	1	1	1	1
+relative	0	0	0	0	1
+start size	1	0	0	0	0
+alt x	1	0	0	0	0
+alt y	1	0	0	0	0
+alt width	1	0	0	0	0
+alt height	1	0	0	0	0
+rounded	1	0	1	1	1
+dashed	1	0	1	1	1
+curved	1	0	1	1	1
+background color	1	0	1	1	1
+background style	1	0	1	1	1
+swimlane background color	1	0	0	0	0
+gradient color	1	0	1	1	1
+stroke color	1	0	1	1	1
+opacity	1	0	1	1	1
+font size	1	0	1	1	1
+font bold	1	0	1	1	1
+font family	1	0	1	1	1
+white space	1	0	1	1	1
+text opacity	0	0	0	0	1
+align	1	0	1	1	1
+vertical align	1	0	1	1	1
+spacing top	1	0	1	1	1
+spacing right	1	0	1	1	1
+spacing bottom	1	0	1	1	1
+spacing left	1	0	1	1	1
+label position	0	0	0	1	1
+vertical label position	0	0	0	1	1
+label background color	0	0	0	1	1
+label border color	0	0	0	1	1
+aspect	0	0	0	1	0
+image aspect	0	0	0	1	0
+image	0	0	0	1	0
+start arrow	0	0	0	0	1
+start fill	0	0	0	0	1
+start X	0	0	0	0	1
+start Y	0	0	0	0	1
+start DX	0	0	0	0	1
+start DY	0	0	0	0	1
+start perimeter	0	0	0	0	1
+end arrow	0	0	0	0	1
+end fill	0	0	0	0	1
+end X	0	0	0	0	1
+end Y	0	0	0	0	1
+end DX	0	0	0	0	1
+end DY	0	0	0	0	1
+end perimeter	0	0	0	0	1
+jump style	0	0	0	0	1
+jump size	0	0	0	0	1
+start point X	0	0	0	0	1
+start point Y	0	0	0	0	1
+end point X	0	0	0	0	1
+end point Y	0	0	0	0	1
+X1	0	0	0	0	1
+Y1	0	0	0	0	1
+X2	0	0	0	0	1
+Y2	0	0	0	0	1
+X3	0	0	0	0	1
+Y3	0	0	0	0	1
+X4	0	0	0	0	1
+Y4	0	0	0	0	1
+X5	0	0	0	0	1
+Y5	0	0	0	0	1

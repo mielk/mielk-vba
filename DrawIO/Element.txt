@@ -1,0 +1,204 @@
+Option Explicit
+
+Private Const CLASS_NAME As String = "Element"
+'----------------------------------------------------------------------------------------------------------
+Private pId As String
+Private pValue As Variant
+Private pParent As String
+Private pVertex As Variant
+Private pConnectable As Variant
+'Private pEdge As Variant
+Private pType As ElementTypeEnum
+Private pComponent As IComponent
+'----------------------------------------------------------------------------------------------------------
+Private pChildren As VBA.Collection
+'----------------------------------------------------------------------------------------------------------
+
+
+
+
+
+Public Sub parse(properties As Scripting.Dictionary, bodyElements As VBA.Collection)
+    Call parseProperties(properties)
+    Call findElementType(properties)
+    
+    Call createComponent
+    If Not pComponent Is Nothing Then
+        Call pComponent.loadDetails(properties, bodyElements)
+    End If
+    
+End Sub
+
+Private Sub parseProperties(properties As Scripting.Dictionary)
+    pId = F.dictionaries.GetItem(properties, PROP_ID)
+    pValue = F.dictionaries.GetItem(properties, PROP_VALUE)
+    pParent = F.dictionaries.GetItem(properties, PROP_PARENT)
+    pVertex = F.dictionaries.GetItem(properties, PROP_VERTEX)
+    pConnectable = F.dictionaries.GetItem(properties, PROP_CONNECTABLE)
+End Sub
+
+Private Sub findElementType(properties As Scripting.Dictionary)
+    Dim styles As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    
+    Set styles = F.dictionaries.GetObject(properties, PROP_STYLE)
+    
+    If styles Is Nothing Then
+        Stop
+    ElseIf styles.Exists(PROP_GROUP) Then
+        pType = ElementType_Group
+    ElseIf styles.Exists(PROP_END_ARROW) Then
+        pType = ElementType_Line
+    ElseIf styles.Exists(PROP_ROUNDED) Then
+        pType = ElementType_Label
+    ElseIf styles.Exists(PROP_SWIMLANE) Then
+        pType = ElementType_Container
+    ElseIf F.dictionaries.GetItem(styles, PROP_SHAPE) = "image" Then
+        pType = ElementType_Image
+    Else
+        Stop
+    End If
+
+End Sub
+
+Private Sub createComponent()
+    Select Case pType
+        Case ElementType_Group:         Set pComponent = createGroup(Me)
+        Case ElementType_Label:         Set pComponent = createLabel(Me)
+        Case ElementType_Image:         Set pComponent = createImage(Me)
+        Case ElementType_Container:     Set pComponent = createContainer(Me)
+        Case ElementType_Line:          Set pComponent = createLine(Me)
+    End Select
+End Sub
+
+
+
+'[GETTERS]
+Public Function getId() As String
+    getId = pId
+End Function
+
+Public Function getParentId() As String
+    getParentId = pParent
+End Function
+
+Public Function isTopLevel() As Boolean
+    isTopLevel = (pParent = "1")
+End Function
+
+
+
+
+
+
+
+'[CHILDREN]
+Public Sub addChild(el As Element)
+    If pChildren Is Nothing Then
+        Set pChildren = New VBA.Collection
+    End If
+    Call pChildren.Add(el)
+End Sub
+
+
+
+
+Public Sub printToSheet(ByRef row As Long)
+    Dim arr As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    ReDim arr(1 To COL_Y5)
+    
+    arr(COL_TYPE) = getElementTypeName(pType)
+    arr(COL_ID) = pId
+    arr(COL_PARENT) = pParent
+    arr(COL_VALUE) = pValue
+    arr(COL_VERTEX) = pVertex
+    arr(COL_CONNECTABLE) = pConnectable
+    Call pComponent.appendDetailsToArray(arr)
+    
+    Call F.Ranges.pasteData(arr, wksStructure.Cells(row, 1))
+    row = row + 1
+    Call printChildrenDetails(row)
+    
+End Sub
+
+Private Sub printChildrenDetails(ByRef row As Long)
+    Dim startRow As Long
+    Dim child As Element
+    Dim rng As Excel.Range
+    '------------------------------------------------------------------------------------------------------
+    
+    startRow = row
+    
+    If F.Collections.isNonEmptyCollection(pChildren) Then
+        For Each child In pChildren
+            Call child.printToSheet(row)
+        Next child
+        
+        Set rng = wksStructure.Rows(startRow).Resize(row - startRow)
+        Call rng.EntireRow.Group
+        
+    End If
+    
+End Sub
+
+
+Public Sub loadPropertiesFromArray(arr As Variant, row As Long)
+    pId = arr(row, COL_ID)
+    pValue = arr(row, COL_VALUE)
+    pParent = arr(row, COL_PARENT)
+    pVertex = arr(row, COL_VERTEX)
+    pConnectable = arr(row, COL_CONNECTABLE)
+    pType = getElementTypeFromString(VBA.CStr(arr(row, COL_TYPE)))
+
+    Call createComponent
+    If Not pComponent Is Nothing Then
+        Call pComponent.loadPropertiesFromArray(arr, row)
+    End If
+
+End Sub
+
+
+
+Public Function toXml() As String
+    Const NODE_PATTERN As String = "\t<mxCell {0}>\n\t\t{1}\n\t</mxCell>"
+    '------------------------------------------------------------------------------------------------------
+    Dim properties As Scripting.Dictionary
+    Dim body As String
+    '------------------------------------------------------------------------------------------------------
+    
+    Set properties = createPropertiesDict
+    body = pComponent.getBodyXml
+    
+    toXml = F.Strings.Format(NODE_PATTERN, _
+                                F.dictionaries.toString(properties, , , " ", "=""", , """"), _
+                                body)
+    'Stop
+    
+    '  <mxGeometry x="20" y="50" width="290" height="160" as="geometry" />
+    
+End Function
+
+Private Function createPropertiesDict() As Scripting.Dictionary
+    Dim key As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set createPropertiesDict = F.dictionaries.Create(False)
+    With createPropertiesDict
+        Call .Add(PROP_ID, pId)
+        Call .Add(PROP_VALUE, pValue)
+        Call .Add(PROP_PARENT, pParent)
+        Call .Add(PROP_VERTEX, pVertex)
+        Call .Add(PROP_CONNECTABLE, pConnectable)
+    End With
+    
+    Call pComponent.appendPropertiesToDictionary(createPropertiesDict)
+    
+    For Each key In createPropertiesDict.Keys
+        If VBA.IsEmpty(createPropertiesDict.Item(key)) Then
+            Call F.dictionaries.removeKey(createPropertiesDict, key)
+        End If
+    Next key
+    
+End Function

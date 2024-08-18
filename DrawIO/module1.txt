@@ -1,0 +1,2369 @@
+Option Explicit
+
+Sub Macro1()
+'
+' Macro1 Macro
+'
+
+'
+    Range("E8").Select
+    ActiveWindow.FreezePanes = False
+    Range("C8").Select
+    ActiveWindow.FreezePanes = True
+    Range("G6:N6").Select
+    ActiveWindow.ScrollColumn = 4
+    ActiveWindow.ScrollColumn = 3
+    Range("U7").Select
+    Selection.End(xlToLeft).Select
+    Range("G7").Select
+    Columns("G:G").Select
+    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+    Range("G7").Select
+    ActiveCell.FormulaR1C1 = "source"
+    Range("H7").Select
+    ActiveCell.FormulaR1C1 = "target"
+    Range("G6:H6").Select
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Merge
+    ActiveCell.FormulaR1C1 = "line ends"
+    Range("G6:H6").Select
+    Selection.Font.Bold = True
+    Range("R7").Select
+    ActiveWindow.ScrollColumn = 4
+    ActiveWindow.ScrollColumn = 5
+    ActiveWindow.ScrollColumn = 6
+    ActiveWindow.ScrollColumn = 7
+    Columns("M:M").Select
+    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+    Range("M7").Select
+    ActiveCell.FormulaR1C1 = "relative"
+    Range("R7").Select
+    ActiveCell.FormulaR1C1 = ""
+    Range("S7").Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Selection.ClearContents
+    Range("S9:U10").Select
+    Selection.ClearContents
+    Range("R7").Select
+    ActiveCell.FormulaR1C1 = "rounded"
+    Range("S7").Select
+    ActiveCell.FormulaR1C1 = "dashed"
+    Range("T7").Select
+    ActiveCell.FormulaR1C1 = "curved"
+    Range("R7").Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Selection.Cut
+    Range("S7").Select
+    ActiveSheet.Paste
+    Range("R7").Select
+    ActiveCell.FormulaR1C1 = "html"
+    Range("R7").Select
+    Selection.ClearContents
+    Range("S7").Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Selection.Cut
+    Range("R7").Select
+    ActiveSheet.Paste
+    Range("S18").Select
+    ActiveSheet.Paste
+    Range("S18:S21").Select
+    Selection.ClearContents
+    Range("S23").Select
+    Selection.ClearContents
+    ActiveWindow.SmallScroll Down:=3
+    Range("U7").Select
+    ActiveCell.FormulaR1C1 = "fillColor"
+    Range("V7").Select
+    ActiveCell.FormulaR1C1 = "strokeColor"
+    Range("W7").Select
+    ActiveWindow.SmallScroll Down:=6
+    Range("R24:S25").Select
+    Selection.ClearContents
+    Range("V7").Select
+    ActiveCell.FormulaR1C1 = "fillStyle"
+    Range("R27").Select
+    Selection.ClearContents
+    ActiveWindow.SmallScroll Down:=6
+    Range("W7").Select
+    ActiveCell.FormulaR1C1 = "swimlaneFillColor"
+    Columns("N:N").Select
+    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+    Range("N7").Select
+    ActiveCell.FormulaR1C1 = "startSize"
+    Range("I6:R6").Select
+    ActiveCell.FormulaR1C1 = "position & size"
+    Range("N7").Select
+    ActiveWindow.SmallScroll Down:=3
+    Range("X7").Select
+    ActiveCell.FormulaR1C1 = "Swimlane fill color"
+    Range("Y7").Select
+    ActiveCell.FormulaR1C1 = "gradient color"
+    Range("Z7").Select
+    ActiveCell.FormulaR1C1 = "stroke color"
+    Range("Y8").Select
+    ActiveWindow.SmallScroll Down:=3
+    Range("T26:T27").Select
+    Selection.ClearContents
+    Range("AA7").Select
+    ActiveCell.FormulaR1C1 = "opacity"
+    Range("AA8").Select
+    ActiveWindow.SmallScroll Down:=6
+    Range("T22").Select
+    ActiveWindow.SmallScroll Down:=3
+    Range("S28").Select
+    Selection.ClearContents
+    Range("T28").Select
+    Selection.ClearContents
+    Range("T29:T30").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.Cut
+    Range("T27").Select
+    Selection.End(xlUp).Select
+    Range("T23").Select
+    ActiveSheet.Paste
+    Range("T22").Select
+    ActiveWindow.SmallScroll Down:=-9
+    Range("T22").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.Cut
+    ActiveWindow.SmallScroll Down:=-7
+    Range("T12").Select
+    ActiveSheet.Paste
+    Range("AB7").Select
+    ActiveCell.FormulaR1C1 = "fontSize"
+    Range("AC7").Select
+    ActiveCell.FormulaR1C1 = "fontStyle"
+    Range("AD7").Select
+    ActiveCell.FormulaR1C1 = "fontFamily"
+    Range("T15:T17").Select
+    Selection.ClearContents
+    Range("AC7").Select
+    ActiveCell.FormulaR1C1 = "font bold"
+    Range("AB7").Select
+    ActiveCell.FormulaR1C1 = "font size"
+    Range("AD7").Select
+    ActiveCell.FormulaR1C1 = "font family"
+    Range("AA7").Select
+    Selection.End(xlToRight).Select
+    Range("AE7").Select
+    ActiveCell.FormulaR1C1 = "white space"
+    Range("T12").Select
+    Selection.ClearContents
+    Range("AF7").Select
+    ActiveCell.FormulaR1C1 = "align"
+    Range("AG7").Select
+    ActiveCell.FormulaR1C1 = "vertical align"
+    Range("AH7").Select
+    ActiveCell.FormulaR1C1 = "spacing top"
+    Range("AI7").Select
+    ActiveCell.FormulaR1C1 = "spacing right"
+    Range("AJ7").Select
+    ActiveCell.FormulaR1C1 = "spacing bottom"
+    Range("AK7").Select
+    ActiveCell.FormulaR1C1 = "spacing left"
+    Range("T18:T22").Select
+    Range("T18:T21").Select
+    Selection.ClearContents
+    Selection.End(xlUp).Select
+    Range("T13:T14").Select
+    Range("T14").Activate
+    Selection.ClearContents
+    Range("T15").Select
+    Selection.End(xlDown).Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.Cut
+    Range("T13").Select
+    ActiveSheet.Paste
+    Rows("6:6").Select
+    Selection.Insert Shift:=xlDown, CopyOrigin:=xlFormatFromLeftOrAbove
+    Range("AL8").Select
+    ActiveCell.FormulaR1C1 = "label position"
+    Range("AM8").Select
+    ActiveCell.FormulaR1C1 = "vertical label position"
+    Range("AN8").Select
+    ActiveCell.FormulaR1C1 = "label background color"
+    Range("AO8").Select
+    ActiveCell.FormulaR1C1 = "label border color"
+    Range("T21:T22").Select
+    Selection.ClearContents
+    Columns("AF:AF").Select
+    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+    Range("AF8").Select
+    ActiveCell.FormulaR1C1 = "text opacity"
+    Range("T23").Select
+    Selection.ClearContents
+    Range("T22").Select
+    Selection.End(xlUp).Select
+    Selection.End(xlUp).Select
+    Selection.End(xlUp).Select
+    Selection.End(xlUp).Select
+    Selection.End(xlDown).Select
+    Selection.End(xlToRight).Select
+    Range("T14:T17").Select
+    Range("T17").Activate
+    Selection.ClearContents
+    Selection.End(xlUp).Select
+    Selection.End(xlToRight).Select
+    Range("AQ8").Select
+    ActiveCell.FormulaR1C1 = "aspect"
+    Range("AR8").Select
+    ActiveCell.FormulaR1C1 = "image aspect"
+    Range("AS8").Select
+    ActiveCell.FormulaR1C1 = "image"
+    Range("T18:T20").Select
+    Selection.ClearContents
+    Range("AQ7:AS7").Select
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Merge
+    ActiveCell.FormulaR1C1 = "image"
+    Range("AM7:AP7").Select
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Merge
+    ActiveCell.FormulaR1C1 = "label"
+    Range("AG7:AL7").Select
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Merge
+    ActiveCell.FormulaR1C1 = "align & padding"
+    Range("AB7:AF7").Select
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Merge
+    ActiveCell.FormulaR1C1 = "font size"
+    Range("AB7:AF7").Select
+    ActiveCell.FormulaR1C1 = "font"
+    Range("S7:U7").Select
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Merge
+    ActiveCell.FormulaR1C1 = "style"
+    Range("S7:U7").Select
+    ActiveCell.FormulaR1C1 = "line style"
+    Range("V8").Select
+    ActiveCell.FormulaR1C1 = "background color"
+    Range("W8").Select
+    ActiveCell.FormulaR1C1 = "background style"
+    Range("X8").Select
+    ActiveCell.FormulaR1C1 = "Swimlane background color"
+    Range("V7:AA7").Select
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Merge
+    ActiveCell.FormulaR1C1 = "background"
+    Range("V8").Select
+    Selection.End(xlToLeft).Select
+    Rows("8:8").Select
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = True
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Range("X8").Select
+    ActiveWindow.ScrollColumn = 18
+    ActiveWindow.ScrollColumn = 19
+    ActiveWindow.ScrollColumn = 20
+    ActiveWindow.ScrollColumn = 21
+    ActiveWindow.ScrollColumn = 22
+    ActiveWindow.ScrollColumn = 23
+    ActiveWindow.ScrollColumn = 24
+    ActiveWindow.ScrollColumn = 25
+    Range("AT8").Select
+    ActiveCell.FormulaR1C1 = "start arrow"
+    Range("AU8").Select
+    ActiveCell.FormulaR1C1 = "start fill"
+    Range("AV8").Select
+    ActiveCell.FormulaR1C1 = "start x"
+    Range("AV8").Select
+    ActiveCell.FormulaR1C1 = "start X"
+    Range("AW8").Select
+    ActiveCell.FormulaR1C1 = "start Y"
+    Range("AX8").Select
+    ActiveCell.FormulaR1C1 = "start DX"
+    Range("AY8").Select
+    ActiveCell.FormulaR1C1 = "start DY"
+    Range("AZ8").Select
+    ActiveCell.FormulaR1C1 = "start perimeter"
+    Range("AT8:AZ8").Select
+    Selection.Copy
+    Range("BA8").Select
+    ActiveSheet.Paste
+    Selection.Replace What:="start", Replacement:="end", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2
+    Application.CutCopyMode = False
+    Range("AT7:AZ7").Select
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Merge
+    ActiveCell.FormulaR1C1 = "line start"
+    Range("BA7:BG7").Select
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Merge
+    ActiveCell.FormulaR1C1 = "line end"
+    Range("BS8").Select
+    Selection.End(xlToLeft).Select
+    Range("BH8").Select
+    ActiveCell.FormulaR1C1 = "jump style"
+    Range("BI8").Select
+    ActiveCell.FormulaR1C1 = "target perimeter spacing"
+    Range("BH7:BI7").Select
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Merge
+    ActiveCell.FormulaR1C1 = "lines crossing"
+    Range("BJ8").Select
+    ActiveCell.FormulaR1C1 = "source point"
+    Range("BJ8").Select
+    ActiveCell.FormulaR1C1 = "X"
+    Range("BK8").Select
+    ActiveCell.FormulaR1C1 = "Y"
+    Range("BL8").Select
+    ActiveCell.FormulaR1C1 = "X"
+    Range("BM8").Select
+    ActiveCell.FormulaR1C1 = "Y"
+    Range("BJ7:BK7").Select
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Merge
+    With Selection
+        .HorizontalAlignment = xlGeneral
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.UnMerge
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Merge
+    ActiveCell.FormulaR1C1 = "source point"
+    Range("BL7:BM7").Select
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Merge
+    ActiveCell.FormulaR1C1 = "end point"
+    Range("BN8").Select
+    ActiveCell.FormulaR1C1 = "X1"
+    Range("BO8").Select
+    ActiveCell.FormulaR1C1 = "Y1"
+    Range("BP8").Select
+    ActiveCell.FormulaR1C1 = "X2"
+    Range("BQ8").Select
+    ActiveCell.FormulaR1C1 = "Y2"
+    Range("BR8").Select
+    ActiveCell.FormulaR1C1 = "X3"
+    Range("BS8").Select
+    ActiveCell.FormulaR1C1 = "Y3"
+    Range("BT8").Select
+    ActiveCell.FormulaR1C1 = "X4"
+    Range("BU8").Select
+    ActiveCell.FormulaR1C1 = "Yr"
+    Range("BU8").Select
+    ActiveCell.FormulaR1C1 = "Y4"
+    Range("BV8").Select
+    ActiveCell.FormulaR1C1 = "X5"
+    Range("BW8").Select
+    ActiveCell.FormulaR1C1 = "Y5"
+    Range("BN7:BW7").Select
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Merge
+    ActiveCell.FormulaR1C1 = "line points"
+    Range("BN8").Select
+    Selection.End(xlToLeft).Select
+    Range("F8").Select
+    Columns("F:F").ColumnWidth = 11
+    Columns("E:BW").Select
+    Selection.ColumnWidth = 11
+    Range("BL8").Select
+    Selection.End(xlToLeft).Select
+    Selection.End(xlToLeft).Select
+    Selection.End(xlToLeft).Select
+    Range("C8").Select
+    Selection.End(xlUp).Select
+    Range("D2:D4").Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Selection.ClearContents
+    Range("C4").Select
+    Selection.End(xlDown).Select
+    Range("K8").Select
+    Selection.End(xlToRight).Select
+    Range("BJ8").Select
+    ActiveCell.FormulaR1C1 = "source point X"
+    Range("BK8").Select
+    ActiveCell.FormulaR1C1 = "source point Y"
+    Range("BL8").Select
+    ActiveCell.FormulaR1C1 = "end point X"
+    Range("BM8").Select
+    ActiveCell.FormulaR1C1 = "end point Y"
+    Range("BJ7:BK7").Select
+    ActiveCell.FormulaR1C1 = "start point"
+    Range("BJ8").Select
+    ActiveCell.FormulaR1C1 = "start point X"
+    Range("BK8").Select
+    ActiveCell.FormulaR1C1 = "start point Y"
+    Range("BK8").Select
+    ActiveWorkbook.Save
+    Range("BJ8").Select
+    Selection.End(xlToLeft).Select
+    Rows("7:7").Select
+    Range("G7").Activate
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = True
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+    End With
+    Rows("7:7").Select
+    Selection.RowHeight = 18
+    Columns("H:H").Select
+    Selection.Columns.Group
+    Range("S7:U7").Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToLeft)).Select
+    Selection.Font.Bold = True
+    Selection.Font.Bold = False
+    Range("I7:R7").Select
+    ActiveCell.FormulaR1C1 = "size"
+    Range("S7:U7").Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Selection.Font.Bold = True
+    Columns("T:U").Select
+    Range("U1").Activate
+    Selection.Columns.Group
+    Columns("W:AA").Select
+    Range("AA1").Activate
+    Selection.Columns.Group
+    Columns("AC:AF").Select
+    Range("AF1").Activate
+    Selection.Columns.Group
+    Columns("AH:AL").Select
+    Range("AL1").Activate
+    Selection.Columns.Group
+    Range("AG7:AL7").Select
+    ActiveCell.FormulaR1C1 = "align"
+    Columns("AN:AP").Select
+    Range("AP1").Activate
+    Selection.Columns.Group
+    Columns("AR:AS").Select
+    Range("AS1").Activate
+    Selection.Columns.Group
+    Columns("AU:AZ").Select
+    Range("AZ1").Activate
+    Selection.Columns.Group
+    Columns("BB:BG").Select
+    Range("BG1").Activate
+    Selection.Columns.Group
+    Columns("BI:BI").Select
+    Selection.Columns.Group
+    Columns("BK:BK").Select
+    Selection.Columns.Group
+    Columns("BM:BM").Select
+    Selection.Columns.Group
+    Range("BP8").Select
+    Selection.End(xlToRight).Select
+    Columns("BO:BW").Select
+    Range("BW1").Activate
+    Selection.Columns.Group
+    Range("BH7:BI7").Select
+    ActiveCell.FormulaR1C1 = "line cross"
+    Range("BH7:BI7").Select
+    Selection.End(xlToLeft).Select
+    Range("A8").Select
+    Sheets("structure").Select
+    Range("A8").Select
+    ActiveSheet.Outline.ShowLevels RowLevels:=0, ColumnLevels:=2
+    Range(Selection, Selection.End(xlToRight)).Select
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ColorIndex = xlAutomatic
+        .TintAndShade = 0
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ColorIndex = xlAutomatic
+        .TintAndShade = 0
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeBottom)
+        .LineStyle = xlContinuous
+        .ColorIndex = xlAutomatic
+        .TintAndShade = 0
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ColorIndex = xlAutomatic
+        .TintAndShade = 0
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlInsideVertical)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.249946592608417
+        .Weight = xlThin
+    End With
+    Selection.Borders(xlInsideHorizontal).LineStyle = xlNone
+    Range("BJ8").Select
+    Selection.End(xlToLeft).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeBottom)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlInsideVertical)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.249946592608417
+        .Weight = xlThin
+    End With
+    Selection.Borders(xlInsideHorizontal).LineStyle = xlNone
+    Range("G7:H7").Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeBottom)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlInsideVertical)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Selection.Borders(xlInsideHorizontal).LineStyle = xlNone
+    Range("L8").Select
+    Selection.End(xlToLeft).Select
+    Range("C9").Select
+    Selection.End(xlToLeft).Select
+    Range("A8").Select
+    Selection.End(xlToRight).Select
+    Range("BW9:BW11").Select
+    Range(Selection, Selection.End(xlToLeft)).Select
+    Range(Selection, Selection.End(xlToLeft)).Select
+    Range(Selection, Selection.End(xlToLeft)).Select
+    Range(Selection, Selection.End(xlToLeft)).Select
+    Range(Selection, Selection.End(xlToLeft)).Select
+    Range(Selection, Selection.End(xlToLeft)).Select
+    Range(Selection, Selection.End(xlToLeft)).Select
+    Range(Selection, Selection.End(xlToLeft)).Select
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Selection.Borders(xlEdgeBottom).LineStyle = xlNone
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlInsideVertical)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.249946592608417
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlInsideHorizontal)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.249946592608417
+        .Weight = xlThin
+    End With
+    Range("C10").Select
+    Selection.End(xlToLeft).Select
+    Selection.End(xlToLeft).Select
+    Selection.End(xlToLeft).Select
+    Range("A8").Select
+    Selection.End(xlToRight).Select
+    Range("G7:H11").Select
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Selection.Borders(xlEdgeBottom).LineStyle = xlNone
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Range("I7:R11").Select
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Selection.Borders(xlEdgeBottom).LineStyle = xlNone
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Range("S7:U11").Select
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Selection.Borders(xlEdgeBottom).LineStyle = xlNone
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Range("V7:AA11").Select
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Selection.Borders(xlEdgeBottom).LineStyle = xlNone
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Range("AB7:AF11").Select
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Selection.Borders(xlEdgeBottom).LineStyle = xlNone
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Range("AG24").Select
+    ActiveWindow.ScrollColumn = 20
+    ActiveWindow.ScrollColumn = 21
+    ActiveWindow.ScrollColumn = 22
+    ActiveWindow.ScrollColumn = 23
+    ActiveWindow.ScrollColumn = 24
+    ActiveWindow.ScrollColumn = 25
+    ActiveWindow.ScrollColumn = 26
+    Range("AG7:AL11").Select
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Selection.Borders(xlEdgeBottom).LineStyle = xlNone
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Range("AM7:AP11").Select
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Selection.Borders(xlEdgeBottom).LineStyle = xlNone
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    ActiveWindow.ScrollColumn = 27
+    ActiveWindow.ScrollColumn = 28
+    ActiveWindow.ScrollColumn = 29
+    ActiveWindow.ScrollColumn = 30
+    ActiveWindow.ScrollColumn = 31
+    ActiveWindow.ScrollColumn = 32
+    ActiveWindow.ScrollColumn = 33
+    ActiveWindow.ScrollColumn = 34
+    Range("AQ7:AS11").Select
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Selection.Borders(xlEdgeBottom).LineStyle = xlNone
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    ActiveWindow.ScrollColumn = 35
+    ActiveWindow.ScrollColumn = 36
+    ActiveWindow.ScrollColumn = 37
+    ActiveWindow.ScrollColumn = 38
+    ActiveWindow.ScrollColumn = 39
+    ActiveWindow.ScrollColumn = 40
+    ActiveWindow.ScrollColumn = 41
+    Range("AT7:AZ11").Select
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Selection.Borders(xlEdgeBottom).LineStyle = xlNone
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Range("BA7:BG11").Select
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Selection.Borders(xlEdgeBottom).LineStyle = xlNone
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    ActiveWindow.ScrollColumn = 42
+    ActiveWindow.ScrollColumn = 43
+    ActiveWindow.ScrollColumn = 44
+    ActiveWindow.ScrollColumn = 45
+    ActiveWindow.ScrollColumn = 46
+    ActiveWindow.ScrollColumn = 47
+    ActiveWindow.ScrollColumn = 48
+    ActiveWindow.ScrollColumn = 49
+    ActiveWindow.ScrollColumn = 50
+    ActiveWindow.ScrollColumn = 51
+    ActiveWindow.ScrollColumn = 52
+    Range("BH7:BI11").Select
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Selection.Borders(xlEdgeBottom).LineStyle = xlNone
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Range("BJ7:BK11").Select
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Selection.Borders(xlEdgeBottom).LineStyle = xlNone
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Range("BL7:BM11").Select
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Selection.Borders(xlEdgeBottom).LineStyle = xlNone
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ThemeColor = 1
+        .TintAndShade = -0.349986266670736
+        .Weight = xlMedium
+    End With
+    Range("G9:H11").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorLight2
+        .TintAndShade = 0.899960325937681
+        .PatternTintAndShade = 0
+    End With
+    Range("G8:H8").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorLight2
+        .TintAndShade = 0.749961851863155
+        .PatternTintAndShade = 0
+    End With
+    Range("G7:H7").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorLight2
+        .TintAndShade = 0.499984740745262
+        .PatternTintAndShade = 0
+    End With
+    Range("I9:R11").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent2
+        .TintAndShade = 0.799981688894314
+        .PatternTintAndShade = 0
+    End With
+    Range("I8:R8").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent2
+        .TintAndShade = 0.599963377788629
+        .PatternTintAndShade = 0
+    End With
+    Range("I7:R7").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent2
+        .TintAndShade = 0.399945066682943
+        .PatternTintAndShade = 0
+    End With
+    Range("M16").Select
+    ActiveWindow.ScrollColumn = 4
+    ActiveWindow.ScrollColumn = 5
+    ActiveWindow.ScrollColumn = 6
+    ActiveWindow.ScrollColumn = 7
+    ActiveWindow.ScrollColumn = 8
+    ActiveWindow.ScrollColumn = 9
+    ActiveWindow.ScrollColumn = 10
+    ActiveWindow.ScrollColumn = 11
+    Range("S9:U11").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent4
+        .TintAndShade = 0.799981688894314
+        .PatternTintAndShade = 0
+    End With
+    Range("S8:U8").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent4
+        .TintAndShade = 0.599963377788629
+        .PatternTintAndShade = 0
+    End With
+    Range("S7:U7").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent4
+        .TintAndShade = 0.399945066682943
+        .PatternTintAndShade = 0
+    End With
+    Range("V9:AA11").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent3
+        .TintAndShade = 0.799981688894314
+        .PatternTintAndShade = 0
+    End With
+    Range("V8:AA8").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent3
+        .TintAndShade = 0.599963377788629
+        .PatternTintAndShade = 0
+    End With
+    Range("V7:AA7").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent3
+        .TintAndShade = 0.399945066682943
+        .PatternTintAndShade = 0
+    End With
+    Range("Y16").Select
+    ActiveWindow.ScrollColumn = 12
+    ActiveWindow.ScrollColumn = 13
+    ActiveWindow.ScrollColumn = 14
+    ActiveWindow.ScrollColumn = 15
+    ActiveWindow.ScrollColumn = 16
+    ActiveWindow.ScrollColumn = 17
+    ActiveWindow.ScrollColumn = 18
+    ActiveWindow.ScrollColumn = 19
+    ActiveWindow.ScrollColumn = 20
+    ActiveWindow.ScrollColumn = 21
+    ActiveWindow.ScrollColumn = 22
+    Range("AB9:AF11").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent5
+        .TintAndShade = 0.799981688894314
+        .PatternTintAndShade = 0
+    End With
+    Range("AB8:AF8").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent5
+        .TintAndShade = 0.599963377788629
+        .PatternTintAndShade = 0
+    End With
+    Range("AB7:AF7").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent5
+        .TintAndShade = 0.399945066682943
+        .PatternTintAndShade = 0
+    End With
+    Range("AG9:AL11").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorDark1
+        .TintAndShade = -4.99893185216834E-02
+        .PatternTintAndShade = 0
+    End With
+    Range("AG8:AL8").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorDark1
+        .TintAndShade = -0.14996795556505
+        .PatternTintAndShade = 0
+    End With
+    Range("AG7:AL7").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorDark1
+        .TintAndShade = -0.249946592608417
+        .PatternTintAndShade = 0
+    End With
+    Range("AK17").Select
+    ActiveWindow.ScrollColumn = 23
+    ActiveWindow.ScrollColumn = 24
+    ActiveWindow.ScrollColumn = 25
+    ActiveWindow.ScrollColumn = 26
+    ActiveWindow.ScrollColumn = 27
+    ActiveWindow.ScrollColumn = 28
+    ActiveWindow.ScrollColumn = 29
+    ActiveWindow.ScrollColumn = 30
+    ActiveWindow.ScrollColumn = 31
+    ActiveWindow.ScrollColumn = 32
+    ActiveWindow.ScrollColumn = 33
+    ActiveWindow.ScrollColumn = 32
+    Range("AM9:AP11").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorLight2
+        .TintAndShade = 0.899960325937681
+        .PatternTintAndShade = 0
+    End With
+    Range("AG9:AL11").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorLight2
+        .TintAndShade = 0.899960325937681
+        .PatternTintAndShade = 0
+    End With
+    Range("AG8:AL8").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorLight2
+        .TintAndShade = 0.749961851863155
+        .PatternTintAndShade = 0
+    End With
+    Range("AG7:AL7").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorLight2
+        .TintAndShade = 0.499984740745262
+        .PatternTintAndShade = 0
+    End With
+    Range("AM9:AP11").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent6
+        .TintAndShade = 0.799981688894314
+        .PatternTintAndShade = 0
+    End With
+    Range("AM8:AP8").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent6
+        .TintAndShade = 0.599963377788629
+        .PatternTintAndShade = 0
+    End With
+    Range("AM7:AP7").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent6
+        .TintAndShade = 0.399945066682943
+        .PatternTintAndShade = 0
+    End With
+    Range("AQ9:AS11").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent5
+        .TintAndShade = 0.799981688894314
+        .PatternTintAndShade = 0
+    End With
+    Range("AQ8:AS8").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent5
+        .TintAndShade = 0.599963377788629
+        .PatternTintAndShade = 0
+    End With
+    Range("AQ7:AS7").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent5
+        .TintAndShade = 0.399945066682943
+        .PatternTintAndShade = 0
+    End With
+    Range("AU19").Select
+    ActiveWindow.ScrollColumn = 33
+    ActiveWindow.ScrollColumn = 34
+    ActiveWindow.ScrollColumn = 35
+    ActiveWindow.ScrollColumn = 36
+    ActiveWindow.ScrollColumn = 37
+    ActiveWindow.ScrollColumn = 38
+    ActiveWindow.ScrollColumn = 39
+    ActiveWindow.ScrollColumn = 40
+    ActiveWindow.ScrollColumn = 41
+    ActiveWindow.ScrollColumn = 42
+    Range("AT9:AZ11").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorLight2
+        .TintAndShade = 0.899960325937681
+        .PatternTintAndShade = 0
+    End With
+    Range("AT8:AZ8").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorLight2
+        .TintAndShade = 0.749961851863155
+        .PatternTintAndShade = 0
+    End With
+    Range("AT7:AZ7").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorLight2
+        .TintAndShade = 0.499984740745262
+        .PatternTintAndShade = 0
+    End With
+    Range("BA9:BG11").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent1
+        .TintAndShade = 0.799981688894314
+        .PatternTintAndShade = 0
+    End With
+    Range("BA8:BG8").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent1
+        .TintAndShade = 0.599963377788629
+        .PatternTintAndShade = 0
+    End With
+    Range("BA7:BG7").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent1
+        .TintAndShade = 0.399945066682943
+        .PatternTintAndShade = 0
+    End With
+    Range("BG24").Select
+    ActiveWindow.ScrollColumn = 43
+    ActiveWindow.ScrollColumn = 44
+    ActiveWindow.ScrollColumn = 45
+    ActiveWindow.ScrollColumn = 46
+    ActiveWindow.ScrollColumn = 47
+    ActiveWindow.ScrollColumn = 48
+    ActiveWindow.ScrollColumn = 49
+    ActiveWindow.ScrollColumn = 50
+    ActiveWindow.ScrollColumn = 51
+    ActiveWindow.ScrollColumn = 52
+    ActiveWindow.ScrollColumn = 53
+    ActiveWindow.ScrollColumn = 54
+    ActiveWindow.ScrollColumn = 55
+    Range("BH9:BI11").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent2
+        .TintAndShade = 0.799981688894314
+        .PatternTintAndShade = 0
+    End With
+    Range("BH8:BI8").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent2
+        .TintAndShade = 0.599963377788629
+        .PatternTintAndShade = 0
+    End With
+    Range("BH7:BI7").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent2
+        .TintAndShade = 0.399945066682943
+        .PatternTintAndShade = 0
+    End With
+    Range("BJ9:BK11").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent3
+        .TintAndShade = 0.799981688894314
+        .PatternTintAndShade = 0
+    End With
+    Range("BJ8:BK8").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent3
+        .TintAndShade = 0.599963377788629
+        .PatternTintAndShade = 0
+    End With
+    Range("BJ7:BK7").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent3
+        .TintAndShade = 0.399945066682943
+        .PatternTintAndShade = 0
+    End With
+    Range("BL9:BM11").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent6
+        .TintAndShade = 0.799981688894314
+        .PatternTintAndShade = 0
+    End With
+    Range("BL8:BM8").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent6
+        .TintAndShade = 0.599963377788629
+        .PatternTintAndShade = 0
+    End With
+    Range("BL7:BM7").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorAccent6
+        .TintAndShade = 0.399945066682943
+        .PatternTintAndShade = 0
+    End With
+    Range("BN9:BW11").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorLight2
+        .TintAndShade = 0.899960325937681
+        .PatternTintAndShade = 0
+    End With
+    Range("BN8:BW8").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorLight2
+        .TintAndShade = 0.749961851863155
+        .PatternTintAndShade = 0
+    End With
+    Range("BN7:BW7").Select
+    With Selection.Interior
+        .pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorLight2
+        .TintAndShade = 0.499984740745262
+        .PatternTintAndShade = 0
+    End With
+    Range("BO12").Select
+    ActiveWorkbook.Save
+    ActiveWorkbook.Save
+    Rows("9:11").Select
+    Selection.RowHeight = 18
+    Range("I7:R7").Select
+    Selection.End(xlToLeft).Select
+    Selection.End(xlToLeft).Select
+    Range("H8").Select
+    Selection.End(xlToRight).Select
+    Selection.End(xlToRight).Select
+    Selection.End(xlToRight).Select
+    Selection.End(xlToLeft).Select
+    Selection.End(xlToLeft).Select
+    Selection.End(xlToLeft).Select
+    Range("A8").Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range("B8").Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Selection.Copy
+    Application.CutCopyMode = False
+    Selection.Cut
+    Application.CutCopyMode = False
+    Selection.Copy
+    Sheets.Add After:=ActiveSheet
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Range("A1").Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Application.CutCopyMode = False
+    Selection.Copy
+    Range("A2").Select
+    Selection.PasteSpecial Paste:=xlPasteAll, Operation:=xlNone, SkipBlanks:= _
+        False, Transpose:=True
+    Range("C5").Select
+    Selection.End(xlToLeft).Select
+    Selection.End(xlUp).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Application.CutCopyMode = False
+    Selection.ClearContents
+    Range("B2").Select
+    ActiveCell.FormulaR1C1 = "=COUNTIF(C[-1],RC[-1])"
+    Range("A3").Select
+    Selection.End(xlDown).Select
+    Range("B75").Select
+    Range(Selection, Selection.End(xlUp)).Select
+    Selection.FillDown
+    Range("B74").Select
+    Calculate
+    Selection.End(xlUp).Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Range("B2").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.ClearContents
+    Range("A2").Select
+    Columns("A:A").EntireColumn.AutoFit
+    Sheets("structure").Select
+    Range("A8").Select
+    Selection.End(xlToLeft).Select
+    Selection.End(xlToLeft).Select
+    Range("N8").Select
+    ActiveCell.FormulaR1C1 = "start size"
+    Range("O8").Select
+    ActiveCell.FormulaR1C1 = "alt X"
+    Range("P8").Select
+    ActiveCell.FormulaR1C1 = "alt Y"
+    Range("Q8").Select
+    ActiveCell.FormulaR1C1 = "alt width"
+    Range("R8").Select
+    ActiveCell.FormulaR1C1 = "alt height"
+    Range("X8").Select
+    ActiveCell.FormulaR1C1 = "swimlane background color"
+    Range("C8").Select
+    ActiveWorkbook.Save
+    Sheets("Sheet1").Select
+    Sheets("Sheet1").Name = "properties"
+    Range("A14").Select
+    ActiveCell.FormulaR1C1 = "start size"
+    Range("A15").Select
+    ActiveCell.FormulaR1C1 = "alt x"
+    Range("A16").Select
+    ActiveCell.FormulaR1C1 = "alt y"
+    Range("A17").Select
+    ActiveCell.FormulaR1C1 = "alt width"
+    Range("A18").Select
+    ActiveCell.FormulaR1C1 = "alt height"
+    Range("A24").Select
+    ActiveCell.FormulaR1C1 = "swimlane background color"
+    Range("A25").Select
+    Selection.End(xlUp).Select
+    Selection.End(xlUp).Select
+    Range("B1").Select
+    ActiveCell.FormulaR1C1 = "container"
+    Range("C1").Select
+    ActiveCell.FormulaR1C1 = "group"
+    Range("D1").Select
+    ActiveCell.FormulaR1C1 = "label"
+    Range("E1").Select
+    ActiveCell.FormulaR1C1 = "image"
+    Range("F1").Select
+    ActiveCell.FormulaR1C1 = "line"
+    Range("B2").Select
+    ActiveCell.FormulaR1C1 = "TRUE"
+    Range("B2").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("C2").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("D2").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("E2").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("F2").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("A3").Select
+    Selection.End(xlDown).Select
+    Range("F75").Select
+    Range(Selection, Selection.End(xlToLeft)).Select
+    Range("B74:F75").Select
+    Range("F75").Activate
+    Range(Selection, Selection.End(xlUp)).Select
+    Range("B2:F75").Select
+    Range("F75").Activate
+    Selection.FormatConditions.AddIconSetCondition
+    Selection.FormatConditions(Selection.FormatConditions.Count).SetFirstPriority
+    With Selection.FormatConditions(1)
+        .ReverseOrder = False
+        .ShowIconOnly = False
+        .IconSet = ActiveWorkbook.IconSets(xl3TrafficLights1)
+    End With
+    With Selection.FormatConditions(1).IconCriteria(2)
+        .Type = xlConditionValuePercent
+        .value = 33
+        .Operator = 7
+    End With
+    With Selection.FormatConditions(1).IconCriteria(3)
+        .Type = xlConditionValuePercent
+        .value = 67
+        .Operator = 7
+    End With
+    ActiveWindow.SmallScroll Down:=-55
+    Range("G71").Select
+    Selection.End(xlToLeft).Select
+    Selection.End(xlUp).Select
+    Selection.End(xlUp).Select
+    Columns("B:F").Select
+    Range("B2").Activate
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlBottom
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Range("A2").Select
+    Selection.End(xlDown).Select
+    Range("F75").Select
+    Range(Selection, Selection.End(xlToLeft)).Select
+    Range("B75:F75").Select
+    Range("F75").Activate
+    Range(Selection, Selection.End(xlUp)).Select
+    Range("B2:F75").Select
+    Range("F75").Activate
+    With Selection.Font
+        .Name = "Aptos Narrow"
+        .Size = 10
+        .Strikethrough = False
+        .Superscript = False
+        .Subscript = False
+        .OutlineFont = False
+        .Shadow = False
+        .Underline = xlUnderlineStyleNone
+        .ThemeColor = xlThemeColorLight1
+        .TintAndShade = 0
+        .ThemeFont = xlThemeFontMinor
+    End With
+    ActiveWindow.SmallScroll Down:=-55
+    Range("A7").Select
+    Selection.End(xlUp).Select
+    Range("B2").Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range("B2:F4").Select
+    Selection.FillDown
+    Range("B4:F6").Select
+    Selection.FillDown
+    Range("B6").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("D6").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("E6").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("F6").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("B7").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("F7").Select
+    Selection.End(xlToLeft).Select
+    Range("B7:E7").Select
+    Selection.FillRight
+    Range("F7").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("B7").Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range("B7:F8").Select
+    Selection.FillDown
+    Range("B9").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("C9").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("D9").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("E9").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("F9").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("B9:F12").Select
+    Selection.FillDown
+    Range("B13").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("C13").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("D13").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("E13").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("F13").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("B14").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("C14").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("D14").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("E14").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("F14").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("B15").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("B16").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("B17").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("B18").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("C18").Select
+    Selection.End(xlUp).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range("C14:F18").Select
+    Selection.FillDown
+    Range("B19").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("C19").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("A19").Select
+    Selection.End(xlDown).Select
+    Range("C75").Select
+    Range(Selection, Selection.End(xlUp)).Select
+    Selection.FillDown
+    Selection.End(xlUp).Select
+    Selection.End(xlUp).Select
+    Range("D3").Select
+    Selection.End(xlDown).Select
+    Range("D19").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("E19").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("F19").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("B20").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("B21").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("D20").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("D21").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("E20").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("E21").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("F20").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("F21").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("B22").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("B23").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("B24").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("D24").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("E24").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("F24").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("D21:F23").Select
+    Selection.FillDown
+    Range("B25").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("A26").Select
+    Selection.End(xlDown).Select
+    Range("B75").Select
+    Range(Selection, Selection.End(xlUp)).Select
+    Selection.FillDown
+    Range("D75").Select
+    Selection.End(xlUp).Select
+    Range("D25").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("E25").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("F25").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("C25").Select
+    Selection.End(xlDown).Select
+    Range("D75:F75").Select
+    Range(Selection, Selection.End(xlUp)).Select
+    Selection.FillDown
+    Selection.End(xlUp).Select
+    Range("B32").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("C32").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("D32").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("E32").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("B39").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("B40").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("D39").Select
+    Selection.End(xlUp).Select
+    Selection.End(xlUp).Select
+    Range("B2").Select
+    ActiveWindow.FreezePanes = True
+    ActiveWindow.SmallScroll Down:=18
+    Range("D39").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("D40").Select
+    ActiveCell.FormulaR1C1 = "1"
+    Range("D39").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("D40").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("B41").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("B42").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("D41").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("D42").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("B43").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("B44").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("B45").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("D43").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("D44").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("D45").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("F43").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("F44").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("F45").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("B46").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("B46:B70").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.FillDown
+    Range("D46").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("E46").Select
+    ActiveCell.FormulaR1C1 = "0"
+    Range("D46:E46").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.FillDown
+    Selection.End(xlDown).Select
+    Selection.End(xlUp).Select
+    Selection.End(xlUp).Select
+    Range("C2").Select
+    ActiveWorkbook.Save
+    Sheets("properties").Select
+    Range("B2").Select
+    Selection.End(xlToLeft).Select
+    Selection.End(xlUp).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range(Selection, Selection.End(xlDown)).Select
+    ActiveWindow.SmallScroll Down:=-33
+    Range("H14").Select
+    ActiveWindow.SmallScroll Down:=-4
+    ActiveWorkbook.Names.Add Name:="PROPERTIES", RefersToR1C1:= _
+        "=OFFSET(properties!R1C1,0,0,COUNTA(properties!C1)+1,COUNTA(properties!R1)+1)"
+    ActiveWorkbook.Names("PROPERTIES").Comment = ""
+    Application.CutCopyMode = False
+    Range("I4").Select
+    ActiveCell.FormulaR1C1 = "vertex"
+    Range("I5").Select
+    ActiveCell.FormulaR1C1 = "image"
+    Range("I4:I5").Select
+    Range("I5").Activate
+    Selection.ClearContents
+    Range("I6").Select
+    Sheets("structure").Select
+    Range("D9").Select
+    ActiveCell.FormulaR1C1 = "=VLOOKUP(RC1,PROPERTIES,2,0)"
+    Range("D9").Select
+    ActiveCell.FormulaR1C1 = "=VLOOKUP(R8C,PROPERTIES,2,0)"
+    Range("D14").Select
+    ActiveCell.FormulaR1C1 = "=MATCH(R[-5]C1,PROPERTIES,0)"
+    Range("D14").Select
+    ActiveCell.FormulaR1C1 = _
+        "=MATCH(R[-5]C1,OFFSET(PROPERTIES,1,COLUMNS(PROPERTIES),0))"
+    Range("D14").Select
+    Selection.ClearContents
+    Sheets("properties").Select
+    Range("J8").Select
+    ActiveCell.FormulaR1C1 = "=MATCH(""group"",OFFSET(PROPERTIES,0,0,1),0)"
+    Range("J8").Select
+    Selection.ClearContents
+    ActiveSheet.Previous.Select
+    Range("D9").Select
+    ActiveCell.FormulaR1C1 = _
+        "=VLOOKUP(R8C,PROPERTIES,MATCH(RC1,OFFSET(PROPERTIES,0,0,1),0),0)"
+    Range("D9").Select
+    Selection.End(xlToLeft).Select
+    Selection.End(xlToLeft).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range("B9").Select
+    Application.CutCopyMode = False
+    Range("BN10").Select
+    Selection.End(xlToLeft).Select
+    Range("A9").Select
+    ActiveWorkbook.Save
+    Sheets("structure").Select
+    Range("C10").Select
+    ActiveWindow.ScrollColumn = 4
+    ActiveWindow.ScrollColumn = 5
+    ActiveWindow.ScrollColumn = 6
+    ActiveWindow.ScrollColumn = 7
+    ActiveWindow.ScrollColumn = 8
+    ActiveWindow.ScrollColumn = 9
+    ActiveWindow.ScrollColumn = 10
+    ActiveWindow.ScrollColumn = 11
+    ActiveWindow.ScrollColumn = 12
+    ActiveWindow.ScrollColumn = 13
+    ActiveWindow.ScrollColumn = 14
+    ActiveWindow.ScrollColumn = 15
+    ActiveWindow.ScrollColumn = 16
+    ActiveWindow.ScrollColumn = 17
+    ActiveWindow.ScrollColumn = 18
+    ActiveWindow.ScrollColumn = 19
+    ActiveWindow.ScrollColumn = 20
+    ActiveWindow.ScrollColumn = 21
+    ActiveWindow.ScrollColumn = 22
+    ActiveWindow.ScrollColumn = 23
+    ActiveWindow.ScrollColumn = 24
+    ActiveWindow.ScrollColumn = 25
+    ActiveWindow.ScrollColumn = 26
+    ActiveWindow.ScrollColumn = 27
+    ActiveWindow.ScrollColumn = 28
+    ActiveWindow.ScrollColumn = 29
+    ActiveWindow.ScrollColumn = 30
+    ActiveWindow.ScrollColumn = 31
+    ActiveWindow.ScrollColumn = 32
+    ActiveWindow.ScrollColumn = 33
+    ActiveWindow.ScrollColumn = 34
+    ActiveWindow.ScrollColumn = 35
+    ActiveWindow.ScrollColumn = 36
+    ActiveWindow.ScrollColumn = 37
+    ActiveWindow.ScrollColumn = 38
+    ActiveWindow.ScrollColumn = 39
+    ActiveWindow.ScrollColumn = 40
+    ActiveWindow.ScrollColumn = 41
+    ActiveWindow.ScrollColumn = 42
+    ActiveWindow.ScrollColumn = 43
+    ActiveWindow.ScrollColumn = 44
+    ActiveWindow.ScrollColumn = 45
+    ActiveWindow.ScrollColumn = 46
+    ActiveWindow.ScrollColumn = 47
+    ActiveWindow.ScrollColumn = 48
+    ActiveWindow.ScrollColumn = 49
+    ActiveWindow.ScrollColumn = 50
+    ActiveWindow.ScrollColumn = 51
+    ActiveWindow.ScrollColumn = 52
+    ActiveWindow.ScrollColumn = 53
+    ActiveWindow.ScrollColumn = 54
+    ActiveWindow.ScrollColumn = 55
+    ActiveWindow.ScrollColumn = 56
+    ActiveWindow.ScrollColumn = 55
+    ActiveWindow.ScrollColumn = 54
+    ActiveWindow.ScrollColumn = 53
+    ActiveWindow.ScrollColumn = 52
+    ActiveWindow.ScrollColumn = 51
+    ActiveWindow.ScrollColumn = 50
+    ActiveWindow.ScrollColumn = 49
+    ActiveWindow.ScrollColumn = 48
+    ActiveWindow.ScrollColumn = 47
+    ActiveWindow.ScrollColumn = 46
+    ActiveWindow.ScrollColumn = 45
+    ActiveWindow.ScrollColumn = 44
+    ActiveWindow.ScrollColumn = 43
+    ActiveWindow.ScrollColumn = 42
+    ActiveWindow.ScrollColumn = 41
+    ActiveWindow.ScrollColumn = 40
+    ActiveWindow.ScrollColumn = 38
+    ActiveWindow.ScrollColumn = 37
+    ActiveWindow.ScrollColumn = 36
+    ActiveWindow.ScrollColumn = 35
+    ActiveWindow.ScrollColumn = 34
+    ActiveWindow.ScrollColumn = 33
+    ActiveWindow.ScrollColumn = 32
+    ActiveWindow.ScrollColumn = 31
+    ActiveWindow.ScrollColumn = 30
+    ActiveWindow.ScrollColumn = 29
+    ActiveWindow.ScrollColumn = 28
+    ActiveWindow.ScrollColumn = 27
+    ActiveWindow.ScrollColumn = 26
+    ActiveWindow.ScrollColumn = 25
+    ActiveWindow.ScrollColumn = 24
+    ActiveWindow.ScrollColumn = 23
+    ActiveWindow.ScrollColumn = 22
+    ActiveWindow.ScrollColumn = 21
+    ActiveWindow.ScrollColumn = 20
+    ActiveWindow.ScrollColumn = 19
+    ActiveWindow.ScrollColumn = 18
+    ActiveWindow.ScrollColumn = 17
+    ActiveWindow.ScrollColumn = 16
+    ActiveWindow.ScrollColumn = 15
+    ActiveWindow.ScrollColumn = 14
+    ActiveWindow.ScrollColumn = 13
+    ActiveWindow.ScrollColumn = 12
+    ActiveWindow.ScrollColumn = 11
+    ActiveWindow.ScrollColumn = 10
+    ActiveWindow.ScrollColumn = 9
+    ActiveWindow.ScrollColumn = 8
+    ActiveWindow.ScrollColumn = 7
+    ActiveWindow.ScrollColumn = 6
+    ActiveWindow.ScrollColumn = 5
+    ActiveWindow.ScrollColumn = 4
+    ActiveWindow.ScrollColumn = 3
+    Range("A13").Select
+    ActiveSheet.Paste
+    ActiveCell.FormulaR1C1 = "=""Public Const COL_""&UPPER(R[-5]C)&"" As Long ""=1"
+    Range("A13").Select
+    ActiveCell.FormulaR1C1 = "=""Public Const COL_""&UPPER(R[-5]C)&"" As Long """
+    Range("A13").Select
+    ActiveCell.FormulaR1C1 = _
+        "=""Public Const COL_""&UPPER(R[-5]C)&"" As Long  = ""&COLUMN()"
+    Range("B13").Select
+    Selection.FillRight
+    Range("B11").Select
+    Selection.End(xlToRight).Select
+    Range("H11").Select
+    Selection.End(xlToRight).Select
+    Selection.End(xlToRight).Select
+    Selection.End(xlToRight).Select
+    Selection.End(xlToRight).Select
+    Selection.End(xlToLeft).Select
+    Range("M8").Select
+    Selection.End(xlToRight).Select
+    Range("BW13").Select
+    Range(Selection, Selection.End(xlToLeft)).Select
+    Selection.FillRight
+    Selection.End(xlToLeft).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Selection.Copy
+    Application.CutCopyMode = False
+    Selection.Copy
+    Range("A15").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Application.CutCopyMode = False
+    Selection.Copy
+    Range("A16").Select
+    Selection.PasteSpecial Paste:=xlPasteAll, Operation:=xlNone, SkipBlanks:= _
+        False, Transpose:=True
+    Application.CutCopyMode = False
+    Selection.Copy
+    Range("A13").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.Delete Shift:=xlUp
+    Rows("9:9").Select
+    Selection.ClearContents
+    Range("A9:XFC9").Select
+    Sheets("structure").Select
+    Sheets("structure").Copy Before:=Sheets(3)
+    Sheets("structure (2)").Select
+    ActiveWindow.SelectedSheets.Visible = False
+    Sheets("structure").Select
+    Range("B20").Select
+    Selection.End(xlToLeft).Select
+    Selection.End(xlToLeft).Select
+    Selection.End(xlUp).Select
+    Range("A9").Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range("A8").Select
+    Selection.End(xlToRight).Select
+    Range("A9").Select
+    Selection.End(xlToLeft).Select
+    Rows("9:9").Select
+    ActiveWorkbook.Names.Add Name:="RNG_STYLE", RefersToR1C1:="=structure!R9"
+    Range("A8").Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Range("A8").Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Rows("9:9").Select
+    Range("B9").Activate
+    ActiveWorkbook.Save
+    ActiveWorkbook.Save
+    Range("B2").Select
+    ActiveWindow.ScrollColumn = 55
+    ActiveWindow.ScrollColumn = 54
+    ActiveWindow.ScrollColumn = 53
+    ActiveWindow.ScrollColumn = 52
+    ActiveWindow.ScrollColumn = 51
+    ActiveWindow.ScrollColumn = 50
+    ActiveWindow.ScrollColumn = 49
+    ActiveWindow.ScrollColumn = 48
+    ActiveWindow.ScrollColumn = 47
+    ActiveWindow.ScrollColumn = 46
+    ActiveWindow.ScrollColumn = 45
+    ActiveWindow.ScrollColumn = 44
+    ActiveWindow.ScrollColumn = 43
+    ActiveWindow.ScrollColumn = 42
+    ActiveWindow.ScrollColumn = 41
+    ActiveWindow.ScrollColumn = 40
+    ActiveWindow.ScrollColumn = 39
+    ActiveWindow.ScrollColumn = 38
+    ActiveWindow.ScrollColumn = 37
+    ActiveWindow.ScrollColumn = 36
+    ActiveWindow.ScrollColumn = 35
+    ActiveWindow.ScrollColumn = 34
+    ActiveWindow.ScrollColumn = 33
+    ActiveWindow.ScrollColumn = 32
+    ActiveWindow.ScrollColumn = 31
+    ActiveWindow.ScrollColumn = 30
+    ActiveWindow.ScrollColumn = 29
+    ActiveWindow.ScrollColumn = 28
+    ActiveWindow.ScrollColumn = 27
+    ActiveWindow.ScrollColumn = 26
+    ActiveWindow.ScrollColumn = 25
+    ActiveWindow.ScrollColumn = 24
+    ActiveWindow.ScrollColumn = 23
+    ActiveWindow.ScrollColumn = 22
+    ActiveWindow.ScrollColumn = 21
+    ActiveWindow.ScrollColumn = 20
+    ActiveWindow.ScrollColumn = 19
+    ActiveWindow.ScrollColumn = 18
+    ActiveWindow.ScrollColumn = 17
+    ActiveWindow.ScrollColumn = 16
+    ActiveWindow.ScrollColumn = 15
+    ActiveWindow.ScrollColumn = 14
+    ActiveWindow.ScrollColumn = 13
+    ActiveWindow.ScrollColumn = 12
+    ActiveWindow.ScrollColumn = 11
+    ActiveWindow.ScrollColumn = 10
+    ActiveWindow.ScrollColumn = 9
+    ActiveWindow.ScrollColumn = 8
+    ActiveWindow.ScrollColumn = 7
+    ActiveWindow.ScrollColumn = 6
+    ActiveWindow.ScrollColumn = 5
+    ActiveWindow.ScrollColumn = 4
+    ActiveWindow.ScrollColumn = 3
+    ActiveCell.FormulaR1C1 = "Read from XML"
+    Range("C2").Select
+    ActiveWorkbook.Save
+    ActiveWorkbook.Save
+    ActiveWorkbook.Save
+    ActiveWorkbook.Save
+    Range("B2").Select
+    ActiveWorkbook.Save
+    ActiveWorkbook.Save
+    ActiveWorkbook.Save
+    ActiveWorkbook.Save
+    ActiveWorkbook.Save
+    Range("B2").Select
+    ActiveWindow.ScrollColumn = 4
+    ActiveWindow.ScrollColumn = 5
+    ActiveWindow.ScrollColumn = 6
+    ActiveWindow.ScrollColumn = 7
+    ActiveWindow.ScrollColumn = 8
+    ActiveWindow.ScrollColumn = 9
+    ActiveWindow.ScrollColumn = 10
+    ActiveWindow.ScrollColumn = 11
+    ActiveWindow.ScrollColumn = 12
+    ActiveWindow.ScrollColumn = 13
+    ActiveWindow.ScrollColumn = 14
+    ActiveWindow.ScrollColumn = 15
+    ActiveWindow.ScrollColumn = 16
+    ActiveWindow.ScrollColumn = 17
+    ActiveWindow.ScrollColumn = 18
+    ActiveWindow.ScrollColumn = 19
+    ActiveWindow.ScrollColumn = 20
+    ActiveWindow.ScrollColumn = 21
+    ActiveWindow.ScrollColumn = 22
+    ActiveWindow.ScrollColumn = 23
+    ActiveWindow.ScrollColumn = 24
+    ActiveWindow.ScrollColumn = 25
+    ActiveWindow.ScrollColumn = 26
+    ActiveWindow.ScrollColumn = 27
+    ActiveWindow.ScrollColumn = 28
+    ActiveWindow.ScrollColumn = 29
+    ActiveWindow.ScrollColumn = 30
+    ActiveWindow.ScrollColumn = 31
+    ActiveWindow.ScrollColumn = 32
+    ActiveWindow.ScrollColumn = 33
+    ActiveWindow.ScrollColumn = 34
+    ActiveWindow.ScrollColumn = 35
+    Range("AS9").Select
+    With Selection
+        .HorizontalAlignment = xlLeft
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Range("AS9").Select
+    ActiveWindow.ScrollColumn = 36
+    ActiveWindow.ScrollColumn = 37
+    ActiveWindow.ScrollColumn = 38
+    ActiveWindow.ScrollColumn = 39
+    ActiveWindow.ScrollColumn = 40
+    ActiveWindow.ScrollColumn = 41
+    ActiveWindow.ScrollColumn = 42
+    ActiveWindow.ScrollColumn = 43
+    ActiveWindow.ScrollColumn = 44
+    ActiveWindow.ScrollColumn = 45
+    ActiveWindow.ScrollColumn = 46
+    ActiveWindow.ScrollColumn = 47
+    ActiveWindow.ScrollColumn = 48
+    ActiveWindow.ScrollColumn = 49
+    ActiveWindow.ScrollColumn = 50
+    ActiveWindow.ScrollColumn = 51
+    ActiveWindow.ScrollColumn = 52
+    ActiveWindow.ScrollColumn = 53
+    ActiveWindow.ScrollColumn = 54
+    ActiveWindow.ScrollColumn = 55
+    ActiveWindow.ScrollColumn = 56
+    ActiveWindow.ScrollColumn = 55
+    ActiveWindow.ScrollColumn = 53
+    ActiveWindow.ScrollColumn = 52
+    ActiveWindow.ScrollColumn = 51
+    ActiveWindow.ScrollColumn = 50
+    ActiveWindow.ScrollColumn = 49
+    ActiveWindow.ScrollColumn = 48
+    ActiveWindow.ScrollColumn = 47
+    ActiveWindow.ScrollColumn = 46
+    ActiveWindow.ScrollColumn = 45
+    ActiveWindow.ScrollColumn = 44
+    ActiveWindow.ScrollColumn = 43
+    ActiveWindow.ScrollColumn = 42
+    ActiveWindow.ScrollColumn = 41
+    ActiveWindow.ScrollColumn = 40
+    ActiveWindow.ScrollColumn = 39
+    ActiveWindow.ScrollColumn = 38
+    ActiveWindow.ScrollColumn = 37
+    ActiveWindow.ScrollColumn = 36
+    ActiveWindow.ScrollColumn = 35
+    ActiveWindow.ScrollColumn = 34
+    ActiveWindow.ScrollColumn = 33
+    ActiveWindow.ScrollColumn = 32
+    ActiveWindow.ScrollColumn = 31
+    ActiveWindow.ScrollColumn = 30
+    ActiveWindow.ScrollColumn = 29
+    ActiveWindow.ScrollColumn = 28
+    ActiveWindow.ScrollColumn = 27
+    ActiveWindow.ScrollColumn = 26
+    Range("AO8").Select
+    ActiveWorkbook.Save
+    Range("C9").Select
+    Selection.End(xlToLeft).Select
+    Selection.End(xlToLeft).Select
+    ActiveWorkbook.Save
+    Range("B2").Select
+    ActiveWorkbook.Save
+End Sub

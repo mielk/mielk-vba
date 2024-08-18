@@ -1,0 +1,73 @@
+Option Explicit
+
+Private Const CLASS_NAME As String = "modConstructors"
+'----------------------------------------------------------------------------------------------------------
+
+Public Function XmlParser() As XmlParser
+    Static instance As XmlParser
+    '------------------------------------------------------------------------------------------------------
+    If instance Is Nothing Then
+        Set instance = New XmlParser
+    End If
+    Set XmlParser = instance
+End Function
+
+Public Function XmlStructurePrinter() As XmlStructurePrinter
+    Static instance As XmlStructurePrinter
+    '------------------------------------------------------------------------------------------------------
+    If instance Is Nothing Then
+        Set instance = New XmlStructurePrinter
+    End If
+    Set XmlStructurePrinter = instance
+End Function
+
+Public Function XmlGenerator() As XmlGenerator
+    Static instance As XmlGenerator
+    '------------------------------------------------------------------------------------------------------
+    If instance Is Nothing Then
+        Set instance = New XmlGenerator
+    End If
+    Set XmlGenerator = instance
+End Function
+
+
+
+'[ELEMENTS & COMPONENTS]
+Public Function createElement() As Element
+    Set createElement = New Element
+End Function
+
+Public Function createGroup(parent As Element) As EGroup
+    Set createGroup = New EGroup
+    With createGroup
+        Call .setParent(parent)
+    End With
+End Function
+
+Public Function createLabel(parent As Element) As ELabel
+    Set createLabel = New ELabel
+    With createLabel
+        Call .setParent(parent)
+    End With
+End Function
+
+Public Function createContainer(parent As Element) As EContainer
+    Set createContainer = New EContainer
+    With createContainer
+        Call .setParent(parent)
+    End With
+End Function
+
+Public Function createImage(parent As Element) As EImage
+    Set createImage = New EImage
+    With createImage
+        Call .setParent(parent)
+    End With
+End Function
+
+Public Function createLine(parent As Element) As ELine
+    Set createLine = New ELine
+    With createLine
+        Call .setParent(parent)
+    End With
+End Function

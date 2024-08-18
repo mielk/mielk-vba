@@ -1,0 +1,245 @@
+Option Explicit
+
+Implements IComponent
+
+Private Const CLASS_NAME As String = "EContainer"
+'----------------------------------------------------------------------------------------------------------
+Private pParent As Element
+Private pCollapsed As Variant
+'----------------------------------------------------------------------------------------------------------
+Private pX As Variant
+Private pY As Variant
+Private pWidth As Variant
+Private pHeight As Variant
+Private pAlternateX As Variant
+Private pAlternateY As Variant
+Private pAlternateWidth As Variant
+Private pAlternateHeight As Variant
+'----------------------------------------------------------------------------------------------------------
+Private pWhiteSpace As Variant
+Private pHtml As Variant
+Private pStartSize As Variant
+Private pFillColor As Variant
+Private pStrokeColor As Variant
+Private pSwimlaneFillColor As Variant
+'----------------------------------------------------------------------------------------------------------
+
+
+
+'[SETTERS]
+Public Sub setParent(value As Element)
+    Set pParent = value
+End Sub
+
+
+'[API]
+Private Sub loadDetails(properties As Scripting.Dictionary, bodyElements As VBA.Collection)
+    Call parseMeta(properties)
+    Call parseStyle(properties)
+    Call parseBody(bodyElements)
+End Sub
+
+Private Sub parseMeta(properties As Scripting.Dictionary)
+    pCollapsed = F.dictionaries.GetItem(properties, PROP_COLLAPSED)
+End Sub
+
+Private Sub parseStyle(properties As Scripting.Dictionary)
+    Dim styles As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    
+    Set styles = F.dictionaries.GetObject(properties, PROP_STYLE)
+    
+    pWhiteSpace = F.dictionaries.GetItem(styles, PROP_WHITE_SPACE)
+    pHtml = F.dictionaries.GetItem(styles, PROP_HTML)
+    pStartSize = F.dictionaries.GetItem(styles, PROP_START_SIZE)
+    pFillColor = F.dictionaries.GetItem(styles, PROP_FILL_COLOR)
+    pStrokeColor = F.dictionaries.GetItem(styles, PROP_STROKE_COLOR)
+    pSwimlaneFillColor = F.dictionaries.GetItem(styles, PROP_SWIMLANE_FILL_COLOR)
+
+
+    'Remove all properties assigned above and check if there is something left
+    Call F.dictionaries.RemoveItem(styles, PROP_SWIMLANE)
+    Call F.dictionaries.RemoveItem(styles, PROP_WHITE_SPACE)
+    Call F.dictionaries.RemoveItem(styles, PROP_HTML)
+    Call F.dictionaries.RemoveItem(styles, PROP_FILL_COLOR)
+    Call F.dictionaries.RemoveItem(styles, PROP_STROKE_COLOR)
+    Call F.dictionaries.RemoveItem(styles, PROP_START_SIZE)
+    Call F.dictionaries.RemoveItem(styles, PROP_SWIMLANE_FILL_COLOR)
+
+    If styles.Count > 0 Then Stop
+
+
+End Sub
+
+
+Private Sub parseBody(elements As VBA.Collection)
+    Dim dto As Scripting.Dictionary
+    Dim children As VBA.Collection
+    Dim child As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    
+    Set dto = F.Collections.getFirstItem(elements)
+    If Not dto Is Nothing Then
+        pX = F.dictionaries.GetItem(dto, PROP_X)
+        pY = F.dictionaries.GetItem(dto, PROP_Y)
+        pWidth = F.dictionaries.GetItem(dto, PROP_WIDTH)
+        pHeight = F.dictionaries.GetItem(dto, PROP_HEIGHT)
+        
+        Set children = F.dictionaries.GetObject(dto, PROP_CHILDREN)
+        Set child = F.Collections.getFirstObject(children)
+        If Not child Is Nothing Then
+            If F.dictionaries.GetItem(child, PROP_AS) = PROP_ALTERNATE_BOUNDS Then
+                pAlternateX = F.dictionaries.GetItem(dto, PROP_X)
+                pAlternateY = F.dictionaries.GetItem(dto, PROP_Y)
+                pAlternateWidth = F.dictionaries.GetItem(dto, PROP_WIDTH)
+                pAlternateHeight = F.dictionaries.GetItem(dto, PROP_HEIGHT)
+            End If
+        End If
+    End If
+
+End Sub
+
+Private Sub appendDetailsToArray(arr As Variant)
+    arr(COL_COLLAPSED) = pCollapsed
+    arr(COL_X) = pX
+    arr(COL_Y) = pY
+    arr(COL_WIDTH) = pWidth
+    arr(COL_HEIGHT) = pHeight
+    arr(COL_ALT_X) = pAlternateX
+    arr(COL_ALT_Y) = pAlternateY
+    arr(COL_ALT_WIDTH) = pAlternateWidth
+    arr(COL_ALT_HEIGHT) = pAlternateHeight
+    arr(COL_WHITE_SPACE) = pWhiteSpace
+    arr(COL_START_SIZE) = pStartSize
+    arr(COL_BACKGROUND_COLOR) = pFillColor
+    arr(COL_STROKE_COLOR) = pStrokeColor
+    arr(COL_SWIMLANE_BACKGROUND_COLOR) = pSwimlaneFillColor
+End Sub
+
+
+Private Sub loadPropertiesFromArray(arr As Variant, row As Long)
+    pCollapsed = arr(row, COL_COLLAPSED)
+    pX = arr(row, COL_X)
+    pY = arr(row, COL_Y)
+    pWidth = arr(row, COL_WIDTH)
+    pHeight = arr(row, COL_HEIGHT)
+    pAlternateX = arr(row, COL_ALT_X)
+    pAlternateY = arr(row, COL_ALT_Y)
+    pAlternateWidth = arr(row, COL_ALT_WIDTH)
+    pAlternateHeight = arr(row, COL_ALT_HEIGHT)
+    pWhiteSpace = arr(row, COL_WHITE_SPACE)
+    pStartSize = arr(row, COL_START_SIZE)
+    pFillColor = arr(row, COL_BACKGROUND_COLOR)
+    pStrokeColor = arr(row, COL_STROKE_COLOR)
+    pSwimlaneFillColor = arr(row, COL_SWIMLANE_BACKGROUND_COLOR)
+End Sub
+
+
+Private Sub appendPropertiesToDictionary(dict As Scripting.Dictionary)
+    Call F.dictionaries.AddItem(dict, PROP_STYLE, createStylesDictionary)
+    Call F.dictionaries.AddItem(dict, PROP_COLLAPSED, pCollapsed)
+End Sub
+
+Private Function createStylesDictionary() As String
+    Dim dict As Scripting.Dictionary
+    Dim key As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set dict = F.dictionaries.Create(False)
+    With dict
+        Call .Add(PROP_WHITE_SPACE, pWhiteSpace)
+        Call .Add(PROP_HTML, 1)
+        Call .Add(PROP_START_SIZE, VBA.Replace(pStartSize, ",", "."))
+        Call .Add(PROP_FILL_COLOR, pFillColor)
+        Call .Add(PROP_STROKE_COLOR, pStrokeColor)
+        Call .Add(PROP_SWIMLANE_FILL_COLOR, pSwimlaneFillColor)
+    End With
+    
+    For Each key In dict.Keys
+        If VBA.IsEmpty(dict.Item(key)) Then
+            Call F.dictionaries.removeKey(dict, key)
+        ElseIf VBA.Len(dict.Item(key)) = 0 Then
+            Call F.dictionaries.removeKey(dict, key)
+        End If
+    Next key
+    
+    createStylesDictionary = PROP_SWIMLANE & ";" & F.dictionaries.toString(dict, itemsDelimiter:=";", keyItemDelimiter:="=") & ";"
+    
+End Function
+
+Private Function getBodyXml() As String
+    Const XML_PATTERN As String = "<mxGeometry {0}>\n<mxRectangle {1} />\n</mxGeometry>"
+    '------------------------------------------------------------------------------------------------------
+    Dim dict As Scripting.Dictionary
+    Dim dictAlt As Scripting.Dictionary
+    Dim key As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set dict = F.dictionaries.Create(False)
+    With dict
+        Call .Add(PROP_X, VBA.Replace(pX, ",", "."))
+        Call .Add(PROP_Y, VBA.Replace(pY, ",", "."))
+        Call .Add(PROP_WIDTH, VBA.Replace(pWidth, ",", "."))
+        Call .Add(PROP_HEIGHT, VBA.Replace(pHeight, ",", "."))
+        Call .Add(PROP_AS, PROP_GEOMETRY)
+    End With
+    
+    Set dictAlt = F.dictionaries.Create(False)
+    With dictAlt
+        Call .Add(PROP_X, VBA.Replace(F.Numerics.coalesce(pAlternateX, pX), ",", "."))
+        Call .Add(PROP_Y, VBA.Replace(F.Numerics.coalesce(pAlternateY, pY), ",", "."))
+        Call .Add(PROP_WIDTH, VBA.Replace(F.Numerics.coalesce(pAlternateWidth, pWidth), ",", "."))
+        Call .Add(PROP_HEIGHT, VBA.Replace(F.Numerics.coalesce(pAlternateHeight, pHeight), ",", "."))
+        Call .Add(PROP_AS, PROP_ALTERNATE_BOUNDS)
+    End With
+    
+
+    For Each key In dict.Keys
+        If VBA.IsEmpty(dict.Item(key)) Then
+            Call F.dictionaries.removeKey(dict, key)
+        ElseIf VBA.Len(dict.Item(key)) = 0 Then
+            Call F.dictionaries.removeKey(dict, key)
+        End If
+    Next key
+        
+    For Each key In dictAlt.Keys
+        If VBA.IsEmpty(dictAlt.Item(key)) Then
+            Call F.dictionaries.removeKey(dictAlt, key)
+        ElseIf VBA.Len(dictAlt.Item(key)) = 0 Then
+            Call F.dictionaries.removeKey(dict, key)
+        End If
+    Next key
+    
+    
+    getBodyXml = F.Strings.Format(XML_PATTERN, _
+                        F.dictionaries.toString(dict, , , " ", "=""", , """"), _
+                        F.dictionaries.toString(dictAlt, , , " ", "=""", , """"))
+        
+End Function
+
+
+
+'[Implementation of IComponent]
+Private Sub IComponent_loadDetails(properties As Scripting.Dictionary, bodyElements As VBA.Collection)
+    Call loadDetails(properties, bodyElements)
+End Sub
+
+Private Sub IComponent_loadPropertiesFromArray(arr As Variant, row As Long)
+    Call loadPropertiesFromArray(arr, row)
+End Sub
+
+Private Sub IComponent_setParent(value As Element)
+    Call setParent(value)
+End Sub
+
+Private Sub IComponent_appendDetailsToArray(arr As Variant)
+    Call appendDetailsToArray(arr)
+End Sub
+
+Private Sub IComponent_appendPropertiesToDictionary(dict As Scripting.IDictionary)
+    Call appendPropertiesToDictionary(dict)
+End Sub
+
+Private Function IComponent_getBodyXml() As String
+    IComponent_getBodyXml = getBodyXml
+End Function

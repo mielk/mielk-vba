@@ -1,0 +1,146 @@
+Option Explicit
+
+Private Const CLASS_NAME As String = "XmlParser"
+'----------------------------------------------------------------------------------------------------------
+Private pElements As Scripting.Dictionary
+'----------------------------------------------------------------------------------------------------------
+
+
+
+'[GETTERS]
+Public Function getElements() As VBA.Collection
+    Set getElements = F.dictionaries.toCollection(pElements)
+End Function
+
+
+
+Public Sub parse(content As String)
+    Dim regexCells As String
+    '------------------------------------------------------------------------------------------------------
+    Dim matches As VBA.Collection
+    Dim matchArray As Variant
+    Dim elementStyles As Scripting.Dictionary
+    Dim bodyElements As VBA.Collection
+    Dim el As Element
+    Dim parent As Element
+    '------------------------------------------------------------------------------------------------------
+    
+    Set pElements = F.dictionaries.Create(False)
+    
+    regexCells = getPatternFromConfigSheet(XML_REGEX_CELLS)
+    
+    If VBA.Len(regexCells) = 0 Then
+        Call VBA.Err.Raise(1, Description:="Cells regex pattern not found in [config] sheet")
+    End If
+    
+
+    Set matches = F.regex.getMatchArraysCollection(content, regexCells)
+    For Each matchArray In matches
+        Set elementStyles = getPropertiesDictionary(VBA.CStr(matchArray(LBound(matchArray))))
+        Call F.dictionaries.AddItem(elementStyles, PROP_STYLE, _
+                                        getStylesDictionary(VBA.CStr(F.dictionaries.GetItem(elementStyles, PROP_STYLE))), _
+                                        duplicateBehaviour_Override)
+        Set bodyElements = getBodyElements(VBA.CStr(matchArray(UBound(matchArray))))
+        
+        Set el = createElement()
+        Call el.parse(elementStyles, bodyElements)
+        
+        Call pElements.Add(el.getId, el)
+        Set parent = F.dictionaries.GetObject(pElements, el.getParentId)
+        If Not parent Is Nothing Then
+            Call parent.addChild(el)
+        End If
+        
+    Next matchArray
+
+End Sub
+
+Private Function getPropertiesDictionary(str As String) As Scripting.Dictionary
+    Static regexProperties As String
+    '------------------------------------------------------------------------------------------------------
+    Dim matches As VBA.Collection
+    Dim match As Variant
+    '------------------------------------------------------------------------------------------------------
+    Dim propName As String
+    Dim propValue As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set getPropertiesDictionary = F.dictionaries.Create(False)
+    
+    If VBA.Len(regexProperties) = 0 Then
+        regexProperties = getPatternFromConfigSheet(XML_REGEX_PROPERTIES)
+        If VBA.Len(regexProperties) = 0 Then
+            Call VBA.Err.Raise(1, Description:="Properties regex pattern not found in [config] sheet")
+        End If
+    End If
+
+    Set matches = F.regex.getMatchArraysCollection(str, regexProperties)
+    
+    For Each match In matches
+        propName = match(LBound(match))
+        propValue = match(LBound(match) + 1)
+        Call F.dictionaries.AddItem(getPropertiesDictionary, propName, propValue)
+    Next match
+    
+End Function
+
+
+Private Function getStylesDictionary(str As String) As Scripting.Dictionary
+    Static regexStyles As String
+    '------------------------------------------------------------------------------------------------------
+    Dim matches As VBA.Collection
+    Dim match As Variant
+    '------------------------------------------------------------------------------------------------------
+    Dim propName As String
+    Dim propValue As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set getStylesDictionary = F.dictionaries.Create(False)
+    
+    If VBA.Len(regexStyles) = 0 Then
+        regexStyles = getPatternFromConfigSheet(XML_REGEX_STYLE)
+        If VBA.Len(regexStyles) = 0 Then
+            Call VBA.Err.Raise(1, Description:="Styles regex pattern not found in [config] sheet")
+        End If
+    End If
+
+    Set matches = F.regex.getMatchArraysCollection(str, regexStyles)
+    
+    For Each match In matches
+        propName = match(LBound(match))
+        propValue = match(LBound(match) + 1)
+        Call F.dictionaries.AddItem(getStylesDictionary, propName, propValue)
+    Next match
+    
+End Function
+
+Private Function getBodyElements(str As String) As VBA.Collection
+    Static regexBody As String
+    '------------------------------------------------------------------------------------------------------
+    Dim matches As VBA.Collection
+    Dim match As Variant
+    Dim dict As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    
+    Set getBodyElements = New VBA.Collection
+    
+    If VBA.Len(regexBody) = 0 Then
+        regexBody = getPatternFromConfigSheet(XML_REGEX_BODY)
+        If VBA.Len(regexBody) = 0 Then
+            Call VBA.Err.Raise(1, Description:="Body regex pattern not found in [config] sheet")
+        End If
+    End If
+    
+    Set matches = F.regex.getMatchArraysCollection(str, regexBody)
+    
+    For Each match In matches
+        Set dict = F.dictionaries.Create(False)
+        Call F.dictionaries.AddItem(dict, PROP_TYPE, match(LBound(match)))
+        Call F.dictionaries.appendDictionary(dict, getPropertiesDictionary(VBA.CStr(match(LBound(match) + 1))))
+        Call F.dictionaries.AddItem(dict, PROP_CHILDREN, getBodyElements(VBA.CStr(match(LBound(match) + 2))))
+        Call getBodyElements.Add(dict)
+    Next match
+    
+End Function
+
+

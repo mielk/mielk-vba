@@ -1,0 +1,49 @@
+Option Explicit
+
+Private Const CLASS_NAME As String = "modDbTables"
+'----------------------------------------------------------------------------------------------------------
+Public Const TRUE_ICON As String = "icoTrue"
+Public Const FALSE_ICON As String = "icoFalse"
+'----------------------------------------------------------------------------------------------------------
+
+Public Sub convertToIcon()
+    Dim rng As Excel.Range
+    Dim cell As Excel.Range
+    Dim value As Variant
+    Dim shPattern As Excel.Shape
+    Dim sh As Variant
+    '------------------------------------------------------------------------------------------------------
+    Dim top As Single
+    Dim left As Single
+    '------------------------------------------------------------------------------------------------------
+    
+    Set rng = Excel.Selection
+    
+    If F.Ranges.IsValid(rng) Then
+        For Each cell In rng.Cells
+            value = cell.value
+            
+            If value = True Then
+                Set shPattern = wksDbTables.Shapes(TRUE_ICON)
+            ElseIf value = False Then
+                Set shPattern = wksDbTables.Shapes(FALSE_ICON)
+            End If
+            
+            Call shPattern.Copy
+            Call cell.Select
+            Call wksDbTables.Paste
+            Call F.Variables.assign(sh, Selection.ShapeRange)
+            
+            With cell
+                top = .top + (.Height - sh.Height) / 2
+                left = .left + (.Width - sh.Width) / 2
+            End With
+            
+            sh.top = top
+            sh.left = left
+            cell.value = Empty
+            
+        Next cell
+    End If
+    
+End Sub

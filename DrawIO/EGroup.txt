@@ -1,0 +1,120 @@
+Option Explicit
+
+Implements IComponent
+
+Private Const CLASS_NAME As String = "EGroup"
+'----------------------------------------------------------------------------------------------------------
+Private pParent As Element
+'----------------------------------------------------------------------------------------------------------
+Private pX As Variant
+Private pY As Variant
+Private pWidth As Variant
+Private pHeight As Variant
+'----------------------------------------------------------------------------------------------------------
+
+
+
+
+'[SETTERS]
+Public Sub setParent(value As Element)
+    Set pParent = value
+End Sub
+
+
+'[API]
+Private Sub loadDetails(properties As Scripting.Dictionary, bodyElements As VBA.Collection)
+    Call parseStyle(properties)
+    Call parseBody(bodyElements)
+End Sub
+
+Private Sub parseStyle(properties As Scripting.Dictionary)
+    ' no action required
+End Sub
+
+Private Sub parseBody(elements As VBA.Collection)
+    Dim dto As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    
+    Set dto = F.Collections.getFirstItem(elements)
+    If Not dto Is Nothing Then
+        pX = F.dictionaries.GetItem(dto, PROP_X)
+        pY = F.dictionaries.GetItem(dto, PROP_Y)
+        pWidth = F.dictionaries.GetItem(dto, PROP_WIDTH)
+        pHeight = F.dictionaries.GetItem(dto, PROP_HEIGHT)
+    End If
+
+End Sub
+
+Private Sub appendDetailsToArray(arr As Variant)
+    arr(COL_X) = pX
+    arr(COL_Y) = pY
+    arr(COL_WIDTH) = pWidth
+    arr(COL_HEIGHT) = pHeight
+End Sub
+
+Private Sub loadPropertiesFromArray(arr As Variant, row As Long)
+    pX = arr(row, COL_X)
+    pY = arr(row, COL_Y)
+    pWidth = arr(row, COL_WIDTH)
+    pHeight = arr(row, COL_HEIGHT)
+End Sub
+
+Private Sub appendPropertiesToDictionary(dict As Scripting.Dictionary)
+    Call F.dictionaries.AddItem(dict, PROP_STYLE, PROP_GROUP)
+End Sub
+
+Private Function getBodyXml() As String
+    Const XML_PATTERN As String = "<mxGeometry {0} />"
+    '------------------------------------------------------------------------------------------------------
+    Dim dict As Scripting.Dictionary
+    Dim key As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set dict = F.dictionaries.Create(False)
+    With dict
+        Call .Add(PROP_X, VBA.Replace(pX, ",", "."))
+        Call .Add(PROP_Y, VBA.Replace(pY, ",", "."))
+        Call .Add(PROP_WIDTH, VBA.Replace(pWidth, ",", "."))
+        Call .Add(PROP_HEIGHT, VBA.Replace(pHeight, ",", "."))
+        Call .Add(PROP_AS, PROP_GEOMETRY)
+    End With
+    
+    For Each key In dict.Keys
+        If VBA.IsEmpty(dict.Item(key)) Then
+            Call F.dictionaries.removeKey(dict, key)
+        ElseIf VBA.Len(dict.Item(key)) = 0 Then
+            Call F.dictionaries.removeKey(dict, key)
+        End If
+    Next key
+    
+    getBodyXml = F.Strings.Format(XML_PATTERN, F.dictionaries.toString(dict, , , " ", "=""", , """"))
+    
+End Function
+
+
+
+'[Implementation of IComponent]
+Private Sub IComponent_loadDetails(properties As Scripting.Dictionary, bodyElements As VBA.Collection)
+    Call loadDetails(properties, bodyElements)
+End Sub
+
+Private Sub IComponent_loadPropertiesFromArray(arr As Variant, row As Long)
+    Call loadPropertiesFromArray(arr, row)
+End Sub
+
+Private Sub IComponent_setParent(value As Element)
+    Call setParent(value)
+End Sub
+
+Private Sub IComponent_appendDetailsToArray(arr As Variant)
+    Call appendDetailsToArray(arr)
+End Sub
+
+Private Sub IComponent_appendPropertiesToDictionary(dict As Scripting.IDictionary)
+    Call appendPropertiesToDictionary(dict)
+End Sub
+
+Private Function IComponent_getBodyXml() As String
+    IComponent_getBodyXml = getBodyXml
+End Function
+

@@ -1,0 +1,22 @@
+Option Explicit
+
+Private Const CLASS_NAME As String = "IComponent"
+'----------------------------------------------------------------------------------------------------------
+
+Public Sub setParent(value As Element)
+End Sub
+
+Public Sub loadDetails(properties As Scripting.Dictionary, bodyElements As VBA.Collection)
+End Sub
+
+Public Sub appendDetailsToArray(arr As Variant)
+End Sub
+
+Public Sub loadPropertiesFromArray(arr As Variant, row As Long)
+End Sub
+
+Public Sub appendPropertiesToDictionary(dict As Scripting.Dictionary)
+End Sub
+
+Public Function getBodyXml() As String
+End Function

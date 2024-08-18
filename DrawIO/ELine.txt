@@ -1,0 +1,583 @@
+Option Explicit
+
+Implements IComponent
+
+Private Const CLASS_NAME As String = "ELine"
+'----------------------------------------------------------------------------------------------------------
+Private pParent As Element
+Private pSource As Variant
+Private pTarget As Variant
+'----------------------------------------------------------------------------------------------------------
+Private pX As Variant
+Private pY As Variant
+Private pWidth As Variant
+Private pHeight As Variant
+Private pRelative As Variant
+'[Source point]
+Private pSourcePointX As Variant
+Private pSourcePointY As Variant
+'[Target point]
+Private pTargetPointX As Variant
+Private pTargetPointY As Variant
+'[Points array]
+Private pPoints As VBA.Collection
+'----------------------------------------------------------------------------------------------------------
+Private pRounded As Variant
+Private pDashed As Variant
+Private pCurved As Variant
+Private pHtml As Variant
+Private pEndArrow As Variant
+Private pEndFill As Variant
+Private pStartArrow As Variant
+Private pStartFill As Variant
+Private pStrokeColor As Variant
+Private pExitX As Variant
+Private pExitY As Variant
+Private pExitDX As Variant
+Private pExitDY As Variant
+Private pExitPerimeter As Variant
+Private pEntryX As Variant
+Private pEntryY As Variant
+Private pEntryDX As Variant
+Private pEntryDY As Variant
+Private pEntryPerimeter As Variant
+Private pJumpSize As Variant
+Private pJumpStyle As Variant
+Private pLabelBackgroundColor As Variant
+Private pLabelBorderColor As Variant
+Private pTextOpacity As Variant
+Private pAlign As Variant
+Private pVerticalAlign As Variant
+Private pFontStyle As Variant
+Private pFontSize As Variant
+Private pFontFamily As Variant
+Private pSpacingTop As Variant
+Private pSpacingRight As Variant
+Private pSpacingBottom As Variant
+Private pSpacingLeft As Variant
+Private pLabelPosition As Variant
+Private pVerticalLabelPosition As Variant
+'----------------------------------------------------------------------------------------------------------
+
+
+
+
+'[SETTERS]
+Public Sub setParent(value As Element)
+    Set pParent = value
+End Sub
+
+
+'[API]
+Private Sub loadDetails(properties As Scripting.Dictionary, bodyElements As VBA.Collection)
+    Call parseMeta(properties)
+    Call parseStyle(properties)
+    Call parseBody(bodyElements)
+End Sub
+
+Private Sub parseMeta(properties As Scripting.Dictionary)
+    pSource = F.dictionaries.GetItem(properties, PROP_SOURCE)
+    pTarget = F.dictionaries.GetItem(properties, PROP_TARGET)
+End Sub
+
+Private Sub parseStyle(properties As Scripting.Dictionary)
+    Dim styles As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    
+    Set styles = F.dictionaries.GetObject(properties, PROP_STYLE)
+    
+    pRounded = F.dictionaries.GetItem(styles, PROP_ROUNDED)
+    pDashed = F.dictionaries.GetItem(styles, PROP_DASHED)
+    pCurved = F.dictionaries.GetItem(styles, PROP_CURVED)
+    pHtml = F.dictionaries.GetItem(styles, PROP_HTML)
+    pEndArrow = F.dictionaries.GetItem(styles, PROP_END_ARROW)
+    pEndFill = F.dictionaries.GetItem(styles, PROP_END_FILL)
+    pStartArrow = F.dictionaries.GetItem(styles, PROP_START_ARROW)
+    pStartFill = F.dictionaries.GetItem(styles, PROP_START_FILL)
+    pStrokeColor = F.dictionaries.GetItem(styles, PROP_STROKE_COLOR)
+    pExitX = F.dictionaries.GetItem(styles, PROP_EXIT_X)
+    pExitY = F.dictionaries.GetItem(styles, PROP_EXIT_Y)
+    pExitDX = F.dictionaries.GetItem(styles, PROP_EXIT_DX)
+    pExitDY = F.dictionaries.GetItem(styles, PROP_EXIT_DY)
+    pExitPerimeter = F.dictionaries.GetItem(styles, PROP_EXIT_PERIMETER)
+    pEntryX = F.dictionaries.GetItem(styles, PROP_ENTRY_X)
+    pEntryY = F.dictionaries.GetItem(styles, PROP_ENTRY_Y)
+    pEntryDX = F.dictionaries.GetItem(styles, PROP_ENTRY_DX)
+    pEntryDY = F.dictionaries.GetItem(styles, PROP_ENTRY_DY)
+    pEntryPerimeter = F.dictionaries.GetItem(styles, PROP_ENTRY_PERIMETER)
+    pJumpSize = F.dictionaries.GetItem(styles, PROP_JUMP_SIZE)
+    pJumpStyle = F.dictionaries.GetItem(styles, PROP_JUMP_STYLE)
+    pLabelBackgroundColor = F.dictionaries.GetItem(styles, PROP_LABEL_BACKGROUND_COLOR)
+    pLabelBorderColor = F.dictionaries.GetItem(styles, PROP_LABEL_BORDER_COLOR)
+    pTextOpacity = F.dictionaries.GetItem(styles, PROP_TEXT_OPACITY)
+    pAlign = F.dictionaries.GetItem(styles, PROP_ALIGN)
+    pVerticalAlign = F.dictionaries.GetItem(styles, PROP_VERTICAL_ALIGN)
+    pFontStyle = F.dictionaries.GetItem(styles, PROP_FONT_STYLE)
+    pFontSize = F.dictionaries.GetItem(styles, PROP_FONT_SIZE)
+    pFontFamily = F.dictionaries.GetItem(styles, PROP_FONT_FAMILY)
+    pSpacingTop = F.dictionaries.GetItem(styles, PROP_SPACING_TOP)
+    pSpacingRight = F.dictionaries.GetItem(styles, PROP_SPACING_RIGHT)
+    pSpacingBottom = F.dictionaries.GetItem(styles, PROP_SPACING_BOTTOM)
+    pSpacingLeft = F.dictionaries.GetItem(styles, PROP_SPACING_LEFT)
+    pLabelPosition = F.dictionaries.GetItem(styles, PROP_LABEL_POSITION)
+    pVerticalLabelPosition = F.dictionaries.GetItem(styles, PROP_VERTICAL_LABEL_POSITION)
+
+
+    
+
+    'Remove all properties assigned above and check if there is something left
+    Call F.dictionaries.RemoveItem(styles, PROP_END_ARROW)
+    Call F.dictionaries.RemoveItem(styles, PROP_END_FILL)
+    Call F.dictionaries.RemoveItem(styles, PROP_START_ARROW)
+    Call F.dictionaries.RemoveItem(styles, PROP_START_FILL)
+    Call F.dictionaries.RemoveItem(styles, PROP_ROUNDED)
+    Call F.dictionaries.RemoveItem(styles, PROP_DASHED)
+    Call F.dictionaries.RemoveItem(styles, PROP_CURVED)
+    Call F.dictionaries.RemoveItem(styles, PROP_HTML)
+    Call F.dictionaries.RemoveItem(styles, PROP_EXIT_X)
+    Call F.dictionaries.RemoveItem(styles, PROP_EXIT_Y)
+    Call F.dictionaries.RemoveItem(styles, PROP_EXIT_DX)
+    Call F.dictionaries.RemoveItem(styles, PROP_EXIT_DY)
+    Call F.dictionaries.RemoveItem(styles, PROP_EXIT_PERIMETER)
+    Call F.dictionaries.RemoveItem(styles, PROP_ENTRY_X)
+    Call F.dictionaries.RemoveItem(styles, PROP_ENTRY_Y)
+    Call F.dictionaries.RemoveItem(styles, PROP_ENTRY_DX)
+    Call F.dictionaries.RemoveItem(styles, PROP_ENTRY_DY)
+    Call F.dictionaries.RemoveItem(styles, PROP_ENTRY_PERIMETER)
+    Call F.dictionaries.RemoveItem(styles, PROP_STROKE_COLOR)
+    Call F.dictionaries.RemoveItem(styles, PROP_JUMP_SIZE)
+    Call F.dictionaries.RemoveItem(styles, PROP_JUMP_STYLE)
+    Call F.dictionaries.RemoveItem(styles, PROP_TARGET_PERIMETER_SPACING)
+    Call F.dictionaries.RemoveItem(styles, PROP_LABEL_BACKGROUND_COLOR)
+    Call F.dictionaries.RemoveItem(styles, PROP_LABEL_BORDER_COLOR)
+    Call F.dictionaries.RemoveItem(styles, PROP_TEXT_OPACITY)
+    Call F.dictionaries.RemoveItem(styles, PROP_ALIGN)
+    Call F.dictionaries.RemoveItem(styles, PROP_VERTICAL_ALIGN)
+    Call F.dictionaries.RemoveItem(styles, PROP_FONT_STYLE)
+    Call F.dictionaries.RemoveItem(styles, PROP_FONT_SIZE)
+    Call F.dictionaries.RemoveItem(styles, PROP_FONT_FAMILY)
+    Call F.dictionaries.RemoveItem(styles, PROP_SPACING_TOP)
+    Call F.dictionaries.RemoveItem(styles, PROP_SPACING_RIGHT)
+    Call F.dictionaries.RemoveItem(styles, PROP_SPACING_BOTTOM)
+    Call F.dictionaries.RemoveItem(styles, PROP_SPACING_LEFT)
+    Call F.dictionaries.RemoveItem(styles, PROP_LABEL_POSITION)
+    Call F.dictionaries.RemoveItem(styles, PROP_VERTICAL_LABEL_POSITION)
+
+    If styles.Count > 0 Then Stop
+
+End Sub
+
+Private Sub parseBody(elements As VBA.Collection)
+    Dim dto As Scripting.Dictionary
+    Dim children As Scripting.Dictionary
+    Dim sourcePoint As Scripting.Dictionary
+    Dim targetPoint As Scripting.Dictionary
+    Dim points As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    
+    Set dto = F.Collections.getFirstItem(elements)
+    If Not dto Is Nothing Then
+        pX = F.dictionaries.GetItem(dto, PROP_X)
+        pY = F.dictionaries.GetItem(dto, PROP_Y)
+        pWidth = F.dictionaries.GetItem(dto, PROP_WIDTH)
+        pHeight = F.dictionaries.GetItem(dto, PROP_HEIGHT)
+        pRelative = F.dictionaries.GetItem(dto, PROP_RELATIVE)
+        
+        Set children = getChildrenDictionary(dto)
+        
+        '[Source point]
+        Set sourcePoint = F.dictionaries.GetObject(children, PROP_SOURCE_POINT)
+        If Not sourcePoint Is Nothing Then
+            pSourcePointX = F.dictionaries.GetItem(sourcePoint, PROP_X)
+            pSourcePointY = F.dictionaries.GetItem(sourcePoint, PROP_Y)
+        End If
+        
+        '[Target point]
+        Set targetPoint = F.dictionaries.GetObject(children, PROP_TARGET_POINT)
+        If Not targetPoint Is Nothing Then
+            pTargetPointX = F.dictionaries.GetItem(targetPoint, PROP_X)
+            pTargetPointY = F.dictionaries.GetItem(targetPoint, PROP_Y)
+        End If
+        
+        '[Points]
+        Set points = F.dictionaries.GetObject(children, PROP_POINTS)
+        If Not points Is Nothing Then
+            Call setPoints(points)
+        End If
+        
+    End If
+
+End Sub
+
+Private Function getChildrenDictionary(dto As Scripting.Dictionary) As Scripting.Dictionary
+    Dim children As VBA.Collection
+    Dim child As Scripting.Dictionary
+    Dim childType As String
+    '------------------------------------------------------------------------------------------------------
+        
+    Set getChildrenDictionary = F.dictionaries.Create(False)
+    
+    Set children = F.dictionaries.GetObject(dto, PROP_CHILDREN)
+    For Each child In children
+        childType = F.dictionaries.GetItem(child, PROP_AS)
+        Call F.dictionaries.AddItem(getChildrenDictionary, childType, child)
+    Next child
+    
+End Function
+
+Private Sub setPoints(points As Scripting.Dictionary)
+    Dim children As VBA.Collection
+    Dim child As Scripting.Dictionary
+    Dim dto As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    
+    Set pPoints = New VBA.Collection
+    
+    Set children = F.dictionaries.GetObject(points, PROP_CHILDREN)
+    For Each child In children
+        Set dto = F.dictionaries.Create(False)
+        Call dto.Add(PROP_X, F.dictionaries.GetItem(child, PROP_X))
+        Call dto.Add(PROP_Y, F.dictionaries.GetItem(child, PROP_Y))
+        Call pPoints.Add(dto)
+    Next child
+    
+End Sub
+
+Private Sub appendDetailsToArray(arr As Variant)
+    arr(COL_SOURCE) = pSource
+    arr(COL_TARGET) = pTarget
+    arr(COL_X) = pX
+    arr(COL_Y) = pY
+    arr(COL_WIDTH) = pWidth
+    arr(COL_HEIGHT) = pHeight
+    arr(COL_RELATIVE) = pRelative
+    arr(COL_START_POINT_X) = pSourcePointX
+    arr(COL_START_POINT_Y) = pSourcePointY
+    arr(COL_END_POINT_X) = pTargetPointX
+    arr(COL_END_POINT_Y) = pTargetPointY
+    arr(COL_ROUNDED) = pRounded
+    arr(COL_DASHED) = pDashed
+    arr(COL_CURVED) = pCurved
+    
+    arr(COL_END_ARROW) = pEndArrow
+    arr(COL_END_FILL) = pEndFill
+    arr(COL_START_ARROW) = pStartArrow
+    arr(COL_START_FILL) = pStartFill
+    arr(COL_STROKE_COLOR) = pStrokeColor
+    arr(COL_START_X) = pExitX
+    arr(COL_START_Y) = pExitY
+    arr(COL_START_DX) = pExitDX
+    arr(COL_START_DY) = pExitDY
+    arr(COL_START_PERIMETER) = pExitPerimeter
+    arr(COL_END_X) = pEntryX
+    arr(COL_END_Y) = pEntryY
+    arr(COL_END_DX) = pEntryDX
+    arr(COL_END_DY) = pEntryDY
+    arr(COL_END_PERIMETER) = pEntryPerimeter
+    
+    arr(COL_JUMP_SIZE) = pJumpSize
+    arr(COL_JUMP_STYLE) = pJumpStyle
+    
+    arr(COL_LABEL_BACKGROUND_COLOR) = pLabelBackgroundColor
+    arr(COL_LABEL_BORDER_COLOR) = pLabelBorderColor
+    
+    arr(COL_TEXT_OPACITY) = pTextOpacity
+    arr(COL_ALIGN) = pAlign
+    arr(COL_VERTICAL_ALIGN) = pVerticalAlign
+    arr(COL_FONT_SIZE) = pFontSize
+    arr(COL_FONT_STYLE) = pFontStyle
+    arr(COL_FONT_FAMILY) = pFontFamily
+    
+    arr(COL_SPACING_TOP) = pSpacingTop
+    arr(COL_SPACING_RIGHT) = pSpacingRight
+    arr(COL_SPACING_BOTTOM) = pSpacingBottom
+    arr(COL_SPACING_LEFT) = pSpacingLeft
+    
+    arr(COL_LABEL_POSITION) = pLabelPosition
+    arr(COL_VERTICAL_LABEL_POSITION) = pVerticalLabelPosition
+    
+    'points
+    Call appendPoints(arr)
+    
+End Sub
+
+Private Sub appendPoints(arr As Variant)
+    Dim point As Scripting.Dictionary
+    Dim col As Long
+    Dim x As Variant
+    Dim y As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    col = COL_X1
+    
+    For Each point In pPoints
+        x = F.dictionaries.GetItem(point, PROP_X)
+        y = F.dictionaries.GetItem(point, PROP_Y)
+        
+        arr(col) = x
+        arr(col + 1) = y
+        
+        col = col + 2
+    Next point
+    
+End Sub
+
+Private Sub loadPropertiesFromArray(arr As Variant, row As Long)
+    pSource = arr(row, COL_SOURCE)
+    pTarget = arr(row, COL_TARGET)
+    pX = arr(row, COL_X)
+    pY = arr(row, COL_Y)
+    pWidth = arr(row, COL_WIDTH)
+    pHeight = arr(row, COL_HEIGHT)
+    pRelative = arr(row, COL_RELATIVE)
+    pSourcePointX = arr(row, COL_START_POINT_X)
+    pSourcePointY = arr(row, COL_START_POINT_Y)
+    pTargetPointX = arr(row, COL_END_POINT_X)
+    pTargetPointY = arr(row, COL_END_POINT_Y)
+    pRounded = arr(row, COL_ROUNDED)
+    pDashed = arr(row, COL_DASHED)
+    pCurved = arr(row, COL_CURVED)
+    pEndArrow = arr(row, COL_END_ARROW)
+    pEndFill = arr(row, COL_END_FILL)
+    pStartArrow = arr(row, COL_START_ARROW)
+    pStartFill = arr(row, COL_START_FILL)
+    pStrokeColor = arr(row, COL_STROKE_COLOR)
+    pExitX = arr(row, COL_START_X)
+    pExitY = arr(row, COL_START_Y)
+    pExitDX = arr(row, COL_START_DX)
+    pExitDY = arr(row, COL_START_DY)
+    pExitPerimeter = arr(row, COL_START_PERIMETER)
+    pEntryX = arr(row, COL_END_X)
+    pEntryY = arr(row, COL_END_Y)
+    pEntryDX = arr(row, COL_END_DX)
+    pEntryDY = arr(row, COL_END_DY)
+    pEntryPerimeter = arr(row, COL_END_PERIMETER)
+    pJumpSize = arr(row, COL_JUMP_SIZE)
+    pJumpStyle = arr(row, COL_JUMP_STYLE)
+    pLabelBackgroundColor = arr(row, COL_LABEL_BACKGROUND_COLOR)
+    pLabelBorderColor = arr(row, COL_LABEL_BORDER_COLOR)
+    pTextOpacity = arr(row, COL_TEXT_OPACITY)
+    pAlign = arr(row, COL_ALIGN)
+    pVerticalAlign = arr(row, COL_VERTICAL_ALIGN)
+    pFontSize = arr(row, COL_FONT_SIZE)
+    pFontStyle = arr(row, COL_FONT_STYLE)
+    pFontFamily = arr(row, COL_FONT_FAMILY)
+    pSpacingTop = arr(row, COL_SPACING_TOP)
+    pSpacingRight = arr(row, COL_SPACING_RIGHT)
+    pSpacingBottom = arr(row, COL_SPACING_BOTTOM)
+    pSpacingLeft = arr(row, COL_SPACING_LEFT)
+    pLabelPosition = arr(row, COL_LABEL_POSITION)
+    pVerticalLabelPosition = arr(row, COL_VERTICAL_LABEL_POSITION)
+    
+    Call loadPoints(arr, row)
+    
+End Sub
+
+Private Sub loadPoints(arr As Variant, row As Long)
+    Dim col As Long
+    Dim point As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    
+    Set pPoints = New VBA.Collection
+    col = COL_X1
+    
+    Do While col < 76
+        If Not VBA.IsEmpty(arr(row, col)) Then
+            Set point = F.dictionaries.Create(False)
+            Call point.Add(PROP_X, arr(row, col))
+            Call point.Add(PROP_Y, arr(row, col + 1))
+            Call pPoints.Add(point)
+            col = col + 2
+        Else
+            Exit Do
+        End If
+    Loop
+    
+End Sub
+
+
+
+Private Sub appendPropertiesToDictionary(dict As Scripting.Dictionary)
+    Call F.dictionaries.AddItem(dict, PROP_STYLE, createStylesDictionary)
+    Call F.dictionaries.AddItem(dict, PROP_SOURCE, pSource)
+    Call F.dictionaries.AddItem(dict, PROP_TARGET, pTarget)
+    Call F.dictionaries.AddItem(dict, PROP_EDGE, 1)
+End Sub
+
+Private Function createStylesDictionary() As String
+    Dim dict As Scripting.Dictionary
+    Dim key As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set dict = F.dictionaries.Create(False)
+    With dict
+        Call .Add(PROP_ROUNDED, pRounded)
+        Call .Add(PROP_DASHED, pDashed)
+        Call .Add(PROP_CURVED, pCurved)
+        Call .Add(PROP_HTML, 1)
+        Call .Add(PROP_END_ARROW, pEndArrow)
+        Call .Add(PROP_END_FILL, pEndFill)
+        Call .Add(PROP_START_ARROW, pStartArrow)
+        Call .Add(PROP_START_FILL, pStartFill)
+        Call .Add(PROP_STROKE_COLOR, pStrokeColor)
+        Call .Add(PROP_EXIT_X, VBA.Replace(pExitX, ",", "."))
+        Call .Add(PROP_EXIT_Y, VBA.Replace(pExitY, ",", "."))
+        Call .Add(PROP_EXIT_DX, VBA.Replace(pExitDX, ",", "."))
+        Call .Add(PROP_EXIT_DY, VBA.Replace(pExitDY, ",", "."))
+        Call .Add(PROP_EXIT_PERIMETER, VBA.Replace(pExitPerimeter, ",", "."))
+        Call .Add(PROP_ENTRY_X, VBA.Replace(pEntryX, ",", "."))
+        Call .Add(PROP_ENTRY_Y, VBA.Replace(pEntryY, ",", "."))
+        Call .Add(PROP_ENTRY_DX, VBA.Replace(pEntryDX, ",", "."))
+        Call .Add(PROP_ENTRY_DY, VBA.Replace(pEntryDY, ",", "."))
+        Call .Add(PROP_ENTRY_PERIMETER, VBA.Replace(pEntryPerimeter, ",", "."))
+        Call .Add(PROP_JUMP_SIZE, VBA.Replace(pJumpSize, ",", "."))
+        Call .Add(PROP_JUMP_STYLE, pJumpStyle)
+        Call .Add(PROP_LABEL_BACKGROUND_COLOR, pLabelBackgroundColor)
+        Call .Add(PROP_LABEL_BORDER_COLOR, pLabelBorderColor)
+        Call .Add(PROP_TEXT_OPACITY, pTextOpacity)
+        Call .Add(PROP_ALIGN, pAlign)
+        Call .Add(PROP_VERTICAL_ALIGN, VBA.Replace(pVerticalAlign, ",", "."))
+        Call .Add(PROP_FONT_STYLE, pFontStyle)
+        Call .Add(PROP_FONT_SIZE, VBA.Replace(pFontSize, ",", "."))
+        Call .Add(PROP_FONT_FAMILY, pFontFamily)
+        Call .Add(PROP_SPACING_TOP, VBA.Replace(pSpacingTop, ",", "."))
+        Call .Add(PROP_SPACING_RIGHT, VBA.Replace(pSpacingRight, ",", "."))
+        Call .Add(PROP_SPACING_BOTTOM, VBA.Replace(pSpacingBottom, ",", "."))
+        Call .Add(PROP_SPACING_LEFT, VBA.Replace(pSpacingLeft, ",", "."))
+        Call .Add(PROP_LABEL_POSITION, VBA.Replace(pLabelPosition, ",", "."))
+        Call .Add(PROP_VERTICAL_LABEL_POSITION, VBA.Replace(pVerticalLabelPosition, ",", "."))
+    End With
+    
+    For Each key In dict.Keys
+        If VBA.IsEmpty(dict.Item(key)) Then
+            Call F.dictionaries.removeKey(dict, key)
+        ElseIf VBA.Len(dict.Item(key)) = 0 Then
+            Call F.dictionaries.removeKey(dict, key)
+        End If
+    Next key
+    
+    createStylesDictionary = F.dictionaries.toString(dict, itemsDelimiter:=";", keyItemDelimiter:="=") & ";"
+    
+End Function
+
+Private Function getBodyXml() As String
+    Const XML_PATTERN As String = "<mxGeometry {0}>\n{1}\n</mxGeometry>"
+    '------------------------------------------------------------------------------------------------------
+    Dim dict As Scripting.Dictionary
+    Dim key As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set dict = F.dictionaries.Create(False)
+    With dict
+        Call .Add(PROP_X, VBA.Replace(pX, ",", "."))
+        Call .Add(PROP_Y, VBA.Replace(pY, ",", "."))
+        Call .Add(PROP_WIDTH, VBA.Replace(pWidth, ",", "."))
+        Call .Add(PROP_HEIGHT, VBA.Replace(pHeight, ",", "."))
+        Call .Add(PROP_RELATIVE, pRelative)
+        Call .Add(PROP_AS, PROP_GEOMETRY)
+    End With
+    
+    For Each key In dict.Keys
+        If VBA.IsEmpty(dict.Item(key)) Then
+            Call F.dictionaries.removeKey(dict, key)
+        ElseIf VBA.Len(dict.Item(key)) = 0 Then
+            Call F.dictionaries.removeKey(dict, key)
+        End If
+    Next key
+    
+    getBodyXml = F.Strings.Format(XML_PATTERN, _
+                        F.dictionaries.toString(dict, , , " ", "=""", , """"), _
+                        getDetailedBodyXml)
+    
+End Function
+
+Private Function getDetailedBodyXml() As String
+    Const POINT_XML_PATTERN As String = "<mxPoint {0} />"
+    Const ARR_XML_PATTERN As String = "<Array as=""points"">\n{0}\n</Array>"
+    '------------------------------------------------------------------------------------------------------
+    Dim sourcePointDto As Scripting.Dictionary
+    Dim targetPointDto As Scripting.Dictionary
+    Dim dto As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    Dim nodes As VBA.Collection
+    Dim points As VBA.Collection
+    Dim key As Variant
+    Dim text As String
+    '------------------------------------------------------------------------------------------------------
+    
+    Set nodes = New VBA.Collection
+    
+    Set sourcePointDto = F.dictionaries.createWithItems(False, _
+                                KeyValue(PROP_X, VBA.Replace(pSourcePointX, ",", ".")), _
+                                KeyValue(PROP_Y, VBA.Replace(pSourcePointY, ",", ".")), _
+                                KeyValue(PROP_AS, PROP_SOURCE_POINT))
+    Set targetPointDto = F.dictionaries.createWithItems(False, _
+                                KeyValue(PROP_X, VBA.Replace(pTargetPointX, ",", ".")), _
+                                KeyValue(PROP_Y, VBA.Replace(pTargetPointY, ",", ".")), _
+                                KeyValue(PROP_AS, PROP_TARGET_POINT))
+    
+    For Each dto In F.Collections.Create(sourcePointDto, targetPointDto)
+        For Each key In dto.Keys
+            If VBA.IsEmpty(dto.Item(key)) Then
+                Call F.dictionaries.removeKey(dto, key)
+            ElseIf VBA.Len(dto.Item(key)) = 0 Then
+                Call F.dictionaries.removeKey(dto, key)
+            End If
+        Next key
+        
+        If dto.Count > 1 Then
+            text = F.Strings.Format(POINT_XML_PATTERN, _
+                            F.dictionaries.toString(dto, , , " ", "=""", , """"))
+            Call nodes.Add(text)
+        End If
+        
+    Next dto
+    
+    
+    If F.Collections.isNonEmptyCollection(pPoints) Then
+        Set points = New VBA.Collection
+        For Each dto In pPoints
+            Call points.Add(F.Strings.Format(POINT_XML_PATTERN, _
+                                       VBA.Replace(F.dictionaries.toString(dto, , , " ", "=""", , """"), ",", ".")))
+        Next dto
+        
+        text = F.Strings.Format(ARR_XML_PATTERN, F.Collections.toString(points, , VBA.vbCrLf))
+        Call nodes.Add(text)
+        
+    End If
+    
+    
+    
+    
+    If F.Collections.isNonEmptyCollection(nodes) Then
+        getDetailedBodyXml = F.Collections.toString(nodes, , VBA.vbCrLf)
+    End If
+    
+End Function
+
+
+
+'[Implementation of IComponent]
+Private Sub IComponent_loadDetails(properties As Scripting.Dictionary, bodyElements As VBA.Collection)
+    Call loadDetails(properties, bodyElements)
+End Sub
+
+Private Sub IComponent_loadPropertiesFromArray(arr As Variant, row As Long)
+    Call loadPropertiesFromArray(arr, row)
+End Sub
+
+Private Sub IComponent_setParent(value As Element)
+    Call setParent(value)
+End Sub
+
+Private Sub IComponent_appendDetailsToArray(arr As Variant)
+    Call appendDetailsToArray(arr)
+End Sub
+
+Private Sub IComponent_appendPropertiesToDictionary(dict As Scripting.IDictionary)
+    Call appendPropertiesToDictionary(dict)
+End Sub
+
+Private Function IComponent_getBodyXml() As String
+    IComponent_getBodyXml = getBodyXml
+End Function

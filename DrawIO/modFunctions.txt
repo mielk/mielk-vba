@@ -1,0 +1,14 @@
+Option Explicit
+
+Private Const CLASS_NAME As String = "modFunctions"
+'----------------------------------------------------------------------------------------------------------
+
+Public Function getPatternFromConfigSheet(rangeName As String) As String
+    Dim cell As Excel.Range
+    '------------------------------------------------------------------------------------------------------
+    Set cell = F.Sheets.getNamedRange(wksConfig, rangeName)
+    If Not cell Is Nothing Then
+        getPatternFromConfigSheet = cell.Value2
+    End If
+End Function
+
