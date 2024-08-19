@@ -1,0 +1,250 @@
+
+Option Explicit
+
+Implements IRepoParent
+
+Private Const CLASS_NAME As String = "Repo_Roles"
+'----------------------------------------------------------------------------------------------------------
+Private Const REPO_NAME As String = "Roles"
+Private Const CONFIG_FILE As String = "objects\roles"
+'----------------------------------------------------------------------------------------------------------
+Private WithEvents pRepository As Repository2
+'----------------------------------------------------------------------------------------------------------
+Private pConfig As Scripting.Dictionary
+Private pIsAddingAllowed As Boolean
+Private pIsDeletingAllowed As Boolean
+Private pIsFilteringAllowed As Boolean
+Private pIsSortingAllowed As Boolean
+'----------------------------------------------------------------------------------------------------------
+
+
+
+Private Sub Class_Initialize()
+    Call loadConfig
+    Call reload
+End Sub
+
+Private Sub loadConfig()
+    Set pConfig = F.json.getJsonObjectFromFile(Paths.getConfigFilePath(CONFIG_FILE))
+    pIsAddingAllowed = F.dictionaries.GetItem(pConfig, TAG_IS_ADDING_ALLOWED)
+    pIsDeletingAllowed = F.dictionaries.GetItem(pConfig, TAG_IS_DELETING_ALLOWED)
+    pIsFilteringAllowed = F.dictionaries.GetItem(pConfig, TAG_IS_FILTERING_ALLOWED)
+    pIsSortingAllowed = F.dictionaries.GetItem(pConfig, TAG_IS_SORTING_ALLOWED)
+End Sub
+
+Private Sub reload()
+    Set pRepository = MApp.Create.Repository2.setParent(Me)
+    Call pRepository.loadValues(getItems, getMappings)
+End Sub
+
+Private Function getItems() As VBA.Collection
+    Dim dtos As VBA.Collection
+    Dim dto As Scripting.Dictionary
+    Dim item As ERole
+    '------------------------------------------------------------------------------------------------------
+    Set getItems = New VBA.Collection
+    Set dtos = Db.roles.getRoles
+    For Each dto In dtos
+        Set item = New ERole
+        Call item.loadDto(dto)
+        Call getItems.Add(item)
+    Next dto
+End Function
+
+Private Function getMappings() As Scripting.Dictionary
+    Set getMappings = F.dictionaries.Create(False)
+    With getMappings
+        Call .Add(ProjectProps.roleId.getName, ProjectProps.roleId)
+        Call .Add(ProjectProps.RoleName.getName, ProjectProps.RoleName)
+    End With
+End Function
+
+
+
+
+
+'[Getters]
+Public Function getRole(value As Variant) As ERole
+    If F.Variables.isUndefined(value) Then
+        'skip
+    ElseIf VBA.IsObject(value) Then
+        If TypeOf value Is ERole Then
+            Set getRole = value
+        End If
+    ElseIf F.Math.IsNumeric(value) Then
+        Set getRole = getRoleByProperty(value, ProjectProps.roleId)
+    ElseIf F.Variables.isString(value) Then
+        Set getRole = getRoleByProperty(value, ProjectProps.RoleName)
+    End If
+End Function
+
+Public Function getRoleByProperty(value As Variant, Optional ByVal prop As enumProperty) As ERole
+    If prop Is Nothing Then Set prop = ProjectProps.roleId
+    Set getRoleByProperty = pRepository.GetItem(prop.getName, value)
+End Function
+
+Public Function toCollection(Optional activeOnly As Boolean = True) As VBA.Collection
+    Set toCollection = pRepository.getItemsCollection(activeOnly)
+End Function
+
+Public Function toDictionary(Optional ByVal prop As enumProperty, Optional activeOnly As Boolean = True, _
+                             Optional cloneObjects As Boolean = False) As Scripting.Dictionary
+    If prop Is Nothing Then Set prop = ProjectProps.roleId
+    Set toDictionary = pRepository.getItemsDictionary(prop.getName, activeOnly)
+    If cloneObjects Then
+        Set toDictionary = F.dictionaries.Map(toDictionary, "$.clone")
+    End If
+End Function
+
+
+'[Actions]
+Public Sub edit()
+    Call loadConfig
+    Call reload
+    Call pRepository.manage
+End Sub
+
+Private Function createNewRole() As ERole
+    Dim item As ERole
+    Dim validation As ValidationObject
+    '------------------------------------------------------------------------------------------------------
+    Set item = New ERole
+    Set validation = item.edit
+    If validation.getStatus Then
+        Call pRepository.AddItem(item)
+        Set createNewRole = item
+    End If
+End Function
+
+
+
+'[Managing]
+Private Function getIdField() As String
+    getIdField = F.dictionaries.GetItem(pConfig, TAG_ID_FIELD)
+End Function
+
+Private Function isAddingAllowed() As Boolean
+    isAddingAllowed = pIsAddingAllowed
+End Function
+
+Private Function isDeletingAllowed() As Boolean
+    isDeletingAllowed = pIsDeletingAllowed
+End Function
+
+Private Function isFilteringAllowed() As Boolean
+    isFilteringAllowed = pIsFilteringAllowed
+End Function
+
+Private Function isSortingAllowed() As Boolean
+    isSortingAllowed = pIsSortingAllowed
+End Function
+
+Private Function getSortingRules() As Scripting.Dictionary
+    Set getSortingRules = F.dictionaries.GetObject(pConfig, TAG_SORTING_RULES)
+End Function
+
+Private Function getColumns() As VBA.Collection
+    Set getColumns = F.dictionaries.GetObject(pConfig, TAG_COLUMNS)
+End Function
+
+
+
+
+
+'[Selecting item]
+Public Function selectRoles(Optional initialRoles As VBA.Collection) As VBA.Collection
+    Const WINDOW_TITLE As String = "Roles.SelectItems.WindowTitle"
+    '------------------------------------------------------------------------------------------------------
+    Dim headers As VBA.Collection
+    Dim selection As VBA.Collection
+    Dim dictInitialItems As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    
+    Set dictInitialItems = F.Collections.toDictionary(initialRoles, duplicateBehaviour_Override, "$.getName")
+    
+    Set headers = F.Collections.Create( _
+                        UI.Create.ListHeaderDefinition(Msg.getText("Roles.Labels.Role"), ProjectProps.RoleName.getName))
+    Set selection = pRepository.selectItems( _
+                                            labelsPropertyName:=ProjectProps.RoleName.getName, _
+                                            multipleSelectionAllowed:=True, _
+                                            defaultItem:=dictInitialItems, _
+                                            hasSearchPanel:=True, _
+                                            addingAllowed:=True, _
+                                            windowTitle:=Msg.getText(WINDOW_TITLE), _
+                                            headers:=headers)
+    
+    If F.Collections.isNonEmptyCollection(selection) Then
+        Set selectRoles = selection
+    Else
+        Set selectRoles = New VBA.Collection
+    End If
+    
+End Function
+
+
+
+
+
+'[Events of Repository]
+
+
+
+
+'[Implementation of IRepoParent]
+
+Private Function IRepoParent_getIdField() As String
+    IRepoParent_getIdField = getIdField
+End Function
+
+Private Function IRepoParent_getName() As String
+    IRepoParent_getName = REPO_NAME
+End Function
+
+Private Function IRepoParent_getSheetName() As String
+    IRepoParent_getSheetName = Msg.getText("Roles.Manager.Sheet.Name")
+End Function
+
+Private Function IRepoParent_isAddingAllowed() As Boolean
+    IRepoParent_isAddingAllowed = isAddingAllowed
+End Function
+
+Private Function IRepoParent_isDeletingAllowed() As Boolean
+    IRepoParent_isDeletingAllowed = isDeletingAllowed
+End Function
+
+Private Function IRepoParent_isFilteringAllowed() As Boolean
+    IRepoParent_isFilteringAllowed = isFilteringAllowed
+End Function
+
+Private Function IRepoParent_isSortingAllowed() As Boolean
+    IRepoParent_isSortingAllowed = isSortingAllowed
+End Function
+
+Private Function IRepoParent_getColumns() As VBA.Collection
+    Set IRepoParent_getColumns = getColumns
+End Function
+
+Private Function IRepoParent_getSortingRules() As Scripting.Dictionary
+    Set IRepoParent_getSortingRules = getSortingRules
+End Function
+
+Private Function IRepoParent_runAfterEditAction(updateView As Boolean) As Variant
+    Stop
+End Function
+
+Private Function IRepoParent_createNewItem() As MielkCore.IEditItem
+    Set IRepoParent_createNewItem = createNewRole
+End Function
+
+Private Function IRepoParent_getDeleteItemQuestion() As String
+    Stop
+End Function
+
+Private Function IRepoParent_getDeleteItemWindowTitle() As String
+    Stop
+End Function
+
+Private Function IRepoParent_getDeleteSuccessInfo() As String
+    Stop
+End Function
+

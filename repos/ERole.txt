@@ -1,0 +1,283 @@
+Option Explicit
+
+Implements IEditItem
+
+Private Const CLASS_NAME As String = "ERole"
+'----------------------------------------------------------------------------------------------------------
+Private Const ERROR_EMPTY_FIELD As String = "Roles.ValidationErrors.EmptyField"
+Private Const ERROR_NAME_ALREADY_USED As String = "Roles.ValidationErrors.NameAlreadyUsed"
+Private Const EDIT_ROLE_WINDOW_TITLE As String = "Roles.Edit.Window.Title"
+Private Const ADD_ROLE_WINDOW_TITLE As String = "Roles.Add.Window.Title"
+'----------------------------------------------------------------------------------------------------------
+Private pId As Long
+Private pName As String
+'----------------------------------------------------------------------------------------------------------
+
+
+
+
+'[Setters]
+Private Function setId(value As Long) As ERole
+    Set setId = Me
+    pId = value
+End Function
+
+Private Function setName(value As String) As ERole
+    Set setName = Me
+    pName = value
+End Function
+
+Friend Sub loadDto(dto As Scripting.Dictionary)
+    Call setValueFromDto(dto, ProjectProps.roleId)
+    Call setValueFromDto(dto, ProjectProps.RoleName)
+End Sub
+
+Private Sub setValueFromDto(dto As Scripting.Dictionary, prop As enumProperty)
+    Dim dbField As String
+    '------------------------------------------------------------------------------------------------------
+    dbField = prop.getDbField
+    If dto.Exists(dbField) Then
+        Call setValue(prop.getLowerCaseName, dto.item(dbField))
+    End If
+End Sub
+
+Public Function setValue(propName As String, value As Variant) As ERole
+    If Not VBA.IsNull(value) Then
+        Select Case VBA.LCase$(propName)
+            Case ProjectProps.roleId.getLowerCaseName:             Call setId(VBA.CLng(value))
+            Case ProjectProps.RoleName.getLowerCaseName:           Call setName(VBA.CStr(value))
+        End Select
+    End If
+End Function
+
+
+
+'[Getters]
+Public Function getId() As Long
+    getId = pId
+End Function
+
+Public Function getName() As String
+    getName = pName
+End Function
+
+Public Function getValue(propName As String) As Variant
+    Select Case VBA.LCase$(propName)
+        Case ProjectProps.roleId.getLowerCaseName:             getValue = getId
+        Case ProjectProps.RoleName.getLowerCaseName:           getValue = getName
+    End Select
+End Function
+
+
+
+
+
+'[Actions]
+Public Sub delete()
+    Call Db.roles.deleteRole(pId)
+End Sub
+
+
+
+
+'[Editing]
+Public Function clone(Optional includeId As Boolean = True) As ERole
+    Set clone = New ERole
+    With clone
+        If includeId Then Call .setValue(ProjectProps.roleId.getName, pId)
+        Call .setValue(ProjectProps.RoleName.getName, pName)
+    End With
+End Function
+
+Public Function getInsertDto() As Scripting.Dictionary
+    Set getInsertDto = F.dictionaries.Create(False)
+    With getInsertDto
+        Call .Add(ProjectProps.RoleName.getDbField, pName)
+    End With
+End Function
+
+Public Function edit() As MielkCore.ValidationObject
+    Dim editForm As WEditEntity
+    Dim editedItem As ERole
+    '------------------------------------------------------------------------------------------------------
+    
+    On Error GoTo ErrHandler
+    
+    Set editForm = getEditForm
+    If Not editForm Is Nothing Then
+        With editForm
+            Call .run(vbModal, UI.Create.LocationPropsForScreenCenter)
+            If Not .isCancelledByUser Then
+                Set editedItem = .getEditItem
+                Call saveChanges(editedItem)
+            End If
+            Set edit = F.Create.ValidationObject(Not .isCancelledByUser)
+        End With
+    End If
+    
+'==========================================================================================================
+ExitPoint:
+    Dim errNumber As Long, errDescription As String
+    If errNumber Then
+        Set edit = F.Create.ValidationObject(False, errDescription)
+    End If
+    Exit Function
+    
+'----------------------------------------------------------------------------------------------------------
+ErrHandler:
+    errNumber = Err.Number: errDescription = Err.Description
+    'call ErrorManager.addError(CLASS_NAME, metho
+    GoTo ExitPoint
+    
+End Function
+
+Private Sub saveChanges(editedItem As ERole)
+    Dim dto As Scripting.Dictionary
+    Dim transactionUuid As String:              transactionUuid = F.Crypto.createUUID
+    '------------------------------------------------------------------------------------------------------
+    
+    '[Save changes to the database - in transaction, because of more than one query (properties + aliases)]
+    
+    Call Db.getConnection.beginTransaction(transactionUuid)
+    
+    '[Update properties]
+    If pId Then
+        Set dto = F.dictionaries.getDictionaryDifference(editedItem.getInsertDto, Me.getInsertDto)
+        If F.dictionaries.isNonEmptyDictionary(dto) Then
+            Call Db.roles.Update(dto, pId)
+        End If
+    Else
+        Set dto = editedItem.getInsertDto
+        Call Db.roles.Insert(dto, pId)
+    End If
+    
+    Call Db.getConnection.commitTransaction(transactionUuid)
+    
+    '[Apply changes to this object]
+    Call loadDto(dto)
+    
+End Sub
+
+
+Private Function getEditForm() As WEditEntity
+    Set getEditForm = MApp.Create.EditEntityWindow
+    With getEditForm
+        Call .setWindowTitle(getWindowTitle)
+        Call .setLinesDefinitions(getEditLinesDefinitions)
+        Call .setItem(Me)
+    End With
+End Function
+
+Private Function getWindowTitle() As String
+    If pId Then
+        getWindowTitle = F.Strings.Format(Msg.getText(EDIT_ROLE_WINDOW_TITLE), getName)
+    Else
+        getWindowTitle = Msg.getText(ADD_ROLE_WINDOW_TITLE)
+    End If
+End Function
+
+Private Function getEditLinesDefinitions() As VBA.Collection
+    Dim validationParams As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    
+    Set validationParams = F.dictionaries.createSingleEntryDict(Props.items.getName, _
+                                                                Entities.roles.toDictionary(ProjectProps.RoleName))
+    
+    Set getEditLinesDefinitions = New VBA.Collection
+    With getEditLinesDefinitions
+        '[Name]
+        Call .Add(F.dictionaries.createWithItems(False, _
+                        KeyValue(TAG_CONTROL_TYPE, ControlType_TextBox), _
+                        KeyValue(TAG_CAPTION, Msg.getText("Roles.Labels.Name")), _
+                        KeyValue(TAG_PROPERTY, ProjectProps.RoleName.getName), _
+                        KeyValue(TAG_VALIDATION_FUNCTION, "validateName"), _
+                        KeyValue(TAG_VALIDATION_PARAMS, validationParams), _
+                        KeyValue(TAG_CONFIRM_WITH_ENTER, True)))
+    End With
+    
+End Function
+
+
+'[Validation]
+Public Function getValidation(validationFunction As String, Optional validationParams As Scripting.Dictionary) As ValidationObject
+    Set getValidation = VBA.CallByName(Me, validationFunction, VbMethod, validationParams)
+End Function
+
+Public Function validateName(Optional validationParams As Scripting.Dictionary) As ValidationObject
+    Static names As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    Dim name As String
+    Dim role As ERole
+    '------------------------------------------------------------------------------------------------------
+    
+    name = F.dictionaries.GetItem(validationParams, VALUE_____)
+    If names Is Nothing Then
+        Set names = F.dictionaries.GetItem(validationParams, Props.items.getName)
+    End If
+    
+    If VBA.Len(name) = 0 Then
+        Set validateName = F.Create.ValidationObject(False, Msg.getText(ERROR_EMPTY_FIELD))
+    Else
+        If names.Exists(name) Then
+            Set role = names.item(name)
+            If role.getId = pId Then
+                Set validateName = F.Create.ValidationObject(True)
+            Else
+                Set validateName = F.Create.ValidationObject(False, Msg.getText(ERROR_NAME_ALREADY_USED))
+            End If
+        Else
+            Set validateName = F.Create.ValidationObject(True)
+        End If
+    End If
+    
+End Function
+
+
+
+
+
+
+
+'[Implementation of IEditItem]
+Private Function IEditItem_clone() As MielkCore.IEditItem
+    Set IEditItem_clone = clone
+End Function
+
+Private Sub IEditItem_delete()
+    Call delete
+End Sub
+
+Private Function IEditItem_edit(Optional params As Scripting.Dictionary) As MielkCore.ValidationObject
+    Set IEditItem_edit = edit
+End Function
+
+Private Function IEditItem_getId() As Long
+    IEditItem_getId = getId
+End Function
+
+Private Function IEditItem_getName() As String
+    IEditItem_getName = getName
+End Function
+
+Private Function IEditItem_getObjectsAffected() As Collection
+    Set IEditItem_getObjectsAffected = New VBA.Collection
+End Function
+
+Private Function IEditItem_getValidation(validationFunction As String, Optional validationParams As Scripting.IDictionary) As MielkCore.ValidationObject
+    Set IEditItem_getValidation = getValidation(validationFunction, validationParams)
+End Function
+
+Private Function IEditItem_getValue(valueKey As String) As Variant
+    Call F.Variables.assign(IEditItem_getValue, getValue(valueKey))
+End Function
+
+Private Sub IEditItem_runAction(actionName As String, Optional params As Scripting.IDictionary)
+    Call VBA.CallByName(Me, actionName, VbMethod, params)
+End Sub
+
+Private Sub IEditItem_updateValue(valueKey As String, value As Variant)
+    Call setValue(valueKey, value)
+End Sub
+
+
+

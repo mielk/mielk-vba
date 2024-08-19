@@ -1,0 +1,56 @@
+{
+    "messages": {
+        "Roles": {
+            "Manager": {
+                "Sheet": {
+                    "Name": {
+                        "en": "Roles",
+                        "pl": "Role"
+                    }
+                }
+            },
+            "Labels": {
+                "Role": {
+                    "en": "Role",
+                    "pl": "Rola"
+                },
+                "Name": {
+                    "en": "Name",
+                    "pl": "Nazwa"
+                }
+            },
+            "Edit": {
+                "Window": {
+                    "Title": {
+                        "en": "Edit role ({0})",
+                        "pl": "Edytuj rolę ({0})"
+                    }
+                }
+            },
+            "Add": {
+                "Window": {
+                    "Title": {
+                        "en": "Add new specialization",
+                        "pl": "Dodaj nową specjalizację"
+                    }
+                }
+            },
+            "ValidationErrors": {
+                "EmptyField": {
+                    "en": "This field cannot be empty",
+                    "pl": "To pole nie może być puste"
+                },
+                "NameAlreadyUsed": {
+                    "en": "This name is already used",
+                    "pl": "Ta nazwa jest już użyta"
+                }
+            },
+            "SelectItems": {
+                "WindowTitle": {
+                    "en": "Select roles",
+                    "pl": "Wybierz role"
+                }
+            }
+        }
+    }
+}
