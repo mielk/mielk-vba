@@ -1,0 +1,63 @@
+Option Explicit
+
+Private Const CLASS_NAME As String = "Service_Roles"
+'----------------------------------------------------------------------------------------------------------
+Private pRepository As DbRepository
+'----------------------------------------------------------------------------------------------------------
+
+
+
+'[SETTERS]
+Public Function setRepository(value As DbRepository) As Service_Roles
+    Set setRepository = Me
+    Set pRepository = value
+End Function
+
+
+
+'[GETTERS]
+Private Function getConnection() As MielkDB.IDbConnection
+    Set getConnection = pRepository.getConnection
+End Function
+
+
+
+'[API]
+Public Function getRoleById(id As Long) As Scripting.Dictionary
+    Set getRoleById = getConnection.Query. _
+                            from(dataTypes.Roles). _
+                            Where(ProjectProps.RoleId, ComparisonMode_Equal, id). _
+                            toDto
+End Function
+
+Public Function getRoles() As VBA.Collection
+    Set getRoles = getConnection.Query. _
+                            from(dataTypes.Roles.getReadDbTable). _
+                            toDtosCollection
+End Function
+
+Public Sub deleteRole(id As Long)
+    Dim values As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    Set values = F.dictionaries.createSingleEntryDict(Props.IsActive.getDbField, False)
+    Call getConnection.update. _
+                        from(dataTypes.Roles.getWriteDbTable). _
+                        values(values). _
+                        Where(ProjectProps.RoleId.getDbField, ComparisonMode_Equal, id). _
+                        Execute
+End Sub
+
+Public Sub update(values As Scripting.Dictionary, id As Long)
+    Call getConnection.update. _
+                        from(dataTypes.Roles.getWriteDbTable). _
+                        values(values). _
+                        Where(ProjectProps.RoleId.getDbField, ComparisonMode_Equal, id). _
+                        Execute
+End Sub
+
+Public Sub insert(values As Scripting.Dictionary, ByRef id As Long)
+    Call getConnection.insert. _
+                        Into(dataTypes.Roles.getWriteDbTable). _
+                        values(values). _
+                        ExecuteWithId(id, ProjectProps.RoleId.getDbField)
+End Sub
