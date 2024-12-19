@@ -15,7 +15,7 @@ Private Const DEFAULT_DATE_TIME_FORMAT As String = "YYYY-MM-DD HH:MM:SS"
 Private Const DEFAULT_DATE_ONLY_FORMAT As String = "YYYY-MM-DD"
 Private Const DEFAULT_TIME_ONLY_FORMAT As String = "HH:MM:SS"
 '----------------------------------------------------------------------------------------------------------
-Private Const ISO_TIME_REGEX_PATTERN As String = "((\d{4})-([01]\d)-([0-3]\d)T([0-2]\d):([0-5]\d):([0-5]\d)\.(\d+([+-][0-2]\d:[0-5]" & _
+Private Const ISO_DATE_TIME_REGEX_PATTERN As String = "((\d{4})-([01]\d)-([0-3]\d)T([0-2]\d):([0-5]\d):([0-5]\d)\.(\d+([+-][0-2]\d:[0-5]" & _
                                                  "\d|Z)))|((\d{4})-([01]\d)-([0-3]\d)T([0-2]\d):([0-5]\d):([0-5]\d([+-][0-2]\d:[0-5]\d|Z)))" & _
                                                  "|((\d{4})-([01]\d)-([0-3]\d)T([0-2]\d):([0-5]\d)(([+-][0-2]\d:[0-5]\d|Z)))"
 Private Const TIMEPART_DISALLOWED_REGEX_PATTERN As String = "^\s*(\d{4})\s*(?:-|\.|\/|\\)\s*(\d{2})\s*(?:-|\.|\/|\\)\s*(\d{2})\s*$"
@@ -25,6 +25,7 @@ Private Const TIMEPART_DISALLOWED_REVERSED_REGEX_PATTERN As String = "^\s*(\d{2}
 Private Const TIMEPART_ALLOWED_REVERSED_REGEX_PATTERN As String = "^\s*(\d{2})\s*(?:-|\.|\/|\\|_)\s*(\d{2})" & _
                                     "\s*(?:-|\.|\/|\\|_)\s*(\d{4})\s*(|\d{2})\s*(?:-|\.|\/|\\|_|:)\s*(\d{2})" & _
                                     "\s*(?:|(?:-|\.|\/|\\|_|:)\s*(\d{2})\s*)$"
+Private Const TIME_REGEX_PATTERN As String = "^([01][0-9]|2[0-3]):([0-5][0-9])(?::([0-5][0-9])(?:\.(\d+))?)?$"
 Private Const MMDDYY_REGEX_PATTERN As String = "^\s*(\d{2})[\/\.](\d{2})[\/\.](\d{2})\s*$"
 '----------------------------------------------------------------------------------------------------------
 
@@ -42,7 +43,7 @@ Public Function isDateString(ByVal value As Variant, Optional allowTimePart As B
         Call .Add(TIMEPART_DISALLOWED_REVERSED_REGEX_PATTERN)
         
         If allowTimePart Then
-            Call .Add(ISO_TIME_REGEX_PATTERN)
+            Call .Add(ISO_DATE_TIME_REGEX_PATTERN)
             Call .Add(TIMEPART_ALLOWED_REGEX_PATTERN)
             Call .Add(TIMEPART_ALLOWED_REVERSED_REGEX_PATTERN)
         End If
@@ -72,20 +73,22 @@ End Function
 
 
 Public Function isTimeString(ByVal value As String) As Boolean
-    Const REGEX_PATTERN As String = "^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$"
-    Static objRegex As Object
+    isTimeString = f.regex.checkIfMatch(value, TIME_REGEX_PATTERN)
+End Function
+
+Public Function getTimeFromString(value As String) As Date
+    Dim matches As Variant
+    Dim hours As Long
+    Dim minutes As Long
+    Dim seconds As Long
     '------------------------------------------------------------------------------------------------------
-
-    If objRegex Is Nothing Then
-        Set objRegex = f.regex.Create(REGEX_PATTERN)
+    matches = f.regex.getMatchArray(value, TIME_REGEX_PATTERN)
+    If f.arrays.isDefined(matches) Then
+        hours = matches(LBound(matches))
+        minutes = matches(LBound(matches) + 1)
+        seconds = matches(LBound(matches) + 2)
+        getTimeFromString = VBA.TimeSerial(hours, minutes, seconds)
     End If
-    isTimeString = objRegex.test(VBA.trim$(value))
-
-    'Check if there are any blank characters
-    If Not isTimeString Then
-        isTimeString = objRegex.test(VBA.trim$(value))
-    End If
-
 End Function
 
 Public Function getDateFromString(ByVal value As String) As Variant
@@ -167,7 +170,7 @@ Public Function fromString(ByVal value As String) As Date
         End If
         On Error GoTo 0
     ElseIf isTimeString(value) Then
-        fromString = VBA.CDate(value)
+        fromString = getTimeFromString(value)
     Else
         On Error Resume Next
         d = fromIso8601(value)
@@ -466,7 +469,7 @@ End Function
 
 
 Public Function getPreviousWorkingDay(baseDate As Date) As Date
-    getPreviousWorkingDay = VBA.DateAdd("d", baseDate, -1 * f.Numerics.getMax(1, VBA.Weekday(baseDate, vbTuesday) - 4))
+    getPreviousWorkingDay = VBA.DateAdd("d", baseDate, -1 * f.Numerics.getMax(1, VBA.WeekDay(baseDate, vbTuesday) - 4))
 End Function
 
 Public Function toMonthYearString(value As Variant) As String

@@ -25,7 +25,7 @@ Public Function getVbaVersion() As Long
 End Function
 
 Public Function getExcelVersion() As Long
-    getExcelVersion = f.Numerics.toNumeric(Excel.Application.Version)
+    getExcelVersion = f.Numerics.toNumeric(Excel.Application.version)
 End Function
 
 

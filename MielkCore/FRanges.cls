@@ -479,7 +479,7 @@ Public Sub pasteAsValues(rng As Excel.Range, Optional protectionPassword As Stri
             isProtected = wks.ProtectContents
             If isProtected Then Call wks.Unprotect(protectionPassword)
             Call .copy
-            Call .PasteSpecial(Paste:=xlPasteValues, operation:=xlNone, SkipBlanks:=False, transpose:=False)
+            Call .PasteSpecial(Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, transpose:=False)
             If isProtected Then Call wks.Protect(protectionPassword)
         End With
     End If
@@ -1093,12 +1093,15 @@ End Function
 '                "inside-horizontal": {...},
 '                "inside-vertical": {...}
 '            }
-Public Sub applyBorders(rng As Excel.Range, bordersDict As Scripting.Dictionary, _
+Public Sub applyBorders(rng As Excel.Range, ByVal bordersDict As Scripting.Dictionary, _
                             Optional skipOutsideBorders As Boolean = False, Optional skipInsideBorders As Boolean = False)
     Dim varKey As Variant
     Dim borderIndex As XlBordersIndex
     Dim borderProps As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
+    
+    Set bordersDict = getBordersDefinitionsFromDict( _
+                            f.dictionaries.createSingleEntryDict(UIProps.Borders.getName, bordersDict))
     
     If f.dictionaries.isNonEmptyDictionary(bordersDict) Then
         For Each varKey In bordersDict.Keys
@@ -1169,57 +1172,118 @@ End Sub
 
 
 
-'formatDict - JSON object width definition of borders.
-' Template:
-'            {
-'                "right": {
-'                    "color": 16777215,
-'                    "weight": "thin",
-'                    "style": "continuous"
-'                },
-'                "left": {...},
-'                "top": {...},
-'                "bottom": {...},
-'                "inside-horizontal": {...},
-'                "inside-vertical": {...}
-'            }
-Public Function applyFormatCondition(rng As Excel.Range, formatProps As Scripting.Dictionary) As Excel.FormatCondition
-    Dim formatType As XlFormatConditionType:                formatType = xlExpression
-    Dim operator As XlFormatConditionOperator:              operator = xlEqual
+
+Public Function applyFormatCondition(rng As Excel.Range, formatProps As Scripting.Dictionary) As Object
+    Dim formatType As XlFormatConditionType
+    '------------------------------------------------------------------------------------------------------
+    
+    If f.ranges.IsValid(rng) Then
+        formatType = f.Reflection.modifyValue(f.dictionaries.getItem(formatProps, "type"), _
+                            f.Reflection.getFunctionFullName("convertFormatConditionTypeToEnum", Excel.ThisWorkbook))
+        Select Case formatType
+            Case xlIconSets:                    Set applyFormatCondition = applyIconSetsFormatCondition(rng, formatProps)
+            Case xlExpression, xlCellValue:     Set applyFormatCondition = applyRegularFormatCondition(rng, formatProps)
+            Case Else:                          Set applyFormatCondition = applyRegularFormatCondition(rng, formatProps)
+        End Select
+    End If
+    
+End Function
+
+Private Function applyRegularFormatCondition(rng As Excel.Range, formatProps As Scripting.Dictionary) As Excel.FormatCondition
+    Dim formatType As XlFormatConditionType
+    Dim operator As XlFormatConditionOperator
     Dim setFirstPriority As Boolean
+    Dim priority As Variant
     Dim stopIfTrue As Boolean
+    Dim isFormulaR1C1 As Boolean
     Dim formula As Variant
     Dim backColor As Variant
     Dim fontColor As Variant
     Dim fontSize As Variant
-    Dim FontBold As Variant
+    Dim fontBold As Variant
     '------------------------------------------------------------------------------------------------------
     
     If f.ranges.IsValid(rng) Then
-        
-        '[Load properties]
-        Call f.dictionaries.assignValueFromDictToVariable(formatProps, formatType, "type", f.Reflection.getFunctionFullName("convertFormatConditionTypeToEnum", Excel.ThisWorkbook))
-        Call f.dictionaries.assignValueFromDictToVariable(formatProps, operator, "operator", f.Reflection.getFunctionFullName("convertFormatConditionOperatorToEnum", Excel.ThisWorkbook))
-        Call f.dictionaries.assignValueFromDictToVariable(formatProps, setFirstPriority, "setFirstPriority")
-        Call f.dictionaries.assignValueFromDictToVariable(formatProps, stopIfTrue, "stopIfTrue")
-        Call f.dictionaries.assignValueFromDictToVariable(formatProps, formula, "formula")
-        Call f.dictionaries.assignValueFromDictToVariable(formatProps, backColor, "interior.color")
-        Call f.dictionaries.assignValueFromDictToVariable(formatProps, fontColor, "font.color")
-        Call f.dictionaries.assignValueFromDictToVariable(formatProps, fontSize, "font.size")
-        Call f.dictionaries.assignValueFromDictToVariable(formatProps, FontBold, "font.bold")
+        formatType = f.Variables.coalesce( _
+                        f.Reflection.modifyValue(f.dictionaries.getItem(formatProps, "type"), _
+                            f.Reflection.getFunctionFullName("convertFormatConditionTypeToEnum", Excel.ThisWorkbook)), _
+                     xlExpression)
+        operator = f.Variables.coalesce( _
+                        f.Reflection.modifyValue(f.dictionaries.getItem(formatProps, "operator"), _
+                            f.Reflection.getFunctionFullName("convertFormatConditionOperatorToEnum", Excel.ThisWorkbook)), _
+                     xlEqual)
+        setFirstPriority = f.dictionaries.getItem(formatProps, "setFirstPriority")
+        priority = f.dictionaries.getItem(formatProps, "priority")
+        stopIfTrue = f.dictionaries.getItem(formatProps, "stopIfTrue")
+        isFormulaR1C1 = VBA.IIf(formatProps.exists(props.isFormulaR1C1.getName), _
+                                f.dictionaries.getItem(formatProps, props.isFormulaR1C1.getName), _
+                                True)
+        formula = f.Reflection.convertToLocalFormula(f.dictionaries.getItem(formatProps, "formula"), isFormulaR1C1)
+        backColor = f.dictionaries.getItemForCombinedKey(formatProps, "interior.color")
+        fontColor = f.dictionaries.getItemForCombinedKey(formatProps, "font.color")
+        fontSize = f.dictionaries.getItemForCombinedKey(formatProps, "font.size")
+        fontBold = f.dictionaries.getItemForCombinedKey(formatProps, "font.bold")
         
         '[Apply properties to range]
-        Set applyFormatCondition = rng.FormatConditions.Add(formatType, operator, formula)
-        With applyFormatCondition
+        Set applyRegularFormatCondition = rng.FormatConditions.Add(formatType, operator, formula)
+        With applyRegularFormatCondition
             If setFirstPriority Then Call .setFirstPriority
             .stopIfTrue = stopIfTrue
+            If Not VBA.IsEmpty(priority) Then .priority = priority
             If Not VBA.IsEmpty(backColor) Then .Interior.color = backColor
             If Not VBA.IsEmpty(fontColor) Then .Font.color = fontColor
-            If Not VBA.IsEmpty(FontBold) Then .Font.Bold = FontBold
+            If Not VBA.IsEmpty(fontBold) Then .Font.Bold = fontBold
             If Not VBA.IsEmpty(fontSize) Then .Font.size = fontSize
         End With
-        
     End If
+    
+End Function
+
+Private Function applyIconSetsFormatCondition(rng As Excel.Range, formatProps As Scripting.Dictionary) As Excel.IconSetCondition
+    Dim stopIfTrue As Boolean
+    Dim showIconOnly As Boolean
+    Dim priority As Variant
+    Dim percentileValues As Boolean
+    Dim iconSetId As Variant
+    '------------------------------------------------------------------------------------------------------
+    Dim iconCriteria As VBA.Collection
+    Dim dtoCriterium As Scripting.Dictionary
+    Dim index As Long
+    Dim operator As Long
+    Dim value As Variant
+    Dim icon As Long
+    Dim iconType As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    stopIfTrue = f.dictionaries.getItem(formatProps, "stopIfTrue")
+    showIconOnly = f.dictionaries.getItem(formatProps, "showIconOnly")
+    priority = f.dictionaries.getItem(formatProps, "priority")
+    percentileValues = f.dictionaries.getItem(formatProps, "percentileValues")
+    iconSetId = f.Variables.coalesce(f.dictionaries.getItem(formatProps, "iconSetId"), 7)
+    Set iconCriteria = f.dictionaries.getObject(formatProps, "iconCriteria")
+    
+    Set applyIconSetsFormatCondition = rng.FormatConditions.AddIconSetCondition()
+    With applyIconSetsFormatCondition
+        .IconSet = iconSetId
+        .showIconOnly = showIconOnly
+        .priority = priority
+        .percentileValues = percentileValues
+    End With
+    
+    For Each dtoCriterium In iconCriteria
+        index = f.dictionaries.getItem(dtoCriterium, "index")
+        operator = f.dictionaries.getItem(dtoCriterium, "operator")
+        value = f.dictionaries.getItem(dtoCriterium, "value")
+        icon = f.dictionaries.getItem(dtoCriterium, "icon")
+        iconType = f.dictionaries.getItem(dtoCriterium, "type")
+        
+        With applyIconSetsFormatCondition.iconCriteria(index)
+            .operator = operator
+            If .value <> value Then .value = value
+            .icon = icon
+        End With
+        
+    Next dtoCriterium
     
 End Function
 
@@ -1332,7 +1396,7 @@ Public Sub applyFormatForSingleProperty(rng As Excel.Range, prop As UIProp, valu
         Case UIProps.fontSize.getId:                    rng.Font.size = value
         Case UIProps.fontColor.getId:                   rng.Font.color = value
         Case UIProps.FontFamily.getId:                  rng.Font.name = value
-        Case UIProps.FontBold.getId:                    rng.Font.Bold = value
+        Case UIProps.fontBold.getId:                    rng.Font.Bold = value
         Case UIProps.FontItalic.getId:                  rng.Font.Italic = value
         Case UIProps.VerticalAlignment.getId:           rng.VerticalAlignment = value
         Case UIProps.HorizontalAlignment.getId:         rng.HorizontalAlignment = value
@@ -1341,6 +1405,7 @@ Public Sub applyFormatForSingleProperty(rng As Excel.Range, prop As UIProp, valu
         Case UIProps.ColumnAutoFit.getId:               Call rng.EntireColumn.AutoFit
         Case UIProps.RowAutoFit.getId:                  Call rng.EntireRow.AutoFit
         Case UIProps.NumberFormat.getId:                rng.NumberFormat = value
+        Case UIProps.Locked.getId:                      rng.Locked = value
         Case UIProps.PaddingVertical.getId:             Stop: rng.EntireRow.RowHeight = rng.EntireRow.RowHeight + 2 * value
     End Select
     
@@ -1754,7 +1819,7 @@ Public Sub autoFitRowsWithoutShrinking(rng As Excel.Range, Optional maxHeight As
     On Error GoTo 0
     
     For i = LBound(heights) To UBound(heights)
-        If rng.Rows(i).RowHeight > maxHeight Then
+        If rng.Rows(i).RowHeight > maxHeight And maxHeight > 0 Then
             rng.Rows(i).RowHeight = maxHeight
         ElseIf rng.Rows(i).RowHeight < heights(i) Then
             rng.Rows(i).RowHeight = heights(i)
@@ -1932,3 +1997,47 @@ Public Sub copyFormulas(rngSource As Excel.Range, rngDestination As Excel.Range)
     End If
     
 End Sub
+
+
+
+Public Sub insertValidationList(rng As Excel.Range, listName As String)
+    Const METHOD_NAME As String = "insertValidationList"
+    '------------------------------------------------------------------------------------------------------
+    Const FORMULA_PATTERN As String = "={0}"
+    Dim formula As String
+    '------------------------------------------------------------------------------------------------------
+    
+    If Not DEV_MODE Then On Error GoTo ErrHandler
+
+    formula = f.strings.format(FORMULA_PATTERN, listName)
+
+    If Not f.ranges.IsValid(rng) Then
+        Call Exceptions.InvalidRange.raise
+    Else
+        With rng.validation
+            On Error Resume Next
+            Call .delete
+            If Not DEV_MODE Then On Error GoTo ErrHandler
+            
+            Call .Add(Type:=xlValidateList, AlertStyle:=xlValidAlertStop, operator:=xlBetween, Formula1:=formula)
+            .IgnoreBlank = True
+            .InCellDropdown = True
+        End With
+    End If
+
+'==========================================================================================================
+ExitPoint:
+    Dim errNumber As Long, errDescription As String
+    If errNumber > 0 Then Call VBA.err.raise(errNumber, CLASS_NAME & "." & METHOD_NAME, errDescription)
+    Exit Sub
+
+'----------------------------------------------------------------------------------------------------------
+ErrHandler:
+    errNumber = VBA.err.number: errDescription = VBA.err.description
+    Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, _
+                                "rng; listName", _
+                                rng, listName)
+    GoTo ExitPoint
+    
+End Sub
+

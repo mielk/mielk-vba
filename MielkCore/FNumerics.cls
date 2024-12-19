@@ -11,7 +11,10 @@ Option Explicit
 
 Private Const CLASS_NAME As String = "FNumerics"
 '----------------------------------------------------------------------------------------------------------
-
+Const IS_NUMBER_REGEX_PATTERN As String = "^-?\d +(?:[ '\u00A0]?\d{3})*(?:[\.,]\d+)?%?$"
+Const IS_NUMERIC_REGEX_PATTERN As String = "^\s*-?([\s\d]+[.,]{0,1}|)\d+%?\s*$"
+'------------------------------------------------------------------------------------------------------
+    
 Public Function getMin(ParamArray values() As Variant) As Variant
     Dim isValueSet As Boolean
     Dim varValue As Variant
@@ -155,19 +158,12 @@ End Function
 
 
 Public Function isNumeric(value As Variant) As Boolean
-    'Const REGEX_PATTERN As String = "^(-?\d+(?:\.|\,)\d+)$|^(-?\d+)$"
-    Const REGEX_PATTERN As String = "^\s*-?([\s\d]+[.,]{0,1}|)\d+%?\s*$"
-    '------------------------------------------------------------------------------------------------------
-    Static objRegex As Object
-    '------------------------------------------------------------------------------------------------------
-    
     If f.Variables.isUndefined(value) Then
     ElseIf VBA.IsArray(value) Then
     ElseIf VBA.IsObject(value) Then
     Else
-        isNumeric = f.regex.checkIfMatch(VBA.CStr(value), REGEX_PATTERN)
+        isNumeric = f.regex.checkIfMatch(VBA.CStr(value), IS_NUMERIC_REGEX_PATTERN)
     End If
-    
 End Function
 
 Public Function toNumeric(ByVal value As Variant) As Variant
@@ -311,15 +307,13 @@ End Function
 
 
 Public Function isNumber(value As Variant) As Boolean
-    Const REGEX_PATTERN As String = "^-?\d+(?:[ '\u00A0]?\d{3})*(?:[\.,]\d+)?%?$"
-    '------------------------------------------------------------------------------------------------------
     Static objRegex As Object
     '------------------------------------------------------------------------------------------------------
     
     If objRegex Is Nothing Then
         Set objRegex = VBA.CreateObject("VBScript.RegExp")
         With objRegex
-            .pattern = REGEX_PATTERN
+            .pattern = IS_NUMBER_REGEX_PATTERN
             .ignoreCase = True
         End With
     End If

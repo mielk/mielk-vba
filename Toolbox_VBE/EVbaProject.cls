@@ -45,7 +45,7 @@ End Function
 
 Public Function countComponents() As Long
     If F.dictionaries.isNonEmptyDictionary(pComponents) Then
-        countComponents = pComponents.Count
+        countComponents = pComponents.count
     End If
 End Function
 
@@ -80,8 +80,8 @@ Private Function read(wkb As Excel.Workbook) As EVbaProject
     If project.Protection = vbext_pp_locked Then
         Debug.Print "File " & getPath & " is protected"
     Else
-        Debug.Print project.VBComponents.Count
-        totalItems = project.VBComponents.Count
+        Debug.Print project.VBComponents.count
+        totalItems = project.VBComponents.count
         For Each component In project.VBComponents
         
             If filterComponentByName(component.name) Then
@@ -105,7 +105,7 @@ End Function
 
 
 
-Private Function readFromPath(filepath As String) As EVbaProject
+Private Function readFromPath(filePath As String) As EVbaProject
     Dim wkb As Excel.Workbook
     Dim wasOpen As Boolean
     Dim xls As Excel.Application
@@ -114,7 +114,7 @@ Private Function readFromPath(filepath As String) As EVbaProject
     Set readFromPath = Me
     
     Set xls = F.Excel.getBackgroundInstance(False, False)
-    Set wkb = F.Books.open_(filepath, True, xls, wasOpen:=wasOpen)
+    Set wkb = F.Books.open_(filePath, True, xls, wasOpen:=wasOpen)
     
     If F.Books.IsValid(wkb) Then
         Call read(wkb)

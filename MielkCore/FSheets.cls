@@ -22,9 +22,9 @@ Public Function IsValid(wks As Excel.Worksheet) As Boolean
     IsValid = VBA.Len(strSheetName)
 End Function
 
-Public Function getNamedRange(wks As Excel.Worksheet, RangeName As String) As Excel.Range
+Public Function getNamedRange(wks As Excel.Worksheet, rangeName As String) As Excel.Range
     On Error Resume Next
-    Set getNamedRange = wks.Range(RangeName)
+    Set getNamedRange = wks.Range(rangeName)
 End Function
 
 Public Sub closeParentWorkbook(wks As Excel.Worksheet, Optional saveChanges As Boolean = False)
@@ -196,7 +196,37 @@ Public Sub delete(wkb As Excel.Workbook, sheetName As String)
     On Error GoTo 0
     
     wkb.Application.displayAlerts = displayAlerts
+    
+End Sub
 
+Public Sub deleteAllExcept(wkb As Excel.Workbook, sheetName As String, Optional useRegex As Boolean = False)
+    Dim wks As Excel.Worksheet
+    Dim toBeDeleted As VBA.Collection
+    Dim name As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set toBeDeleted = New VBA.Collection
+    
+    If f.Books.IsValid(wkb) Then
+        For Each wks In wkb.Worksheets
+            
+            If Not useRegex Then
+                If Not f.strings.compareStrings(wks.name, sheetName) Then
+                    Call toBeDeleted.Add(wks.name)
+                End If
+            Else
+                Stop
+            End If
+            
+        Next wks
+    End If
+    
+    If f.Collections.isNonEmptyCollection(toBeDeleted) Then
+        For Each name In toBeDeleted
+            Call delete(wkb, VBA.CStr(name))
+        Next name
+    End If
+    
 End Sub
 
 

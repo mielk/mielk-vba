@@ -31,11 +31,11 @@ Public Function getValue(Parent As Object, name As String) As Variant
 End Function
 
 Public Function get_(Parent As Object, name As String) As Excel.name
-    Dim RangeName As String
+    Dim rangeName As String
     '------------------------------------------------------------------------------------------------------
-    RangeName = getFullPath(Parent, name)
+    rangeName = getFullPath(Parent, name)
     If exists(Parent, name) Then
-        Set get_ = Parent.names(RangeName)
+        Set get_ = Parent.names(rangeName)
     End If
 End Function
 
@@ -47,27 +47,27 @@ Public Function getFullPath(Parent As Object, name As String) As String
     If TypeOf Parent Is Excel.Workbook Then
         getFullPath = name
     ElseIf TypeOf Parent Is Excel.Worksheet Then
-        parentName = VBA.IIf(VBA.InStr(1, Parent.name, " "), "'" & Parent.name & "'", Parent.name)
+        parentName = VBA.IIf(VBA.InStr(1, Parent.name, " "), "'" & VBA.replace(Parent.name, "'", "''") & "'", Parent.name)
         getFullPath = f.strings.format(EXCEL_NAME_PATTERN, parentName, name)
     End If
 End Function
 
 Public Function exists(Parent As Object, name As String) As Boolean
-    Dim RangeName As String
+    Dim rangeName As String
     Dim objName As Excel.name
     Dim names As Variant
     '------------------------------------------------------------------------------------------------------
     
-    RangeName = getFullPath(Parent, name)
+    rangeName = getFullPath(Parent, name)
     
-    If VBA.Len(RangeName) Then
+    If VBA.Len(rangeName) Then
         On Error Resume Next
         Set names = Parent.names
         On Error GoTo 0
         
         If Not VBA.IsEmpty(names) Then
             For Each objName In Parent.names
-                If f.strings.compareStrings(objName.name, RangeName) Then
+                If f.strings.compareStrings(objName.name, rangeName) Then
                     exists = True
                     Exit For
                 End If

@@ -125,6 +125,52 @@ Public Function getVbProjectByName(name As String, Optional ByVal instance As Ex
     
 End Function
 
+Public Function getVbProjectByProjectName(name As String) As Object
+    Dim names As VBA.Collection
+    Dim varName As Variant
+    Dim addIn As Excel.addIn
+    Dim wkb As Excel.Workbook
+    Dim project As VBIDE.VBProject
+    '------------------------------------------------------------------------------------------------------
+    
+    
+    '[Collect names of all add-ins and regular Excel books.] ----------------------------------------|
+    Set names = New VBA.Collection                                                                  '|
+    For Each addIn In Excel.Application.AddIns2                                                     '|
+        Call names.Add(addIn.name)                                                                  '|
+    Next addIn                                                                                      '|
+                                                                                                    '|
+    For Each wkb In Excel.Application.Workbooks                                                     '|
+        Call names.Add(wkb.name)                                                                    '|
+    Next wkb                                                                                        '|
+    '------------------------------------------------------------------------------------------------|
+    
+    
+    For Each varName In names
+        
+        '[Try to set reference to a file with such a name.] -----------------------------------------|
+        On Error Resume Next                                                                        '|
+        Set wkb = Application.Workbooks(varName)                                                    '|
+        On Error GoTo 0                                                                             '|
+        '--------------------------------------------------------------------------------------------|
+        
+        If f.Books.IsValid(wkb) Then
+            Set project = wkb.VBProject
+            If project Is Nothing Then
+                ' error when creating reference to [project]
+            ElseIf f.strings.compareStrings(project.name, name) Then
+                Set getVbProjectByProjectName = project
+                Exit For
+            End If
+        End If
+        
+    Next varName
+    
+    
+End Function
+
+
+
 Public Function getVbProject(Optional project As Variant) As Object 'VBIDE.VBProject
     If VBA.IsMissing(project) Then
         Set getVbProject = Excel.ThisWorkbook.VBProject
@@ -375,4 +421,23 @@ Public Sub appendToCodeModule(cm As VBIDE.codeModule, content As String)
             Call .AddFromString(content)
         End With
     End If
+End Sub
+
+
+
+Public Sub changeClassInstancing(cl As VBIDE.VBComponent, Optional toPublic As Boolean = True)
+    Const INSTANCING_PROPERTY_NAME As String = "Instancing"
+    '------------------------------------------------------------------------------------------------------
+    Dim value As Long
+    Dim prop As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    value = VBA.IIf(toPublic, 2, 1)
+    
+    For Each prop In cl.properties
+        If prop.name = INSTANCING_PROPERTY_NAME Then
+            prop.value = value
+        End If
+    Next prop
+    
 End Sub

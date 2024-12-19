@@ -123,7 +123,7 @@ Private pActionButtonsToLeft As Boolean
 Event AfterChange()
 Event AfterDoubleClick()
 Event AfterEditItemClick(item As Variant, ByRef newCaption As String)
-Event AfterRemoveItemClick(item As Variant, ByRef Confirmed As Boolean)
+Event AfterRemoveItemClick(item As Variant, ByRef confirmed As Boolean)
 Event AfterPreviewChanged(key As Variant, item As Variant, index As Long)
 Event GiveFocusToTopControl()
 '----------------------------------------------------------------------------------------------------------
@@ -664,7 +664,7 @@ Private Sub renderLines()
     Dim line As UIListLine
     '------------------------------------------------------------------------------------------------------
     
-    linesCounter = F.Math.getMin(pItems.count, pMaxItemsPerPage)
+    linesCounter = F.Math.getMin(pItems.Count, pMaxItemsPerPage)
     If linesCounter Then
         currentLinesCounter = F.arrays.getSize(pLines)
         
@@ -715,22 +715,48 @@ End Sub
 
 Private Sub arrangeLines()
     Dim line As UIListLine
-    Dim Y As Single:                                Y = 0.25
+    Dim y As Single:                                y = 0.25
     Dim i As Long
     '------------------------------------------------------------------------------------------------------
     
+    Call clearLinesArray
+    
     For i = LBound(pLines) To UBound(pLines)
         Set line = pLines(i)
+        
         With line
+        
             If line.isVisible Then
-                Call .Move(top:=Y)
-                Y = .getBottom
+                Call .Move(top:=y)
+                y = .getBottom
             End If
         End With
     Next i
 
 End Sub
 
+Private Sub clearLinesArray()
+    Dim col As VBA.Collection
+    Dim line As UIListLine
+    Dim index As Long
+    '------------------------------------------------------------------------------------------------------
+    
+    Set col = F.Collections.removeUndefined(F.arrays.toCollection(pLines))
+    
+    If F.Collections.isNonEmptyCollection(col) Then
+        ReDim pLines(1 To col.Count)
+        For Each line In col
+            index = index + 1
+            Call line.setIndex(index)
+            Set pLines(index) = line
+        Next line
+    Else
+        Erase pLines
+    End If
+    
+    Call showHideScrollBar(index)
+    
+End Sub
 
 
 
@@ -786,7 +812,9 @@ Private Sub updateLinesItems(Optional pageIndex As Long = 1)
     Set pKeysByLine = F.dictionaries.Create(False)
     
     pCurrentPage = pageIndex
-    If Not pHeaderLine Is Nothing Then Call pHeaderLine.setCurrentPage(pCurrentPage)
+    If Not pHeaderLine Is Nothing Then
+        Call pHeaderLine.setCurrentPage(pCurrentPage)
+    End If
     
     pagesOffset = (pCurrentPage - 1) * pMaxItemsPerPage
     lastIndex = F.Math.getMin(F.arrays.getSize(pLines), pMaxItemsPerPage)
@@ -794,7 +822,7 @@ Private Sub updateLinesItems(Optional pageIndex As Long = 1)
     For i = 1 To lastIndex
         Set line = pLines(i)
         index = i + pagesOffset
-        If index <= pFiltered.count Then
+        If index <= pFiltered.Count Then
             key = pSortedKeys(index)
             With line
                 Call .setVisibility(True)
@@ -845,7 +873,7 @@ Private Function getItemCaption(key As Variant) As String
 End Function
 
 Private Function countPages() As Long
-    countPages = VBA.Int(pFiltered.count / pMaxItemsPerPage) + VBA.IIf(pFiltered.count Mod pMaxItemsPerPage > 0, 1, 0)
+    countPages = VBA.Int(pFiltered.Count / pMaxItemsPerPage) + VBA.IIf(pFiltered.Count Mod pMaxItemsPerPage > 0, 1, 0)
 End Function
 
 Private Sub showHideScrollBar(lastIndex As Long)
@@ -877,10 +905,36 @@ Public Sub addItem(key As Variant, item As Variant, Optional caption As Variant)
     '------------------------------------------------------------------------------------------------------
     If Not VBA.IsMissing(caption) Then Call F.dictionaries.addItem(pCaptions, key, caption)
     Call F.dictionaries.addItem(pItems, key, item)
+    Call assureLinesCount
     Call filterItems(pFilter, False)
     Call sortItems
     Call updateLinesItems(pCurrentPage)
 End Sub
+
+Private Sub assureLinesCount()
+    Dim i As Long
+    Dim linesAdded As Boolean
+    '------------------------------------------------------------------------------------------------------
+    
+    For i = F.arrays.getSize(pLines) + 1 To pItems.Count
+        Call addListLine(i)
+        linesAdded = True
+    Next i
+    
+    If linesAdded Then
+        Call arrangeLines
+    End If
+    
+End Sub
+
+Private Function addListLine(index As Long) As UIListLine
+    If F.arrays.isDefined(pLines) Then
+        ReDim Preserve pLines(1 To index)
+    Else
+        ReDim pLines(1 To index)
+    End If
+    Set pLines(index) = renderLine(index)
+End Function
 
 Public Sub changeItemCaption(key As Variant, caption As String)
     Dim line As UIListLine
@@ -1185,7 +1239,7 @@ Public Sub setFocus(Optional selectFirstItem As Boolean = False, _
         Call pFocusTextbox.setFocus
     End If
     pFrame.borderColor = pFocusBorderColor
-    If pFiltered.count > 0 Then
+    If pFiltered.Count > 0 Then
         Set line = getFirstVisibleLine
         If selectFirstItem Then Call changeSelection(line)
         If activateFirstItem Then Call updateActiveLine(line)
@@ -1228,27 +1282,38 @@ Friend Sub editItem(line As UIListLine)
 End Sub
 
 Friend Sub removeItem(line As UIListLine)
-    Dim Confirmed As Boolean
+    Dim confirmed As Boolean
+    '--------------------------------------------------------------------------------------------------
+    Dim key As String
+    Dim index As Long
+    Dim item As Variant
     '--------------------------------------------------------------------------------------------------
     
-    Stop
+    With line
+        key = .getKey
+        index = .getIndex
+        Set item = .getItem
+    End With
     
-    RaiseEvent AfterRemoveItemClick(line.getItem, Confirmed)
-    If Confirmed Then
-        Stop
-'
-'        '[Deselect]
-'        If line.isSelected Then
-'            Call changeSelection(line)
-'            If F.Variables.equals(line, pSelectedLine) Then Set pSelectedLine = Nothing
-'            RaiseEvent AfterChange
-'        End If
-'
-'        Call line.destroy
-'        Stop 'xxx
-'        'Call F.dictionaries.removeItem(pItems, line.getKey)
-'        'Call F.dictionaries.removeItem(pLinesByKey, line.getKey)
-'        Call arrangeLines
+    
+    RaiseEvent AfterRemoveItemClick(item, confirmed)
+    
+    
+    If confirmed Then
+        
+        '[Deselect - in case the row to be removed was currently active.
+        Call F.dictionaries.removeKey(pSelection, key)
+        Call updateLinesSelectionStatus
+        
+        Call F.dictionaries.removeKey(pItems, key)
+        Call F.dictionaries.removeKey(pLinesByKey, key)
+        Call line.destroy
+        Set pLines(index) = Nothing
+        
+        Call arrangeLines
+        
+        RaiseEvent AfterChange
+        
     End If
 End Sub
 
@@ -1392,10 +1457,10 @@ Private Sub pFocusTextbox_KeyDown(ByVal keyCode As MSForms.ReturnInteger, ByVal 
             Call changeActiveRow(getVisibleRowsCounter - 1)
             keyCode = 0
         Case vbKeyHome                  'Home
-            Call changeActiveRow(-pFiltered.count)
+            Call changeActiveRow(-pFiltered.Count)
             keyCode = 0
         Case vbKeyEnd                   'End
-            Call changeActiveRow(pFiltered.count)
+            Call changeActiveRow(pFiltered.Count)
             keyCode = 0
         Case vbKeySpace
             Call changeSelection(pActiveLine)
@@ -1550,11 +1615,11 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     'Call alignVertically(baseCtrl)
 End Sub
 
-Private Function IControl_move(Optional x As Variant, Optional Y As Variant) As IControl
-    Set IControl_move = Move(x, Y)
+Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
+    Set IControl_move = Move(x, y)
 End Function
 
-Private Function IControl_offset(Optional x As Single, Optional Y As Single) As IControl
+Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl
     Stop
     'Set IControl_offset = offset(x, y)
 End Function

@@ -122,7 +122,8 @@ Public Function convertFormatConditionTypeToEnum(value As String) As XlFormatCon
     Select Case VBA.LCase$(value)
         Case "expression", "formula":
                                     convertFormatConditionTypeToEnum = xlExpression
-        Case "cellValue":           convertFormatConditionTypeToEnum = xlCellValue
+        Case "cellvalue":           convertFormatConditionTypeToEnum = xlCellValue
+        Case "iconsets":            convertFormatConditionTypeToEnum = xlIconSets
         Case Else:                  convertFormatConditionTypeToEnum = xlExpression
     End Select
 End Function

@@ -135,7 +135,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -182,7 +182,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -223,7 +223,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -293,7 +293,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -352,7 +352,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), _
                                                                         KeyValue("dimension", dimension))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -405,7 +405,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -473,7 +473,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
                                                 KeyValue("allowDifferentIndexing", allowDifferentIndexing))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -505,7 +505,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
                                                 KeyValue("allowDifferentIndexing", allowDifferentIndexing))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -561,7 +561,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -622,7 +622,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("index", index), _
                                                     KeyValue("dimension", dimension), KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -701,7 +701,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
     '----------------------------------------------------------------------------------------------------------
 AssigningExceptionHandler:
@@ -710,7 +710,7 @@ AssigningExceptionHandler:
     errDescription = Exceptions.IllegalDataType.getDescription
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr), KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Sub
 
@@ -785,7 +785,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
             KeyValue("ignoreIndexingBase", ignoreIndexingBase), KeyValue("strictDataType", strictDataType))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -817,7 +817,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
                                                                 KeyValue("strictDataType", strictDataType))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -856,7 +856,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2), _
                                                                 KeyValue("strictDataType", strictDataType))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -881,7 +881,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr1", arr1), KeyValue("arr2", arr2))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -966,7 +966,7 @@ ErrHandler:
             KeyValue("rowSeparator", rowSeparator), KeyValue("rowStartTag", rowStartTag), _
             KeyValue("rowEndTag", rowEndTag), KeyValue("skipHeader", skipHeader))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -1012,7 +1012,7 @@ ErrHandler:
             KeyValue("itemStartTag", itemStartTag), KeyValue("itemEndTag", itemEndTag), _
             KeyValue("skipHeader", skipHeader))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -1062,7 +1062,7 @@ ErrHandler:
             KeyValue("rowSeparator", rowSeparator), KeyValue("rowStartTag", rowStartTag), _
             KeyValue("rowEndTag", rowEndTag), KeyValue("skipHeader", skipHeader))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -1096,7 +1096,7 @@ ErrHandler:
             KeyValue("stringifyMode", stringifyMode), KeyValue("itemsDelimiter", itemsDelimiter), _
             KeyValue("itemStartTag", itemStartTag), KeyValue("itemEndTag", itemEndTag))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -1143,7 +1143,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("arr", arr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -1208,7 +1208,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -1247,7 +1247,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("sourceArr", sourceArr))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
 End Function
 
@@ -1287,7 +1287,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
 End Function
 
@@ -1327,7 +1327,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
 End Function
 
@@ -1354,7 +1354,7 @@ ErrHandler:
     Set err = VBA.err: errNumber = err.number: errDescription = err.description
     Set params = f.dictionaries.createWithItems(False, KeyValue("value", value))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
 End Function
 
@@ -1424,7 +1424,7 @@ ErrHandler:
                 KeyValue("strictDataType", strictDataType), KeyValue("isCaseSensitive", isCaseSensitive), _
                 KeyValue("trimIfValueIsString", trimIfValueIsString))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
 End Function
 
@@ -1489,7 +1489,7 @@ ErrHandler:
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -1521,7 +1521,7 @@ ErrHandler:
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
 End Function
 
@@ -1559,7 +1559,7 @@ ErrHandler:
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     
 End Function
 
@@ -1621,7 +1621,7 @@ ErrHandler:
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -1653,7 +1653,7 @@ ErrHandler:
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -1691,7 +1691,7 @@ ErrHandler:
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -1728,7 +1728,7 @@ ErrHandler:
                 KeyValue("skipUndefinedItems", skipUndefinedItems), _
                 KeyValue("skipEmptyStrings", skipEmptyStrings), KeyValue("skipZeros", skipZeros))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -1791,7 +1791,7 @@ ErrHandler:
                 KeyValue("startIndex", startIndex), KeyValue("endIndex", endIndex), _
                 KeyValue("absoluteIndex", absoluteIndex))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -1845,7 +1845,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
                 KeyValue("startIndex", startIndex), KeyValue("endIndex", endIndex))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -1890,7 +1890,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
                 KeyValue("startIndex", startIndex), KeyValue("endIndex", endIndex))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -2008,7 +2008,7 @@ ErrHandler:
                 KeyValue("startColumnIndex", startColumnIndex), _
                 KeyValue("endColumnIndex", endColumnIndex), KeyValue("absoluteIndex", absoluteIndex))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -2091,7 +2091,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
                         KeyValue("rowIndex", RowIndex), KeyValue("absoluteIndex", absoluteIndex))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -2177,7 +2177,7 @@ ErrHandler:
     Set params = f.dictionaries.createWithItems(False, KeyValue("sourceArray", sourceArray), _
                         KeyValue("columnIndex", columnIndex), KeyValue("absoluteIndex", absoluteIndex))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
         
 End Function
 
@@ -2285,7 +2285,7 @@ ErrHandler:
                         KeyValue("isCaseSensitive", isCaseSensitive), _
                         KeyValue("trimWhenComparingStrings", trimWhenComparingStrings))
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, params)
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
 
 End Function
 
@@ -3349,4 +3349,51 @@ Private Sub copyContentIntoStaticArray(ByRef sourceArray As Variant, ByRef desti
         Call populateArrayWithValuesFromOtherArray(sourceArray, destinationArray)
     End If
 End Sub
+
+
+Public Function changeIndexation_1D(arr As Variant, index As Long) As Variant
+    Dim result As Variant
+    Dim offset As Long
+    Dim i As Long
+    '------------------------------------------------------------------------------------------------------
+    
+    If Not f.arrays.isDefined(arr) Then
+        Call Exceptions.UndefinedArrayNotAllowed.raise
+    ElseIf f.arrays.countDimensions(arr) <> 1 Then
+        Call Exceptions.InvalidDimension.raise
+    Else
+        offset = index - LBound(arr)
+        
+        ReDim result(LBound(arr) + offset To UBound(arr) + offset)
+        For i = LBound(arr) To UBound(arr)
+            result(i + offset) = arr(i)
+        Next i
+    End If
+    
+    changeIndexation_1D = result
+    
+End Function
+
+
+
+
+
+Public Function removeUndefined(arr As Variant, Optional includeEmptyString As Boolean = False, _
+                                    Optional includeZero As Boolean = False, _
+                                    Optional includeUndefinedArray As Boolean = True) As Variant
+    Dim col As VBA.Collection
+    '------------------------------------------------------------------------------------------------------
+
+    If Not f.arrays.isDefined(arr) Then
+        Call Exceptions.UndefinedArrayNotAllowed.raise
+    ElseIf f.arrays.countDimensions(arr) <> 1 Then
+        Call Exceptions.InvalidDimension.raise
+    Else
+        Set col = f.Collections.removeUndefined(toCollection(arr), _
+                                                    includeEmptyString, includeZero, includeUndefinedArray)
+        removeUndefined = f.Collections.toArray(col)
+    End If
+                                    
+End Function
+
 

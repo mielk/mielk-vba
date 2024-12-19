@@ -88,6 +88,8 @@ Private Const PROP_ROW_AUTO_FIT As String = "rowAutoFit"
 Private Const PROP_COLUMN_AUTO_FIT As String = "columnAutoFit"
 Private Const PROP_NUMBER_FORMAT As String = "numberFormat"
 
+'[Other]
+Private Const PROP_LOCKED As String = "locked"
 '----------------------------------------------------------------------------------------------------------
 Private pDefaultPropsArray() As Variant
 Private pEmptyPropsArray() As Variant
@@ -197,6 +199,9 @@ Private Sub initializeProps()
     Call addProp(53, PROP_ROW_AUTO_FIT, False, "rowAutoFit", "row-auto-fit", "row_auto_fit", "row.auto.fit")
     Call addProp(54, PROP_NUMBER_FORMAT, False, "numberFormat", "number-format", "number_format", "number.format")
     
+    '[Other]
+    Call addProp(55, PROP_LOCKED, False, "locked")
+    
 End Sub
 
 Private Function addProp(id As Long, propName As String, isInheritable As Boolean, ParamArray Aliases() As Variant) As UIProp
@@ -283,7 +288,7 @@ Public Function BackgroundColor() As UIProp: Set BackgroundColor = f.dictionarie
 Public Function fontSize() As UIProp: Set fontSize = f.dictionaries.getObject(pPropsByAliases, PROP_FONT_SIZE): End Function
 Public Function fontColor() As UIProp: Set fontColor = f.dictionaries.getObject(pPropsByAliases, PROP_FONT_COLOR): End Function
 Public Function FontFamily() As UIProp: Set FontFamily = f.dictionaries.getObject(pPropsByAliases, PROP_FONT_FAMILY): End Function
-Public Function FontBold() As UIProp: Set FontBold = f.dictionaries.getObject(pPropsByAliases, PROP_FONT_BOLD): End Function
+Public Function fontBold() As UIProp: Set fontBold = f.dictionaries.getObject(pPropsByAliases, PROP_FONT_BOLD): End Function
 Public Function FontItalic() As UIProp: Set FontItalic = f.dictionaries.getObject(pPropsByAliases, PROP_FONT_ITALIC): End Function
 '[Border]
 Public Function Borders() As UIProp: Set Borders = f.dictionaries.getObject(pPropsByAliases, PROP_BORDERS): End Function
@@ -316,3 +321,4 @@ Public Function AutoFit() As UIProp: Set AutoFit = f.dictionaries.getObject(pPro
 Public Function ColumnAutoFit() As UIProp: Set ColumnAutoFit = f.dictionaries.getObject(pPropsByAliases, PROP_COLUMN_AUTO_FIT): End Function
 Public Function RowAutoFit() As UIProp: Set RowAutoFit = f.dictionaries.getObject(pPropsByAliases, PROP_ROW_AUTO_FIT): End Function
 Public Function NumberFormat() As UIProp: Set NumberFormat = f.dictionaries.getObject(pPropsByAliases, PROP_NUMBER_FORMAT): End Function
+Public Function Locked() As UIProp: Set Locked = f.dictionaries.getObject(pPropsByAliases, PROP_LOCKED): End Function

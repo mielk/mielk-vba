@@ -40,6 +40,11 @@ Public Const VBA_PARAM_ARRAY As String = "ParamArray"
 Public Const VBA_LINE_BREAK As String = " _"
 Public Const VBA_ARRAY_BRACKETS As String = "()"
 Public Const VBA_OPTION_EXPLICIT As String = "Option Explicit"
+'[Common regex patterns]
+Public Const DBO_TABLE_REGEX_PATTERN As String = "^\[dbo\]\.\[(\w+)\]$"
+Public Const DBO_TABLE_BUILD_PATTERN As String = "[dbo].[{0}]"
+'[Repository builder]
+Public Const STRING_PROPERTY_SUFFIX As String = "Str"
 '----------------------------------------------------------------------------------------------------------
 Public Const MODULE_LEVEL_SEPARATOR_LENGTH As Long = 106
 Public Const MODULE_LEVEL_SEPARATOR_INDENT As Long = 0
@@ -61,7 +66,7 @@ Public Function filterComponentByName(componentName As String) As Boolean
         End With
     End If
     
-    If dict.Count Then
+    If dict.count Then
         filterComponentByName = dict.Exists(componentName)
     Else
         filterComponentByName = True

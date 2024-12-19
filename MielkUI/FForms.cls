@@ -98,14 +98,14 @@ Public Sub clearMsFrame(frm As MSForms.frame)
     '------------------------------------------------------------------------------------------------------
     
     If UI.controls.isValid(frm) Then
-        controlsCounter = frm.controls.count
+        controlsCounter = frm.controls.Count
         Do While controlsCounter
             Set ctrl = frm.controls.item(0)
             Call frm.controls.remove(ctrl.name)
-            If frm.controls.count = controlsCounter Then
+            If frm.controls.Count = controlsCounter Then
                 Call VBA.Err.Raise(1, description:="Error when trying to remove control " & ctrl.name)
             Else
-                controlsCounter = frm.controls.count
+                controlsCounter = frm.controls.Count
             End If
         Loop
     End If
@@ -133,7 +133,7 @@ End Sub
 
 
 
-Public Sub offsetControls(x As Single, Y As Single, ParamArray controls() As Variant)
+Public Sub offsetControls(x As Single, y As Single, ParamArray controls() As Variant)
     Dim ctrl As Variant
     Dim customControl As IControl
     Dim msFormsControl As MSForms.control
@@ -146,13 +146,13 @@ Public Sub offsetControls(x As Single, Y As Single, ParamArray controls() As Var
             ' skip
         ElseIf TypeOf ctrl Is IControl Then             '[IControl]
             Set customControl = ctrl
-            Call customControl.offset(x, Y)
+            Call customControl.offset(x, y)
         ElseIf TypeOf ctrl Is MSForms.control Then      '[MSForms.Control]
             Set msFormsControl = ctrl
             If UI.controls.isValid(msFormsControl) Then
                 With msFormsControl
                     .left = F.Numerics.roundTo(.left + x, PIXEL_SIZE)
-                    .top = F.Numerics.roundTo(.top + Y, PIXEL_SIZE)
+                    .top = F.Numerics.roundTo(.top + y, PIXEL_SIZE)
                 End With
             End If
         End If
@@ -164,21 +164,21 @@ End Sub
 Public Function calculateRightBottomPoint(container As Object, Optional onlyVisible As Boolean = True) As Coordinate
     Dim ctrl As MSForms.control
     Dim x As Single
-    Dim Y As Single
+    Dim y As Single
     '------------------------------------------------------------------------------------------------------
     
     For Each ctrl In container.controls
         If ctrl.parent Is container Then
             If onlyVisible = False Or ctrl.visible = True Then
                 x = UI.controls.getRight(ctrl)
-                Y = UI.controls.getBottom(ctrl)
+                y = UI.controls.getBottom(ctrl)
                 
                 If x > calculateRightBottomPoint.x Then
                     calculateRightBottomPoint.x = x
                 End If
                 
-                If Y > calculateRightBottomPoint.Y Then
-                    calculateRightBottomPoint.Y = Y
+                If y > calculateRightBottomPoint.y Then
+                    calculateRightBottomPoint.y = y
                 End If
                 
             End If

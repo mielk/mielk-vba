@@ -25,7 +25,8 @@ Private Const CLASS_NAME As String = "FTextfiles"
 '------------------------------------------------------------------------------------------------------
 Private Const CP_UTF8 As Long = 65001
 '------------------------------------------------------------------------------------------------------
-Private Const SEPARATOR_TEMP_REPLACEMENT As String = "™"
+Private Const DEFAULT_DELIMITER As String = ","
+Private Const SEPARATOR_TEMP_REPLACEMENT As String = "†‡"
 Private Const TRIM_FILE_REGEX As String = "^[\s\n]*|[\s\n]*$"
 Private Const OPEN_CLOSE_QUOTE_REGEX As String = "(^""|""$)"
 Private Const FIND_INNER_FIELDS_QUOTES_REGEX As String = """([^,""]*)"""
@@ -223,7 +224,7 @@ Private Function readTextFile2(filepath As String) As String
 End Function
 
 Public Function getCsvContentAsArray(filepath As String, _
-                                     Optional delimiter As String = ",", _
+                                     Optional ByVal delimiter As String = DEFAULT_DELIMITER, _
                                      Optional customAdjustments As Scripting.Dictionary, _
                                      Optional useUnicodeReadingMethod As Boolean = True) As Variant
     Dim content As String
@@ -244,6 +245,7 @@ Public Function getCsvContentAsArray(filepath As String, _
     Dim key As Variant
     Dim adjustment As String
     '----------------------------------------------------------------------------------------------------------------------
+
     
     If useUnicodeReadingMethod Then
         content = f.strings.cutFromEnd(readTextFile(filepath), VBA.vbCrLf)
@@ -258,6 +260,7 @@ Public Function getCsvContentAsArray(filepath As String, _
         Next key
     End If
     
+    delimiter = adjustDelimiter(delimiter, content)
     findRegex = f.strings.format(FIND_SEPARATOR_REGEX_PATTERN, SEPARATOR_TEMP_REPLACEMENT)
     replacementRegex = f.strings.format(REPLACE_SEPARATOR_REGEX_PATTERN, delimiter)
     innerQuotesRegex = f.strings.format(FIND_INNER_FIELDS_QUOTES_REGEX, delimiter)
@@ -279,8 +282,7 @@ Public Function getCsvContentAsArray(filepath As String, _
     content = f.regex.replace(content, delimiter, SEPARATOR_TEMP_REPLACEMENT)
     content = f.regex.replace(content, findRegex, replacementRegex)
     
-    
-    
+    Debug.Print content
     
     If VBA.Len(content) Then
         lines = VBA.Split(content, VBA.vbLf)
@@ -307,6 +309,31 @@ Public Function getCsvContentAsArray(filepath As String, _
     Next i
     
     getCsvContentAsArray = arr
+    
+End Function
+
+Private Function adjustDelimiter(delimiter As String, content As String) As String
+    Dim i As Long
+    Dim arr As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    If VBA.Len(delimiter) = 0 Then
+        adjustDelimiter = DEFAULT_DELIMITER
+    ElseIf VBA.Len(delimiter) = 1 Then
+        adjustDelimiter = delimiter
+    ElseIf VBA.Left(delimiter, 1) <> "?" Then
+        adjustDelimiter = delimiter
+    Else
+        
+        ReDim arr(1 To 2, 2 To VBA.Len(delimiter))
+        For i = 2 To VBA.Len(delimiter)
+            arr(1, i) = VBA.mid$(delimiter, i, 1)
+            arr(2, i) = f.strings.countOccurrences(content, VBA.CStr(arr(1, i)), False)
+        Next i
+        arr = f.arrays.sort(arr, False, 2)
+        adjustDelimiter = arr(LBound(arr, 1), LBound(arr, 2))
+
+    End If
     
 End Function
 

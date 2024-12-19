@@ -34,14 +34,14 @@ Public Sub addItem(submenuCaption As String, itemCaption As String, _
     
     With subMenu
         .caption = submenuCaption
-        .Tag = CUSTOM_MENU_ITEM_TAG
+        .tag = CUSTOM_MENU_ITEM_TAG
     End With
     
     With barItem
         .caption = itemCaption
         .faceId = faceId
         .OnAction = F.Reflection.getFunctionFullName(OnAction, Excel.ThisWorkbook)
-        .Tag = CUSTOM_MENU_ITEM_TAG
+        .tag = CUSTOM_MENU_ITEM_TAG
     End With
     
     Set item.pControl = Application.VBE.Events.CommandBarEvents(barItem)
@@ -55,7 +55,7 @@ Public Sub removeCustomMenuItems()
     Dim control As Office.CommandBarControl
     '------------------------------------------------------------------------------------------------------
     
-    Set Controls = Excel.Application.VBE.CommandBars.FindControls(Tag:=CUSTOM_MENU_ITEM_TAG)
+    Set Controls = Excel.Application.VBE.CommandBars.FindControls(tag:=CUSTOM_MENU_ITEM_TAG)
     
     If Not Controls Is Nothing Then
         For Each control In Controls

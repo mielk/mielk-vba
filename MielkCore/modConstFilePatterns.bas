@@ -9,6 +9,8 @@ Public Const EXTENSION_EXCEL_ADDIN As String = ".xlam"
 Public Const EXTENSION_EXCEL_MACRO_FILE As String = ".xlsm"
 Public Const EXTENSION_JSON As String = ".json"
 Public Const EXTENSION_ZIP As String = ".zip"
+'[Extensions regex] ---------------------------------------------------------------------------------------
+Public Const EXTENSION_REGEX_EXCEL_FILE As String = "^xl[sa][mbx]?$"
 '[File patterns] ------------------------------------------------------------------------------------------
 Public Const FILES_PATTERN_ACCESS As String = "Access files, *.mdb; *.mde; *.accdb; *.accde"
 Public Const FILES_PATTERN_CSV As String = "CSV files, *.csv"

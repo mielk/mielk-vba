@@ -28,8 +28,8 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub setInitialValues()
-    pName = "Effective Yields"
-    pCodeName = "ey"
+    pName = "Yahoo Data Scrapper"
+    pCodeName = "yds"
     pParentFolder = "D:\vba-tests\apps\"
     pLibFolderPath = "D:\Dropbox\tm\mielk\mielk-vba\code\"
     pIsAddIn = False

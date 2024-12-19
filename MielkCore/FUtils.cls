@@ -16,6 +16,7 @@ Private Const BACKUP_FOLDER_PATH As String = "E:\dane\VBA\backups"
 
 Public Sub printFilePaths()
     Dim addIn As Excel.addIn
+    Dim wkb As Excel.Workbook
     '------------------------------------------------------------------------------------------------------
     
     For Each addIn In Application.AddIns2
@@ -23,6 +24,10 @@ Public Sub printFilePaths()
             Debug.Print addIn.fullName
         End If
     Next addIn
+    
+    For Each wkb In Application.Workbooks
+        Debug.Print wkb.fullName
+    Next wkb
     
 End Sub
 
@@ -72,7 +77,7 @@ Public Sub saveAllAddIns( _
 End Sub
 
 Private Function isAddInSkippedFromSaving(ByVal addinName As String, ByVal skipRepoFiles As Boolean) As Boolean
-    Const REGEX_REPO_FILE As String = "mielk-.*\.xlam$"
+    Const REGEX_REPO_FILE As String = "(?:mielk|toolbox)-.*\.xlam$"
     '------------------------------------------------------------------------------------------------------
     If VBA.InStr(1, addinName, "solver", vbTextCompare) Then
         isAddInSkippedFromSaving = True
@@ -151,3 +156,55 @@ Public Function convertToAddIn(originalFilePath As String, _
     End With
     
 End Function
+
+
+Public Sub versionUpdate(version As String, Optional description As String)
+    Dim addIn As Excel.addIn
+    Dim wkb As Excel.Workbook
+    '------------------------------------------------------------------------------------------------------
+    
+    'Save all add-ins
+    For Each addIn In Application.AddIns2
+        If Not isAddInSkippedFromSaving(addIn.name, True) Then
+            If addIn.isOpen Then
+                On Error Resume Next
+                Set wkb = Application.Workbooks(addIn.name)
+                On Error GoTo 0
+                
+                If wkb.name = addIn.name Then
+                    Call setFileVersion(wkb, version, description)
+                    Debug.Print wkb.fullName & " - version number changed to " & version
+                End If
+            End If
+        End If
+    Next addIn
+    
+    Debug.Print "Versioning completed [" & VBA.format(VBA.Now, "YYYY-MM-DD HH:MM:SS") & "]"
+    
+End Sub
+
+Public Sub displayFileVersions()
+    Dim addIn As Excel.addIn
+    Dim wkb As Excel.Workbook
+    Dim version As String
+    Dim message As String
+    '------------------------------------------------------------------------------------------------------
+    
+    'Save all add-ins
+    For Each addIn In Application.AddIns2
+        If Not isAddInSkippedFromSaving(addIn.name, True) Then
+            If addIn.isOpen Then
+                On Error Resume Next
+                Set wkb = Application.Workbooks(addIn.name)
+                On Error GoTo 0
+                
+                If wkb.name = addIn.name Then
+                    version = f.Variables.coalesce(getFileVersion(wkb), "???")
+                    message = VBA.String(2, " ") & version & VBA.String(10 - VBA.Len(version), " ") & wkb.fullName
+                    Debug.Print message
+                End If
+            End If
+        End If
+    Next addIn
+    
+End Sub

@@ -35,6 +35,8 @@ Public Const INVALID_BORDER_COLOR As Long = 3487637
 Public Const INVALID_FONT_COLOR As Long = 3487637
 '[Checkboxes] ---------------------------------------------------------------------------------------------
 Public Const CHECKBOX_WIDTH As Single = 10.5
+'[Other controls] -----------------------------------------------------------------------------------------
+Public Const CALENDAR_ICON_SIZE As Single = 32
 '[Create control commands] --------------------------------------------------------------------------------
 Public Const CREATE_BUTTON_ID As String = "Forms.CommandButton.1"
 Public Const CREATE_CHECKBOX_ID As String = "Forms.CheckBox.1"

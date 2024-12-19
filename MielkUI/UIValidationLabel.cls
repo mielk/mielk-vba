@@ -138,8 +138,10 @@ End Function
 
 Public Function setTop(value As Single) As UIValidationLabel
     Set setTop = Me
-    pTop = value
-    Call updatePosition
+    If value <> pTop Then
+        pTop = value
+        Call updatePosition
+    End If
 End Function
 
 Public Function setHeight(value As Single) As UIValidationLabel
@@ -351,3 +353,8 @@ Public Sub delete()
     End With
 End Sub
 
+Public Sub applyHeightAutoFit()
+    pCaptionLabel.AutoSize = True
+    pBackgroundLabel.height = pCaptionLabel.height + 3 * DEFAULT_PADDING
+    pCaptionLabel.top = pBackgroundLabel.top + 1.5 * DEFAULT_PADDING
+End Sub

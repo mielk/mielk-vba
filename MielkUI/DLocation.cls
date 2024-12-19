@@ -120,9 +120,9 @@ Private Function adjustToPreventOverflow(ByVal left As Single, ByVal top As Sing
         
         '[Adjust screen working area to DPI]
         .width = .width / dpiScaling.x
-        .height = .height / dpiScaling.Y
+        .height = .height / dpiScaling.y
         .left = .left / dpiScaling.x
-        .top = .top / dpiScaling.Y
+        .top = .top / dpiScaling.y
         
         '[Left]
         If left < .left Then
@@ -142,7 +142,7 @@ Private Function adjustToPreventOverflow(ByVal left As Single, ByVal top As Sing
     
     With adjustToPreventOverflow
         .x = left
-        .Y = top
+        .y = top
     End With
     
 End Function

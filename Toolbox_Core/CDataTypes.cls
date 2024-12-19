@@ -29,6 +29,10 @@ End Sub
 
 Private Sub insertEnumOptions()
     Call addEnumOption("Ribbon", "ribbon")
+    '[Channels]
+    Call addEnumOption("Channels", "[dbo].[Channels]", "[dbo].[Channels]")
+    Call addEnumOption("AliasesChannels", "[dbo].[AliasesChannels]", "[dbo].[AliasesChannels]")
+
 End Sub
 
 Private Sub addEnumOption(ByVal name As String, ByVal readDbTable As String, Optional ByVal writeDbTable As String)
@@ -56,3 +60,7 @@ End Function
 
 '[INTELLISENSE]
 Public Function Ribbon() As enumDataType: Set Ribbon = ByName("Ribbon"): End Function
+
+'[Channels]
+Public Function Channels() As enumDataType: Set Channels = ByName("Channels"): End Function
+Public Function AliasesChannels() As enumDataType: Set AliasesChannels = ByName("AliasesChannels"): End Function

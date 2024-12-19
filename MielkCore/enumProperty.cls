@@ -45,6 +45,10 @@ Attribute getDbField.VB_UserMemId = 0
     getDbField = pDbField
 End Function
 
+Public Function getLowerCaseDbField() As String
+    getLowerCaseDbField = VBA.LCase$(pDbField)
+End Function
+
 Public Function getTag() As String
     getTag = "[" & pName & "]"
 End Function

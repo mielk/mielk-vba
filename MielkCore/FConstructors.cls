@@ -20,9 +20,9 @@ Public Function prop(name As String, Optional dbField As String) As enumProperty
     End With
 End Function
 
-Public Function DataType(name As String, Optional readDbTable As String, Optional writeDbTable As String) As enumDataType
-    Set DataType = New enumDataType
-    With DataType
+Public Function dataType(name As String, Optional readDbTable As String, Optional writeDbTable As String) As enumDataType
+    Set dataType = New enumDataType
+    With dataType
         Call .setName(name)
         Call .setReadDbTable(readDbTable)
         If VBA.Len(writeDbTable) Then Call .setWriteDbTable(writeDbTable) Else Call .setWriteDbTable(readDbTable)

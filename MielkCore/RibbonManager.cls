@@ -186,13 +186,13 @@ Private Sub loadInvalidationGroups()
     Dim key As Variant
     '------------------------------------------------------------------------------------------------------
     
-    Set pInvalidationGroups = f.Objects.coalesce( _
+    Set pInvalidationGroups = f.objects.coalesce( _
                                     f.dictionaries.getObject(pSettings, INVALIDATION_CONTROLS_TAG), _
                                     f.dictionaries.Create(False))
     
     'Update [general] group.
     Set generalControls = f.dictionaries.getObject(pInvalidationGroups, GENERAL_INVALIDATION_GROUP)
-    Set generalDict = f.Objects.coalesce( _
+    Set generalDict = f.objects.coalesce( _
                             f.dictionaries.createFrom(generalControls), f.dictionaries.Create(False))
     For Each key In pControlsProps.Keys
         Call f.dictionaries.addItem(generalDict, key, key)

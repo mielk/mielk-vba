@@ -482,12 +482,12 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     'N/A
 End Sub
 
-Private Function IControl_move(Optional x As Variant, Optional Y As Variant) As IControl
-    Set IControl_move = Move(x, Y)
+Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
+    Set IControl_move = Move(x, y)
 End Function
 
-Private Function IControl_offset(Optional x As Single, Optional Y As Single) As IControl
-    Set IControl_offset = offset(x, Y)
+Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl
+    Set IControl_offset = offset(x, y)
 End Function
 
 Private Sub IControl_triggerEvent(eventId As Long)

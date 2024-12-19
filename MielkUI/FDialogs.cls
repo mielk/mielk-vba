@@ -61,3 +61,47 @@ Public Function selectWindow(items As Scripting.Dictionary, Optional captions As
     Set selectWindow = UI.Create.SelectItemWindow(items)
     Call selectWindow.setCaptions(captions)
 End Function
+
+
+
+Public Function selectDateFromCalendar(Optional defaultDate As Variant, _
+                                       Optional windowTitle As String = "Select date", _
+                                       Optional invokingWindow As WTemplate) As Variant
+    Dim datePicker As WDatePicker
+    Dim d As Date
+    Dim location As DLocation
+    '------------------------------------------------------------------------------------------------------
+    
+    If Not F.Variables.isUndefined(defaultDate, True, True) Then
+        d = VBA.CDate(defaultDate)
+    Else
+        d = VBA.Date
+    End If
+    
+    Set datePicker = UI.Create.datePicker(d, MsgService.getText(windowTitle))
+    With datePicker
+        If Not invokingWindow Is Nothing Then
+            Call invokingWindow.sendToBackground
+            Set location = UI.Create.LocationPropsForCurrentCursor
+        Else
+            Set location = UI.Create.LocationPropsForScreenCenter
+        End If
+        
+        Call .display(vbModal, location)
+        
+        If Not invokingWindow Is Nothing Then
+            Call invokingWindow.restoreFromBackground
+        End If
+        
+        If Not .isCancelledByUser Then
+            selectDateFromCalendar = VBA.format(.getDate, "YYYY-MM-DD")
+        ElseIf defaultDate Then
+            selectDateFromCalendar = VBA.format(defaultDate, "YYYY-MM-DD")
+        Else
+            selectDateFromCalendar = Empty
+        End If
+        
+    End With
+    
+End Function
+

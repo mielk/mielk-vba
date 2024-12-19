@@ -36,7 +36,7 @@ Private Const BACK_END_PASSWORD As String = vbNullString
 Private Const TOOL_FOLDER_PLACEHOLDER As String = "{tool}"
 Private Const RESOURCES_FOLDER_PLACEHOLDER As String = "{resources}"
 '[Project-specific paths] ---------------------------------------------------------------------------------
-Private Const PROJECT_TEMPLATE_FOLDER As String = "D:\Dropbox\tm\mielk\mielk-vba\ProjectTemplate"
+Private Const PROJECT_TEMPLATE_FOLDER As String = "D:\Dropbox\tm\mielk\mielk-vba\Toolbox\ProjectTemplate"
 '----------------------------------------------------------------------------------------------------------
 
 

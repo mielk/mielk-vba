@@ -308,6 +308,7 @@ Public Sub display(Optional ByVal message As String)
             Set errObj = pErrors.item(i)
             If errObj Is Nothing Then
             ElseIf errObj.getErrorDescription = INTERFACE_REGULAR_ERROR Then
+                message = errObj.getErrorDescription
             Else
                 message = errObj.getErrorDescription
                 Exit For
@@ -328,7 +329,7 @@ ExitPoint:
 ErrHandler:
     Dim errMessage As String
     '------------------------------------------------------------------------------------------------------
-    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.Source
+    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.source
     errMessage = getDisplayErrorMessage & VBA.vbCrLf & VBA.vbCrLf & _
                 "----------- [Stack] -------------------------------------" & VBA.vbCrLf & _
                 " * ErrorManager.display" & VBA.vbCrLf & errDescription
@@ -350,9 +351,15 @@ Public Sub logToTextFile(Optional errorsFilePath As String)
     
     If VBA.Len(errorsFilePath) Then
         filepath = errorsFilePath
-    ElseIf fso.folderExists(pLogFolder) Then
-        fileName = VBA.format(VBA.Date, "YYYY-MM-DD") & ".txt"
-        filepath = f.files.concatenatePath(pLogFolder, fileName)
+    Else
+        If Not fso.folderExists(pLogFolder) Then
+            Call f.files.createFolder(pLogFolder)
+        End If
+        
+        If fso.folderExists(pLogFolder) Then
+            fileName = VBA.format(VBA.Date, "YYYY-MM-DD") & ".txt"
+            filepath = f.files.concatenatePath(pLogFolder, fileName)
+        End If
     End If
     
     If VBA.Len(filepath) Then
@@ -370,7 +377,7 @@ ExitPoint:
 ErrHandler:
     Dim errNumber As Long, errDescription As String, errSource As String, errMessage As String
     '------------------------------------------------------------------------------------------------------
-    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.Source
+    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.source
     errMessage = getLogToTextfileErrorMessage & VBA.vbCrLf & VBA.vbCrLf & _
                 "----------- [Stack] -------------------------------------" & VBA.vbCrLf & _
                 " * ErrorManager.logToTextFile" & VBA.vbCrLf & _
@@ -413,7 +420,7 @@ ErrHandler:
     Dim errNumber As Long, errDescription As String, errSource As String
     Dim errMessage As String, isSourceError As Boolean
     '------------------------------------------------------------------------------------------------------
-    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.Source
+    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.source
     isSourceError = Not VBA.Left(errDescription, 3) = " * "
     errMessage = " * " & CLASS_NAME & "." & METHOD_NAME & VBA.IIf(isSourceError, _
                             VBA.vbCrLf & " * " & errSource & ": " & errDescription & " (" & errNumber & ")", _
@@ -502,7 +509,7 @@ ErrHandler:
     Dim errNumber As Long, errDescription As String, errSource As String
     Dim errMessage As String, isSourceError As Boolean
     '------------------------------------------------------------------------------------------------------
-    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.Source
+    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.source
     isSourceError = Not VBA.Left(errDescription, 3) = " * "
     errMessage = " * " & CLASS_NAME & "." & METHOD_NAME & VBA.IIf(isSourceError, _
                             VBA.vbCrLf & " * " & errSource & ": " & errDescription & " (" & errNumber & ")", _
@@ -528,7 +535,7 @@ Private Function createGeneralPropertiesDictionary() As Scripting.Dictionary
         Call .Add(FIELD_DATE_FORMAT, f.System.getDateFormat)
         Call .Add(FIELD_VBA_ERROR_BREAK_MODE, f.System.getErrorHandlingSetting)
         Call .Add(FIELD_PARENT_APP, Application.name)
-        Call .Add(FIELD_PARENT_APP_VERSION, Application.Version)
+        Call .Add(FIELD_PARENT_APP_VERSION, Application.version)
         Call .Add(FIELD_WINDOWS_BITS, f.System.getSystemBits)
     End With
     
@@ -541,7 +548,7 @@ ErrHandler:
     Dim errNumber As Long, errDescription As String, errSource As String
     Dim errMessage As String, isSourceError As Boolean
     '------------------------------------------------------------------------------------------------------
-    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.Source
+    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.source
     isSourceError = Not VBA.Left(errDescription, 3) = " * "
     errMessage = " * " & CLASS_NAME & "." & METHOD_NAME & VBA.IIf(isSourceError, _
                             VBA.vbCrLf & " * " & errSource & ": " & errDescription & " (" & errNumber & ")", _
@@ -573,7 +580,7 @@ ErrHandler:
     Dim errNumber As Long, errDescription As String, errSource As String
     Dim errMessage As String, isSourceError As Boolean
     '------------------------------------------------------------------------------------------------------
-    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.Source
+    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.source
     isSourceError = Not VBA.Left(errDescription, 3) = " * "
     errMessage = " * " & CLASS_NAME & "." & METHOD_NAME & VBA.IIf(isSourceError, _
                             VBA.vbCrLf & " * " & errSource & ": " & errDescription & " (" & errNumber & ")", _
@@ -606,7 +613,7 @@ ErrHandler:
     Dim errNumber As Long, errDescription As String, errSource As String
     Dim errMessage As String, isSourceError As Boolean
     '------------------------------------------------------------------------------------------------------
-    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.Source
+    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.source
     isSourceError = Not VBA.Left(errDescription, 3) = " * "
     errMessage = " * " & CLASS_NAME & "." & METHOD_NAME & VBA.IIf(isSourceError, _
                             VBA.vbCrLf & " * " & errSource & ": " & errDescription & " (" & errNumber & ")", _
@@ -642,7 +649,7 @@ ErrHandler:
     Dim errNumber As Long, errDescription As String, errSource As String
     Dim errMessage As String, isSourceError As Boolean
     '------------------------------------------------------------------------------------------------------
-    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.Source
+    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.source
     isSourceError = Not VBA.Left(errDescription, 3) = " * "
     errMessage = " * " & CLASS_NAME & "." & METHOD_NAME & VBA.IIf(isSourceError, _
                             VBA.vbCrLf & " * " & errSource & ": " & errDescription & " (" & errNumber & ")", _
@@ -679,7 +686,7 @@ ErrHandler:
     Dim errNumber As Long, errDescription As String, errSource As String
     Dim errMessage As String
     '------------------------------------------------------------------------------------------------------
-    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.Source
+    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.source
     errMessage = VBA.vbCrLf & VBA.vbCrLf & getToImmediateErrorMessage & VBA.vbCrLf & VBA.vbCrLf & _
                 "----------- [Stack] -------------------------------------" & VBA.vbCrLf & _
                 " * ErrorManager.toImmediate" & VBA.vbCrLf & errDescription

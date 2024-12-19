@@ -114,6 +114,7 @@ End Function
 
 Public Function setProgressAndMessage(progress As Double, caption As String) As WProgressBar
     Set setProgressAndMessage = Me
+    On Error Resume Next
     Call setCaption(caption)
     Call setProgress(progress)
 End Function
@@ -336,7 +337,7 @@ Public Sub openSubProcess(ByVal initialProgress As Double, ByVal finalProgress A
     '------------------------------------------------------------------------------------------------------
     
     If F.Collections.isNonEmptyCollection(pLevels) Then
-        Set currentLevel = pLevels.item(pLevels.count)
+        Set currentLevel = pLevels.item(pLevels.Count)
     Else
         Set currentLevel = F.Create.Limit(0, 1)
     End If
@@ -360,11 +361,11 @@ Public Sub closeCurrentSubProcess(Optional ByRef progress As Single)
     '------------------------------------------------------------------------------------------------------
     
     If F.Collections.isNonEmptyCollection(pLevels) Then
-        Set currentProcess = pLevels.item(pLevels.count)
+        Set currentProcess = pLevels.item(pLevels.Count)
         pProgress = currentProcess.getHigh
         progress = calculateCurrentProcessProgress
         Call updateProgress
-        Call pLevels.remove(pLevels.count)
+        Call pLevels.remove(pLevels.Count)
     End If
 
 End Sub
@@ -373,9 +374,9 @@ Private Function calculateCurrentProcessProgress() As Double
     Dim parentalProcess As Limit
     Dim currentProcess As Limit
     '------------------------------------------------------------------------------------------------------
-    Set currentProcess = pLevels.item(pLevels.count)
-    If pLevels.count > 1 Then
-        Set parentalProcess = pLevels.item(pLevels.count - 1)
+    Set currentProcess = pLevels.item(pLevels.Count)
+    If pLevels.Count > 1 Then
+        Set parentalProcess = pLevels.item(pLevels.Count - 1)
         calculateCurrentProcessProgress = (currentProcess.getHigh - parentalProcess.getLow) / parentalProcess.getRange
     Else
         calculateCurrentProcessProgress = currentProcess.getHigh
@@ -388,9 +389,9 @@ Public Sub moveToSiblingProcess(ByVal offset As Double)
     '------------------------------------------------------------------------------------------------------
     
     If F.Collections.isNonEmptyCollection(pLevels) Then
-        Set currentProcess = pLevels.item(pLevels.count)
-        If pLevels.count > 1 Then
-            Set parentProcess = pLevels.item(pLevels.count - 1)
+        Set currentProcess = pLevels.item(pLevels.Count)
+        If pLevels.Count > 1 Then
+            Set parentProcess = pLevels.item(pLevels.Count - 1)
         Else
             Set parentProcess = F.Create.Limit(0, 1)
         End If
@@ -419,7 +420,7 @@ Private Function calculateRealProgress(ByVal value As Double) As Double
     
     '[Adjust progress value to current sub-process]
     If F.Collections.isNonEmptyCollection(pLevels) Then
-        Set currentProcessBounds = pLevels.item(pLevels.count)
+        Set currentProcessBounds = pLevels.item(pLevels.Count)
     Else
         Set currentProcessBounds = F.Create.Limit(0, 1)
     End If

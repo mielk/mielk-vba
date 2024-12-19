@@ -17,7 +17,7 @@ Private Const CLASS_NAME As String = "FColors"
 #ElseIf VBA7 Then
     Private Declare PtrSafe Function ChooseColorDlg Lib "comdlg32.dll" Alias "ChooseColorA" (pChoosecolor As ChooseColor) As Long
 #Else
-    Private Declare Function ChooseColorDlg Lib "comdlg32.dll" Alias "ChooseColorA" (pChoosecolor As CHOOSECOLOR) As Long
+    Private Declare Function ChooseColorDlg Lib "comdlg32.dll" Alias "ChooseColorA" (pChoosecolor As ChooseColor) As Long
 #End If
 '[Windows API types] --------------------------------------------------------------------------------------
 #If VBA7 Then

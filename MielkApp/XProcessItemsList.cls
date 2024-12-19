@@ -6,7 +6,7 @@ Attribute VB_Name = "XProcessItemsList"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
-Attribute VB_Exposed = True
+Attribute VB_Exposed = False
 Option Explicit
 
 Private Enum ControlTypeEnum
@@ -307,10 +307,10 @@ End Sub
 
 '[RENDERING]
 Private Function getLabelName(controlType As ControlTypeEnum) As String
-    Dim TAG As String
+    Dim tag As String
     '----------------------------------------------------------------------------------------------------------
-    TAG = CLASS_NAME & "|" & pUuid & "|" & controlType
-    getLabelName = "ctrl_" & VBA.left$(F.Crypto.SHA1HASH(TAG), 25)
+    tag = CLASS_NAME & "|" & pUuid & "|" & controlType
+    getLabelName = "ctrl_" & VBA.left$(F.Crypto.SHA1HASH(tag), 25)
 End Function
 
 
@@ -443,7 +443,7 @@ Private Sub addItemLineToContainers(itemLine As xxProcessItemLine)
     Call F.arrays.addEntry(pItemLinesArray, itemLine)
 End Sub
 
-Private Function getItemLineByName(name As String) As xxProcessItemLine
+Public Function getItemLineByName(name As String) As xxProcessItemLine
     Set getItemLineByName = F.dictionaries.GetObject(pItemLinesDictionary, name)
 End Function
 

@@ -56,7 +56,14 @@ Public Sub setRepoEditBook(value As Excel.Workbook)
 End Sub
 
 Public Function getRepoEditBook() As Excel.Workbook
+    If Not F.Books.isValid(pRepoEditBook) Then
+        Set pRepoEditBook = createRepoEditBook
+    End If
     Set getRepoEditBook = pRepoEditBook
+End Function
+
+Private Function createRepoEditBook() As Excel.Workbook
+    Set createRepoEditBook = F.Books.addNew(1, Excel.Application, SHEET_NAME_TEMP)
 End Function
 
 

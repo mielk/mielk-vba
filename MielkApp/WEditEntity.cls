@@ -49,6 +49,8 @@ Private pLabelWidth As Single
 Private pValueWidth As Single
 Private pHasWarningsForUnsavedData As Boolean
 Private pWindowTitle As String
+'[Validation] ---------------------------------------------------------------------------------------------
+Private pValidations As Scripting.Dictionary
 '----------------------------------------------------------------------------------------------------------
 
 
@@ -187,6 +189,7 @@ Private Sub renderCustomPanels()
             With panel
                 Call .setParentFrame(pFrame)
                 Call .setWindow(pForm)
+                Call .setListener(Me)
                 Call .render
             End With
         Next panel
@@ -251,14 +254,28 @@ End Function
 
 
 
+'[VALIDATIONS]
+Public Sub updateValidation(key As Variant, validation As MielkCore.ValidationObject)
+    If pValidations Is Nothing Then
+        Set pValidations = F.dictionaries.Create(False)
+    End If
+    Call F.dictionaries.addItem(pValidations, key, validation)
+    Call pForm.setValidation(getTotalValidation)
+End Sub
 
+Private Function getTotalValidation() As ValidationObject
+    Dim validations As VBA.Collection
+    '------------------------------------------------------------------------------------------------------
+    Set validations = F.dictionaries.toCollection(pValidations, DictPart_ValueOnly)
+    Set getTotalValidation = F.validations.mergeValidationObjects(validations)
+End Function
 
 
 
 '[Events]
 
 Private Sub pPropertiesPanel_AfterValidationChange(validation As MielkCore.ValidationObject)
-    Call pForm.setValidation(validation)
+    Call updateValidation(props.prop.getName, validation)
 End Sub
 
 Private Sub pPropertiesPanel_AfterChange()

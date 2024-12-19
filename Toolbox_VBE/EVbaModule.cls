@@ -208,10 +208,11 @@ End Function
 
 
 Public Function appendErrorHandling(entryPoints As Scripting.Dictionary) As Scripting.Dictionary
-    Const ERR_HANDLING_ALREADY_EXIST As String = "Error handling skipped - already existed"
+    Const ERR_HANDLING_ALREADY_EXIST As String = "Error handling skipped - already existed | "
     Const ERR_HANDLING_INTERFACE_METHOD As String = "Error handling skipped - interface method"
     Const ERR_HANDLING_SIMPLE_METHOD As String = "Error handling skipped - simple method"
-    Const ERR_HANDLING_ANNOTATION As String = "Error handling skipped - annotation"
+    Const ERR_HANDLING_ANNOTATION_NO_HANDLING As String = "Error handling skipped - no error handling annotation"
+    Const ERR_HANDLING_ANNOTATION_CUSTOM_HANDLING As String = "Error handling skipped - custom error handling annotation"
     Const ERR_HANDLING_APPENDED As String = "Error handling appended"
     Const ERR_HANDLING_ONE_LINER As String = "Error handling skipped - one line method"
     '------------------------------------------------------------------------------------------------------
@@ -219,11 +220,12 @@ Public Function appendErrorHandling(entryPoints As Scripting.Dictionary) As Scri
     Dim method As EVbaMethod
     Dim methodFullName As String
     Dim isEntryPoint As Boolean
+    Dim existingErrHandlingStatus As String
     '------------------------------------------------------------------------------------------------------
     Dim methodBodyWithErrHandling As String
     '------------------------------------------------------------------------------------------------------
     
-    On Error GoTo errHandler
+    On Error GoTo ErrHandler
     
     Set appendErrorHandling = F.dictionaries.Create(False)
     
@@ -234,18 +236,19 @@ Public Function appendErrorHandling(entryPoints As Scripting.Dictionary) As Scri
     
     For Each method In methods
         methodFullName = pName & "." & method.getName
-        isEntryPoint = F.dictionaries.hasKey(entryPoints, methodFullName)
-        
-        If method.isOneLiner Then
+        If method.hasNoErrorHandlingAnnotation Then
+            Call F.dictionaries.addItem(appendErrorHandling, method.getName, ERR_HANDLING_ANNOTATION_NO_HANDLING)
+        ElseIf method.hasCustomErrorHandlingAnnotation Then
+            Call F.dictionaries.addItem(appendErrorHandling, method.getName, ERR_HANDLING_ANNOTATION_CUSTOM_HANDLING)
+        ElseIf method.isOneLiner Then
             Call F.dictionaries.addItem(appendErrorHandling, method.getName, ERR_HANDLING_ONE_LINER)
         ElseIf method.hasAnyErrorHandling Then
-            Call F.dictionaries.addItem(appendErrorHandling, method.getName, ERR_HANDLING_ALREADY_EXIST)
+            existingErrHandlingStatus = method.getErrorHandlingStatus
+            Call F.dictionaries.addItem(appendErrorHandling, method.getName, ERR_HANDLING_ALREADY_EXIST & existingErrHandlingStatus)
         ElseIf method.isInterfaceMethod Then
             Call F.dictionaries.addItem(appendErrorHandling, method.getName, ERR_HANDLING_INTERFACE_METHOD)
         ElseIf method.isSimpleMethod Then
             Call F.dictionaries.addItem(appendErrorHandling, method.getName, ERR_HANDLING_SIMPLE_METHOD)
-        ElseIf method.hasNoErrorHandlingAnnotation Then
-            Call F.dictionaries.addItem(appendErrorHandling, method.getName, ERR_HANDLING_ANNOTATION)
         Else
 
             methodBodyWithErrHandling = method.getBodyWithErrorHandlingAppended(isEntryPoint)
@@ -259,7 +262,7 @@ Public Function appendErrorHandling(entryPoints As Scripting.Dictionary) As Scri
 ExitPoint:
     Exit Function
 
-errHandler:
+ErrHandler:
     Stop
     
 End Function

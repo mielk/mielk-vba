@@ -21,6 +21,7 @@ Private pFrom As String
 Private pOrderFields As Scripting.Dictionary
 '----------------------------------------------------------------------------------------------------------
 Private pFunction As String
+Private pScalarFunction As String
 Private pFunctionParams As Variant
 '----------------------------------------------------------------------------------------------------------
 Private pStoredProcedure As String
@@ -81,6 +82,12 @@ End Function
 Public Function FromFunction(functionName As String, Optional params As Variant) As IQuery
     Set FromFunction = Me
     pFunction = functionName
+    Call F.Variables.assign(pFunctionParams, params)
+End Function
+
+Public Function FromScalarFunction(functionName As String, Optional params As Variant) As IQuery
+    Set FromScalarFunction = Me
+    pScalarFunction = functionName
     Call F.Variables.assign(pFunctionParams, params)
 End Function
 
@@ -179,8 +186,17 @@ End Sub
 '[Creating SQL commands]
 Private Function getSqlString() As String
     Const SQL_PATTERN As String = "SELECT {0} FROM {1} {2} {3}"
+    Const SQL_PATTERN_SCALAR_FN As String = "SELECT {0}({1});"
     '------------------------------------------------------------------------------------------------------
-    getSqlString = F.Strings.Format(SQL_PATTERN, getSelectPart, getFromPart, getWherePart, getOrderPart)
+    If VBA.Len(pScalarFunction) Then
+        getSqlString = F.Strings.Format(SQL_PATTERN_SCALAR_FN, pScalarFunction, getFunctionParamsAsString)
+    Else
+        getSqlString = F.Strings.Format(SQL_PATTERN, _
+                                            getSelectPart, _
+                                            getFromPart, _
+                                            getWherePart, _
+                                            getOrderPart)
+    End If
 End Function
 
 Private Function getSelectPart() As String
@@ -258,6 +274,10 @@ End Function
 
 Private Function IQuery_FromFunction(functionName As String, Optional params As Variant) As IQuery
     Set IQuery_FromFunction = FromFunction(functionName, params)
+End Function
+
+Private Function IQuery_FromScalarFunction(functionName As String, Optional params As Variant) As IQuery
+    Set IQuery_FromScalarFunction = FromScalarFunction(functionName, params)
 End Function
 
 Private Function IQuery_FromStoredProcedure(procName As String, Optional params As Scripting.IDictionary) As IQuery

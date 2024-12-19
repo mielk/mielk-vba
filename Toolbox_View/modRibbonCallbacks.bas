@@ -56,7 +56,7 @@ Private Sub action_toolbox(ByVal control As IRibbonControl)
         
         Call ErrorManager.Clear
         Call setParentApp               'To make sure that the information was not cleared.
-        
+
         Select Case control.ID
             '[Code]
             Case "button.code.createNewProject":                        Call Toolbox.createNewProject(getSheetsDictionary)

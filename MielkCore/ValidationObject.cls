@@ -82,41 +82,41 @@ Public Function appendMessage(text As String) As ValidationObject
     pMessage = pMessage & VBA.IIf(appendNewLine, VBA.vbCrLf, vbNullString) & text
 End Function
 
-Public Function appendValidation(Validation As ValidationObject) As ValidationObject
+Public Function appendValidation(validation As ValidationObject) As ValidationObject
     Set appendValidation = Me
-    If Validation Is Nothing Then
+    If validation Is Nothing Then
         
-    ElseIf Validation.getStatus = False Then
+    ElseIf validation.getStatus = False Then
         pStatus = False
-        Call appendMessage(Validation.getMessage)
+        Call appendMessage(validation.getMessage)
     End If
 End Function
 
-Public Function compare(Validation As ValidationObject) As Boolean
-    If Validation Is Nothing Then
+Public Function compare(validation As ValidationObject) As Boolean
+    If validation Is Nothing Then
         compare = False
-    ElseIf pStatus <> Validation.getStatus Then
+    ElseIf pStatus <> validation.getStatus Then
         compare = False
-    ElseIf Not f.strings.compareStrings(pMessage, Validation.getMessage) Then
+    ElseIf Not f.strings.compareStrings(pMessage, validation.getMessage) Then
         compare = False
     Else
         compare = True
     End If
 End Function
 
-Public Sub merge(Validation As ValidationObject)
-    If Not Validation Is Nothing Then
-        If Validation.getStatus <> True Then pStatus = Validation.getStatus
+Public Sub merge(validation As ValidationObject)
+    If Not validation Is Nothing Then
+        If validation.getStatus <> True Then pStatus = validation.getStatus
         
-        If VBA.Len(Validation.getMessage) = 0 Then
+        If VBA.Len(validation.getMessage) = 0 Then
         ElseIf VBA.Len(pMessage) > 0 Then
-            pMessage = pMessage & VBA.vbCrLf & Validation.getMessage
+            pMessage = pMessage & VBA.vbCrLf & validation.getMessage
         Else
-            pMessage = Validation.getMessage
+            pMessage = validation.getMessage
         End If
         
         If Not pErrors Is Nothing Then
-            Call f.dictionaries.appendDictionary(pErrors, Validation.getErrors)
+            Call f.dictionaries.appendDictionary(pErrors, validation.getErrors)
         End If
         
     End If

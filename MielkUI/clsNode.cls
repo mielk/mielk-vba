@@ -402,7 +402,7 @@ Public Property Let key(ByVal sKey As String)
     If bIsInMainCol Then
         With tree.Nodes
             .remove i
-            If i <= .count Then
+            If i <= .Count Then
                 .add Me, sKey, i
             Else
                 .add Me
@@ -451,7 +451,7 @@ Public Property Get NextNode() As clsNode    ' can't name this proc 'Next' in VB
                 Exit For
             End If
         Next
-        If .childNodes.count > i Then
+        If .childNodes.Count > i Then
             Set NextNode = .childNodes(i + 1)
         End If
     End With
@@ -516,7 +516,7 @@ Public Function sort(Optional ByVal ndOrder As ndSortOrder = ndAscending, _
 
     On Error GoTo errExit
     lStart = 1
-    lLast = childNodes.count    ' error if no childnodes to sort
+    lLast = childNodes.Count    ' error if no childnodes to sort
 
     If lLast = 1 Then
         ' nothing to sort
@@ -574,7 +574,7 @@ Public Function AddChild(Optional sKey As String, _
             .add cChild
         End If
 
-        cChild.index = .count
+        cChild.index = .Count
     End With
 
     If mcolChildNodes Is Nothing Then
@@ -691,7 +691,7 @@ Public Function GetChild(vKey As Variant) As clsNode
     ElseIf Not mcolChildNodes Is Nothing Then
         lIdx = vKey
         If lIdx = -1 Then
-            lIdx = mcolChildNodes.count
+            lIdx = mcolChildNodes.Count
         End If
         If lIdx > 0 Then
             Set GetChild = mcolChildNodes(lIdx)
@@ -818,9 +818,9 @@ Friend Sub CheckTriStateParent()
         Next
         If alChecked(1) Then
             alChecked(1) = 1
-        ElseIf alChecked(-1) = childNodes.count Then
+        ElseIf alChecked(-1) = childNodes.Count Then
             alChecked(1) = -1
-        ElseIf alChecked(0) = childNodes.count Then
+        ElseIf alChecked(0) = childNodes.Count Then
             alChecked(1) = 0
         Else
             alChecked(1) = 1
@@ -993,7 +993,7 @@ Dim cTmp As clsNode
     On Error GoTo errH
 
     If bReverse Then
-        For i = mcolChildNodes.count To 1 Step -1
+        For i = mcolChildNodes.Count To 1 Step -1
             Set cTmp = mcolChildNodes(i)
             If mcolChildNodes(i) Is cNode Then
                 mcolChildNodes.remove i
@@ -1012,7 +1012,7 @@ Dim cTmp As clsNode
         Next
     End If
     
-    If mcolChildNodes.count = 0 Then
+    If mcolChildNodes.Count = 0 Then
         Set mcolChildNodes = Nothing
         Me.Expanded = False
     End If
@@ -1334,7 +1334,7 @@ Private Sub mctlControl_DblClick(ByVal Cancel As MSForms.ReturnBoolean)
 
 End Sub
 
-Private Sub mctlControl_MouseDown(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
+Private Sub mctlControl_MouseDown(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal y As Single)
 'PT temporarily activate and highlight the MouseDown node and a grey border to the previous activenode
 '   MouseUp and Click events will confirm the action or reset the previous active node
     Dim bFlag As Boolean
@@ -1367,11 +1367,11 @@ End Sub
 
 
 
-Private Sub mctlControl_MouseMove(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
+Private Sub mctlControl_MouseMove(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal y As Single)
     Call setAsHoveredNode
 End Sub
 
-Private Sub mctlControl_MouseUp(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
+Private Sub mctlControl_MouseUp(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal y As Single)
 ' PT MouseUp fires before the Click event, at this point we don't know 100% if user
 '    definately wants to activate the MouseDown node. If user drags the mouse off the MouseDown node the
 '    Click event will not fire which means user wants to cancel and revert to the previous activenode.
@@ -1385,7 +1385,7 @@ Dim bMoveCopy As Boolean
     If Not moLastActiveNode Is Nothing Then
         With Me.control
             ' is the mouse over the node or within a pixel of it
-            bMouseIsOver = (x >= -1 And x <= .width + 1) And (Y >= -1 And Y <= .height + 1)
+            bMouseIsOver = (x >= -1 And x <= .width + 1) And (y >= -1 And y <= .height + 1)
         End With
         
         If Not bMouseIsOver Then
@@ -1968,22 +1968,22 @@ Private Sub IListener_catchEvent(src As Variant, ev As Variant, Optional propert
     Call moTree.NodeEventRouter(Me, src.getActionName, tvClick)
 End Sub
 
-Public Sub updatePosition(x As Single, Y As Single)
+Public Sub updatePosition(x As Single, y As Single)
     Dim offsetY As Single
     Dim offsetX As Single
     '------------------------------------------------------------------------------------------------------
     
     If pMoveMode Then
         offsetX = x - pMoveAnchorPoint.x
-        offsetY = Y - pMoveAnchorPoint.Y
+        offsetY = y - pMoveAnchorPoint.y
         
         With pMoveLabel
-            .top = Y
+            .top = y
             .left = x
         End With
         
         With pMoveCaptionLabel
-            .top = Y
+            .top = y
             .left = x
         End With
     End If
@@ -1998,7 +1998,7 @@ Private Sub pDropLabel_Click()
     Call pTreeView.setAsSelectedDropNode(Me)
 End Sub
 
-Private Sub pHoverBackground_MouseMove(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
+Private Sub pHoverBackground_MouseMove(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal y As Single)
     Call setAsHoveredNode
 End Sub
 
@@ -2030,7 +2030,7 @@ Public Sub locateSpecialButtons()
         For Each img In pSpecialButtons
             With img
                 Call .setEnability(True)
-                Call .Move(x:=left, Y:=iconsTop)
+                Call .Move(x:=left, y:=iconsTop)
                 left = .getRight + BUTTONS_SPACE
             End With
         Next img

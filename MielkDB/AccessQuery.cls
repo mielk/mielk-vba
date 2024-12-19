@@ -242,6 +242,10 @@ Private Function IQuery_FromFunction(functionName As String, Optional params As 
     Set IQuery_FromFunction = FromFunction(functionName, params)
 End Function
 
+Private Function IQuery_FromScalarFunction(functionName As String, Optional params As Variant) As IQuery
+    Set IQuery_FromScalarFunction = FromFunction(functionName, params)
+End Function
+
 Private Function IQuery_FromStoredProcedure(procName As String, Optional params As Scripting.IDictionary) As IQuery
     'N/A
 End Function

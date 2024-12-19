@@ -96,6 +96,38 @@ Public Function ModulesExporter() As ModulesExporter
     
 End Function
 
+Public Function DataTypesGenerator() As DataTypesGenerator
+    Static instance As DataTypesGenerator
+    '------------------------------------------------------------------------------------------------------
+    
+    If instance Is Nothing Then
+        Set instance = New DataTypesGenerator
+    End If
+    Set DataTypesGenerator = instance
+    
+End Function
+
+Public Function PropsGenerator() As PropsGenerator
+    Static instance As PropsGenerator
+    '------------------------------------------------------------------------------------------------------
+    
+    If instance Is Nothing Then
+        Set instance = New PropsGenerator
+    End If
+    Set PropsGenerator = instance
+    
+End Function
+
+Public Function RepoGenerator() As RepoGenerator
+    Static instance As RepoGenerator
+    '------------------------------------------------------------------------------------------------------
+    
+    If instance Is Nothing Then
+        Set instance = New RepoGenerator
+    End If
+    Set RepoGenerator = instance
+    
+End Function
 
 
 

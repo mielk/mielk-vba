@@ -77,13 +77,13 @@ End Function
 
 Public Function loadFromDto(dto As Scripting.Dictionary) As EVbaVariable
     Set loadFromDto = Me
-    Call setName(F.dictionaries.GetItem(dto, Props.name.getName))
+    Call setName(F.dictionaries.GetItem(dto, props.name.getName))
     Call setVarType(F.dictionaries.GetItem(dto, Props_Vbe.variableType.getName))
     Call setIsOptional(F.dictionaries.GetItem(dto, Props_Vbe.IsOptional.getName))
     Call setPassMode(F.dictionaries.GetItem(dto, Props_Vbe.PassMode.getName))
     Call setIsArray(F.dictionaries.GetItem(dto, Props_Vbe.IsArray.getName))
     Call setIsParamArray(F.dictionaries.GetItem(dto, Props_Vbe.IsParamArray.getName))
-    Call setDataType(F.dictionaries.GetItem(dto, Props_Vbe.DataType.getName))
+    Call setDataType(F.dictionaries.GetItem(dto, Props_Vbe.dataType.getName))
     Call setDefaultValue(F.dictionaries.GetItem(dto, Props_Vbe.DefaultValue.getName))
     Call setArraySize(F.dictionaries.GetItem(dto, Props_Vbe.ArraySize.getName))
 End Function

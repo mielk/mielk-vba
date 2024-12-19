@@ -272,12 +272,12 @@ End Sub
 
 
 '[EVENTS]
-Private Sub pCheckBox_MouseUp(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
+Private Sub pCheckBox_MouseUp(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal y As Single)
     Call ErrorManager.clear
     Call handleClick(Button, shift)
 End Sub
 
-Private Sub pLabel_MouseUp(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
+Private Sub pLabel_MouseUp(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal y As Single)
     Call ErrorManager.clear
     Call handleClick(Button, shift)
 End Sub

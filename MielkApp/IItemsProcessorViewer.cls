@@ -44,3 +44,6 @@ End Sub
 
 Public Sub afterCancel()
 End Sub
+
+Public Sub updateLine(key As Variant)
+End Sub

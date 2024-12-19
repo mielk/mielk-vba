@@ -333,17 +333,12 @@ Private Function isItemFixed(key As Variant) As Boolean
 End Function
 
 Public Sub insertBorder(index As XlBordersIndex, color As Long)
-    Dim dict As Scripting.Dictionary
-    '------------------------------------------------------------------------------------------------------
-    
     If index = xlEdgeTop Then
         Call updateBorderVariable(pTopBorder, color)
     ElseIf index = xlEdgeBottom Then
         Call updateBorderVariable(pBottomBorder, color)
     End If
-    
     Call updateBorderSizeAndPosition
-    
 End Sub
 
 
@@ -452,7 +447,7 @@ Private Sub updatePanelHeightAndScrollBar()
     Dim lastLineBottom As Single
     '------------------------------------------------------------------------------------------------------
     
-    lastLineBottom = UI.Forms.calculateRightBottomPoint(pFrame, True).Y
+    lastLineBottom = UI.Forms.calculateRightBottomPoint(pFrame, True).y
     
     With pFrame
         '[Panel height]
@@ -661,11 +656,11 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     Stop
 End Sub
 
-Private Function IControl_move(Optional x As Variant, Optional Y As Variant) As IControl
+Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
     Stop
 End Function
 
-Private Function IControl_offset(Optional x As Single, Optional Y As Single) As IControl
+Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl
     Stop
 End Function
 

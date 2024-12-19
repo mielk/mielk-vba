@@ -29,7 +29,6 @@ End Sub
 Private Sub insertEnumOptions()
 
     '[Common - basic]
-    Call addEnumOption("Alias", "Alias")
     Call addEnumOption("Counter", "Counter")
     Call addEnumOption(DEFAULT_TAG)
     Call addEnumOption("Id", "id")
@@ -40,16 +39,16 @@ Private Sub insertEnumOptions()
 
     '[Common - session]
     Call addEnumOption("DevOnly")
-    Call addEnumOption("SessionId", "session_id")
+    Call addEnumOption("SessionId", "SessionId")
     
     '[Common - application]
     Call addEnumOption("SettingType", "type")
     Call addEnumOption("SettingValue", "value")
-    Call addEnumOption("Version", "version")
+    Call addEnumOption("Version")
 
     '[Common - processing]
     Call addEnumOption("DbProp")
-    Call addEnumOption("Index", "index")
+    Call addEnumOption("Index")
     Call addEnumOption("IsDate")
     Call addEnumOption("Item")
     Call addEnumOption("Items")
@@ -64,26 +63,29 @@ Private Sub insertEnumOptions()
     Call addEnumOption("Warning")
 
     '[Common - status]
-    Call addEnumOption("IsActive", "is_active")
-    Call addEnumOption("IsComplete", "is_complete")
-    Call addEnumOption("IsConfirmed", "is_confirmed")
+    Call addEnumOption("IsActive", "IsActive")
+    Call addEnumOption("IsComplete", "IsComplete")
+    Call addEnumOption("IsConfirmed", "IsConfirmed")
     Call addEnumOption("IsEditable")
     Call addEnumOption("IsFixed")
-    Call addEnumOption("IsIncluded", "is_included")
-    Call addEnumOption("IsMissing", "is_missing")
+    Call addEnumOption("IsIncluded", "IsIncluded")
+    Call addEnumOption("IsMissing", "IsMissing")
     Call addEnumOption("IsSelected")
     Call addEnumOption("IsValid")
-    Call addEnumOption("Status", "status")
+    Call addEnumOption("Status")
     
     '[Common - date & time]
     Call addEnumOption("Date_")
     Call addEnumOption("Dates")
     Call addEnumOption("EndDate", "EndDate")
     Call addEnumOption("EndMonth", "EndMonth")
+    Call addEnumOption("EndTime")
     Call addEnumOption("Month")
     Call addEnumOption("StartDate", "StartDate")
     Call addEnumOption("StartMonth", "StartMonth")
+    Call addEnumOption("StartTime")
     Call addEnumOption("Timestamp")
+    Call addEnumOption("WeekDay")
     Call addEnumOption("Year")
     
     '[Common - user forms]
@@ -100,6 +102,7 @@ Private Sub insertEnumOptions()
     Call addEnumOption("ColumnSymbol")          'i.e. D - for column 4, AA - for column 27, etc.
     Call addEnumOption("Columns")
     Call addEnumOption("Formula")
+    Call addEnumOption("IsFormulaR1C1")
     Call addEnumOption("Range")
     Call addEnumOption("RangeName")
     Call addEnumOption("Row")
@@ -110,6 +113,13 @@ Private Sub insertEnumOptions()
     Call addEnumOption("Sheet")
     Call addEnumOption("SheetName")
     
+    '[Common - DB]
+    Call addEnumOption("DbUploadRecordsSeparator", "RecordsSeparator")
+    Call addEnumOption("DbUploadFieldsSeparator", "FieldsSeparator")
+    Call addEnumOption("DbTableName", "TableName")
+    Call addEnumOption("DbFieldName", "FieldName")
+    Call addEnumOption("OutputPrefix", "Prefix")
+    
     '[Common - Styling]
     Call addEnumOption("Styles")
     Call addEnumOption("StylesConditional")
@@ -119,22 +129,23 @@ Private Sub insertEnumOptions()
     Call addEnumOption("Ribbon")
     
     '[Common - file types & paths]
-    Call addEnumOption("DestinationFilePath", "destination_file_path")
-    Call addEnumOption("FileCreator", "file_creator")
-    Call addEnumOption("FileName", "file_name")
-    Call addEnumOption("FilePath", "file_path")
-    Call addEnumOption("FileSize", "file_size")
-    Call addEnumOption("FileTimestamp", "file_timestamp")
-    Call addEnumOption("FileType", "file_type")
-    Call addEnumOption("FolderPath", "folder_path")
-    Call addEnumOption("SourceFilePath", "source_file_path")
+    Call addEnumOption("DestinationFilePath", "destinationFilePath")
+    Call addEnumOption("FileCreator", "fileCreator")
+    Call addEnumOption("FileName", "fileName")
+    Call addEnumOption("FilePath", "FilePath")
+    Call addEnumOption("FileSize", "fileSize")
+    Call addEnumOption("FileTimestamp", "fileTimestamp")
+    Call addEnumOption("FileType", "fileType")
+    Call addEnumOption("FolderPath", "folderPath")
+    Call addEnumOption("SourceFilePath", "sourceFilePath")
     
     '[Common - Developers]
-    Call addEnumOption("ProjectName", "project_name")
-    Call addEnumOption("ProjectCodeName", "project_code_name")
-    Call addEnumOption("References", "references")
-    Call addEnumOption("RefName", "ref_name")
-    Call addEnumOption("RefFilePath", "ref_file_path")
+    Call addEnumOption("ErrorMessage")
+    Call addEnumOption("ProjectName")
+    Call addEnumOption("ProjectCodeName")
+    Call addEnumOption("References")
+    Call addEnumOption("RefName")
+    Call addEnumOption("RefFilePath")
     
     '[Common - events handling]
     Call addEnumOption("KeyCode")
@@ -142,6 +153,11 @@ Private Sub insertEnumOptions()
     Call addEnumOption("Button")
     Call addEnumOption("XPos")
     Call addEnumOption("YPos")
+    
+    '[Common - standarization]
+    Call addEnumOption("Alias", "Alias")
+    Call addEnumOption("Aliases")
+    Call addEnumOption("AliasesString")
     
 End Sub
 
@@ -182,7 +198,6 @@ End Function
 '[INTELLISENSE]
 
 '[Common - basic]
-Public Function Alias() As enumProperty: Set Alias = ByName("Alias"): End Function
 Public Function Counter() As enumProperty: Set Counter = ByName("Counter"): End Function
 Public Function default() As enumProperty: Set default = ByName(DEFAULT_TAG): End Function
 Public Function id() As enumProperty: Set id = ByName("Id"): End Function
@@ -198,7 +213,7 @@ Public Function SessionId() As enumProperty: Set SessionId = ByName("SessionId")
 '[Common - application]
 Public Function SettingType() As enumProperty: Set SettingType = ByName("SettingType"): End Function
 Public Function SettingValue() As enumProperty: Set SettingValue = ByName("SettingValue"): End Function
-Public Function Version() As enumProperty: Set Version = ByName("Version"): End Function
+Public Function version() As enumProperty: Set version = ByName("Version"): End Function
 
 '[Common - processing]
 Public Function DbProp() As enumProperty: Set DbProp = ByName("DbProp"): End Function
@@ -213,7 +228,7 @@ Public Function Parent() As enumProperty: Set Parent = ByName("Parent"): End Fun
 Public Function prop() As enumProperty: Set prop = ByName("Prop"): End Function
 Public Function regex() As enumProperty: Set regex = ByName("Regex"): End Function
 Public Function Required() As enumProperty: Set Required = ByName("Required"): End Function
-Public Function Validation() As enumProperty: Set Validation = ByName("Validation"): End Function
+Public Function validation() As enumProperty: Set validation = ByName("Validation"): End Function
 Public Function Warning() As enumProperty: Set Warning = ByName("Warning"): End Function
 
 '[Common - status]
@@ -227,16 +242,19 @@ Public Function IsMissing() As enumProperty: Set IsMissing = ByName("IsMissing")
 Public Function IsSelected() As enumProperty: Set IsSelected = ByName("IsSelected"): End Function
 Public Function IsValid() As enumProperty: Set IsValid = ByName("IsValid"): End Function
 Public Function Status() As enumProperty: Set Status = ByName("Status"): End Function
-    
+
 '[Common - date & time]
 Public Function Date_() As enumProperty: Set Date_ = ByName("Date_"): End Function
 Public Function Dates() As enumProperty: Set Dates = ByName("Dates"): End Function
 Public Function EndDate() As enumProperty: Set EndDate = ByName("EndDate"): End Function
 Public Function EndMonth() As enumProperty: Set EndMonth = ByName("EndMonth"): End Function
+Public Function EndTime() As enumProperty: Set EndTime = ByName("EndTime"): End Function
 Public Function month() As enumProperty: Set month = ByName("Month"): End Function
 Public Function StartDate() As enumProperty: Set StartDate = ByName("StartDate"): End Function
 Public Function StartMonth() As enumProperty: Set StartMonth = ByName("StartMonth"): End Function
+Public Function StartTime() As enumProperty: Set StartTime = ByName("StartTime"): End Function
 Public Function timestamp() As enumProperty: Set timestamp = ByName("Timestamp"): End Function
+Public Function WeekDay() As enumProperty: Set WeekDay = ByName("WeekDay"): End Function
 Public Function year() As enumProperty: Set year = ByName("Year"): End Function
 
 '[Common - user forms]
@@ -253,8 +271,9 @@ Public Function columnIndex() As enumProperty: Set columnIndex = ByName("columnI
 Public Function ColumnSymbol() As enumProperty: Set ColumnSymbol = ByName("ColumnSymbol"): End Function
 Public Function columns() As enumProperty: Set columns = ByName("Columns"): End Function
 Public Function formula() As enumProperty: Set formula = ByName("Formula"): End Function
+Public Function isFormulaR1C1() As enumProperty: Set isFormulaR1C1 = ByName("isFormulaR1C1"): End Function
 Public Function Range() As enumProperty: Set Range = ByName("Range"): End Function
-Public Function RangeName() As enumProperty: Set RangeName = ByName("RangeName"): End Function
+Public Function rangeName() As enumProperty: Set rangeName = ByName("RangeName"): End Function
 Public Function row() As enumProperty: Set row = ByName("Row"): End Function
 Public Function RowIndex() As enumProperty: Set RowIndex = ByName("RowIndex"): End Function
 Public Function Rows() As enumProperty: Set Rows = ByName("Rows"): End Function
@@ -284,6 +303,7 @@ Public Function folderPath() As enumProperty: Set folderPath = ByName("FolderPat
 Public Function sourceFilePath() As enumProperty: Set sourceFilePath = ByName("SourceFilePath"): End Function
 
 '[Common - Developers]
+Public Function ErrorMessage() As enumProperty: Set ErrorMessage = ByName("ErrorMessage"): End Function
 Public Function ProjectName() As enumProperty: Set ProjectName = ByName("ProjectName"): End Function
 Public Function ProjectCodeName() As enumProperty: Set ProjectCodeName = ByName("ProjectCodeName"): End Function
 Public Function References() As enumProperty: Set References = ByName("References"): End Function
@@ -296,3 +316,13 @@ Public Function Shift() As enumProperty: Set Shift = ByName("Shift"): End Functi
 Public Function Button() As enumProperty: Set Button = ByName("Button"): End Function
 Public Function XPos() As enumProperty: Set XPos = ByName("XPos"): End Function
 Public Function YPos() As enumProperty: Set YPos = ByName("YPos"): End Function
+
+'[Common - standarization]
+Public Function Alias() As enumProperty: Set Alias = ByName("Alias"): End Function
+Public Function Aliases() As enumProperty: Set Aliases = ByName("Aliases"): End Function
+Public Function AliasesString() As enumProperty: Set AliasesString = ByName("AliasesString"): End Function
+'[Common - DB]
+Public Function DbUploadRecordsSeparator() As enumProperty: Set DbUploadRecordsSeparator = ByName("DbUploadRecordsSeparator"): End Function
+Public Function DbUploadFieldsSeparator() As enumProperty: Set DbUploadFieldsSeparator = ByName("DbUploadFieldsSeparator"): End Function
+Public Function DbTableName() As enumProperty: Set DbTableName = ByName("DbTableName"): End Function
+Public Function DbFieldName() As enumProperty: Set DbFieldName = ByName("DbFieldName"): End Function

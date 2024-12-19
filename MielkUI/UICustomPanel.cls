@@ -17,6 +17,7 @@ Private Const DEFAULT_HORIZONTAL_PADDING As Single = 0
 Private Const DEFAULT_VERTICAL_PADDING As Single = 9
 Private Const DEFAULT_BACKGROUND_COLOR As Long = vbWhite
 '----------------------------------------------------------------------------------------------------------
+Private pContentManager As ICustomPanelContentManager
 Private pListener As IListener
 Private pWindow As WTemplate
 Private pParentFrame As MSForms.frame
@@ -46,6 +47,7 @@ Private pIsVisible As Boolean
 Private pBordersVisibility As Boolean
 Private pDisableEvents As Boolean
 '----------------------------------------------------------------------------------------------------------
+Event AfterMove()
 Event AfterResize()
 Event AfterVisibilityChange()
 Event RenderControls()
@@ -74,6 +76,11 @@ End Sub
 
 
 '[SETTERS]
+Public Function setContentManager(value As ICustomPanelContentManager) As UICustomPanel
+    Set setContentManager = Me
+    Set pContentManager = value
+End Function
+
 Public Function setListener(value As IListener) As UICustomPanel
     Set setListener = Me
     Set pListener = value
@@ -155,6 +162,10 @@ Public Function getWindow() As WTemplate
     Set getWindow = pWindow
 End Function
 
+Public Function getListener() As IListener
+    Set getListener = pListener
+End Function
+
 Public Function getInnerFrame() As MSForms.frame
     Set getInnerFrame = pInnerFrame
 End Function
@@ -209,6 +220,9 @@ End Function
 Public Sub render()
     If Not pIsRendered Then
         Call insertInnerFrame
+        If Not pContentManager Is Nothing Then
+            Call pContentManager.renderContent
+        End If
         RaiseEvent RenderControls
         Call autoResize
         Call updatePosition
@@ -297,16 +311,19 @@ Private Sub updateSize()
         '[Height]
         If pHeight >= 0 Then
             .height = pHeight
-        ElseIf pMinHeight > 0 And lastPoint.Y < pMinHeight Then
+        ElseIf pMinHeight > 0 And lastPoint.y < pMinHeight Then
             .height = pMinHeight
-        ElseIf pMaxHeight > 0 And lastPoint.Y > pMaxHeight Then
+        ElseIf pMaxHeight > 0 And lastPoint.y > pMaxHeight Then
             .height = pMaxHeight
         Else
-            .height = lastPoint.Y
+            .height = lastPoint.y
         End If
         
     End With
     
+    If Not pContentManager Is Nothing Then
+        Call pContentManager.handleAfterResize
+    End If
     RaiseEvent AfterResize
     
     Call updateScrollBars
@@ -323,8 +340,8 @@ Private Sub updateScrollBars()
         .ScrollBars = fmScrollBarsNone
         
         '[Vertical scroll bar]
-        .ScrollHeight = lastPoint.Y
-        If lastPoint.Y > .InsideHeight Then
+        .ScrollHeight = lastPoint.y
+        If lastPoint.y > .InsideHeight Then
             .ScrollBars = .ScrollBars + fmScrollBarsVertical
             .scrollTop = 0
         End If
@@ -346,6 +363,10 @@ Private Sub updatePosition()
             .left = pLeft
             .top = pTop
         End With
+        If Not pContentManager Is Nothing Then
+            Call pContentManager.handleAfterMove
+        End If
+        RaiseEvent AfterMove
     End If
 End Sub
 
@@ -368,11 +389,16 @@ Public Sub autoResize(Optional resizeWindowAfterward As Boolean = True)
         pDisableEvents = True
         coord = UI.Forms.calculateRightBottomPoint(pInnerFrame)
         With pInnerFrame
-            .height = coord.Y
+            .height = coord.y
             .width = coord.x + pHorizontalPadding
         End With
         
-        If resizeWindowAfterward Then RaiseEvent AfterResize
+        If resizeWindowAfterward Then
+            If Not pContentManager Is Nothing Then
+                Call pContentManager.handleAfterResize
+            End If
+            RaiseEvent AfterResize
+        End If
         pDisableEvents = False
     End If
     

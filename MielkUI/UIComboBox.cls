@@ -522,7 +522,7 @@ End Sub
 
 
 
-Public Function Move(Optional x As Variant, Optional Y As Variant) As UIComboBox
+Public Function Move(Optional x As Variant, Optional y As Variant) As UIComboBox
     Dim offsetX As Single
     Dim offsetY As Single
     '------------------------------------------------------------------------------------------------------
@@ -533,8 +533,8 @@ Public Function Move(Optional x As Variant, Optional Y As Variant) As UIComboBox
         If VBA.IsNumeric(x) Then
             offsetX = (x - .left)
         End If
-        If VBA.IsNumeric(Y) Then
-            offsetY = (Y - .top)
+        If VBA.IsNumeric(y) Then
+            offsetY = (y - .top)
         End If
     End With
     
@@ -542,9 +542,9 @@ Public Function Move(Optional x As Variant, Optional Y As Variant) As UIComboBox
     
 End Function
 
-Public Function offset(Optional x As Single, Optional Y As Single) As UIComboBox
+Public Function offset(Optional x As Single, Optional y As Single) As UIComboBox
     Set offset = Me
-    Call UI.Forms.offsetControls(x, Y, pBackgroundLabel, pComboBox)
+    Call UI.Forms.offsetControls(x, y, pBackgroundLabel, pComboBox)
     With pBackgroundLabel
         pTop = .top
         pLeft = .left
@@ -867,7 +867,7 @@ Stop
     If Not pEventsDisabled Then Call dropdown
 End Sub
 
-Private Sub pBackground_MouseDown(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
+Private Sub pBackground_MouseDown(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal y As Single)
 Stop
     If Not pEventsDisabled Then Call dropdown
 End Sub
@@ -895,7 +895,7 @@ Private Sub pComboBox_KeyDown(ByVal keyCode As MSForms.ReturnInteger, ByVal shif
     RaiseEvent KeyDown(keyCode, shift)
 End Sub
 
-Private Sub pComboBox_MouseDown(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
+Private Sub pComboBox_MouseDown(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal y As Single)
     pShiftPressed = shift
     If Not pEventsDisabled Then Call dropdown
 End Sub
@@ -1058,12 +1058,12 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     Call alignVertically(baseCtrl)
 End Sub
 
-Private Function IControl_move(Optional x As Variant, Optional Y As Variant) As IControl
-    Set IControl_move = Move(x, Y)
+Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
+    Set IControl_move = Move(x, y)
 End Function
 
-Private Function IControl_offset(Optional x As Single, Optional Y As Single) As IControl
-    Set IControl_offset = offset(x, Y)
+Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl
+    Set IControl_offset = offset(x, y)
 End Function
 
 Private Sub IControl_triggerEvent(eventId As Long)

@@ -2,7 +2,7 @@ Attribute VB_Name = "modCreators"
 Option Explicit
 
 Private Const CLASS_NAME As String = "modCreators"
-    '----------------------------------------------------------------------------------------------------------
+'----------------------------------------------------------------------------------------------------------
 
 
 Public Function f() As Functions

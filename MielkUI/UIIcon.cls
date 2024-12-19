@@ -251,7 +251,7 @@ End Sub
 
 
 
-Public Function Move(Optional x As Variant, Optional Y As Variant) As UIIcon
+Public Function Move(Optional x As Variant, Optional y As Variant) As UIIcon
     Dim offsetX As Single
     Dim offsetY As Single
     '------------------------------------------------------------------------------------------------------
@@ -262,8 +262,8 @@ Public Function Move(Optional x As Variant, Optional Y As Variant) As UIIcon
         If VBA.IsNumeric(x) Then
             offsetX = (x - .left)
         End If
-        If VBA.IsNumeric(Y) Then
-            offsetY = (Y - .top)
+        If VBA.IsNumeric(y) Then
+            offsetY = (y - .top)
         End If
     End With
     
@@ -271,9 +271,9 @@ Public Function Move(Optional x As Variant, Optional Y As Variant) As UIIcon
     
 End Function
 
-Public Function offset(Optional x As Single, Optional Y As Single) As UIIcon
+Public Function offset(Optional x As Single, Optional y As Single) As UIIcon
     Set offset = Me
-    Call UI.Forms.offsetControls(x, Y, pLabel)
+    Call UI.Forms.offsetControls(x, y, pLabel)
     pTop = pLabel.top
 End Function
 
@@ -343,7 +343,7 @@ End Sub
 
 '[Controls' events]
 
-Private Sub pLabel_MouseUp(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
+Private Sub pLabel_MouseUp(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal y As Single)
     Dim properties As Scripting.Dictionary
     '------------------------------------------------------------------------------------------------------
     
@@ -358,7 +358,7 @@ Private Sub pLabel_MouseUp(ByVal Button As Integer, ByVal shift As Integer, ByVa
                                                         KeyValue(TAG_BUTTON, Button), _
                                                         KeyValue(props.shift.getName, shift), _
                                                         KeyValue(TAG_X, x), _
-                                                        KeyValue(TAG_Y, Y))
+                                                        KeyValue(TAG_Y, y))
         Call pListener.catchEvent(Me, Events.MouseUp.getName, properties)
     End If
     
@@ -418,12 +418,12 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     Call alignVertically(baseCtrl)
 End Sub
 
-Private Function IControl_move(Optional x As Variant, Optional Y As Variant) As IControl
-    Set IControl_move = Move(x, Y)
+Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
+    Set IControl_move = Move(x, y)
 End Function
 
-Private Function IControl_offset(Optional x As Single, Optional Y As Single) As IControl
-    Set IControl_offset = offset(x, Y)
+Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl
+    Set IControl_offset = offset(x, y)
 End Function
 
 Private Sub IControl_triggerEvent(eventId As Long)

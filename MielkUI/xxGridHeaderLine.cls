@@ -72,7 +72,7 @@ Public Function setTop(value As Single) As xxGridHeaderLine
     Set setTop = Me
     offsetY = value - pTop
     pTop = value
-    If pIsRendered Then Call offsetControls(Y:=offsetY)
+    If pIsRendered Then Call offsetControls(y:=offsetY)
 End Function
 
 Public Function setLeft(value As Single) As xxGridHeaderLine
@@ -203,19 +203,19 @@ Private Sub relocateControls()
     
 End Sub
 
-Private Sub offsetControls(Optional x As Single, Optional Y As Single)
+Private Sub offsetControls(Optional x As Single, Optional y As Single)
     Dim key As Variant
     Dim header As xxGridHeader
     '------------------------------------------------------------------------------------------------------
     
     If pIsRendered Then
-        If Y Then
-            pBackground.top = pBackground.top + Y
-            pBottomBorder.top = pBottomBorder.top + Y
+        If y Then
+            pBackground.top = pBackground.top + y
+            pBottomBorder.top = pBottomBorder.top + y
             For Each key In pHeaders.keys
                 Set header = pHeaders.item(key)
                 If Not header Is Nothing Then
-                    Call header.offset(Y:=Y)
+                    Call header.offset(y:=y)
                 End If
             Next key
         End If

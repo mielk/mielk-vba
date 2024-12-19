@@ -97,7 +97,10 @@ Private Function getConnectionString(provider As String, dataSource As String, d
     End If
 End Function
 
-Public Function getConnection() As Object 'ADODB.connection
+Public Function getConnection(Optional ensureIsOpen As Boolean = False) As Object 'ADODB.connection
+    If ensureIsOpen Then
+        Call openConnection
+    End If
     Set getConnection = pConnection
 End Function
 
@@ -147,7 +150,7 @@ Public Function clone() As SqlServerConnection
     Call clone.setConnectionString(pConnectionString)
 End Function
 
-Private Sub closeConnection(Optional rollbackTransactionIfOpen As Boolean = False, _
+Public Sub closeConnection(Optional rollbackTransactionIfOpen As Boolean = False, _
                             Optional ignoreCloseWhileInTransactionError As Boolean = True)
                             
     If pConnection Is Nothing Then
@@ -327,12 +330,13 @@ End Sub
 
 
 '[STORED PROCEDURES]
-Public Sub runStoredProcedure(procedureName As String, params As Scripting.IDictionary, asynchronous As Boolean)
+Public Function runStoredProcedure(procedureName As String, params As Scripting.IDictionary, asynchronous As Boolean) As ValidationObject
     Const METHOD_NAME As String = "runStoredProcedure"
     Const SQL_PATTERN As String = "EXEC {0} {1}"
     '------------------------------------------------------------------------------------------------------
     Dim sqlCommand As String
     Dim paramsText As String
+    Dim errMessage As String
     '------------------------------------------------------------------------------------------------------
     
     On Error GoTo ExceptionHandler
@@ -355,9 +359,12 @@ Public Sub runStoredProcedure(procedureName As String, params As Scripting.IDict
 ExitPoint:
     Dim errNumber As Long, errDescription As String
     If errNumber Then
-        Call Exceptions.DbStoredProcedureError.Raise(sqlCommand, errNumber, errDescription)
+        errMessage = errNumber & ";" & errDescription & ";" & sqlCommand
+        Set runStoredProcedure = F.Create.ValidationObject(False, errMessage)
+    Else
+        Set runStoredProcedure = F.Create.ValidationObject(True)
     End If
-    Exit Sub
+    Exit Function
     
 '----------------------------------------------------------------------------------------------------------
 ExceptionHandler:
@@ -365,15 +372,16 @@ ExceptionHandler:
     Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription)
     GoTo ExitPoint
     
-End Sub
+End Function
 
-Public Sub runStoredProcedureWithCommand(procedureName As String, params As Scripting.IDictionary, asynchronous As Boolean)
+Public Function runStoredProcedureWithCommand(procedureName As String, params As Scripting.IDictionary, asynchronous As Boolean) As ValidationObject
     Const METHOD_NAME As String = "runStoredProcedureWithCommand"
     '------------------------------------------------------------------------------------------------------
     Dim command As Object ' ADODB.command
     Dim varKey As Variant
     Dim value As Variant
     Dim sql As String
+    Dim errMessage As String
     '------------------------------------------------------------------------------------------------------
     
     On Error GoTo ExceptionHandler
@@ -396,14 +404,22 @@ Public Sub runStoredProcedureWithCommand(procedureName As String, params As Scri
 
 '==========================================================================================================
 ExitPoint:
-    Exit Sub
+    Dim errNumber As Long, errDescription As String
+    If errNumber Then
+        errMessage = errNumber & ";" & errDescription & ";" & sql
+        Set runStoredProcedureWithCommand = F.Create.ValidationObject(False, errMessage)
+    Else
+        Set runStoredProcedureWithCommand = F.Create.ValidationObject(True)
+    End If
+    Exit Function
     
 '----------------------------------------------------------------------------------------------------------
 ExceptionHandler:
-    Call Exceptions.SqlException.Raise(sql)
+    errNumber = VBA.Err.Number: errDescription = VBA.Err.Description
+    Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription)
     GoTo ExitPoint
     
-End Sub
+End Function
 
 Public Function getRecordsetFromStoredProcedure(procName As String, params As Scripting.Dictionary) As Object 'ADODB.Recordset
     Const METHOD_NAME As String = "runStoredProcedure"
@@ -475,16 +491,20 @@ Private Sub IDbConnection_setConnectionString(conStr As String)
     Call setConnectionString(conStr)
 End Sub
 
+Private Sub IDbConnection_setConnectionDetails(provider As String, dataSource As String, dbName As String, Optional userName As String, Optional password As String)
+
+End Sub
+
 Private Sub IDbConnection_openConnection()
     Call ensureConnectionIsOpen
 End Sub
 
 Private Function IDbConnection_getConnection() As Object 'ADODB.connection
-    Set IDbConnection_getConnection = getConnection
+    Set IDbConnection_getConnection = getConnection(True)
 End Function
 
-Private Function IDbConnection_clone() As IDbConnection
-    Set IDbConnection_clone = clone
+Private Function IDbConnection_cloneConnection() As IDbConnection
+    Set IDbConnection_cloneConnection = clone
 End Function
 
 Private Sub IDbConnection_closeConnection(Optional rollbackTransactionIfOpen As Boolean = False)
@@ -544,13 +564,12 @@ Private Function IDbConnection_getScalarFunctionValue(sqlString As String, Optio
     IDbConnection_getScalarFunctionValue = getScalarFunctionValue(sqlString, lockType)
 End Function
 
-Private Sub IDbConnection_runStoredProcedure(procName As String, params As Scripting.Dictionary, Optional asynchronous As Boolean = True)
-    Call runStoredProcedure(procName, params, asynchronous)
-End Sub
-
-Private Sub IDbConnection_runStoredProcedureWithCommand(procName As String, params As Scripting.Dictionary, Optional asynchronous As Boolean = True)
-    Call runStoredProcedureWithCommand(procName, params, asynchronous)
-End Sub
+Private Function IDbConnection_runStoredProcedure(procName As String, params As Scripting.Dictionary, Optional asynchronous As Boolean = True) As ValidationObject
+    Set IDbConnection_runStoredProcedure = runStoredProcedure(procName, params, asynchronous)
+End Function
+Private Function IDbConnection_runStoredProcedureWithCommand(procName As String, params As Scripting.Dictionary, Optional asynchronous As Boolean = True) As ValidationObject
+    Set IDbConnection_runStoredProcedureWithCommand = runStoredProcedureWithCommand(procName, params, asynchronous)
+End Function
 
 Private Function IDbConnection_Meta() As IMeta
     Set IDbConnection_Meta = Meta

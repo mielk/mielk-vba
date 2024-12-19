@@ -182,6 +182,18 @@ Public Function GetComputerName() As String
     
 End Function
 
+Public Function checkUserName(value As String) As Boolean
+    If VBA.InStr(1, GetComputerName, value, vbTextCompare) > 0 Then
+        checkUserName = True
+    ElseIf VBA.InStr(1, getUserUid, value, vbTextCompare) > 0 Then
+        checkUserName = True
+    Else
+        checkUserName = False
+    End If
+End Function
+
+
+
 
 
 '[FOLDERS]

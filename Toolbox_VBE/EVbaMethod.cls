@@ -123,6 +123,7 @@ End Function
 '[ANALYZING]
 Public Sub analyzeBody()
     With VbaCodeParser
+        pBody = cutCommentsAfterEnd(pBody)
         pDeclarationLinesCounter = .countDeclarationLines(pBody)
         pDeclarationLine = .getMethodDeclarationLine(pBody)
         pScope = .findMethodScope(pBody)
@@ -131,11 +132,14 @@ Public Sub analyzeBody()
         Set pInputParams = getVariablesFromDtos(.getMethodInputParamsDtos(pBody))
         Set pVariables = getVariablesFromDtos(.getVariablesDtos(pBody))
     End With
-'
-'    Dim inputParams2 As VBA.Collection
-'    Set inputParams2 = F.dictionaries.toCollection(pInputParams, DictPart_ValueOnly)
-'
 End Sub
+
+Private Function cutCommentsAfterEnd(body As String) As String
+    Const REGEX_PATTERN As String = "^([\s\u000A\u000D]*End (?:Sub|Function))(?:.|\u000A|\u000D)*"
+    Const REPLACEMENT_PATTERN As String = "$1"
+    '------------------------------------------------------------------------------------------------------
+    cutCommentsAfterEnd = F.regex.Replace(body, REGEX_PATTERN, REPLACEMENT_PATTERN)
+End Function
 
 Private Function getVariablesFromDtos(dtos As VBA.Collection) As Scripting.Dictionary
     Dim dto As Scripting.Dictionary
@@ -201,39 +205,6 @@ Private Function clearBody() As String
 End Function
 
 
-Public Function removeWhiteSpace(text As String) As String
-    Const REGEX_PATTERN As String = "(\r|\n)(\s|\t)*"
-    '------------------------------------------------------------------------------------------------------
-    Dim objRegex As Object
-    '------------------------------------------------------------------------------------------------------
-    
-    Set objRegex = F.regex.Create(REGEX_PATTERN, MultiLine:=False)
-    removeWhiteSpace = objRegex.Replace(F.Strings.trimFull(text), VBA.vbCrLf)
-    removeWhiteSpace = VBA.Replace(removeWhiteSpace, VBA.Chr(13), vbNullString)
-    removeWhiteSpace = VBA.Replace(removeWhiteSpace, VBA.Chr(10), vbNullString)
-    removeWhiteSpace = VBA.Replace(removeWhiteSpace, VBA.Chr(9), vbNullString)
-    removeWhiteSpace = VBA.Replace(removeWhiteSpace, VBA.Chr(32), vbNullString)
-    
-End Function
-    
-Private Function removeAfterComments(text As String) As String
-    Dim keywords As Variant
-    Dim keyword As Variant
-    Dim comments As String
-    '------------------------------------------------------------------------------------------------------
-    
-    removeAfterComments = text
-    keywords = VBA.Array(VBA_SUB, VBA_FUNCTION, VBA_PROPERTY)
-    
-    For Each keyword In keywords
-        comments = F.Strings.substring(text, VBA.Chr(13) & "End " & keyword, vbNullString)
-        If VBA.Len(comments) Then removeAfterComments = VBA.Replace(removeAfterComments, comments, vbNullString)
-    Next keyword
-    
-End Function
-
-
-
 Public Function compare(comparedMethod As EVbaMethod, _
                             Optional ignoreDescriptions As Boolean = True, _
                             Optional ignoreErrorHandling As Boolean = True, _
@@ -241,10 +212,23 @@ Public Function compare(comparedMethod As EVbaMethod, _
     Dim strBaseMethod As String
     Dim strComparedMethod As String
     '------------------------------------------------------------------------------------------------------
+    Dim message As String
+    '------------------------------------------------------------------------------------------------------
     
     strBaseMethod = removeErrorHandling(removeSeparators(toString(ignoreDescriptions, ignoreErrorHandling, ignoreWhiteSpaces)))
     strComparedMethod = removeErrorHandling(removeSeparators(comparedMethod.toString(ignoreDescriptions, ignoreErrorHandling, ignoreWhiteSpaces)))
     compare = F.Strings.compareStrings(strBaseMethod, strComparedMethod, False, True)
+    
+    If Not compare Then
+        message = "-------------------------------------------------" & VBA.vbCrLf & _
+                  pModule.getName & "." & comparedMethod.getName & VBA.vbCrLf & _
+                  "[B]" & VBA.vbCrLf & _
+                  strBaseMethod & VBA.vbCrLf & _
+                  "[C]" & VBA.vbCrLf & _
+                  strComparedMethod & VBA.vbCrLf & _
+                  "================================================="
+        Call F.TextFiles.printToTextFile(message, getLogTextFilePath)
+    End If
     
 End Function
 
@@ -258,11 +242,6 @@ Private Function removeErrorHandling(text As String) As String
     removeErrorHandling = F.regex.Replace(text, REGEX_PATTERN, vbNullString)
 End Function
 
-Private Function removeSeparators(text As String) As String
-    Const REGEX_PATTERN As String = "'[=-]+"
-    '------------------------------------------------------------------------------------------------------
-    removeSeparators = F.regex.Replace(text, REGEX_PATTERN, vbNullString)
-End Function
 
 
 
@@ -306,8 +285,14 @@ Public Function hasNoErrorHandlingAnnotation() As Boolean
     hasNoErrorHandlingAnnotation = F.regex.checkIfMatch(pDescription, REGEX_PATTERN)
 End Function
 
+Public Function hasCustomErrorHandlingAnnotation() As Boolean
+    Const REGEX_PATTERN As String = "'@custom-error-handling"
+    '------------------------------------------------------------------------------------------------------
+    hasCustomErrorHandlingAnnotation = F.regex.checkIfMatch(pDescription, REGEX_PATTERN)
+End Function
+
 Public Function isOneLiner() As Boolean
-    Const REGEX_PATTERN As String = "^Public Function \w*\(\) As \w*: Set"
+    Const REGEX_PATTERN As String = "^Public Function \w*\(\) As [\w\.]*: Set"
     '------------------------------------------------------------------------------------------------------
     isOneLiner = F.regex.checkIfMatch(pBody, REGEX_PATTERN)
 End Function
@@ -478,10 +463,10 @@ Private Function getErrorHandlingParams() As String
         'Set colParams = F.dictionaries.toCollection(params, DictPart_KeyOnly)
         
         
-        If colParams.Count = 1 Then
+        If colParams.count = 1 Then
             getErrorHandlingParams = ", """ & F.Collections.toString(colParams, , "; ") & """" & _
                                      ", " & F.Collections.toString(colParams, , ", ") & ")"
-        ElseIf colParams.Count > 1 Then
+        ElseIf colParams.count > 1 Then
             getErrorHandlingParams = ", _" & VBA.vbCrLf & VBA.String(34, " ") & _
                                      """" & F.Collections.toString(colParams, , "; ") & """" & _
                                      ", _" & VBA.vbCrLf & VBA.String(34, " ") & _
@@ -507,3 +492,135 @@ Public Sub replaceWithNewVersion(newVersion As String)
     Call selection.replaceWithGivenCode(newVersion)
     
 End Sub
+
+
+
+Public Function getErrorHandlingStatus() As String
+    Const REGEX_HAS_METHOD_NAME As String = "Const METHOD_NAME As String = ""{0}"""
+    Const REGEX_HAS_ON_ERR_GO_TO As String = "If Not DEV_MODE Then On Error GoTo ErrHandler"
+    'Const REGEX_ERR_HANDLER As String = "ExitPoint:[\u000A\u000D](?:.|[\u000A\u000D])*[\u000A\u000D]\s*Exit (?:Function|Sub)[\u000A\u000D\s]*'-*[\u000A\u000D]+ErrHandler:\s*errNumber = VBA\.Err\.Number: errDescription = VBA\.Err\.Description[\u000A\u000D]\s*Call ErrorManager\.addError(?:.|[\u000A\u000D])*?GoTo ExitPoint"
+    Const REGEX_EXIT_POINT As String = "ExitPoint:(?:.|\u000A|\u000D)*?Exit (?:Function|Sub)"
+    Const REGEX_ERR_HANDLER As String = "ErrHandler:\s*errNumber = VBA\.Err\.Number: errDescription = VBA\.Err\.Description[\u000A\u000D]\s*Call ErrorManager\.addError(?:.|[\u000A\u000D])*?GoTo ExitPoint"
+    Const REGEX_ERR_HANDLER_AFTER_EXIT_POINT As String = "ExitPoint:(?:.|\u000A|\u000D)*?ErrHandler:"
+    Const REGEX_FREEZE_EXCEL As String = "Call F\.Excel\.freeze"
+    Const REGEX_UNFREEZE_EXCEL As String = "ExitPoint:(?:.|[\u000A\u000D]\s)*Call F\.Excel\.unfreeze"
+    Const REGEX_NOTHING_AFTER_ERR_HANDLING As String = "GoTo ExitPoint[\n\s\t]*End (?:Sub|Function)"
+    '------------------------------------------------------------------------------------------------------
+    Dim errors As VBA.Collection
+    Dim regexPattern As String
+    '------------------------------------------------------------------------------------------------------
+    
+    Set errors = New VBA.Collection
+    
+    Call analyzeBody
+    
+    'Has proper method name
+    regexPattern = F.Strings.Format(REGEX_HAS_METHOD_NAME, pName)
+    If Not F.regex.checkIfMatch(pBody, regexPattern) Then
+        Call errors.Add("No method name constant")
+    End If
+    
+    'Has On Error GoTo ErrHandler
+    If Not F.regex.checkIfMatch(pBody, REGEX_HAS_ON_ERR_GO_TO) Then
+        Call errors.Add("No On Error GoTo ErrHandler command")
+    End If
+    
+    'Has proper ExitPoint section
+    If Not F.regex.checkIfMatch(pBody, REGEX_EXIT_POINT) Then
+        Call errors.Add("Invalid ExitPoint part")
+    End If
+    
+    'Has proper ErrHandler section
+    If Not F.regex.checkIfMatch(pBody, REGEX_ERR_HANDLER) Then
+        Call errors.Add("Invalid ErrHandler part")
+    End If
+    
+    'Has ErrHandler after ExitPoint
+    If Not F.regex.checkIfMatch(pBody, REGEX_ERR_HANDLER_AFTER_EXIT_POINT) Then
+        Call errors.Add("ErrHandler should be after ExitPoint")
+    End If
+    
+    'Has correct variables in ErrManager.addError part
+    If Not verifyVariablesInExitPoint Then
+        Call errors.Add("Discrepancies in variables definitions in ErrorManager.add")
+    End If
+    
+    'if xlsState.freeze used, has .unfreeze in exitpoint
+    If Not F.regex.checkIfMatch(pBody, REGEX_FREEZE_EXCEL) Then
+        ' no Excel freezing - no need to unfreeze it
+    ElseIf Not F.regex.checkIfMatch(pBody, REGEX_UNFREEZE_EXCEL) Then
+        Call errors.Add("No Excel unfreezing in ExitPoint")
+    End If
+    
+    'Nothing after GoToExitPoint
+    If Not F.regex.checkIfMatch(pBody, REGEX_NOTHING_AFTER_ERR_HANDLING) Then
+        Call errors.Add("There is some code between ErrorHandler and end of function/sub")
+    End If
+
+    If errors.count Then
+        getErrorHandlingStatus = "errors: " & F.Collections.toString(errors, StringifyMode_Normal, " | ")
+    Else
+        getErrorHandlingStatus = "correct"
+    End If
+
+End Function
+
+Private Function verifyVariablesInExitPoint() As Boolean
+    'Const REGEX_VARIABLES As String = "Call ErrorManager\.addError\(CLASS_NAME, METHOD_NAME, errNumber, errDescription, (?:_\n\s*)?""([\w;, ]*)"", (?:_\n\s*)?([\w, ]*)\)"
+    Const REGEX_VARIABLES As String = "Call ErrorManager\.addError\(CLASS_NAME, METHOD_NAME, errNumber, errDescription, (?:_[\u000A\u000D]\s*)?""([\w;, ]*)"", (?:_[\u000A\u000D]\s*)?([\w, \(\)\.]*)\)"
+    '------------------------------------------------------------------------------------------------------
+    Dim matches As Variant
+    Dim names As Variant
+    Dim variables As Variant
+    Dim i As Long
+    Dim count As Long
+    '------------------------------------------------------------------------------------------------------
+    
+    matches = F.regex.getMatchArray(pBody, REGEX_VARIABLES)
+    
+    If F.arrays.isDefined(matches) Then
+        names = VBA.Split(VBA.Replace(matches(1), " ", vbNullString), ";")
+        variables = VBA.Split(VBA.Replace(matches(2), " ", vbNullString), ",")
+        count = F.arrays.getSize(names)
+        
+        For i = LBound(variables) To UBound(variables)
+            If F.Strings.compareStrings(variables(i), "F.Excel.getExcelStateString(xlsState)", False) Then
+                variables(i) = "xlsState"
+            ElseIf F.Strings.compareStrings(variables(i), "areaToString(screenArea)", False) Then
+                variables(i) = "screenArea"
+            End If
+        Next i
+        
+        If F.arrays.compare(names, variables) Then
+            verifyVariablesInExitPoint = True
+        Else
+            verifyVariablesInExitPoint = False
+        End If
+    Else
+        verifyVariablesInExitPoint = True
+    End If
+    
+    If count <> countVariablesAndInputParams Then
+        verifyVariablesInExitPoint = False
+    End If
+    
+End Function
+
+Private Function countVariablesAndInputParams() As Long
+    Dim key As Variant
+    Dim var As EVbaVariable
+    '------------------------------------------------------------------------------------------------------
+    
+    For Each key In pInputParams.Keys
+        Set var = pInputParams.item(key)
+        If var.getName <> "errNumber" Then countVariablesAndInputParams = countVariablesAndInputParams + 1
+    Next key
+    
+    For Each key In pVariables.Keys
+        Set var = pVariables.item(key)
+        If var.getVarType <> VarType_Const Then
+            countVariablesAndInputParams = countVariablesAndInputParams + 1
+        End If
+    Next key
+    
+End Function

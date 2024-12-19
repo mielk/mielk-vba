@@ -117,7 +117,7 @@ Event RightClick(cNode As clsNode)
 Event NodeCheck(cNode As clsNode)   'Checkbox change event
 Event AfterLabelEdit(ByRef Cancel As Boolean, NewString As String, cNode As clsNode)
 Event KeyDown(cNode As clsNode, ByVal keyCode As MSForms.ReturnInteger, ByVal shift As Integer)
-Event MouseDown(cNode As clsNode, ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
+Event MouseDown(cNode As clsNode, ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal y As Single)
 Event CustomEvent(cNode As clsNode, eventName As String)
 Event BeforeDragDrop(draggedNode As clsNode)
 Event AfterDragDrop(draggedNode As clsNode, dropNode As clsNode)
@@ -128,7 +128,7 @@ Event AfterExpandCollapse()
                     
 Private Type POINTAPI
     x As Long
-    Y As Long
+    y As Long
 End Type
 
 #If Mac Then
@@ -138,7 +138,7 @@ End Type
             ByRef lpPoint As POINTAPI) As Long
     Private Declare PtrSafe Function SetCursorPos Lib "user32.dll" ( _
             ByVal x As Long, _
-            ByVal Y As Long) As Long
+            ByVal y As Long) As Long
     Private Declare PtrSafe Function getTickCount Lib "kernel32.dll" Alias "GetTickCount" () As Long
 #Else
     Private Declare Function GetCursorPos Lib "user32.dll" ( _
@@ -294,7 +294,7 @@ Public Property Let CheckBoxes(Optional bTriState As Boolean, ByVal bCheckboxes 
 
     If Not TreeControl Is Nothing Then
 
-        If TreeControl.controls.count And (bOrig <> mbCheckboxes Or bOrigTriState <> mbTriState) Then
+        If TreeControl.controls.Count And (bOrig <> mbCheckboxes Or bOrigTriState <> mbTriState) Then
             ' Checkboxes added changed after start-up so update the treeview
             mbRedesign = True
             Refresh
@@ -361,7 +361,7 @@ Public Property Set Images(objImages As Object)
     End If
 
     ' Flag we have a valid collection of images
-    mbGotIcons = mcolIcons.count >= 1
+    mbGotIcons = mcolIcons.Count >= 1
     
     Exit Property
 errH:
@@ -409,7 +409,7 @@ Public Property Let Indentation(sngIndent As Single)
 
     If Not TreeControl Is Nothing And Not (sngOld = msngIndent) Then
         ' changed after start-up so update the treeview
-        If TreeControl.controls.count Then
+        If TreeControl.controls.Count Then
             Set cNode = Me.ActiveNode
             Refresh
             If Not cNode Is Nothing Then
@@ -544,7 +544,7 @@ Public Property Let NodeHeight(ByVal sngNodeHeight As Single)
     #End If
     If mbRootButton Then msngRootLine = msngIndent
     If Not TreeControl Is Nothing And Not (sngOld = msngNodeHeight) Then
-        If TreeControl.controls.count Then
+        If TreeControl.controls.Count Then
             Set cNode = Me.ActiveNode
             Refresh
             If Not cNode Is Nothing Then
@@ -600,7 +600,7 @@ Public Property Let ShowExpanders(bShowExpanders As Boolean)
     mbShowExpanders = bShowExpanders
     
     If Not TreeControl Is Nothing Then
-        If TreeControl.controls.count Then
+        If TreeControl.controls.Count Then
             Refresh
         End If
     End If
@@ -618,7 +618,7 @@ Dim bOrig As Boolean
     mbShowLines = bShowLines
 
     If Not TreeControl Is Nothing Then
-        If TreeControl.controls.count Then
+        If TreeControl.controls.Count Then
             If bOrig <> mbShowLines Then
                 ' ShowLines added after start-up so update the treeview
                 Refresh
@@ -901,7 +901,7 @@ Public Function NodeAdd(Optional vRelative, _
     End If
 
     With cParent.childNodes
-        If .count = 0 Then
+        If .Count = 0 Then
             .add cNode
         Else
             i = 0
@@ -915,7 +915,7 @@ Public Function NodeAdd(Optional vRelative, _
             End If
             Select Case vRelationship
             Case tvFirst: .add cNode, , 1
-            Case tvLast: .add cNode, After:=.count
+            Case tvLast: .add cNode, After:=.Count
             Case tvNext: .add cNode, After:=i
             Case tvPrevious: .add cNode, Before:=i
             Case tvChild: .add cNode
@@ -928,7 +928,7 @@ Public Function NodeAdd(Optional vRelative, _
         .caption = CStr(vCaption)
         .ImageMain = vImageMain
         .ImageExpanded = vImageExpanded
-        .index = mcolNodes.count
+        .index = mcolNodes.Count
         
         Set .parentNode = cParent
         Set .tree = Me
@@ -1001,7 +1001,7 @@ Public Sub NodeRemove(cNode As clsNode)
     If mlNodesCreated Then
         If Not cNodeAbove Is Nothing Then
             Set Me.ActiveNode = cNodeAbove
-        ElseIf mcolNodes.count Then
+        ElseIf mcolNodes.Count Then
             Set Me.ActiveNode = mcolNodes(1)
         End If
     Else
@@ -1029,7 +1029,7 @@ Public Sub NodesClear()
 
     If Not TreeControl Is Nothing Then
         With TreeControl
-            For i = TreeControl.controls.count - 1 To 0 Step -1
+            For i = TreeControl.controls.Count - 1 To 0 Step -1
                 TreeControl.controls.remove i
             Next
             .ScrollBars = fmScrollBarsNone
@@ -1082,7 +1082,7 @@ Public Sub Refresh()
         Erase msngMaxWidths
         Exit Sub
         
-    ElseIf Me.TreeControl.controls.count = 0 Then
+    ElseIf Me.TreeControl.controls.Count = 0 Then
         ' display the treeview for first time
         bInit = True
     Else
@@ -1312,7 +1312,7 @@ Friend Function RaiseAfterLabelEdit(cNode As clsNode, sNewText As String) As Boo
 End Function
 
 Friend Sub NodeEventRouter(cNode As clsNode, sControl As String, lAction As tvMouse, _
-                           Optional Button As Integer, Optional shift As Integer, Optional x As Single, Optional Y As Single)
+                           Optional Button As Integer, Optional shift As Integer, Optional x As Single, Optional y As Single)
 Dim bFlag As Boolean
 Dim lngViewable As Long
 Dim cLastChild As clsNode
@@ -1354,9 +1354,9 @@ Dim cLastChild As clsNode
 
         If cNode.Expanded Then
             If Not cNode.childNodes Is Nothing Then
-                Set cLastChild = cNode.childNodes(cNode.childNodes.count)
+                Set cLastChild = cNode.childNodes(cNode.childNodes.Count)
                 If Not NodeIsVisible(cLastChild, lngViewable) Then
-                    If lngViewable > cNode.childNodes.count Then
+                    If lngViewable > cNode.childNodes.Count Then
                         ScrollToView cLastChild, Top1Bottom2:=2
                     Else
                         ScrollToView cNode, Top1Bottom2:=1
@@ -1523,7 +1523,7 @@ Dim sngTickCnt As Single
         #End If
     #End If
 
-    bInit = TreeControl.count = 0
+    bInit = TreeControl.Count = 0
 
     'TODO find equivalent for cancel key in Access & Word
     #If HostProject = "Access" Then
@@ -1543,7 +1543,7 @@ Dim sngTickCnt As Single
         ReDim msngMaxWidths(0 To 7)
     End If
 
-    If mcolNodes.count - mlNodesCreated > 400 Then
+    If mcolNodes.Count - mlNodesCreated > 400 Then
         ' creating many controls might take a while
         'HourGlassCursor bApply:=True
         Application.Cursor = xlWait
@@ -1814,7 +1814,7 @@ Dim sngTickCnt As Single
 
         'Vertical line for multiple roots
         If mbRootButton And mbShowLines Then
-            If moRootHolder.childNodes.count > 1 Then
+            If moRootHolder.childNodes.Count > 1 Then
 
                 If moRootHolder.VLine Is Nothing Then
                     Set moRootHolder.VLine = TreeControl.controls.add("forms.label.1", "VLine_Roots")
@@ -1871,10 +1871,10 @@ Dim sngTickCnt As Single
         #End If
 
         sCap = "Seconds: " & format(sngTickCnt, "0.00") & _
-               "    Nodes: " & mcolNodes.count & _
+               "    Nodes: " & mcolNodes.Count & _
                "  created: " & mlNodesCreated & _
                "  visible: " & mlVisCount & _
-               "    Total controls: " & TreeControl.controls.count
+               "    Total controls: " & TreeControl.controls.Count
 
         #If HostProject = "Access" Then
             If Not moForm Is Nothing Then
@@ -1947,7 +1947,7 @@ Sub HourGlassCursor(bApply As Boolean)
         If Not bApply Then
             ' in some systems the cursor may fail to reset to default, this forces it
             GetCursorPos pt
-            SetCursorPos pt.x, pt.Y
+            SetCursorPos pt.x, pt.y
         End If
     #End If
 
@@ -2354,7 +2354,7 @@ Private Sub Clone(cParent As clsNode, cNode As clsNode, Optional vBefore, Option
     
     AddNodeToCol mcolNodes, cClone, bTreeCol:=True
 
-    cClone.index = Nodes.count
+    cClone.index = Nodes.Count
     
     mbTriState = bTriStateOrig
     If mbTriState Then
@@ -2726,7 +2726,7 @@ Private Sub TreeControl_KeyDown(ByVal keyCode As MSForms.ReturnInteger, ByVal sh
         RaiseEvent KeyDown(ActiveNode, keyCode, shift)
     Else
         If Not mcolNodes Is Nothing Then
-            If mcolNodes.count Then
+            If mcolNodes.Count Then
                 Set ActiveNode = mcolNodes(1)
             End If
         End If
@@ -2807,7 +2807,7 @@ Private Sub TreeControl_KeyUp(ByVal keyCode As MSForms.ReturnInteger, ByVal shif
         End Select
     Else
         If Not mcolNodes Is Nothing Then
-            If mcolNodes.count Then
+            If mcolNodes.Count Then
                 Set ActiveNode = mcolNodes(1)
             End If
         End If
@@ -2829,9 +2829,9 @@ Public Function getScrollTop() As Single
     getScrollTop = TreeControl.scrollTop
 End Function
 
-Private Sub TreeControl_MouseDown(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
+Private Sub TreeControl_MouseDown(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal y As Single)
     Call setHoveredNode(Nothing)
-    RaiseEvent MouseDown(Nothing, Button, shift, x, Y)
+    RaiseEvent MouseDown(Nothing, Button, shift, x, y)
 End Sub
 
 Public Sub setHoveredNode(node As clsNode)
@@ -2899,7 +2899,7 @@ Private Sub runCustomRefreshActions()
 End Sub
 
 
-Private Sub TreeControl_MouseMove(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
+Private Sub TreeControl_MouseMove(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal y As Single)
     Call setHoveredNode(Nothing)
 End Sub
 

@@ -20,7 +20,7 @@ Private Const TOP_BORDER_NAME As String = "lblTopBorder"
 Private Const UNSAVED_DATA_ICON_NAME As String = "lblUnsavedDataIcon"
 Private Const UNSAVED_DATA_CAPTION_NAME As String = "lblUnsavedDataCaption"
 Private Const UNSAVED_DATA_TAG As String = "UnsavedData"
-Private Const UNSAVED_DATA_QUESTION As String = "ConfirmCancellingWindowWithUnsavedData"
+Private Const UNSAVED_DATA_QUESTION As String = "Windows.Warnings.CancelWithoutSaving"
 '[UI default values] --------------------------------------------------------------------------------------
 Private Const DEFAULT_IS_VISIBLE As Boolean = True
 Private Const DEFAULT_HEIGHT As Single = 40

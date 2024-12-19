@@ -255,7 +255,7 @@ End Sub
 
 
 
-Public Function Move(Optional x As Variant, Optional Y As Variant) As UILabel
+Public Function Move(Optional x As Variant, Optional y As Variant) As UILabel
     Dim offsetX As Single
     Dim offsetY As Single
     '------------------------------------------------------------------------------------------------------
@@ -266,8 +266,8 @@ Public Function Move(Optional x As Variant, Optional Y As Variant) As UILabel
         If VBA.IsNumeric(x) Then
             offsetX = (x - .left)
         End If
-        If VBA.IsNumeric(Y) Then
-            offsetY = (Y - .top)
+        If VBA.IsNumeric(y) Then
+            offsetY = (y - .top)
         End If
     End With
     
@@ -275,9 +275,9 @@ Public Function Move(Optional x As Variant, Optional Y As Variant) As UILabel
     
 End Function
 
-Public Function offset(Optional x As Single, Optional Y As Single) As UILabel
+Public Function offset(Optional x As Single, Optional y As Single) As UILabel
     Set offset = Me
-    Call UI.Forms.offsetControls(x, Y, pBackgroundLabel, pCaptionLabel)
+    Call UI.Forms.offsetControls(x, y, pBackgroundLabel, pCaptionLabel)
     With pBackgroundLabel
         pTop = .top
         pLeft = .left
@@ -520,12 +520,12 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     Call alignVertically(baseCtrl)
 End Sub
 
-Private Function IControl_move(Optional x As Variant, Optional Y As Variant) As IControl
-    Set IControl_move = Move(x, Y)
+Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
+    Set IControl_move = Move(x, y)
 End Function
 
-Private Function IControl_offset(Optional x As Single, Optional Y As Single) As IControl
-    Set IControl_offset = offset(x, Y)
+Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl
+    Set IControl_offset = offset(x, y)
 End Function
 
 Private Sub IControl_triggerEvent(eventId As Long)

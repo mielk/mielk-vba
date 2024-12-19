@@ -310,14 +310,18 @@ Public Sub updateInfo(status As ItemProcessStatusEnum, message As String)
     Call arrangeControls
 End Sub
 
+Public Sub updateCaption()
+    Call refreshNameLabel
+End Sub
+
 
 
 '[RENDERING]
 Private Function getLabelName(controlType As ControlTypeEnum) As String
-    Dim TAG As String
+    Dim tag As String
     '----------------------------------------------------------------------------------------------------------
-    TAG = CLASS_NAME & "|" & pName & "|" & controlType
-    getLabelName = "ctrl_" & VBA.left$(F.Crypto.SHA1HASH(TAG), 25)
+    tag = CLASS_NAME & "|" & pName & "|" & controlType
+    getLabelName = "ctrl_" & VBA.left$(F.Crypto.SHA1HASH(tag), 25)
 End Function
 
 
@@ -392,7 +396,7 @@ Private Sub refreshNameLabel()
         .Font.name = pFontFamily
         .Font.size = UI.Normalize.FontSize(pFontSize)
         .TextAlign = fmTextAlignLeft
-        .caption = getCaptionForDisplay(pName)
+        .caption = getCaptionForDisplay(pItem.getCaption)
     End With
 End Sub
 

@@ -94,7 +94,7 @@ End Function
 #Else
     Public Function getByPointer(pointer As Long) As Object
 #End If
-    Set getByPointer = f.Objects.getByPointer(pointer)
+    Set getByPointer = f.objects.getByPointer(pointer)
 End Function
 
 Public Function getObjectProperty(obj As Object, ByVal value As String) As Variant
@@ -241,7 +241,27 @@ Private Function isSpecificDataType(ByRef value As Variant, ByVal checkedDataTyp
     End If
 End Function
 
-
+Public Function isPrimitiveDataType(dataType As String) As Boolean
+    Static dict As Scripting.Dictionary
+    '------------------------------------------------------------------------------------------------------
+    
+    If dict Is Nothing Then
+        Set dict = f.dictionaries.Create(False)
+        With dict
+            Call .Add(TYPE_STRING, vbNullString)
+            Call .Add(TYPE_BYTE, vbNullString)
+            Call .Add(TYPE_INTEGER, vbNullString)
+            Call .Add(TYPE_LONG, vbNullString)
+            Call .Add(TYPE_DOUBLE, vbNullString)
+            Call .Add(TYPE_DATE, vbNullString)
+            Call .Add(TYPE_BOOLEAN, vbNullString)
+            Call .Add(TYPE_CURRENCY, vbNullString)
+        End With
+    End If
+    
+    isPrimitiveDataType = dict.exists(dataType)
+    
+End Function
 
 
 

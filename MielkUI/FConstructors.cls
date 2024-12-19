@@ -138,12 +138,12 @@ Public Function SelectItemWindow(items As Scripting.Dictionary, Optional ByVal w
     
 End Function
 
-Public Function DatePicker(Optional defaultDate As Variant, Optional ByVal windowTitle As String) As WDatePicker
+Public Function datePicker(Optional defaultDate As Variant, Optional ByVal windowTitle As String) As WDatePicker
     Dim initialDate As Date
     '------------------------------------------------------------------------------------------------------
     If VBA.IsDate(defaultDate) Then initialDate = VBA.CDate(defaultDate) Else initialDate = VBA.Date
-    Set DatePicker = New WDatePicker
-    With DatePicker
+    Set datePicker = New WDatePicker
+    With datePicker
         Call .setDefaultDate(initialDate)
         If VBA.Len(windowTitle) Then Call .setTitle(windowTitle)
     End With
@@ -192,7 +192,7 @@ Public Function LocationPropsForCurrentCursor() As DLocation
     
     Set LocationPropsForCurrentCursor = UI.Create.locationProps. _
                                 setAnchorLeft(position.x * PIXEL_SIZE / dpiScaling.x). _
-                                setAnchorTop(position.Y * PIXEL_SIZE / dpiScaling.Y). _
+                                setAnchorTop(position.y * PIXEL_SIZE / dpiScaling.y). _
                                 setAnchorPoint(AnchorPoint_TopMiddle)
     
 End Function
@@ -201,7 +201,7 @@ Public Function LocationPropsForScreenCenter() As DLocation
     Dim screenArea As area
     Dim dpiScaling As Coordinate
     Dim x As Single
-    Dim Y As Single
+    Dim y As Single
     '------------------------------------------------------------------------------------------------------
     
     screenArea = F.Screen.getActiveMonitorWorkingArea
@@ -209,12 +209,12 @@ Public Function LocationPropsForScreenCenter() As DLocation
     
     With screenArea
         x = .left + .width / 2
-        Y = .top + .height / 2
+        y = .top + .height / 2
     End With
     
     Set LocationPropsForScreenCenter = UI.Create.locationProps. _
                                 setAnchorLeft(x / dpiScaling.x). _
-                                setAnchorTop(Y / dpiScaling.Y). _
+                                setAnchorTop(y / dpiScaling.y). _
                                 setAnchorPoint(AnchorPoint_Middle)
     
 End Function

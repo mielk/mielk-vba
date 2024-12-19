@@ -57,6 +57,7 @@ Private Sub Class_Initialize()
     pUuid = F.Crypto.createUUID
     pVisible = True
     pBackColor = vbWhite
+    pTextAlignment = fmTextAlignCenter
 End Sub
 
 
@@ -97,6 +98,13 @@ End Function
 Public Function setWidth(value As Single) As UITextBox
     Set setWidth = Me
     pWidth = value
+    If pIsRendered Then Call updateSize
+End Function
+
+Public Function resize(Optional width As Single = -1, Optional height As Single = -1) As UITextBox
+    Set resize = Me
+    If height >= 0 Then pHeight = height
+    If width >= 0 Then pWidth = width
     If pIsRendered Then Call updateSize
 End Function
 
@@ -235,9 +243,10 @@ Public Function render() As UITextBox
     If Not pIsRendered Then
         Call insertBackgroundLabel
         Call insertTextBox
+        pIsRendered = True
         Call updateValue
         Call updateSize
-        pIsRendered = True
+        Call updateView
     End If
 End Function
 
@@ -275,7 +284,7 @@ End Sub
 
 
 
-Public Function Move(Optional x As Variant, Optional Y As Variant) As UITextBox
+Public Function Move(Optional x As Variant, Optional y As Variant) As UITextBox
     Dim offsetX As Single
     Dim offsetY As Single
     '------------------------------------------------------------------------------------------------------
@@ -286,8 +295,8 @@ Public Function Move(Optional x As Variant, Optional Y As Variant) As UITextBox
         If VBA.IsNumeric(x) Then
             offsetX = (x - .left)
         End If
-        If VBA.IsNumeric(Y) Then
-            offsetY = (Y - .top)
+        If VBA.IsNumeric(y) Then
+            offsetY = (y - .top)
         End If
     End With
     
@@ -295,9 +304,9 @@ Public Function Move(Optional x As Variant, Optional Y As Variant) As UITextBox
     
 End Function
 
-Public Function offset(Optional x As Single, Optional Y As Single) As UITextBox
+Public Function offset(Optional x As Single, Optional y As Single) As UITextBox
     Set offset = Me
-    Call UI.Forms.offsetControls(x, Y, pBackgroundLabel, pTextBox)
+    Call UI.Forms.offsetControls(x, y, pBackgroundLabel, pTextBox)
     With pBackgroundLabel
         pTop = .top
         pLeft = .left
@@ -335,18 +344,30 @@ End Sub
 
 
 Private Sub updateSize()
+    Dim width As Single
+    '------------------------------------------------------------------------------------------------------
+    
     pEventsDisabled = True
-    pBackgroundLabel.width = pWidth
+    
+    With pBackgroundLabel
+        .width = pWidth
+        .height = VBA.IIf(pHeight > 0, pHeight, .height)
+    End With
+    
     With pTextBox
         .value = "kj"
         .AutoSize = True
         .AutoSize = False
         .value = pValue
+        DoEvents
         .top = calculateTextBoxTop
-        .width = pWidth - 2 * CAPTION_MARGIN
+        width = pWidth - 2 * CAPTION_MARGIN
+        .width = VBA.IIf(width <= 0, .width, width)
         .left = pBackgroundLabel.left + CAPTION_MARGIN
     End With
+    
     pEventsDisabled = False
+    
 End Sub
 
 Private Sub updateValue()
@@ -401,7 +422,9 @@ End Sub
 
 Private Sub updateBackColor()
     If pIsRendered Then
+        pBackgroundLabel.BackStyle = fmBackStyleOpaque
         pBackgroundLabel.backColor = pBackColor
+        pTextBox.BackStyle = fmBackStyleOpaque
         pTextBox.backColor = pBackColor
     End If
 End Sub
@@ -412,6 +435,12 @@ Private Sub updateTextAlignment()
     End If
 End Sub
 
+Private Sub updateView()
+    Call updateVisibility
+    Call updateToolTips
+    Call updateBorderColor
+    Call updateBackColor
+End Sub
 
 
 Public Sub setFocus()
@@ -500,12 +529,12 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     Call alignVertically(baseCtrl)
 End Sub
 
-Private Function IControl_move(Optional x As Variant, Optional Y As Variant) As IControl
-    Set IControl_move = Move(x, Y)
+Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
+    Set IControl_move = Move(x, y)
 End Function
 
-Private Function IControl_offset(Optional x As Single, Optional Y As Single) As IControl
-    Set IControl_offset = offset(x, Y)
+Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl
+    Set IControl_offset = offset(x, y)
 End Function
 
 Private Sub IControl_triggerEvent(eventId As Long)

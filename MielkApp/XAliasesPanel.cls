@@ -500,7 +500,7 @@ Public Sub setFocus()
     For Each key In pLines.Keys
         Set line = pLines.items(0)
         If Not line Is Nothing Then
-            If Not line.isReadOnly Then
+            If Not line.IsReadOnly Then
                 Call line.setFocus
                 Exit For
             End If

@@ -45,6 +45,7 @@ Private pStrings As FStrings
 Private pSystem As FSystem
 Private pTextFiles As FTextFile
 Private pUtils As FUtils
+Private pValidations As FValidations
 Private pVariables As FVariables
 '----------------------------------------------------------------------------------------------------------
 
@@ -85,6 +86,7 @@ Private Sub Class_Initialize()
     Set pSystem = New FSystem
     Set pTextFiles = New FTextFile
     Set pUtils = New FUtils
+    Set pValidations = New FValidations
     Set pVariables = New FVariables
 End Sub
 
@@ -181,8 +183,8 @@ Public Function Numerics() As FNumerics
     Set Numerics = pNumerics
 End Function
 
-Public Function Objects() As FObjects
-    Set Objects = pObjects
+Public Function objects() As FObjects
+    Set objects = pObjects
 End Function
 
 Public Function Outlook() As FOutlook
@@ -231,6 +233,10 @@ End Function
 
 Public Function Utils() As FUtils
     Set Utils = pUtils
+End Function
+
+Public Function validations() As FValidations
+    Set validations = pValidations
 End Function
 
 Public Function Variables() As FVariables

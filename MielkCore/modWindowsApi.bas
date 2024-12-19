@@ -27,15 +27,15 @@ End Type
     
     Public Declare PtrSafe Function GetActiveWindow Lib "user32.dll" () As LongPtr
     Public Declare PtrSafe Function BringWindowToTop Lib "user32" (ByVal hWnd As LongPtr) As Long
-    Public Declare PtrSafe Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (destination As Any, Source As Any, ByVal length As LongLong)
+    Public Declare PtrSafe Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (destination As Any, source As Any, ByVal length As LongLong)
     Public Declare PtrSafe Function EnumChildWindows Lib "user32.dll" (ByVal hWndParent As LongPtr, ByVal lpEnumFunc As LongPtr, ByVal lParam As LongPtr) As Long
-    Public Declare PtrSafe Function EnumDisplayMonitors Lib "user32.dll" (ByVal hDC As LongPtr, ByRef lprcClip As Any, ByVal lpfnEnum As LongPtr, ByVal dwData As LongPtr) As Boolean
+    Public Declare PtrSafe Function EnumDisplayMonitors Lib "user32.dll" (ByVal hdc As LongPtr, ByRef lprcClip As Any, ByVal lpfnEnum As LongPtr, ByVal dwData As LongPtr) As Boolean
     Public Declare PtrSafe Function EnumWindows Lib "user32.dll" (ByVal lpEnumFunc As LongPtr, ByVal param As LongPtr) As Long
     Public Declare PtrSafe Function FindWindows Lib "user32.dll" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As LongPtr
     Public Declare PtrSafe Function apiGetComputerName Lib "kernel32" Alias "GetComputerNameA" (ByVal lpBuffer As String, nSize As Long) As Long
     Public Declare PtrSafe Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Boolean
     Public Declare PtrSafe Function GetDpiForMonitor Lib "shcore" (ByVal hMonitor As LongPtr, ByVal dpiType As MONITOR_DPI_TYPE, ByRef dpiX As Long, ByRef dpiY As Long) As Long
-    Public Declare PtrSafe Function GetMonitorInfo Lib "user32.dll" Alias "GetMonitorInfoA" (ByVal hMonitor As LongPtr, ByRef lpMI As MONITORINFOEX) As Boolean
+    Public Declare PtrSafe Function GetMonitorInfo Lib "user32.dll" Alias "GetMonitorInfoA" (ByVal hMonitor As LongPtr, ByRef lpmi As MONITORINFOEX) As Boolean
     Public Declare PtrSafe Function GetSystemMetrics Lib "user32" (ByVal index As Integer) As Integer
     Public Declare PtrSafe Function GetUserName Lib "advapi32.dll" Alias "GetUserNameA" (ByVal lpBuffer As String, nSize As Long) As Long
     Public Declare PtrSafe Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hWnd As LongPtr, ByVal lpString As String, ByVal cch As Long) As Long
@@ -53,15 +53,15 @@ End Type
 #ElseIf VBA7 Then
     Public Declare PtrSafe Function GetActiveWindow Lib "user32.dll" () As LongPtr
     Public Declare PtrSafe Function BringWindowToTop Lib "user32" (ByVal hWnd As LongPtr) As Long
-    Public Declare PtrSafe Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (destination As Any, Source As Any, ByVal length As Long)
+    Public Declare PtrSafe Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (destination As Any, source As Any, ByVal length As Long)
     Public Declare PtrSafe Function EnumChildWindows Lib "user32.dll" (ByVal hWndParent As LongPtr, ByVal lpEnumFunc As LongPtr, ByVal lParam As LongPtr) As Long
-    Public Declare PtrSafe Function EnumDisplayMonitors Lib "user32.dll" (ByVal hDC As LongPtr, ByRef lprcClip As Any, ByVal lpfnEnum As LongPtr, ByVal dwData As LongPtr) As Boolean
+    Public Declare PtrSafe Function EnumDisplayMonitors Lib "user32.dll" (ByVal hdc As LongPtr, ByRef lprcClip As Any, ByVal lpfnEnum As LongPtr, ByVal dwData As LongPtr) As Boolean
     Public Declare PtrSafe Function EnumWindows Lib "user32.dll" (ByVal lpEnumFunc As LongPtr, ByVal param As LongPtr) As Long
     Public Declare PtrSafe Function FindWindows Lib "user32.dll" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As LongPtr
     Public Declare PtrSafe Function apiGetComputerName Lib "kernel32" Alias "GetComputerNameA" (ByVal lpBuffer As String, nSize As Long) As Long
     Public Declare PtrSafe Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Boolean
     Public Declare PtrSafe Function GetDpiForMonitor Lib "shcore" (ByVal hMonitor As LongPtr, ByVal dpiType As MONITOR_DPI_TYPE, ByRef dpiX As Long, ByRef dpiY As Long) As Long
-    Public Declare PtrSafe Function GetMonitorInfo Lib "user32.dll" Alias "GetMonitorInfoA" (ByVal hMonitor As LongPtr, ByRef lpMI As MONITORINFOEX) As Boolean
+    Public Declare PtrSafe Function GetMonitorInfo Lib "user32.dll" Alias "GetMonitorInfoA" (ByVal hMonitor As LongPtr, ByRef lpmi As MONITORINFOEX) As Boolean
     Public Declare PtrSafe Function GetSystemMetrics Lib "user32" (ByVal index As Integer) As Integer
     Public Declare PtrSafe Function GetUserName Lib "advapi32.dll" Alias "GetUserNameA" (ByVal lpBuffer As String, nSize As Long) As Long
     Public Declare PtrSafe Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hWnd As LongPtr, ByVal lpString As String, ByVal cch As Long) As Long

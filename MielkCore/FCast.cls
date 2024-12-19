@@ -34,3 +34,11 @@ Public Function toValidationObject(value As Variant) As ValidationObject
     On Error Resume Next
     Set toValidationObject = value
 End Function
+
+Public Function toRange(value As Variant) As Excel.Range
+    If value Is Nothing Then
+    ElseIf Not VBA.IsObject(value) Then
+    ElseIf TypeOf value Is Excel.Range Then
+        Set toRange = value
+    End If
+End Function

@@ -22,13 +22,13 @@ Public Sub add(item As Object)
     Stop
     'If TypeOf item Is IUserForm Then
         Call F.dictionaries.addItem(pContainer, item, item)
-        Debug.Print "Item " & ObjPtr(item) & " added to GlobalCache | GlobalCacheCounter: " & pContainer.count
+        Debug.Print "Item " & ObjPtr(item) & " added to GlobalCache | GlobalCacheCounter: " & pContainer.Count
     'End If
 End Sub
 
 Public Sub remove(item As Object)
     Call F.dictionaries.removeKey(pContainer, item)
-    Debug.Print "Item " & ObjPtr(item) & " removed from GlobalCache | GlobalCacheCounter: " & pContainer.count
+    Debug.Print "Item " & ObjPtr(item) & " removed from GlobalCache | GlobalCacheCounter: " & pContainer.Count
 End Sub
 
 Public Function getForms() As Scripting.Dictionary
@@ -65,5 +65,5 @@ Public Sub clear()
         On Error GoTo 0
     Next varKey
     Call pContainer.removeAll
-    Debug.Print "GlobalCache cleared | GlobalCacheCounter: " & pContainer.count
+    Debug.Print "GlobalCache cleared | GlobalCacheCounter: " & pContainer.Count
 End Sub

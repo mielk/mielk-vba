@@ -314,18 +314,12 @@ Private Sub insertLines()
 End Sub
 
 Public Sub insertBorder(index As XlBordersIndex, color As Long)
-    Dim dict As Scripting.Dictionary
-    Dim line As xxPropertyLine
-    '----------------------------------------------------------------------------------------------------------
-
     If index = xlEdgeTop Then
         Call updateBorderVariable(pTopBorder, color)
     ElseIf index = xlEdgeBottom Then
         Call updateBorderVariable(pBottomBorder, color)
     End If
-
     Call updateBordersSizeAndPosition
-
 End Sub
 
 Private Sub updateBorderVariable(ByRef borderLabel As MSForms.label, color As Long)
@@ -415,12 +409,12 @@ Private Sub updateSize()
         '[Height]
         If pHeight >= 0 Then
             .height = pHeight
-        ElseIf pMinHeight > 0 And lastPoint.Y < pMinHeight Then
+        ElseIf pMinHeight > 0 And lastPoint.y < pMinHeight Then
             .height = pMinHeight
-        ElseIf pMaxHeight > 0 And lastPoint.Y > pMaxHeight Then
+        ElseIf pMaxHeight > 0 And lastPoint.y > pMaxHeight Then
             .height = pMaxHeight
         Else
-            .height = lastPoint.Y
+            .height = lastPoint.y
         End If
         
     End With
@@ -439,8 +433,8 @@ Private Sub updateScrollBars()
         .ScrollBars = fmScrollBarsNone
         
         '[Vertical scroll bar]
-        .ScrollHeight = lastPoint.Y
-        If lastPoint.Y > .InsideHeight Then
+        .ScrollHeight = lastPoint.y
+        If lastPoint.y > .InsideHeight Then
             .ScrollBars = .ScrollBars + fmScrollBarsVertical
             .scrollTop = 0
         End If

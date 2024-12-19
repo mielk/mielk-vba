@@ -11,7 +11,7 @@ Option Explicit
 
 Private Const CLASS_NAME As String = "VbaCodeParser"
 '----------------------------------------------------------------------------------------------------------
-Private Const TO_SINGLE_LINERS_REPLACE_PATTERN As String = "_[\n\s\t]*"
+Private Const TO_SINGLE_LINERS_REPLACE_PATTERN As String = " _[\s\t]*[\u000A\u000D]*"
 '----------------------------------------------------------------------------------------------------------
 
 
@@ -76,7 +76,7 @@ Public Function findMethodType(body As String) As MethodTypeEnum
 End Function
 
 Public Function getMethodInputParamsDtos(body As String) As VBA.Collection
-    Const REGEX_PATTERN As String = "[\(|,| ](?:(Optional|ParamArray) |)(?:(ByRef|ByVal) |)(\w+)(\(\)|)" & _
+    Const REGEX_PATTERN As String = "(Dim)?[\(|,| ](?:(Optional|ParamArray) |)(?:(ByRef|ByVal) |)(\w+)(\(\)|)" & _
                                     "(?: As ([\w\.]+))(?:| = ([\w\.]+|\"".*\""))[\)|,|]"
     '------------------------------------------------------------------------------------------------------
     Dim col As VBA.Collection
@@ -89,17 +89,19 @@ Public Function getMethodInputParamsDtos(body As String) As VBA.Collection
     Set col = F.regex.getMatchArraysCollection(body, REGEX_PATTERN)
     If F.Collections.isNonEmptyCollection(col) Then
         For Each arr In col
-            Set dto = F.dictionaries.Create(False)
-            With dto
-                Call .Add(Props_Vbe.IsOptional.getName, arr(LBound(arr)))
-                Call .Add(Props_Vbe.IsParamArray.getName, arr(LBound(arr)))
-                Call .Add(Props_Vbe.PassMode.getName, arr(LBound(arr) + 1))
-                Call .Add(Props.name.getName, arr(LBound(arr) + 2))
-                Call .Add(Props_Vbe.IsArray.getName, arr(LBound(arr) + 3))
-                Call .Add(Props_Vbe.DataType.getName, arr(LBound(arr) + 4))
-                Call .Add(Props_Vbe.DefaultValue.getName, arr(LBound(arr) + 5))
-            End With
-            Call getMethodInputParamsDtos.Add(dto)
+            If VBA.IsEmpty(arr(LBound(arr))) Then
+                Set dto = F.dictionaries.Create(False)
+                With dto
+                    Call .Add(Props_Vbe.IsOptional.getName, arr(LBound(arr) + 1))
+                    Call .Add(Props_Vbe.IsParamArray.getName, arr(LBound(arr) + 1))
+                    Call .Add(Props_Vbe.PassMode.getName, arr(LBound(arr) + 2))
+                    Call .Add(props.name.getName, arr(LBound(arr) + 3))
+                    Call .Add(Props_Vbe.IsArray.getName, arr(LBound(arr) + 4))
+                    Call .Add(Props_Vbe.dataType.getName, arr(LBound(arr) + 5))
+                    Call .Add(Props_Vbe.DefaultValue.getName, arr(LBound(arr) + 6))
+                End With
+                Call getMethodInputParamsDtos.Add(dto)
+            End If
         Next arr
     End If
     
@@ -151,11 +153,11 @@ Public Function getVariablesDtosFromCodeLine(codeLine As String) As VBA.Collecti
             For Each arr In col
                 Set dto = F.dictionaries.Create(False)
                 With dto
-                    Call .Add(Props.name.getDbField, arr(LBound(arr)))
+                    Call .Add(props.name.getDbField, arr(LBound(arr)))
                     Call .Add(Props_Vbe.variableType.getDbField, variableType)
                     Call .Add(Props_Vbe.IsArray.getDbField, arr(LBound(arr) + 1))
                     Call .Add(Props_Vbe.ArraySize.getDbField, arr(LBound(arr) + 1))
-                    Call .Add(Props_Vbe.DataType.getDbField, arr(LBound(arr) + 2))
+                    Call .Add(Props_Vbe.dataType.getDbField, arr(LBound(arr) + 2))
                     Call .Add(Props_Vbe.DefaultValue.getDbField, arr(LBound(arr) + 3))
                 End With
                 Call getVariablesDtosFromCodeLine.Add(dto)
@@ -166,7 +168,7 @@ Public Function getVariablesDtosFromCodeLine(codeLine As String) As VBA.Collecti
 End Function
 
 Public Function getVariableType(ByVal codeLine As String) As VarTypeEnum
-    Const REGEX_PATTERN As String = "\s*\b(Dim \b(?!err)|Static \b|Const \b)"
+    Const REGEX_PATTERN As String = "\s*\b(Dim \b(?!err(Number|Description))|Static \b|Const \b)"
     '------------------------------------------------------------------------------------------------------
     Dim keyword As String
     '------------------------------------------------------------------------------------------------------

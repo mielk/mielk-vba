@@ -12,8 +12,11 @@ Option Explicit
 Private Const CLASS_NAME As String = "ClassGenerator"
 '----------------------------------------------------------------------------------------------------------
 Private Const CLASS_NAME_PROMPT As String = "VBE.Actions.AddClass.EnterClassName"
+Private Const PROPS_NAME_PROMPT As String = "VBE.Actions.AddProps.EnterPropsNames"
 '[Line patterns and constants] ----------------------------------------------------------------------------
 Private Const CLASS_NAME_LINE_PATTERN As String = "Private Const CLASS_NAME As String = ""{0}"""
+Private Const REGEX_PATTERN_USER_INPUT As String = "^\s*(?:\[([^\[\]]*)\])?((?: *\w+ *(?:: *\w* *)?(?:,|$))+)"
+Private Const REGEX_PATTERN_PROPS_NAMES As String = "(?:^|,)\s*(\w*)\s*(?::\s*(\w*))?"
 '----------------------------------------------------------------------------------------------------------
 
 Public Sub addClass()
@@ -23,7 +26,7 @@ Public Sub addClass()
     '------------------------------------------------------------------------------------------------------
     
     Set activeProject = Fn.getActiveProject
-    className = VBA.InputBox(Msg.getText(CLASS_NAME_PROMPT))
+    className = VBA.InputBox(msg.getText(CLASS_NAME_PROMPT))
     
     Set newClass = activeProject.VBComponents.Add(vbext_ct_ClassModule)
     With newClass
@@ -99,5 +102,34 @@ Public Sub addSettersAndGetters()
     Next property
     
     Call cm.InsertLines(cm.CountOfLines + 1, F.Collections.toString(codeLines, , VBA.vbCrLf))
+    
+End Sub
+
+
+
+
+Public Sub addProps()
+    Dim project As VBIDE.VBProject
+    Dim userInput As String
+    '------------------------------------------------------------------------------------------------------
+    Dim matches As Variant
+    Dim category As String
+    Dim names As String
+    Dim propsMatches As VBA.Collection
+    '------------------------------------------------------------------------------------------------------
+    
+    Set project = Fn.getActiveProject
+    userInput = VBA.InputBox(msg.getText(PROPS_NAME_PROMPT))
+    matches = F.regex.getMatchArray(userInput, REGEX_PATTERN_USER_INPUT)
+    
+    If F.arrays.isDefined(matches) Then
+        Call F.System.saveToClipboard(userInput)
+        category = matches(LBound(matches))
+        names = matches(LBound(matches) + 1)
+        Set propsMatches = F.regex.getMatchArraysCollection(names, REGEX_PATTERN_PROPS_NAMES)
+        
+        Call PropsGenerator.addProps(project, propsMatches, category)
+        
+    End If
     
 End Sub

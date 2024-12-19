@@ -26,9 +26,9 @@ Private pExcel As Excel.Application
 Public Sub run()
     '[Select file]
     Call createProcessUnits
-    Call loadConfig
     
     If f.dictionaries.isNonEmptyDictionary(pItems) Then
+        Call loadConfig
         Call setup
         
         Set pProcessor = setupItemsProcessor

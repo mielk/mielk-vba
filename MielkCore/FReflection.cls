@@ -81,3 +81,28 @@ Public Function runMethod(item As Variant, ByVal functionName As String, Optiona
     
 End Function
 
+Public Function convertToLocalFormula(formula As String, Optional isR1C1Formula As Boolean = True) As String
+    Dim cell As Excel.Range
+    Dim alerts As Boolean
+    '------------------------------------------------------------------------------------------------------
+    
+    Set cell = wksOperations.cells(1, 1)
+    
+    alerts = Application.displayAlerts
+    Application.displayAlerts = False
+    
+    On Error Resume Next
+    
+    If isR1C1Formula Then
+        cell.Formula2R1C1 = formula
+        convertToLocalFormula = cell.Formula2R1C1Local
+    Else
+        cell.Formula2 = formula
+        convertToLocalFormula = cell.Formula2Local
+    End If
+    On Error GoTo 0
+    
+    
+    Application.displayAlerts = alerts
+    
+End Function

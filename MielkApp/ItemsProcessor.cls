@@ -265,6 +265,11 @@ Public Sub triggerDetailStatusUpdate(action As String, progress As Single, Optio
     
 End Sub
 
+Public Sub triggerLineDetailsUpdate(key As Variant)
+    If Not pStatusViewer Is Nothing Then
+        Call pStatusViewer.updateLine(key)
+    End If
+End Sub
 
 
 

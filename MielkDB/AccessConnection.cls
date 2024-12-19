@@ -516,6 +516,7 @@ End Function
 
 
 
+
 '[CONNECTION EVENTS]
 'Private Sub pConnection_BeginTransComplete(ByVal TransactionLevel As Long, ByVal pError As ADODB.Error, adStatus As ADODB.EventStatusEnum, ByVal pConnection As ADODB.connection)
 '    RaiseEvent BeginTransComplete
@@ -543,6 +544,10 @@ Private Sub IDbConnection_setConnectionString(conStr As String)
     Call setConnectionString(conStr)
 End Sub
 
+Private Sub IDbConnection_setConnectionDetails(provider As String, dataSource As String, dbName As String, Optional userName As String, Optional password As String)
+    Stop
+End Sub
+
 Private Function IDbConnection_getConnectionString() As String
     IDbConnection_getConnectionString = pConnectionString
 End Function
@@ -555,8 +560,8 @@ Private Sub IDbConnection_openConnection()
     Call openConnection
 End Sub
 
-Private Function IDbConnection_clone() As IDbConnection
-    Set IDbConnection_clone = clone
+Private Function IDbConnection_cloneConnection() As IDbConnection
+    Set IDbConnection_cloneConnection = clone
 End Function
 
 Private Sub IDbConnection_closeConnection(Optional rollbackTransactionIfOpen As Boolean = False)
@@ -623,13 +628,13 @@ Private Function IDbConnection_getScalarFunctionValue(sqlString As String, Optio
     IDbConnection_getScalarFunctionValue = getPrimitiveValue(sqlString, lockType)
 End Function
 
-Private Sub IDbConnection_runStoredProcedure(procName As String, params As Scripting.Dictionary, Optional asynchronous As Boolean = True)
+Private Function IDbConnection_runStoredProcedure(procName As String, params As Scripting.Dictionary, Optional asynchronous As Boolean = True) As ValidationObject
     'Call runStoredProcedure(procName, params, asynchronous)
-End Sub
+End Function
 
-Private Sub IDbConnection_runStoredProcedureWithCommand(procName As String, params As Scripting.Dictionary, Optional asynchronous As Boolean = True)
+Private Function IDbConnection_runStoredProcedureWithCommand(procName As String, params As Scripting.Dictionary, Optional asynchronous As Boolean = True) As ValidationObject
     'Call runStoredProcedureWithCommand(procName, params, asynchronous)
-End Sub
+End Function
 
 Private Function IDbConnection_Meta() As IMeta
     Set IDbConnection_Meta = Meta

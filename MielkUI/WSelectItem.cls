@@ -86,6 +86,13 @@ Private pCancelledByUser As Boolean
 '----------------------------------------------------------------------------------------------------------
 Private pAddingAllowed As Boolean
 Private pAddingAction As Scripting.Dictionary
+Private pEditingAllowed As Boolean
+Private pEditingAction As Scripting.Dictionary
+Private pDeletingAllowed As Boolean
+Private pDeletingAction As Scripting.Dictionary
+'----------------------------------------------------------------------------------------------------------
+Event AfterItemEdited(item As Variant, ByRef newCaption As String)
+Event AfterItemDeleted(item As Variant, ByRef confirmed As Boolean)
 '----------------------------------------------------------------------------------------------------------
 
 Private Sub Class_Initialize()
@@ -184,6 +191,28 @@ End Function
 Public Function setAddingAction(value As Scripting.Dictionary) As WSelectItem
     Set setAddingAction = Me
     Set pAddingAction = value
+End Function
+
+Public Function setEditingAllowed(value As Boolean) As WSelectItem
+    Set setEditingAllowed = Me
+    pEditingAllowed = value
+End Function
+
+Public Function setEditingAction(value As Scripting.Dictionary) As WSelectItem
+    Set setEditingAction = Me
+    pEditingAllowed = True
+    Set pEditingAction = value
+End Function
+
+Public Function setDeletingAllowed(value As Boolean) As WSelectItem
+    Set setDeletingAllowed = Me
+    pDeletingAllowed = value
+End Function
+
+Public Function setDeletingAction(value As Scripting.Dictionary) As WSelectItem
+    Set setDeletingAction = Me
+    pDeletingAllowed = True
+    Set pDeletingAction = value
 End Function
 
 
@@ -328,6 +357,8 @@ Private Sub insertListBox()
                             setBorderColor(pListBoxBorderColor). _
                             setHasHeaderPanel(False). _
                             setItemsPreviewable(False). _
+                            setItemsEditable(pEditingAllowed). _
+                            setItemsRemovable(pDeletingAllowed). _
                             setHeaderDefinitions(pListHeaders). _
                             setWidth(pListBoxWidth). _
                             setHeight(pListBoxHeight)
@@ -453,7 +484,7 @@ Private Sub validate()
         If pMultiSelectAllowed Then
             Call F.Variables.assign(itemsSelected, .getSelectedValue)
             If F.Collections.isNonEmptyCollection(itemsSelected) Then
-                selectionCounter = itemsSelected.count
+                selectionCounter = itemsSelected.Count
             End If
             
             If pMinItemsSelected > 0 And selectionCounter < pMinItemsSelected Then
@@ -499,11 +530,6 @@ Private Sub pForm_Cancel()
     pCancelledByUser = True
 End Sub
 
-Private Sub pListBox_Change()
-    Call ErrorManager.clear
-    Call validate
-End Sub
-
 Private Sub pList_AfterDoubleClick()
     Call ErrorManager.clear
     If Not pMultiSelectAllowed Then
@@ -519,7 +545,16 @@ End Sub
 
 
 Private Sub pList_AfterChange()
+    Call ErrorManager.clear
     Call validate
+End Sub
+
+Private Sub pList_AfterEditItemClick(item As Variant, ByRef newCaption As String)
+    RaiseEvent AfterItemEdited(item, newCaption)
+End Sub
+
+Private Sub pList_AfterRemoveItemClick(item As Variant, ByRef confirmed As Boolean)
+    RaiseEvent AfterItemDeleted(item, confirmed)
 End Sub
 
 Private Sub pList_GiveFocusToTopControl()

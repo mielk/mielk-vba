@@ -13,13 +13,21 @@ Implements IRepoManager
 
 Private Const CLASS_NAME As String = "RepoManager_Sheet"
 '----------------------------------------------------------------------------------------------------------
+Private Const PROTECTION_PASSWORD As String = "a" 'RepoManager_ProtectionPassword"
 Private Const ADD_BUTTON As String = "btnAdd"
 Private Const CLOSE_BUTTON As String = "btnClose"
 Private Const DELETE_ICON As String = "icoDelete"
 Private Const EDIT_ICON As String = "icoEdit"
 Private Const IS_EDIT_SHEET_NAME As String = "IS_EDIT_SHEET"
 Private Const REPO_TAG_NAME As String = "REPO_TAG"
-Private Const PROTECTION_PASSWORD As String = "a" 'RepoManager_ProtectionPassword"
+'[View constants]
+Private Const ADD_NEW_BUTTON_COLOR As Long = 11957550
+Private Const FONT_NAME As String = "Segoe UI"
+Private Const FONT_SIZE As Long = 10
+'[Captions]
+Private Const DEFAULT_DELETE_ITEM_TITLE As String = "GridManager.DeleteItem.WindowTitle"
+Private Const DEFAULT_DELETE_ITEM_QUESTION As String = "GridManager.DeleteItem.ConfirmationQuestion"
+Private Const DEFAULT_DELETE_ERROR_INFO As String = "GridManager.DeleteItem.ErrorInfo"
 '----------------------------------------------------------------------------------------------------------
 Private Const COL_DELETE As Long = 2
 Private Const COL_EDIT As Long = 3
@@ -56,9 +64,6 @@ Private pSortAscending As Boolean
 
 Private Sub Class_Initialize()
     Set pBook = MApp.getRepoEditBook
-    If pBook Is Nothing Then
-        Set pBook = Excel.Workbooks("utd.xlsm")
-    End If
     Set pListener = ActionListener
 End Sub
 
@@ -73,7 +78,11 @@ Friend Sub destroy()
 End Sub
 
 Private Sub removeSheet()
-    If F.Books.isValid(pBook) Then
+    If Not F.Books.isValid(pBook) Then
+        ' skip - missing reference to book
+    ElseIf Not F.Sheets.isValid(pSheet) Then
+        ' skip - missing reference to sheet
+    Else
         Call F.Sheets.Delete(pBook, pSheet.name)
     End If
 End Sub
@@ -100,11 +109,16 @@ Public Sub show()
 End Sub
 
 Private Function insertSheet() As Excel.Worksheet
+
     Call removePreviousSheets
+    
     Call wksEdit.Copy(Before:=pBook.Worksheets(1))
     Set insertSheet = pBook.Worksheets(1)
     insertSheet.name = pParent.getSheetName
     Call F.ExcelNames.addValue(insertSheet, REPO_TAG_NAME, pParent.getName)
+    
+    Call removeTempSheet
+    
 End Function
 
 Private Sub removePreviousSheets()
@@ -122,6 +136,11 @@ Private Sub removePreviousSheets()
         End If
     Next wks
     
+    If sheetToBeRemoved.Count = pBook.Worksheets.Count Then
+        Call pBook.Worksheets.Add(pBook.Worksheets(1))
+        pBook.Worksheets(1).name = SHEET_NAME_TEMP
+    End If
+    
     Excel.Application.DisplayAlerts = False
     For Each wksName In sheetToBeRemoved
         Set wks = pBook.Worksheets(wksName)
@@ -133,24 +152,45 @@ End Sub
 
 Private Function shouldBeDeleted(wks As Excel.Worksheet, repoTag As String) As Boolean
     Dim isEditSheet As Variant
-    Dim TAG As String
+    Dim tag As String
     '------------------------------------------------------------------------------------------------------
+    
     isEditSheet = F.ExcelNames.getValue(wks, IS_EDIT_SHEET_NAME)
     If isEditSheet Then
-        TAG = F.ExcelNames.getValue(wks, REPO_TAG_NAME)
-        shouldBeDeleted = (TAG = repoTag)
+        tag = F.ExcelNames.getValue(wks, REPO_TAG_NAME)
+        shouldBeDeleted = (tag = repoTag)
     End If
+    
 End Function
 
+Private Sub removeTempSheet()
+    Dim wks As Excel.Worksheet
+    Dim alerts As Boolean
+    '------------------------------------------------------------------------------------------------------
+    
+    With Excel.Application
+        alerts = .DisplayAlerts
+        .DisplayAlerts = False
+    End With
+    
+    Set wks = F.Sheets.getSheet(pBook, SHEET_NAME_TEMP)
+    If F.Sheets.isValid(wks) Then
+        Call wks.Delete
+    End If
+    
+    Excel.Application.DisplayAlerts = alerts
+    
+End Sub
 
 Private Function prepareSheet() As Excel.Worksheet
     
     '[Hide/show add button]
     If Not pParent.isAddingAllowed Then
         'Call f.Sheets.removeShape(pSheet, ADD_BUTTON)
-        pSheet.rows(1).Hidden = True
+        Call hideAddButton
+        pSheet.rows(2).Hidden = True
     Else
-        Call updateAddButtonCaption
+        Call adjustAddButton
     End If
     
     '[Hide/show delete column]
@@ -159,19 +199,37 @@ Private Function prepareSheet() As Excel.Worksheet
         pSheet.columns(COL_DELETE).EntireColumn.Hidden = True
     End If
     
+    '[Adjust whole sheet visual settings]
+    With pSheet.Cells
+        With .Font
+            .name = FONT_NAME
+            .size = FONT_SIZE
+        End With
+    End With
+    
     Call insertColumns
     Call alignCloseButton
     Call insertValues
     
 End Function
 
-Private Sub updateAddButtonCaption()
+Private Sub hideAddButton()
+    Dim btn As Excel.shape
+    '------------------------------------------------------------------------------------------------------
+    Set btn = F.Sheets.getShape(pSheet, ADD_BUTTON)
+    If Not btn Is Nothing Then
+        btn.Visible = msoFalse
+    End If
+End Sub
+
+Private Sub adjustAddButton()
     Dim btn As Excel.shape
     '------------------------------------------------------------------------------------------------------
     Set btn = F.Sheets.getShape(pSheet, ADD_BUTTON)
     If Not btn Is Nothing Then
         With btn.DrawingObject
             .caption = VBA.UCase$(MsgService.getText(.caption))
+            .Interior.color = ADD_NEW_BUTTON_COLOR
         End With
     End If
 End Sub
@@ -290,7 +348,9 @@ Private Sub insertValues()
     End If
     
     Call formatRange
+    Call formatHeader
     Call trimSheet
+    Call locateCloseButton
     Call setProtection
     
 End Sub
@@ -359,9 +419,31 @@ Private Sub applySorting()
 End Sub
 
 Private Sub formatRange()
+    
     If F.Ranges.isValid(pRange) Then
         With pRange
             .rows.EntireRow.RowHeight = ROWS_HEIGHT
+        End With
+        Call F.Ranges.autoFitColumnsWithoutShrinking(pRange.Offset(, 1))
+    End If
+    
+    If shouldAutoFitRows Then
+        Call F.Ranges.autoFitRowsWithoutShrinking(pRange.EntireRow)
+    End If
+    
+End Sub
+
+Private Function shouldAutoFitRows() As Boolean
+    shouldAutoFitRows = F.dictionaries.getItemForCombinedKey(pParent.getConfig, TAG_ROWS_AUTO_FIT)
+End Function
+
+Private Sub formatHeader()
+    If F.Ranges.isValid(pRange) Then
+        With pRange.Offset(-1).resize(1)
+            With .Font
+                .Bold = True
+            End With
+            .HorizontalAlignment = xlCenter
         End With
     End If
 End Sub
@@ -395,15 +477,37 @@ Private Sub applyFilter()
     End If
 End Sub
 
+Private Sub locateCloseButton()
+    Dim shp As Excel.shape
+    Dim topRightCell As Excel.Range
+    Dim top As Single
+    Dim left As Single
+    Dim cellPos As area
+    '------------------------------------------------------------------------------------------------------
+    
+    Set shp = F.Sheets.getShape(pSheet, CLOSE_BUTTON)
+    If Not shp Is Nothing Then
+        Set topRightCell = pSheet.Cells(1, 1).End(xlToRight)
+        If F.Ranges.isValid(topRightCell) Then
+            cellPos = F.Ranges.getRangeSizeAndPosition(topRightCell)
+            With topRightCell
+                shp.top = .top
+                shp.left = .left + .width - shp.width
+            End With
+        End If
+    End If
+    
+End Sub
+
 Private Sub setProtection()
     Call pSheet.Protect( _
                     Password:=PROTECTION_PASSWORD, _
                     DrawingObjects:=True, _
-                    Contents:=True, _
+                    contents:=True, _
                     Scenarios:=True, _
                     UserInterfaceOnly:=True, _
                     AllowFormattingCells:=False, _
-                    AllowFormattingColumns:=False, _
+                    AllowFormattingColumns:=True, _
                     AllowFormattingRows:=False, _
                     AllowInsertingColumns:=False, _
                     AllowInsertingRows:=False, _
@@ -485,25 +589,22 @@ Private Function getItemLineValues(item As IEditItem) As Variant
 End Function
 
 Private Sub deleteItem(row As Long)
-    Const DELETE_ITEM_TITLE As String = "GridManager.DeleteItem.WindowTitle"
-    Const DELETE_ITEM_QUESTION As String = "GridManager.DeleteItem.ConfirmationQuestion"
+    Const METHOD_NAME As String = "deleteItem"
     '------------------------------------------------------------------------------------------------------
     Dim id As Long
     Dim item As IEditItem
-    Dim question As String
     Dim answer As Boolean
     '------------------------------------------------------------------------------------------------------
     
-    Excel.Application.ScreenUpdating = False
+    Call ErrorManager.clear
     
     On Error Resume Next
     id = pSheet.Cells(row, COL_ID)
     Set item = F.dictionaries.GetObject(pItems, id)
-    On Error GoTo 0
+    If Not DEV_MODE Then On Error GoTo ErrHandler
     
     If Not item Is Nothing Then
-        question = F.Strings.format(MsgService.getText(DELETE_ITEM_QUESTION), item.getName)
-        answer = F.Dialogs.getUserConfirmation(question, MsgService.getText(DELETE_ITEM_TITLE))
+        answer = F.Dialogs.getUserConfirmation(getDeleteQuestion(item.getName), getDeleteWindowTitle)
         If answer Then
             Call item.Delete
             Call pRepo.removeItem(item)
@@ -512,11 +613,55 @@ Private Sub deleteItem(row As Long)
         End If
     End If
     
-    Excel.Application.ScreenUpdating = True
+'==========================================================================================================
+ExitPoint:
+    Dim errNumber As Long, errDescription As String
+    If errNumber <> 0 Then
+        Call ErrorManager.Save(customErrorMessage:= _
+                                    getDeleteErrorInfo(item.getName, errNumber, errDescription))
+    End If
+    Exit Sub
+
+'----------------------------------------------------------------------------------------------------------
+ErrHandler:
+    errNumber = VBA.Err.Number: errDescription = VBA.Err.Description
+    Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, _
+                        "row; id; item; answer", _
+                         row, id, item, answer)
+    
+    GoTo ExitPoint
     
 End Sub
 
+Private Function getDeleteQuestion(itemName As String) As String
+    Dim pattern As String
+    '--------------------------------------------------------------------------------------------------
+    pattern = F.Strings.coalesce(pParent.getDeleteItemQuestion, DEFAULT_DELETE_ITEM_QUESTION)
+    getDeleteQuestion = F.Strings.format(MsgService.getText(pattern), itemName)
+End Function
+
+Private Function getDeleteWindowTitle() As String
+    Dim pattern As String
+    '--------------------------------------------------------------------------------------------------
+    pattern = F.Strings.coalesce(pParent.getDeleteItemWindowTitle, DEFAULT_DELETE_ITEM_TITLE)
+    getDeleteWindowTitle = MsgService.getText(pattern)
+End Function
+
+Private Function getDeleteErrorInfo(itemName As String, errNumber As Long, errDescription As String) As String
+    Dim pattern As String
+    '--------------------------------------------------------------------------------------------------
+    pattern = F.Strings.coalesce(pParent.getDeleteErrorInfo, DEFAULT_DELETE_ERROR_INFO)
+    getDeleteErrorInfo = F.Strings.format(MsgService.getText(pattern), itemName, errNumber, errDescription)
+End Function
+
+
 Private Sub updateViewAfterDeleting(row As Long)
+    Dim xlsState As ExcelState
+    '------------------------------------------------------------------------------------------------------
+    
+    xlsState = F.Excel.getDefaultExcelState(pSheet, PROTECTION_PASSWORD)
+    Call F.Excel.freeze(xlsState)
+    
     If pRange.rows.Count <= 1 Then
         Call pSheet.rows(row).ClearContents
         Set pRange = Nothing
@@ -526,6 +671,9 @@ Private Sub updateViewAfterDeleting(row As Long)
         Call pSheet.rows(row).Delete
         Call trimSheet
     End If
+    
+    Call F.Excel.unfreeze(xlsState)
+    
 End Sub
 
 Private Sub addItem()
@@ -585,7 +733,7 @@ Private Sub updateAffectedRows(items As VBA.Collection)
     Dim row As Long
     Dim arr As Variant
     '------------------------------------------------------------------------------------------------------
-            
+    
     If F.Collections.isNonEmptyCollection(items) Then
         For Each item In items
             row = findItemRow(item)

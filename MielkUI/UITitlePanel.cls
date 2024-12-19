@@ -16,7 +16,7 @@ Private Const CAPTION_LABEL_NAME As String = "lblCaption"
 Private Const CLOSE_BUTTON_NAME As String = "lblCloseButton"
 Private Const DOCUMENTATION_BUTTON_NAME As String = "lblDocumentationButton"
 Private Const MOVE_LAYER_NAME As String = "lblMoveLayer"
-Private Const UNSAVED_DATA_QUESTION As String = "ConfirmCancellingWindowWithUnsavedData"
+Private Const UNSAVED_DATA_QUESTION As String = "Windows.Warnings.CancelWithoutSaving"
 '[UI default values] --------------------------------------------------------------------------------------
 Private Const DEFAULT_IS_VISIBLE As Boolean = True
 Private Const DEFAULT_HEIGHT As Single = 32
@@ -74,9 +74,9 @@ Private pImagesDefinitions As VBA.Collection
 Private pActionIconsDefinitions As VBA.Collection
 '[Events] -------------------------------------------------------------------------------------------------
 Event AfterClose()
-Event MoveModeOn(ByVal x As Single, ByVal Y As Single)
-Event Move(ByVal x As Single, ByVal Y As Single)
-Event MoveModeOff(ByVal x As Single, ByVal Y As Single)
+Event MoveModeOn(ByVal x As Single, ByVal y As Single)
+Event Move(ByVal x As Single, ByVal y As Single)
+Event MoveModeOff(ByVal x As Single, ByVal y As Single)
 Event HelpFileButtonClicked()
 '----------------------------------------------------------------------------------------------------------
 
@@ -535,17 +535,17 @@ Private Sub pHelpFileButton_Click()
     RaiseEvent HelpFileButtonClicked
 End Sub
 
-Private Sub pMoveLayer_MouseDown(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
+Private Sub pMoveLayer_MouseDown(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal y As Single)
     Call ErrorManager.clear
-    If Button = 1 Then RaiseEvent MoveModeOn(x, Y)
+    If Button = 1 Then RaiseEvent MoveModeOn(x, y)
 End Sub
 
-Private Sub pMoveLayer_MouseMove(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
+Private Sub pMoveLayer_MouseMove(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal y As Single)
     Call ErrorManager.clear
-    If Button = 1 Then RaiseEvent Move(x, Y)
+    If Button = 1 Then RaiseEvent Move(x, y)
 End Sub
 
-Private Sub pMoveLayer_MouseUp(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal Y As Single)
+Private Sub pMoveLayer_MouseUp(ByVal Button As Integer, ByVal shift As Integer, ByVal x As Single, ByVal y As Single)
     Call ErrorManager.clear
-    If Button = 1 Then RaiseEvent MoveModeOff(x, Y)
+    If Button = 1 Then RaiseEvent MoveModeOff(x, y)
 End Sub

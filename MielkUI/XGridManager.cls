@@ -307,7 +307,7 @@ Private Sub renderItemLines()
     Set pLines = F.dictionaries.Create(False)
     
     '[Item lines]
-    totalItems = pItems.count
+    totalItems = pItems.Count
     For Each item In pItems
         Call addLineForItem(item)
         counter = counter + 1
@@ -473,7 +473,7 @@ Private Function getSortedItems() As Variant
     '------------------------------------------------------------------------------------------------------
     
     If F.dictionaries.isNonEmptyDictionary(pFiltered) Then
-        ReDim arr(1 To 2, 1 To pFiltered.count)
+        ReDim arr(1 To 2, 1 To pFiltered.Count)
         For Each key In pFiltered.keys
             i = i + 1
             Set item = pFiltered.item(key)
@@ -494,11 +494,11 @@ End Function
 
 
 '[SCALING]
-Private Sub updateScrollBars(Y As Single)
+Private Sub updateScrollBars(y As Single)
     With pRecordsContainer
-        If Y > .InsideHeight Then
+        If y > .InsideHeight Then
             .ScrollBars = fmScrollBarsVertical
-            .ScrollHeight = Y
+            .ScrollHeight = y
         Else
             .ScrollBars = fmScrollBarsNone
             .scrollTop = 0
@@ -536,7 +536,7 @@ Private Sub adjustColumnWidths()
         End If
     Next key
     
-    availableWidth = (pRecordsContainer.InsideWidth - totalNotScalableWidth - (pColumns.count - 1) * COLUMNS_SPACE) - 2 * HORIZONTAL_PADDING
+    availableWidth = (pRecordsContainer.InsideWidth - totalNotScalableWidth - (pColumns.Count - 1) * COLUMNS_SPACE) - 2 * HORIZONTAL_PADDING
     factor = availableWidth / totalScalableWidth
     
     For Each key In pColumns.keys
@@ -1125,7 +1125,7 @@ Private Sub updateRecordsCounter()
     '------------------------------------------------------------------------------------------------------
     If pHasRecordsCounter Then
         text = MsgService.getText(RECORDS_COUNTER_TAG)
-        text = F.Strings.format(text, pFiltered.count, pItems.count)
+        text = F.Strings.format(text, pFiltered.Count, pItems.Count)
         If UI.controls.isValid(pRecordsCounterLabel) Then
             pRecordsCounterLabel.caption = text
         End If
@@ -1207,7 +1207,7 @@ Private Function generateitemsArray(Optional includeHeaders As Boolean = True) A
         If F.arrays.isDefined(arrSortedItems) Then
             Set items = F.Collections.fromArray(F.arrays.getRow(arrSortedItems, 1, False))
             If F.Collections.isNonEmptyCollection(items) Then
-                ReDim arr(1 To exportableColumns.count, VBA.IIf(includeHeaders, 0, 1) To items.count)
+                ReDim arr(1 To exportableColumns.Count, VBA.IIf(includeHeaders, 0, 1) To items.Count)
                 
                 If includeHeaders Then
                     Call fillArrayWithHeaders(arr, exportableColumns)
@@ -1215,7 +1215,7 @@ Private Function generateitemsArray(Optional includeHeaders As Boolean = True) A
                 
                 For Each item In items
                     i = i + 1
-                    For j = 1 To exportableColumns.count
+                    For j = 1 To exportableColumns.Count
                         Set column = exportableColumns.item(j)
                         Call F.Variables.assign(value, item.getValue(column.getValuePropertyName))
                         
@@ -1233,7 +1233,7 @@ Private Function generateitemsArray(Optional includeHeaders As Boolean = True) A
             End If
             
         Else
-            ReDim arr(1 To exportableColumns.count, 1 To 1)
+            ReDim arr(1 To exportableColumns.Count, 1 To 1)
             If includeHeaders Then
                 Call fillArrayWithHeaders(arr, exportableColumns)
             End If
@@ -1250,7 +1250,7 @@ Public Sub fillArrayWithHeaders(ByRef arr As Variant, columns As VBA.Collection)
     Dim column As DColumn
     '------------------------------------------------------------------------------------------------------
     
-    For i = 1 To columns.count
+    For i = 1 To columns.Count
         Set column = columns.item(i)
         arr(i, LBound(arr, 2)) = column.getLabel
     Next i

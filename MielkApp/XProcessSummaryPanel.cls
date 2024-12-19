@@ -299,10 +299,10 @@ End Sub
 
 '[RENDERING]
 Private Function getLabelName(controlType As ControlTypeEnum) As String
-    Dim TAG As String
+    Dim tag As String
     '----------------------------------------------------------------------------------------------------------
-    TAG = CLASS_NAME & "|" & pUuid & "|" & controlType
-    getLabelName = "ctrl_" & VBA.left$(F.Crypto.SHA1HASH(TAG), 25)
+    tag = CLASS_NAME & "|" & pUuid & "|" & controlType
+    getLabelName = "ctrl_" & VBA.left$(F.Crypto.SHA1HASH(tag), 25)
 End Function
 
 

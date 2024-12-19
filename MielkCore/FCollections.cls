@@ -363,6 +363,14 @@ Public Function getFirstItem(col As VBA.Collection) As Variant
     End If
 End Function
 
+Public Function getFirstObject(col As VBA.Collection) As Variant
+    If isNonEmptyCollection(col) Then
+        Call f.Variables.assign(getFirstObject, col.item(1))
+    Else
+        Set getFirstObject = Nothing
+    End If
+End Function
+
 Public Function getLastItem(col As VBA.Collection) As Variant
     If isNonEmptyCollection(col) Then
         Call f.Variables.assign(getLastItem, col.item(col.count))

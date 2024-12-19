@@ -262,7 +262,7 @@ End Sub
 Public Sub copySizeAndPosition(destinationControl As MSForms.control, sourceControl As MSForms.control)
     If Not isValid(destinationControl) Then
         'skip
-    ElseIf isValid(sourceControl) Then
+    ElseIf Not isValid(sourceControl) Then
         'skip
     Else
         With destinationControl

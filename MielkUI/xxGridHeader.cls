@@ -249,7 +249,7 @@ Private Sub arrangeLayout()
 End Sub
 
 
-Public Function Move(Optional x As Variant, Optional Y As Variant) As xxGridHeader
+Public Function Move(Optional x As Variant, Optional y As Variant) As xxGridHeader
     Dim offsetX As Single
     Dim offsetY As Single
     '------------------------------------------------------------------------------------------------------
@@ -261,9 +261,9 @@ Public Function Move(Optional x As Variant, Optional Y As Variant) As xxGridHead
             offsetX = (x - pLeft)
             pLeft = x
         End If
-        If VBA.IsNumeric(Y) Then
-            offsetY = (Y - pTop)
-            pTop = Y
+        If VBA.IsNumeric(y) Then
+            offsetY = (y - pTop)
+            pTop = y
         End If
     End With
     
@@ -272,9 +272,9 @@ Public Function Move(Optional x As Variant, Optional Y As Variant) As xxGridHead
 End Function
 
 
-Public Function offset(Optional x As Single, Optional Y As Single) As xxGridHeader
+Public Function offset(Optional x As Single, Optional y As Single) As xxGridHeader
     Set offset = Me
-    Call UI.Forms.offsetControls(x, Y, pBackgroundLabel, pCaptionLabel, pFilterIcon)
+    Call UI.Forms.offsetControls(x, y, pBackgroundLabel, pCaptionLabel, pFilterIcon)
 End Function
 
 Private Sub updateSize()
@@ -414,12 +414,12 @@ Private Sub IControl_alignVertically(baseCtrl As MSForms.IControl)
     'Call alignVertically(baseCtrl)
 End Sub
 
-Private Function IControl_move(Optional x As Variant, Optional Y As Variant) As IControl
-    Set IControl_move = Move(x, Y)
+Private Function IControl_move(Optional x As Variant, Optional y As Variant) As IControl
+    Set IControl_move = Move(x, y)
 End Function
 
-Private Function IControl_offset(Optional x As Single, Optional Y As Single) As IControl
-    Set IControl_offset = offset(x, Y)
+Private Function IControl_offset(Optional x As Single, Optional y As Single) As IControl
+    Set IControl_offset = offset(x, y)
 End Function
 
 Private Sub IControl_triggerEvent(eventId As Long)

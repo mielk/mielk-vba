@@ -50,7 +50,7 @@ Private Function isValidCommandBarPopup(popup As Office.commandBarPopup) As Bool
     '------------------------------------------------------------------------------------------------------
     
     On Error Resume Next
-    controlsCounter = popup.Controls.Count
+    controlsCounter = popup.Controls.count
     
     isValidCommandBarPopup = (controlsCounter >= 0)
 

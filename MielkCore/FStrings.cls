@@ -205,6 +205,50 @@ ErrHandler:
 End Function
 
 
+Public Function formatByTags(pattern As String, replacements As Scripting.Dictionary) As String
+    Const METHOD_NAME As String = "format"
+    '------------------------------------------------------------------------------------------------------
+    Const SLASH_TEMP_REPLACEMENT As String = "$%^#$%^#$%"
+    '------------------------------------------------------------------------------------------------------
+    Dim key As Variant
+    Dim replacement As String
+    Dim tag As String
+    '------------------------------------------------------------------------------------------------------
+
+    If Not DEV_MODE Then On Error GoTo ErrHandler
+
+    'New line symbols
+    formatByTags = VBA.replace(pattern, "\\", SLASH_TEMP_REPLACEMENT)
+    formatByTags = VBA.replace(formatByTags, NEW_LINE_SYMBOL, VBA.vbCrLf)
+    formatByTags = VBA.replace(formatByTags, TAB_SYMBOL, VBA.vbTab)
+    formatByTags = VBA.replace(formatByTags, SLASH_TEMP_REPLACEMENT, "\")
+
+    'Replacements
+    If f.dictionaries.isNonEmptyDictionary(replacements) Then
+        For Each key In replacements.Keys
+            replacement = replacements.item(key)
+            tag = "{" & key & "}"
+            formatByTags = VBA.replace(formatByTags, tag, replacement)
+        Next key
+    End If
+    
+'==========================================================================================================
+ExitPoint:
+    Dim errNumber As Long, errDescription As String
+    If errNumber Then Call VBA.err.raise(errNumber, CLASS_NAME & "." & METHOD_NAME, errDescription)
+    Exit Function
+
+'----------------------------------------------------------------------------------------------------------
+ErrHandler:
+    errNumber = err.number: errDescription = err.description
+    Call ErrorManager.addError(CLASS_NAME, METHOD_NAME, errNumber, errDescription, _
+                        "pattern; replacements; key; replacement", _
+                         pattern, replacements, key, replacement)
+    GoTo ExitPoint
+    
+End Function
+
+
 
 Public Function toDbValue(value As Variant, Optional throwErrorIfIllegalDataType As Boolean = True) As String
     Const METHOD_NAME As String = "toDbValue"
@@ -438,7 +482,7 @@ Private Function stringifyNotContainerObject(value As Object, stringifyMode As S
 
 '==========================================================================================================
 ExitPoint:
-    Call VBA.err.raise(errNumber, Source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
+    Call VBA.err.raise(errNumber, source:=CLASS_NAME & "." & METHOD_NAME, description:=errDescription)
     Exit Function
 
 '----------------------------------------------------------------------------------------------------------

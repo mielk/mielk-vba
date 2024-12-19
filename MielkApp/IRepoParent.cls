@@ -12,6 +12,8 @@ Option Explicit
 Private Const CLASS_NAME As String = "IRepoParent"
 '----------------------------------------------------------------------------------------------------------
 
+Public Function getConfig() As Scripting.Dictionary
+End Function
 
 Public Function getName() As String
 End Function
@@ -40,6 +42,8 @@ End Function
 Public Function getSortingRules() As Scripting.Dictionary
 End Function
 
+
+'[Deleting items]
 Public Function getDeleteSuccessInfo() As String
 End Function
 
@@ -49,9 +53,12 @@ End Function
 Public Function getDeleteItemWindowTitle() As String
 End Function
 
+Public Function getDeleteErrorInfo() As String
+End Function
+
 
 '[Actions]
-Public Function createNewItem() As IEditItem
+Public Function createNewItem(Optional params As Scripting.Dictionary) As IEditItem
 End Function
 
 Public Function runAfterEditAction(ByRef updateView As Boolean)

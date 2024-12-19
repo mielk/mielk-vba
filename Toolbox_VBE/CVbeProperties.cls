@@ -62,7 +62,7 @@ End Function
 Public Function getProperty(ByVal prop As Variant) As enumProperty
     If VBA.IsArray(prop) Then
         'not possible to get property
-    ElseIf Not VBA.IsObject(prop) Then
+    ElseIf Not VBA.isObject(prop) Then
         Set getProperty = F.dictionaries.GetObject(pByNames, prop)
     ElseIf prop Is Nothing Then
         'Nothing should be returned
@@ -84,6 +84,6 @@ Public Function IsOptional() As enumProperty: Set IsOptional = ByName("IsOptiona
 Public Function PassMode() As enumProperty: Set PassMode = ByName("PassMode"): End Function
 Public Function IsArray() As enumProperty: Set IsArray = ByName("IsArray"): End Function
 Public Function IsParamArray() As enumProperty: Set IsParamArray = ByName("IsParamArray"): End Function
-Public Function DataType() As enumProperty: Set DataType = ByName("DataType"): End Function
+Public Function dataType() As enumProperty: Set dataType = ByName("DataType"): End Function
 Public Function DefaultValue() As enumProperty: Set DefaultValue = ByName("DefaultValue"): End Function
 Public Function ArraySize() As enumProperty: Set ArraySize = ByName("ArraySize"): End Function

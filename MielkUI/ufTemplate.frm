@@ -1,9 +1,9 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufTemplate 
    Caption         =   "UserForm1"
-   ClientHeight    =   3012
+   ClientHeight    =   3015
    ClientLeft      =   120
-   ClientTop       =   468
+   ClientTop       =   465
    ClientWidth     =   4560
    OleObjectBlob   =   "ufTemplate.frx":0000
    StartUpPosition =   1  'CenterOwner
@@ -53,8 +53,10 @@ Private Sub UserForm_Activate()
         End If
         
         errNumber = VBA.Err.Number
+        errDescription = VBA.Err.description
         
-        If Not DEV_MODE Then On Error GoTo ErrHandler
+        'If Not DEV_MODE Then On Error GoTo ErrHandler
+        On Error GoTo 0
         
         If errNumber = Exceptions.WrongNumberOfArguments.getNumber Then
             errNumber = 0
@@ -63,6 +65,8 @@ Private Sub UserForm_Activate()
             Else
                 Call Excel.Application.run(pMethodName)
             End If
+        ElseIf errNumber <> 0 Then
+            'Call VBA.Err.Raise(errNumber, , errDescription)
         End If
         
     End If

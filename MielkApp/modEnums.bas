@@ -25,12 +25,12 @@ End Enum
 
 Public Function getItemProcessStatusName(status As ItemProcessStatusEnum) As String
     Select Case status
-        Case ItemProcessStatus_Unknown:                 getItemProcessStatusName = MsgService.getText("Status.Unknown")
-        Case ItemProcessStatus_Correct:                 getItemProcessStatusName = MsgService.getText("Status.Success")
-        Case ItemProcessStatus_Error:                   getItemProcessStatusName = MsgService.getText("Status.Error")
-        Case ItemProcessStatus_Warning:                 getItemProcessStatusName = MsgService.getText("Status.Warning")
-        Case ItemProcessStatus_Rejected:                getItemProcessStatusName = MsgService.getText("Status.Rejected")
-        Case ItemProcessStatus_Skipped:                 getItemProcessStatusName = MsgService.getText("Status.Skipped")
+        Case ItemProcessStatus_Unknown:                 getItemProcessStatusName = MsgService.getText("ProcessingItems.Status.Unknown")
+        Case ItemProcessStatus_Correct:                 getItemProcessStatusName = MsgService.getText("ProcessingItems.Status.Correct")
+        Case ItemProcessStatus_Error:                   getItemProcessStatusName = MsgService.getText("ProcessingItems.Status.Errors")
+        Case ItemProcessStatus_Warning:                 getItemProcessStatusName = MsgService.getText("ProcessingItems.Status.Warnings")
+        Case ItemProcessStatus_Rejected:                getItemProcessStatusName = MsgService.getText("ProcessingItems.Status.Rejected")
+        Case ItemProcessStatus_Skipped:                 getItemProcessStatusName = MsgService.getText("ProcessingItems.Status.Skipped")
     End Select
 End Function
 

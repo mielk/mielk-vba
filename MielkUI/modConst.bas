@@ -2,6 +2,8 @@ Attribute VB_Name = "modConst"
 Option Explicit
 
 Private Const CLASS_NAME As String = "modConst"
+'----------------------------------------------------------------------------------------------------------
+Public Const FILE_VERSION As String = "1.0.0"
 '[Event messages] -----------------------------------------------------------------------------------------
 'Public Const EVENT_CHANGE As String = "change"
 'Public Const EVENT_CLICK As String = "click"
@@ -10,13 +12,14 @@ Private Const CLASS_NAME As String = "modConst"
 Public Const EVENT_AFTER_VALIDATION As String = "after-validation"
 Public Const EVENT_LAYOUT_CHANGE As String = "layout-change"
 '[Actions] ------------------------------------------------------------------------------------------------
-Public Const ACTION_ADD As String = "add"
-Public Const ACTION_DELETE As String = "delete"
-Public Const ACTION_EDIT As String = "edit"
+Public Const ACTION_ADD As String = "INSERT"
+Public Const ACTION_DELETE As String = "DELETE"
+Public Const ACTION_EDIT As String = "UPDATE"
 Public Const ACTION_EXPORT_TO_EXCEL As String = "export-to-excel"
 Public Const ACTION_FILTER_EDIT As String = "filter-edit"
 Public Const ACTION_FILTER_OFF As String = "filter-off"
 Public Const ACTION_FILTER_ON As String = "filter-on"
+Public Const ACTION_INSERT As String = "INSERT"
 Public Const ACTION_SORT As String = "sort"
 '[Tags] ---------------------------------------------------------------------------------------------------
 Public Const TAG_ACTION_PARAMS As String = "action-params"

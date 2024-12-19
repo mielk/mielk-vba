@@ -307,6 +307,15 @@ Private Sub arrangeLayout()
 
 End Sub
 
+Public Sub updateLine(key As Variant)
+    Dim line As xxProcessItemLine
+    '------------------------------------------------------------------------------------------------------
+    Set line = pItemsListControl.getItemLineByName(VBA.CStr(key))
+    If Not line Is Nothing Then
+        Call line.updateCaption
+    End If
+End Sub
+
 
 
 
@@ -472,6 +481,10 @@ End Function
 Private Function IItemsProcessorViewer_setProcessor(value As ItemsProcessor) As IItemsProcessorViewer
     Set IItemsProcessorViewer_setProcessor = setProcessor(value)
 End Function
+
+Private Sub IItemsProcessorViewer_updateLine(key As Variant)
+    Call updateLine(key)
+End Sub
 
 
 

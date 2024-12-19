@@ -76,7 +76,7 @@ Public Function setTop(value As Single) As xxGridLine
     Set setTop = Me
     offsetY = value - pTop
     pTop = value
-    If pIsRendered Then Call offsetControls(Y:=offsetY)
+    If pIsRendered Then Call offsetControls(y:=offsetY)
 End Function
 
 Public Function setLineHeight(value As Single) As xxGridLine
@@ -238,7 +238,7 @@ Private Sub relocateControls()
             Set ctrl = pControls.item(key)
             If Not ctrl Is Nothing Then
                 top = pTop + PIXEL_SIZE + (pLineHeight - ctrl.getHeight) / 2
-                Call ctrl.Move(Y:=top)
+                Call ctrl.Move(y:=top)
                 'Call ctrl.alignVertically(pBackground)
             End If
         Next key
@@ -246,19 +246,19 @@ Private Sub relocateControls()
     
 End Sub
 
-Private Sub offsetControls(Optional x As Single, Optional Y As Single)
+Private Sub offsetControls(Optional x As Single, Optional y As Single)
     Dim key As Variant
     Dim ctrl As IControl
     '------------------------------------------------------------------------------------------------------
     
     If pIsRendered Then
-        If Y Then
+        If y Then
             pBorderLine.top = UI.Normalize.position(pBorderLine.top)
             pBackground.top = UI.Normalize.position(pBackground.top)
             For Each key In pControls.keys
                 Set ctrl = pControls.item(key)
                 If Not ctrl Is Nothing Then
-                    Call ctrl.offset(Y:=Y)
+                    Call ctrl.offset(y:=y)
                 End If
             Next key
         End If

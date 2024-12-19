@@ -158,16 +158,18 @@ Public Function getFirstEntry(dict As Scripting.Dictionary, _
     Dim arr As Variant
     '------------------------------------------------------------------------------------------------------
     
-    For Each key In dict.Keys
-        If partType = DictPart_KeyOnly Then
-            Call f.Variables.assign(getFirstEntry, key)
-        ElseIf partType = DictPart_ValueOnly Then
-            Call f.Variables.assign(getFirstEntry, dict.item(key))
-        Else
-            getFirstEntry = KeyValue(key, dict.item(key))
-        End If
-        Exit For
-    Next key
+    If Not dict Is Nothing Then
+        For Each key In dict.Keys
+            If partType = DictPart_KeyOnly Then
+                Call f.Variables.assign(getFirstEntry, key)
+            ElseIf partType = DictPart_ValueOnly Then
+                Call f.Variables.assign(getFirstEntry, dict.item(key))
+            Else
+                getFirstEntry = KeyValue(key, dict.item(key))
+            End If
+            Exit For
+        Next key
+    End If
     
 End Function
 
@@ -1309,6 +1311,46 @@ Private Function removeItemsFromDictionary( _
     
 End Function
 
+Public Function getElementsWithoutMatch(baseDict As Scripting.Dictionary, _
+                                        comparedDict As Scripting.Dictionary) As Scripting.Dictionary
+    Dim key As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    If Not f.dictionaries.isNonEmptyDictionary(baseDict) Then
+        Set getElementsWithoutMatch = f.dictionaries.Create(baseDict.CompareMode = BinaryCompare)
+    ElseIf Not f.dictionaries.isNonEmptyDictionary(comparedDict) Then
+        Set getElementsWithoutMatch = f.dictionaries.clone(baseDict)
+    Else
+        Set getElementsWithoutMatch = f.dictionaries.Create(baseDict.CompareMode = BinaryCompare)
+        For Each key In baseDict.Keys
+            If Not comparedDict.exists(key) Then
+                Call getElementsWithoutMatch.Add(key, baseDict.item(key))
+            End If
+        Next key
+    End If
+    
+End Function
+
+Public Function getElementsWithMatch(baseDict As Scripting.Dictionary, _
+                                        comparedDict As Scripting.Dictionary) As Scripting.Dictionary
+    Dim key As Variant
+    '------------------------------------------------------------------------------------------------------
+    
+    Set getElementsWithMatch = f.dictionaries.Create(baseDict.CompareMode = BinaryCompare)
+    
+    If Not f.dictionaries.isNonEmptyDictionary(baseDict) Then
+        '
+    ElseIf Not f.dictionaries.isNonEmptyDictionary(comparedDict) Then
+        '
+    Else
+        For Each key In baseDict.Keys
+            If comparedDict.exists(key) Then
+                Call getElementsWithMatch.Add(key, baseDict.item(key))
+            End If
+        Next key
+    End If
+    
+End Function
 
 
 Public Function getValueByKeyRegex(dict As Scripting.Dictionary, regex As String) As Variant

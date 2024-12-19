@@ -6,5 +6,6 @@ Private Const CLASS_NAME As String = "modConstStrings"
 '----------------------------------------------------------------------------------------------------------
 Public Const NEW_LINE_SYMBOL As String = "\n"
 Public Const TAB_SYMBOL As String = "\t"
+Public Const NEW_LINE_REPLACEMENT_TAG As String = "<<NEW_LINE>>"
 '----------------------------------------------------------------------------------------------------------
 

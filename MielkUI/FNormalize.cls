@@ -25,11 +25,11 @@ End Sub
 
 
 Public Function position(ByVal value As Single) As Single
-    position = F.Numerics.roundTo(VBA.CDbl(value), PIXEL_SIZE / pScaling.Y)
+    position = F.Numerics.roundTo(VBA.CDbl(value), PIXEL_SIZE / pScaling.y)
 End Function
 
 Public Function size(ByVal value As Single) As Single
-    size = F.Numerics.roundTo(VBA.CDbl(value), PIXEL_SIZE / pScaling.Y)
+    size = F.Numerics.roundTo(VBA.CDbl(value), PIXEL_SIZE / pScaling.y)
 End Function
 
 Public Function fontSize(ByVal value As Single) As Single

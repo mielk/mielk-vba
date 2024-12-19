@@ -113,7 +113,7 @@ ErrHandler:
     Dim errNumber As Long, errDescription As String, errSource As String
     Dim isSourceError As Boolean, errMessage As String
     '------------------------------------------------------------------------------------------------------
-    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.Source
+    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.source
     isSourceError = Not VBA.Left(errDescription, 3) = " * "
     errMessage = " * " & CLASS_NAME & "." & METHOD_NAME & VBA.IIf(isSourceError, _
                             VBA.vbCrLf & " * " & errSource & ": " & errDescription & " (" & errNumber & ")", _
@@ -152,7 +152,7 @@ ErrHandler:
     Dim errNumber As Long, errDescription As String, errSource As String
     Dim isSourceError As Boolean, errMessage As String
     '------------------------------------------------------------------------------------------------------
-    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.Source
+    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.source
     isSourceError = Not VBA.Left(errDescription, 3) = " * "
     errMessage = " * " & CLASS_NAME & "." & METHOD_NAME & VBA.IIf(isSourceError, _
                             VBA.vbCrLf & " * " & errSource & ": " & errDescription & " (" & errNumber & ")", _
@@ -193,7 +193,7 @@ ErrHandler:
     Dim errNumber As Long, errDescription As String, errSource As String
     Dim isSourceError As Boolean, errMessage As String
     '------------------------------------------------------------------------------------------------------
-    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.Source
+    errNumber = VBA.err.number: errDescription = VBA.err.description: errSource = VBA.err.source
     isSourceError = Not VBA.Left(errDescription, 3) = " * "
     errMessage = " * " & CLASS_NAME & "." & METHOD_NAME & VBA.IIf(isSourceError, _
                             VBA.vbCrLf & " * " & errSource & ": " & errDescription & " (" & errNumber & ")", _

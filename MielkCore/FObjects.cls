@@ -14,10 +14,10 @@ Private Const CLASS_NAME As String = "FObjects"
     '----------------------------------------------------------------------------------------------------------
 
 
-Public Function coalesce(ParamArray Objects() As Variant) As Object
+Public Function coalesce(ParamArray objects() As Variant) As Object
     Dim varObject As Variant
     '------------------------------------------------------------------------------------------------------
-    For Each varObject In Objects
+    For Each varObject In objects
         If VBA.IsObject(varObject) Then
             If Not varObject Is Nothing Then
                 Set coalesce = varObject

@@ -18,6 +18,9 @@ Private Const CLASS_NAME As String = "IDbConnection"
 Public Sub setConnectionString(conStr As String)
 End Sub
 
+Public Sub setConnectionDetails(provider As String, dataSource As String, dbName As String, Optional userName As String, Optional password As String)
+End Sub
+
 Public Function getConnectionString() As String
 End Function
 
@@ -30,13 +33,13 @@ End Function
 Public Sub openConnection()
 End Sub
 
-Public Function clone() As IDbConnection
-End Function
-
 Public Sub closeConnection(Optional rollbackTransactionIfOpen As Boolean = False)
 End Sub
 
 Public Function toString() As String
+End Function
+
+Public Function cloneConnection() As IDbConnection
 End Function
 
 
@@ -87,11 +90,11 @@ End Function
 Public Function getScalarFunctionValue(sqlString As String, Optional lockType As Long = adLockPessimistic) As Variant
 End Function
 
-Public Sub runStoredProcedure(procName As String, params As Scripting.Dictionary, Optional asynchronous As Boolean = True)
-End Sub
+Public Function runStoredProcedure(procName As String, params As Scripting.Dictionary, Optional asynchronous As Boolean = True) As ValidationObject
+End Function
 
-Public Sub runStoredProcedureWithCommand(procName As String, params As Scripting.Dictionary, Optional asynchronous As Boolean = True)
-End Sub
+Public Function runStoredProcedureWithCommand(procName As String, params As Scripting.Dictionary, Optional asynchronous As Boolean = True) As ValidationObject
+End Function
 
 
 

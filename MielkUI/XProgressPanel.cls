@@ -677,7 +677,7 @@ Private Sub autoSizeBackgroundFrame()
     '----------------------------------------------------------------------------------------------------------
     Call hideShowDetailsProgressBar
     endPoint = UI.Forms.calculateRightBottomPoint(pContainerFrame, True)
-    pContainerFrame.height = endPoint.Y + pTopPadding
+    pContainerFrame.height = endPoint.y + pTopPadding
 End Sub
 
 Private Sub hideShowDetailsProgressBar()

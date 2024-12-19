@@ -87,6 +87,19 @@ Public Sub deleteFolder(ByVal folderPath As String)
     End With
 End Sub
 
+Public Sub deleteFilesByFilter(folderPath As String, filterRegex As String, _
+                                            Optional includeSubfolders As Boolean = False)
+    Dim files As VBA.Collection
+    Dim file As Scripting.file
+    '------------------------------------------------------------------------------------------------------
+    
+    Set files = f.files.getFolderFiles(folderPath, includeSubfolders, filterRegex)
+    For Each file In files
+        Call f.files.deleteFile(VBA.CStr(file.path))
+    Next file
+
+End Sub
+
 Public Function getFileFolderPath(ByVal filepath As String, Optional removeEndSlash As Boolean = False) As String
     Const REGEX_PATTERN As String = "(.*)(?:\\[^\\]+)(?:\\*)$"
     Const END_SLASH_PATTERN As String = "(\\*)$"
@@ -352,7 +365,7 @@ Public Function getFileExtension(filepath As String, Optional withDot As Boolean
     getFileExtension = f.regex.getFirstGroupMatch(filepath, REGEX_PATTERN)
     If withDot Then getFileExtension = "." & getFileExtension
 End Function
-
+    
 Public Function getFile(filepath As String) As Scripting.file
     With fso
         If .fileExists(filepath) Then
@@ -929,6 +942,40 @@ Public Function getSubfolders(parentFolderPath As String) As VBA.Collection
     
 End Function
 
+Public Function isNotEmptyFolder(folderPath As String) As Boolean
+    Dim folder As Scripting.folder
+    '------------------------------------------------------------------------------------------------------
+    
+    Set folder = getFolder(folderPath)
+    If folder Is Nothing Then
+        isNotEmptyFolder = False
+    ElseIf folder.SubFolders.count > 0 Then
+        isNotEmptyFolder = True
+    ElseIf folder.files.count > 0 Then
+        isNotEmptyFolder = True
+    Else
+        isNotEmptyFolder = False
+    End If
+    
+End Function
+
+Public Function isEmptyFolder(folderPath As String) As Boolean
+    Dim folder As Scripting.folder
+    '------------------------------------------------------------------------------------------------------
+    
+    Set folder = getFolder(folderPath)
+    If folder Is Nothing Then
+        isEmptyFolder = False
+    ElseIf folder.SubFolders.count > 0 Then
+        isEmptyFolder = False
+    ElseIf folder.files.count > 0 Then
+        isEmptyFolder = False
+    Else
+        isEmptyFolder = True
+    End If
+        
+End Function
+
 
 
 Public Function getSelectPatternForFileTypeCode(fileTypeCode As String) As String
@@ -936,4 +983,29 @@ Public Function getSelectPatternForFileTypeCode(fileTypeCode As String) As Strin
         Case VBA.LCase$(FILE_TYPE_CODE_CSV):        getSelectPatternForFileTypeCode = FILES_PATTERN_CSV
         Case VBA.LCase$(FILE_TYPE_CODE_EXCEL):      getSelectPatternForFileTypeCode = FILES_PATTERN_EXCEL
     End Select
+End Function
+
+
+
+Public Function checkIfExtensionMatch(filepath As String, _
+                                        Optional extensionRegex As String = EXTENSION_REGEX_EXCEL_FILE) As Boolean
+    Dim extension As String
+    '------------------------------------------------------------------------------------------------------
+    extension = getFileExtension(filepath)
+    checkIfExtensionMatch = f.regex.checkIfMatch(extension, extensionRegex)
+End Function
+
+Public Function getFileTypeCodeFromPath(filepath As String) As String
+    Dim extension As String
+    '------------------------------------------------------------------------------------------------------
+    extension = getFileExtension(filepath)
+    
+    If f.regex.checkIfMatch(extension, EXTENSION_REGEX_EXCEL_FILE) Then
+        getFileTypeCodeFromPath = FILE_TYPE_CODE_EXCEL
+    ElseIf f.regex.checkIfMatch(extension, EXTENSION_CSV) Then
+        getFileTypeCodeFromPath = FILE_TYPE_CODE_CSV
+    Else
+        Stop
+    End If
+    
 End Function
